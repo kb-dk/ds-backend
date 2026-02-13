@@ -1,14 +1,24 @@
 package dk.kb.license.solr;
 
+import dk.kb.license.config.ServiceConfig;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,10 +26,101 @@ import java.util.concurrent.TimeUnit;
  * See the yaml-configuration to see which Solr URLs are used
  */
 public class SolrServerClient extends AbstractSolrJClient {
-    
-    public SolrServerClient(String serverUrl) {
-        super(serverUrl);
+    private static final Logger log = LoggerFactory.getLogger(SolrServerClient.class);
+    private String serverUrl = null;
+    private List<SolrServerClient> servers = Collections.emptyList();
+
+    // determines the amount of documents returned by the query
+    private final int rows = 1000;
+
+    /**
+     * Automatically populates the List of SolrServerClient when the class gets initialized
+     */
+    public SolrServerClient() {
+        servers = ServiceConfig.getSolrServers();
     }
 
+    /**
+     * Create a Solr client from a serverUrl that is used to call Solr
+     *
+     * @param serverUrl
+     */
+    public SolrServerClient(String serverUrl) {
+        try {
+            this.serverUrl = serverUrl;
+            solrServer = new Http2SolrClient.Builder(serverUrl)
+                    .useHttp1_1(true)  //because CentOS 7 / apache 2.4.6.
+                    .withConnectionTimeout(15, TimeUnit.SECONDS)                    
+                    .withIdleTimeout(60, TimeUnit.SECONDS)
+                    //.withMaxConnectionsPerHost(4) // For http2SolrClient this is automatic limited to 4.
+                    .build();      
+            log.info("solr client initialized:"+serverUrl);            
+        } catch (RuntimeException e) {
+            log.error("Unable to connect to solr-server: {}", serverUrl, e);
+        }
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public QueryResponse query(SolrParams solrParams) throws SolrServerException, IOException {    
+        return solrServer.query(solrParams);
+    }
+
+    /**
+     * Create a Solr query.
+     *
+     * @param query     what query we want to query in Solr.
+     * @param fieldList what fields should be in the Solr response.
+     * @return a {@link SolrQuery} that can be used in request to Solr.
+     */
+    public SolrQuery createSolrQuery(String query, String fieldList) {
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setQuery(query);
+        solrQuery.setFields(fieldList);
+        solrQuery.setRows(rows);
+        return solrQuery;
+    }
+
+    /**
+     * Call Solr with the given solrQuery and return the response
+     *
+     * @param query     what query we want to query in Solr.
+     * @param fieldList what fields should be in the Solr response.
+     * @return combined response from Solr
+     * @throws SolrServerException
+     * @throws IOException
+     */
+    public SolrDocumentList callSolr(String query, String fieldList) throws SolrServerException, IOException {
+        QueryResponse response = null;
+        SolrDocumentList resultSolrDocumentList = new SolrDocumentList();
+
+        if (servers == null || servers.isEmpty()) {
+            final String errorMessage = "List of SolrServerClient is never populated";
+            log.error(errorMessage);
+            throw new InternalServiceException(errorMessage);
+        }
+
+        // Ds-license supports multiple backing Solr servers. So we have to wrap it in this for-loop
+        for (SolrServerClient server : servers) {
+            SolrQuery solrQuery = createSolrQuery(query, fieldList);
+            response = server.query(solrQuery);
+
+            // If the query match with more than 1000 results, we throw an exception
+            if (response.getResults().getNumFound() > rows) {
+                final String errorMessage = "Too many results for query: " + query;
+                log.error(errorMessage);
+                throw new InvalidArgumentServiceException(errorMessage);
+            }
+
+            resultSolrDocumentList.addAll(response.getResults());
+        }
+
+        // Add NumFound to the SolrDocumentList
+        resultSolrDocumentList.setNumFound(response.getResults().getNumFound());
+
+        return resultSolrDocumentList;
+    }
 }
 

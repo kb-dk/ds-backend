@@ -7,7 +7,6 @@ import dk.kb.license.mapper.DrBroadcastDtoMapper;
 import dk.kb.license.mapper.FailedRestrictedIdDtoMapper;
 import dk.kb.license.mapper.ProcessedRestrictedIdsOutputDtoMapper;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.solr.SolrMultiClient;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.AuditLogEntry;
 import dk.kb.license.storage.AuditLogModuleStorage;
@@ -36,7 +35,7 @@ import java.util.List;
 
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
-    private static final SolrMultiClient solrServerClient = new SolrMultiClient();
+    private static final SolrServerClient solrServerClient = new SolrServerClient();
     private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
     private static final InputValidator inputValidator = new InputValidator();
 
@@ -45,7 +44,7 @@ public class RightsModuleFacade {
      *
      * @return
      */
-    public static SolrMultiClient getSolrServerClient() {
+    public static SolrServerClient getSolrServerClient() {
         return solrServerClient;
     }
 
@@ -817,7 +816,7 @@ public class RightsModuleFacade {
                 query.setStart(start);
 
                 // Query solr for a response
-                QueryResponse response = server.getSolrServer().query(query);
+                QueryResponse response = server.query(query);
                 SolrDocumentList results = response.getResults();
 
                 // For each record in the result touch the related DS-storage record

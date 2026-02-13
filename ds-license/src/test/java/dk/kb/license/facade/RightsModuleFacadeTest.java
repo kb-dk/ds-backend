@@ -2,7 +2,7 @@ package dk.kb.license.facade;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.solr.SolrMultiClient;
+import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
 import dk.kb.license.storage.UnitTestUtil;
@@ -1570,7 +1570,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         // Arrange
         String expectedMessage = "'dsId' cannot be empty";
         // We need to mock the call to solr,
-        SolrMultiClient mockedSolrServerClient = mock(SolrMultiClient.class);
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
             mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
@@ -1594,7 +1594,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         // Arrange
         String expectedMessage = "'dsId' cannot be empty";
         // We need to mock the call to solr,
-        SolrMultiClient mockedSolrServerClient = mock(SolrMultiClient.class);
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
             mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
@@ -1621,7 +1621,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         // Arrange
         String expectedMessage = "Invalid 'dsId': " + dsId;
         // We need to mock the call to solr,
-        SolrMultiClient mockedSolrServerClient = mock(SolrMultiClient.class);
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
             mockedRightsModuleFacade.when(RightsModuleFacade::getSolrServerClient).thenReturn(mockedSolrServerClient);
@@ -1650,7 +1650,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         solrDocumentList.setNumFound(0);
 
         // We need to mock the call to solr,
-        SolrMultiClient mockedSolrServerClient = mock(SolrMultiClient.class);
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
         when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(solrDocumentList);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
@@ -1703,7 +1703,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         solrDocumentListDrProductionId.add(solrDocumentDrProductionId);
 
         // We need to mock the call to solr,
-        SolrMultiClient mockedSolrServerClient = mock(SolrMultiClient.class);
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
         when(mockedSolrServerClient.callSolr(queryDsId, fieldListDsId)).thenReturn(solrDocumentListDsId);
         when(mockedSolrServerClient.callSolr(queryDrProductionId, fieldListDrProductionId)).thenReturn(solrDocumentListDrProductionId);
 
@@ -1742,7 +1742,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         solrDocumentList.add(solrDocument);
 
         // We need to mock the call to solr,
-        SolrMultiClient mockedSolrServerClient = mock(SolrMultiClient.class);
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
         when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(solrDocumentList);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
@@ -1793,7 +1793,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         solrDocumentList.add(solrDocument);
 
         // We need to mock the call to solr,
-        SolrMultiClient mockedSolrServerClient = mock(SolrMultiClient.class);
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
         when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(solrDocumentList);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
@@ -1864,7 +1864,7 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
         solrDocumentList.addAll(List.of(solrDocumentOne, solrDocumentTwo));
 
         // We mock the call to
-        SolrMultiClient mockedSolrServerClient = mock(SolrMultiClient.class);
+        SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
         when(mockedSolrServerClient.callSolr(anyString(), anyString())).thenReturn(solrDocumentList);
 
         try (MockedStatic<RightsModuleFacade> mockedRightsModuleFacade = mockStatic(RightsModuleFacade.class)) {
