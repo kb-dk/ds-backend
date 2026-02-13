@@ -5,22 +5,23 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractSolrJClient {
+public abstract class AbstractSolrJClient implements Closeable {
     private static final Logger log = LoggerFactory.getLogger(AbstractSolrJClient.class);
-    
-    protected static Http2SolrClient solrServer; 
+
+    protected Http2SolrClient solrServer;
     static{ 
         //Silent all the debugs log from HTTP Client (used by SolrJ)
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -32,7 +33,28 @@ public abstract class AbstractSolrJClient {
         java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.OFF);   
     }
 
-    
+     public final String serverUrl;
+
+
+     /**
+     * Create a Solr client from a serverUrl that is used to call Solr
+     *
+     * @param serverUrl
+     */
+    public AbstractSolrJClient(String serverUrl) {
+        this.serverUrl = serverUrl;
+        try {
+            solrServer = new Http2SolrClient.Builder(serverUrl)
+                    .useHttp1_1(true)  //because CentOS 7 / apache 2.4.6.
+                    .withConnectionTimeout(15, TimeUnit.SECONDS)
+                    .withIdleTimeout(60, TimeUnit.SECONDS)
+                    //.withMaxConnectionsPerHost(4) // For http2SolrClient this is automatic limited to 4.
+                    .build();
+            log.info("solr client initialized:"+serverUrl);
+        } catch (RuntimeException e) {
+            log.error("Unable to connect to solr-server: {}", serverUrl, e);
+        }
+    }
     
     /**
      * Filter ID for a given ID field. Both id and resource_id are used as id's.
@@ -64,7 +86,7 @@ public abstract class AbstractSolrJClient {
         ArrayList<String> filteredIds = new ArrayList<>(ids.size());
         for (int i = 0 ; i < ids.size() ; i+=1000) { // Solr has a default max of 1024 unique clauses in a query
             query.setQuery(makeAuthIdPart(ids.subList(i, Math.min(i+1000, ids.size())), solrIdField));
-            QueryResponse response = solrServer.query(query, SolrRequest.METHOD.POST);
+            QueryResponse response = getSolrServer().query(query, SolrRequest.METHOD.POST);
             filteredIds.addAll(getIdsFromResponse(response, solrIdField));
         }
         //Due to multivalue fields, Solr can return ID's that was not in the  query request list
@@ -118,5 +140,8 @@ public abstract class AbstractSolrJClient {
         return solrServer;
     }
 
-   
+        @Override
+    public void close() throws IOException {
+        getSolrServer().close();
+    }
 }

@@ -3,6 +3,7 @@ package dk.kb.license.config;
 import dk.kb.license.model.v1.PlatformEnumDto;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.util.yaml.YAML;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +22,34 @@ public class ServiceConfig {
 
     public static String SOLR_FILTER_ID_FIELD = null;
     public static String SOLR_FILTER_RESOURCE_ID_FIELD = null;
-
+    
+    public static List<SolrServerClient> solrServers;
+    
     /**
      * Gets called when the code needs to call Solr backend servers
      * Updates the list of Solr servers, if the YAML file has been updated since last method call
      *
      * @return list of Solr servers
      */
-    public static List<SolrServerClient> getSolrServers() {
-        List<String> solr_servers = serviceConfig.getList("solr.servers");
-        return solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
+    public static synchronized List<SolrServerClient> getSolrServers() {
+        var currentSolrServers = serviceConfig.<String>getList("solr.servers").stream().collect(Collectors.toSet());
+
+        if (solrServers == null) {
+            solrServers = currentSolrServers
+                                       .stream()
+                                       .map(SolrServerClient::new)
+                                       .collect(Collectors.toList());
+            return solrServers;
+        }
+        
+        var clients = solrServers.stream().map(a -> a.serverUrl).collect(Collectors.toSet());
+        if (clients.containsAll(currentSolrServers) && currentSolrServers.containsAll(clients)){
+            return solrServers;
+        } else {
+            solrServers.forEach(IOUtils::closeQuietly);
+            solrServers = null;
+            return getSolrServers();
+        }
     }
 
     /**

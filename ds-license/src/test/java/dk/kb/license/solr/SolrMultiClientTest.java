@@ -2,6 +2,7 @@ package dk.kb.license.solr;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -15,10 +16,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
-public class SolrServerClientTest {
-    // Arrange
+class SolrMultiClientTest {
+        // Arrange
     final String drProductionId = "9213163000";
     final String dsId = "ds.tv:oai:io:d5ec7b20-c1f2-491e-a2cb-f143683a40f8";
     final String title = "P2 Radioavis";
@@ -27,14 +30,15 @@ public class SolrServerClientTest {
 
     final String queryDsId = "id:\"" + dsId + "\"";
     final String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
-
+    
+    
     @Test
     public void createSolrQuery_whenQueryAndFieldList_thenReturnSolrQuery() {
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
             mockedServiceConfig.when(ServiceConfig::getSolrServers).thenReturn(List.of());
 
-            SolrServerClient solrServerClient = new SolrServerClient();
+            SolrMultiClient solrServerClient = new SolrMultiClient();
 
             // Act
             SolrQuery solrQuery = solrServerClient.createSolrQuery(queryDsId, fieldListDsId);
@@ -45,7 +49,7 @@ public class SolrServerClientTest {
             assertEquals(fieldListDsId, solrQuery.getFields());
         }
     }
-
+    
     @Test
     public void callSolr_whenListOfServersIsEmpty_thenThrowInternalServiceException() {
         // Arrange
@@ -55,7 +59,7 @@ public class SolrServerClientTest {
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
             mockedServiceConfig.when(ServiceConfig::getSolrServers).thenReturn(List.of());
 
-            SolrServerClient solrServerClient = new SolrServerClient();
+            SolrMultiClient solrServerClient = new SolrMultiClient();
 
             // Act
             // Call to Solr backend is mocked, so query parameters actually don't matter
@@ -65,9 +69,11 @@ public class SolrServerClientTest {
             assertEquals(expectedMessage, exception.getMessage());
         }
     }
-
+    
     @Test
-    public void callSolr_whenSolrResponseHaveNoMatches_thenReturnEmptySolrDocumentList() throws SolrServerException, IOException {
+    public void callSolr_whenSolrResponseHaveNoMatches_thenReturnEmptySolrDocumentList() throws
+                                                                                         SolrServerException,
+                                                                                         IOException {
         SolrDocumentList solrDocumentList = new SolrDocumentList();
         solrDocumentList.setNumFound(0);
 
@@ -76,13 +82,15 @@ public class SolrServerClientTest {
 
         // Instead of calling an actual Solr service, we mock `query(SolrParams solrParams`
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
-        when(mockedSolrServerClient.query(any())).thenReturn(mockedQueryResponse);
+        var mockedSolrClient = mock(SolrClient.class);
+        when(mockedSolrServerClient.getSolrServer()).thenReturn(mockedSolrClient);
+        when(mockedSolrClient.query(any())).thenReturn(mockedQueryResponse);
 
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
             mockedServiceConfig.when(ServiceConfig::getSolrServers).thenReturn(List.of(mockedSolrServerClient));
 
-            SolrServerClient solrServerClient = new SolrServerClient();
+            SolrMultiClient solrServerClient = new SolrMultiClient();
 
             // Act
             // Call to Solr backend is mocked, so query parameters actually don't matter
@@ -93,6 +101,7 @@ public class SolrServerClientTest {
         }
     }
 
+    
     @Test
     public void callSolr_whenQueryAndFieldList_thenReturnSolrDocumentList() throws SolrServerException, IOException {
         // Arrange
@@ -112,13 +121,16 @@ public class SolrServerClientTest {
 
         // Instead of calling an actual Solr service, we mock `query(SolrParams solrParams`
         SolrServerClient mockedSolrServerClient = mock(SolrServerClient.class);
-        when(mockedSolrServerClient.query(any())).thenReturn(mockedQueryResponse);
+        var mockedSolrClient = mock(SolrClient.class);
+        when(mockedSolrServerClient.getSolrServer()).thenReturn(mockedSolrClient);
+        when(mockedSolrClient.query(any())).thenReturn(mockedQueryResponse);
 
+        
         // To be able to mock List<SolrServerClient> servers we use the getServers getter method
         try (MockedStatic<ServiceConfig> mockedServiceConfig = mockStatic(ServiceConfig.class)) {
             mockedServiceConfig.when(ServiceConfig::getSolrServers).thenReturn(List.of(mockedSolrServerClient));
 
-            SolrServerClient solrServerClient = new SolrServerClient();
+            SolrMultiClient solrServerClient = new SolrMultiClient();
 
             // Act
             // Call to Solr backend is mocked, so query parameters actually don't matter
