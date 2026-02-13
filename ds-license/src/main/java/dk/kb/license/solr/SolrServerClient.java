@@ -49,6 +49,7 @@ public class SolrServerClient extends AbstractSolrJClient {
         try {
             this.serverUrl = serverUrl;
             solrServer = new Http2SolrClient.Builder(serverUrl)
+                    .useHttp1_1(true)  //because CentOS 7 / apache 2.4.6.
                     .withConnectionTimeout(15, TimeUnit.SECONDS)                    
                     .withIdleTimeout(60, TimeUnit.SECONDS)
                     //.withMaxConnectionsPerHost(4) // For http2SolrClient this is automatic limited to 4.
