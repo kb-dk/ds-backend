@@ -21,7 +21,7 @@ public class ServiceConfig {
 
     public static String SOLR_FILTER_ID_FIELD = null;
     public static String SOLR_FILTER_RESOURCE_ID_FIELD = null;
-
+    public static List<SolrServerClient> solrServers; //This is not initialized again if url is changed in yaml file. Which is never will anyway.
     /**
      * Gets called when the code needs to call Solr backend servers
      * Updates the list of Solr servers, if the YAML file has been updated since last method call
@@ -29,8 +29,7 @@ public class ServiceConfig {
      * @return list of Solr servers
      */
     public static List<SolrServerClient> getSolrServers() {
-        List<String> solr_servers = serviceConfig.getList("solr.servers");
-        return solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
+       return solrServers;
     }
 
     /**
@@ -52,6 +51,7 @@ public class ServiceConfig {
         serviceConfig.setExtrapolate(true);
 
         List<String> solr_servers = serviceConfig.getList("solr.servers");
+        solrServers=solr_servers.stream().map(String::trim).map(SolrServerClient::new).collect(Collectors.toList());
         SOLR_FILTER_ID_FIELD = serviceConfig.getString("solr.idField");
         SOLR_FILTER_RESOURCE_ID_FIELD = serviceConfig.getString("solr.resourceField");
 
