@@ -1,7 +1,7 @@
 INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000108, '2.01.01', 'Almene Nyheder', 30);
 INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000112, '2.01.02', 'Sportsnyheder', 30);
-INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000113, '2.02', 'Aktualitet og Debat', 2190);
-INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000114, '2.03', 'Oplysning og Kultur', 2190);
+INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000113, '2.02', 'Aktualitet & Debat', 2190);
+INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000114, '2.03', 'Oplysning & Kultur', 2190);
 INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000115, '2.04', 'Undervisning', 2190);
 INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000116, '2.05', 'Dramatik & Fiktion', 3650);
 INSERT INTO dr_holdback_categories (id, "key", name, days) VALUES (1755167000117, '2.05.01', 'Dansk Dramatik & Fiktion', 3650);
