@@ -16,10 +16,14 @@ pipeline {
 
     parameters {
         string(name: "VERSION", defaultValue: "X.X.X", description: "Version to release")
+        string(name: "PARENT_VERSION", defaultValue: "X.X.X", description: "Version to release")
+        string(name: "SHARED_VERSION", defaultValue: "X.X.X", description: "Version to release")
+        string(name: "STORAGE_VERSION", defaultValue: "X.X.X", description: "Version to release")
+
     }
 
     stages {
-        stage("Echo Environment Variables") {
+        stage("Print Version") {
             steps {
                 echo "Version: ${params.VERSION}"
             }
@@ -37,11 +41,30 @@ pipeline {
             }
         }
 
+        stage('Setup Versions') {
+            steps {
+                script {
+                    def defaultValue = 'X.X.X'
+
+                    env.PARENT_VERSION = (params.PARENT_VERSION in [defaultValue, '', null]) ? params.VERSION : params.PARENT_VERSION
+                    env.SHARED_VERSION = (params.SHARED_VERSION in [defaultValue, '', null]) ? params.VERSION : params.SHARED_VERSION
+                    env.STORAGE_VERSION = (params.STORAGE_VERSION in [defaultValue, '', null]) ? params.VERSION : params.STORAGE_VERSION
+                    env.VERSION = params.VERSION
+
+                    echo "Versions configured:"
+                    echo "  VERSION: ${env.VERSION}"
+                    echo "  PARENT_VERSION: ${env.PARENT_VERSION}"
+                    echo "  SHARED_VERSION: ${env.SHARED_VERSION}"
+                    echo "  STORAGE_VERSION: ${env.STORAGE_VERSION}"
+                }
+            }
+        }
+
         stage("Change version") {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh "mvn versions:set -DnewVersion=${params.VERSION} -DgenerateBackupPoms=false"
-                    echo "Changing MVN version to: ${params.VERSION}"
+                    sh "mvn versions:set -DnewVersion=${env.VERSION} -DgenerateBackupPoms=false"
+                    echo "Changing MVN version to: ${env.VERSION}"
                 }
             }
         }
@@ -49,8 +72,8 @@ pipeline {
         stage("Update parent") {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh """sed -i "/<parent>/,/<version>/ s/<version>.*<\\/version>/<version>${params.VERSION}<\\/version>/" pom.xml"""
-                    echo "Changing parent to: ${params.VERSION}"
+                    sh """sed -i "/<parent>/,/<version>/ s/<version>.*<\\/version>/<version>${env.PARENT_VERSION}<\\/version>/" pom.xml"""
+                    echo "Changing parent to: ${env.PARENT_VERSION}"
                 }
             }
         }
@@ -58,8 +81,12 @@ pipeline {
         stage("Change dependencies") {
             steps {
                 withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh "mvn versions:use-dep-version -Dincludes=dk.kb.dsshared:*,dk.kb.storage:*,dk.kb.license:*,dk.kb.present:*,dk.kb.kaltura:* -DdepVersion=${params.VERSION} -DforceVersion=true -DgenerateBackupPoms=false"
-                    echo "Changing MVN dependencies to: ${params.VERSION}"
+                    sh "mvn versions:use-dep-version -Dincludes=dk.kb.dsshared:* -DdepVersion=${env.SHARED_VERSION} -DforceVersion=true -DgenerateBackupPoms=false"
+                    echo "Changing MVN dependencies to: ${env.SHARED_VERSION}"
+                }
+                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
+                    sh "mvn versions:use-dep-version -Dincludes=dk.kb.storage:* -DdepVersion=${env.STORAGE_VERSION} -DforceVersion=true -DgenerateBackupPoms=false"
+                    echo "Changing MVN dependencies to: ${env.STORAGE_VERSION}"
                 }
             }
         }
