@@ -185,7 +185,7 @@ origin:
 transformations:
   threads: 3
 
-indexing:
+index:
   useTransriptions: true
 
 security:
