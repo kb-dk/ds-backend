@@ -1,4 +1,4 @@
-library identifier: "releasePipeline@DRA-2545-arkivblik-set-up-shared-lib",
+library identifier: "releasePipeline@master",
     retriever: modernSCM(
         scm: [
             $class: "GitSCMSource",
