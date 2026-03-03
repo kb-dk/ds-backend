@@ -1,4 +1,4 @@
-library identifier: 'releasePipeline@DRA-2545-arkivblik-set-up-shared-lib', retriever: modernSCM(scm: [$class: 'GitSCMSource', remote: 'https://sbprojects.statsbiblioteket.dk/stash/scm/ist/jenkins-shared.git', credentialsId: 'crowd'],libraryPath: "Arkivblik") _
+library identifier: 'releasePipeline@DRA-2545-arkivblik-set-up-shared-lib', retriever: modernSCM(scm: [$class: 'GitSCMSource', remote: 'https://sbprojects.statsbiblioteket.dk/stash/scm/ist/jenkins-shared.git', credentialsId: 'crowd'],libraryPath: "Kuana") _
 
 releasePipeline(
     project: "ds-license",
