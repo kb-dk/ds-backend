@@ -1,8 +1,16 @@
-library identifier: 'releasePipeline@DRA-2545-arkivblik-set-up-shared-lib', retriever: modernSCM(scm: [$class: 'GitSCMSource', remote: 'https://sbprojects.statsbiblioteket.dk/stash/scm/ist/jenkins-shared.git', credentialsId: 'crowd'],libraryPath: "Arkivblik") _
+library identifier: "releasePipeline@DRA-2545-arkivblik-set-up-shared-lib",
+    retriever: modernSCM(
+        scm: [
+            $class: "GitSCMSource",
+            remote: "https://sbprojects.statsbiblioteket.dk/stash/scm/ist/jenkins-shared.git",
+            credentialsId: "crowd"
+        ],
+        libraryPath: "Arkivblik"
+    ) _
 
 releasePipeline(
     project: "ds-license",
     buildToTrigger: "ds-present",
     // List only the versions this specific repo needs
-    extraParameters: ['ds-parent', 'ds-shared', 'ds-storage']
+    extraParameters: ["ds-parent", "ds-shared", "ds-storage"]
 )
