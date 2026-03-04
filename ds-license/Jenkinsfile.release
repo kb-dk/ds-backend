@@ -1,103 +1,16 @@
-pipeline {
-    agent {
-        label "DS agent"
-    }
+library identifier: "releasePipeline@master",
+    retriever: modernSCM(
+        scm: [
+            $class: "GitSCMSource",
+            remote: "https://sbprojects.statsbiblioteket.dk/stash/scm/ist/jenkins-shared.git",
+            credentialsId: "crowd"
+        ],
+        libraryPath: "Arkivblik"
+    ) _
 
-    options {
-        disableConcurrentBuilds()
-        timeout(time: 40, unit: "MINUTES")
-        buildDiscarder(logRotator(numToKeepStr: "5"))
-    }
-
-    environment {
-        PROJECT = "ds-license"
-        BUILD_TO_TRIGGER = "ds-present"
-    }
-
-    parameters {
-        string(name: "VERSION", defaultValue: "X.X.X", description: "Version to release")
-        string(name: "PARENT_VERSION", defaultValue: "X.X.X", description: "Version to release")
-        string(name: "SHARED_VERSION", defaultValue: "X.X.X", description: "Version to release")
-        string(name: "STORAGE_VERSION", defaultValue: "X.X.X", description: "Version to release")
-
-    }
-
-    stages {
-        stage("Print Version") {
-            steps {
-                echo "Version: ${params.VERSION}"
-            }
-        }
-
-        stage("Check Version") {
-            steps {
-                script {
-                    if ( !params.VERSION || params.VERSION == "X.X.X" ) {
-                        currentBuild.description = "No valid version"
-                        currentBuild.result = "ABORTED"
-                        error("Stopping pipeline: No valid version is set.")
-                    }
-                }
-            }
-        }
-
-        stage('Setup Versions') {
-            steps {
-                script {
-                    def defaultValue = 'X.X.X'
-
-                    env.PARENT_VERSION = (params.PARENT_VERSION in [defaultValue, '', null]) ? params.VERSION : params.PARENT_VERSION
-                    env.SHARED_VERSION = (params.SHARED_VERSION in [defaultValue, '', null]) ? params.VERSION : params.SHARED_VERSION
-                    env.STORAGE_VERSION = (params.STORAGE_VERSION in [defaultValue, '', null]) ? params.VERSION : params.STORAGE_VERSION
-                    env.VERSION = params.VERSION
-
-                    echo "Versions configured:"
-                    echo "  VERSION: ${env.VERSION}"
-                    echo "  PARENT_VERSION: ${env.PARENT_VERSION}"
-                    echo "  SHARED_VERSION: ${env.SHARED_VERSION}"
-                    echo "  STORAGE_VERSION: ${env.STORAGE_VERSION}"
-                }
-            }
-        }
-
-        stage("Change version") {
-            steps {
-                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh "mvn versions:set -DnewVersion=${env.VERSION} -DgenerateBackupPoms=false"
-                    echo "Changing MVN version to: ${env.VERSION}"
-                }
-            }
-        }
-
-        stage("Update parent") {
-            steps {
-                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh """sed -i "/<parent>/,/<version>/ s/<version>.*<\\/version>/<version>${env.PARENT_VERSION}<\\/version>/" pom.xml"""
-                    echo "Changing parent to: ${env.PARENT_VERSION}"
-                }
-            }
-        }
-
-        stage("Change dependencies") {
-            steps {
-                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh "mvn versions:use-dep-version -Dincludes=dk.kb.dsshared:* -DdepVersion=${env.SHARED_VERSION} -DforceVersion=true -DgenerateBackupPoms=false"
-                    echo "Changing MVN dependencies to: ${env.SHARED_VERSION}"
-                }
-                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    sh "mvn versions:use-dep-version -Dincludes=dk.kb.storage:* -DdepVersion=${env.STORAGE_VERSION} -DforceVersion=true -DgenerateBackupPoms=false"
-                    echo "Changing MVN dependencies to: ${env.STORAGE_VERSION}"
-                }
-            }
-        }
-
-        stage("Release to Nexus") {
-            steps {
-                withMaven(options: [artifactsPublisher(fingerprintFilesDisabled: true, archiveFilesDisabled: true)], traceability: true, mavenLocalRepo: "${WORKSPACE}/repository") {
-                    // Execute Maven Release
-                    sh "mvn clean deploy"
-                }
-            }
-        }
-    }
-}
+releasePipeline(
+    project: "ds-license",
+    buildToTrigger: "ds-present",
+    // List only the versions this specific repo needs
+    extraParameters: ["ds-parent", "ds-shared", "ds-storage"]
+)
