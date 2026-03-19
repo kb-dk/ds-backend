@@ -72,9 +72,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.4: Add field file_extension
 1.8.5: Merge release_v2 into master
 1.8.6: Random sort field added that can be used to randomize order of search results. Does not require reindexing, just configuration update.
+1.8.7: Added field for annotations
 
   -->
-  <field name="_ds_1.8.6_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.7_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -751,6 +752,11 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="description_length" type="plong">
     <?description The length of the description meassured in characters. ?>
     <?example     256?>
+  </field>
+
+  <field name="annotation" type="text_general">
+    <?description Contains further information about the resource that does not fit in the description. Such as disclaimers or infomation about low quality streams ?>
+    <?example     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis consequat libero, quis ornare mi.?>
   </field>
 
   <field name="genre_sub" type="string" docValues="true">
