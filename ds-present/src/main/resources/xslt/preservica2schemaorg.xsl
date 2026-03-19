@@ -751,6 +751,12 @@
       </xsl:choose>
     </xsl:for-each>
 
+    <xsl:for-each select="./pbcoreInstantiation/pbcoreAnnotation">
+      <f:string key="annotation">
+        <xsl:value-of select="normalize-space(./annotation)"/>
+      </f:string>
+    </xsl:for-each>
+
     <!-- Extract start and end times for broadcast  and calculate duration -->
     <xsl:if test="$startTime != '' and $endTime != ''">
       <f:string key="startTime">
