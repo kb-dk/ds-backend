@@ -751,7 +751,8 @@
       </xsl:choose>
     </xsl:for-each>
 
-    <xsl:for-each select="./pbcoreInstantiation/pbcoreAnnotation">
+    <!-- only extract non empty annotations -->
+    <xsl:for-each select="./pbcoreInstantiation/pbcoreAnnotation[normalize-space(annotation) != '']">
       <f:string key="annotation">
         <xsl:value-of select="normalize-space(./annotation)"/>
       </f:string>
