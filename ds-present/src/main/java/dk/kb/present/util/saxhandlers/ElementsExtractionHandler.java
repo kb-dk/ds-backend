@@ -7,7 +7,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 /**
  * Extract multiple values from an XML stream to a {@link ExtractedPreservicaValues}-object.
@@ -153,7 +152,7 @@ public class ElementsExtractionHandler extends DefaultHandler {
                     String key = PBCORE_EXTRACT_PATHS.get(currentPath);
                     if (ExtractedPreservicaValues.STARTTIME_KEY.equals(key) ||
                             ExtractedPreservicaValues.ENDTIME_KEY.equals(key)) {
-                        String cleanedTime = DataCleanup.getCleanZonedDateTimeFromString(capturedCharacters.toString().trim()).format(DateTimeFormatter.ISO_INSTANT);
+                        String cleanedTime = DataCleanup.standardizeDateTimeToUtc(capturedCharacters.toString().trim());
                         extractedPreservicaValues.setValue(key, cleanedTime);
                     } else {
                         extractedPreservicaValues.setValue(key, capturedCharacters.toString().trim());

@@ -20,7 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.parsers.SAXParserFactory;
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,4 +66,18 @@ public class DataCleanup {
         }
     }
 
+    /**
+     * Standardize date time to be in UTC, without milliseconds and follow this form: yyyy-MM-ddTHH:mm:ssZ
+     *
+     * @param dateTime String
+     * @return Standardized date time as String
+     */
+    public static String standardizeDateTimeToUtc(String dateTime) {
+        try {
+            return OffsetDateTime.parse(dateTime).truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_INSTANT);
+        } catch (DateTimeParseException dateTimeParseException) {
+            log.error("DateTimeParseException was thrown for: '{}'. Try using old getCleanZonedDateTimeFromString method to fix dateTime!", dateTime);
+            return getCleanZonedDateTimeFromString(dateTime).truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_INSTANT);
+        }
+    }
 }
