@@ -173,4 +173,28 @@ class ExtractedPreservicaValuesTest {
         assertEquals("0000", extractedPreservicaValues.getContent());
     }
 
+    @Test
+    public void extractValuesFromPreservicaContent_whenDateAvailableStartAndDateAvailableEndHasMilliseconds_thenReturnUtcDateTimeWithoutMilliseconds() throws IOException, ParserConfigurationException, SAXException {
+        // Arrange
+        String recordId = "64a4809b-2dc5-493e-a2e1-8b069c90c199";
+
+        String xml = Resolver.resolveUTF8String("internal_test_files/preservica7/dr_archive_supplementary_rights_metadata/dsradio/" + recordId + ".xml");
+
+        // Act
+        ExtractedPreservicaValues extractedPreservicaValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(xml, recordId);
+
+        // Assert
+        assertEquals(recordId, extractedPreservicaValues.getId());
+        assertEquals("Kirsten Engquist", extractedPreservicaValues.getTitle());
+        assertEquals("", extractedPreservicaValues.getOriginalTitle());
+        assertEquals("1933-08-02T07:00:00Z", extractedPreservicaValues.getStartTime());
+        assertEquals("1933-08-02T07:09:53Z", extractedPreservicaValues.getEndTime());
+        assertNull(extractedPreservicaValues.getFormValue());
+        assertNull(extractedPreservicaValues.getContent());
+        assertNull(extractedPreservicaValues.getPurpose());
+        assertEquals("12031", extractedPreservicaValues.getProductionId());
+        assertNull(extractedPreservicaValues.getOrigin());
+        assertNull(extractedPreservicaValues.getOriginCountry());
+        assertNull(extractedPreservicaValues.getHoldbackCategory());
+    }
 }

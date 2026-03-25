@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Marked unittest with @Tag("integration") so it can build without aegis. 
 
+## [4.0.1](https://github.com/kb-dk/ds-present/releases/tag/ds-present-4.0.1) 2026-03-04
+
+### Fixed
+
+- Handle datetime with milliseconds using OffsetDateTime
+
 ## [4.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-4.0.0) 2026-01-29
 
 ### Added
