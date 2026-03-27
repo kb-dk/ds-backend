@@ -568,7 +568,16 @@
         <f:string key="abstract_length">
           <xsl:value-of select="f:string-length($abstract)"/>
         </f:string>
+      </xsl:if>
 
+      <!-- Extract annotation -->
+      <xsl:if test="f:exists($schemaorg-xml('annotation'))">
+        <xsl:variable name="annotation">
+          <xsl:value-of select="$schemaorg-xml('annotation')"/>
+        </xsl:variable>
+        <f:string key="annotation">
+          <xsl:value-of select="$annotation"/>
+        </f:string>
       </xsl:if>
 
       <!-- Extract description -->

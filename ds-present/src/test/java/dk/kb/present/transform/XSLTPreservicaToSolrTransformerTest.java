@@ -625,6 +625,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(transformedJSON.contains("\"contains_ritzau\":\"true\""));
     }
 
+    @Test
+    public void testIKKWithAnnoation() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_ANNOTATION);
+        assertTrue(transformedJSON.contains("\"annotation\":\"Dette indhold blev sendt i dansk radio under den tyske besættelse af Danmark, hvor Danmarks Radio ikke havde redaktionel frihed. Oprindeligt udsendelses tidspunkt er ukendt, det angivne tidspunkt kan derfor være ukorrekt.\""));
+    }
+
     //@Test
     void testErrorFromFirstSchemaTransformation() throws IOException {
         // This does not produce an error anymore
