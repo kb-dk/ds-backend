@@ -1,6 +1,7 @@
 package dk.kb.license.facade;
 
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
+import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.AuditLogEntry;
 import dk.kb.license.storage.AuditLogModuleStorage;
 import dk.kb.license.storage.BaseModuleStorage;
@@ -18,11 +19,31 @@ public class AuditLogModuleFacade {
      * @return the AuditLogEntry with the given id
      */
     public static AuditLogEntryOutputDto getAuditEntryById(Long auditLogId) {
-        return BaseModuleStorage.performStorageAction("getAuditEntries()", AuditLogModuleStorage.class, storage -> {
+        return BaseModuleStorage.performStorageAction("getAuditEntryById()", AuditLogModuleStorage.class, storage -> {
             return ((AuditLogModuleStorage) storage).getAuditLogById(auditLogId);
         });
     }
 
+    /**
+     * Retrieves List of {@link AuditLogEntry} . Maximum elements is 100. Use modifiedTimeStart for pagination.
+     * AuditLogEntries in the list are sorted by modifiedTimeStart desc, so latest will come first in the list.     
+     *      
+     * @param modifiedTimeStart Will extract AuditLogEntries with modifiedTimeStart less than this value
+     * @param changeName list only AuditLogEntries of this type. Will list all types if type is null.
+     * 
+     * @return List<AuditLogEntryOutputDto> with a maximum of 100 elements in the list. 
+     */
+    public static List<AuditLogEntryOutputDto> getAuditLogOlderThanModifiedTime(Long modifiedTimeStart, ObjectTypeEnumDto changeName) {                                  
+        return BaseModuleStorage.performStorageAction("getAuditLogOlderThanModifiedTime()", AuditLogModuleStorage.class, storage -> {
+         if (changeName == null) {
+             return ((AuditLogModuleStorage) storage).getAuditLogOlderThanModifiedTimeListAll(modifiedTimeStart);     
+         }
+         else {
+             return ((AuditLogModuleStorage) storage).getAuditLogOlderThanModifiedTimeListByType(modifiedTimeStart,changeName);
+         }        
+        });
+    }
+    
     /**
      * Retrieves a list of all {@link AuditLogEntry} related to a given object.
      *

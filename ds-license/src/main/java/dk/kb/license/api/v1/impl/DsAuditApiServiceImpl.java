@@ -3,6 +3,8 @@ package dk.kb.license.api.v1.impl;
 import dk.kb.license.api.v1.*;
 
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
+import dk.kb.license.model.v1.ChangeTypeEnumDto;
+import dk.kb.license.model.v1.ObjectTypeEnumDto;
 
 import java.util.List;
 
@@ -43,4 +45,17 @@ public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
             throw handleException(e);
         }
     }
+
+    @Override
+    public List<AuditLogEntryOutputDto> getAuditLogOlderThanModifiedTime(Long modifiedTimeStart, ObjectTypeEnumDto changeName) {      
+        if (modifiedTimeStart == null) {
+            modifiedTimeStart = System.currentTimeMillis();
+        }        
+        try {
+            return AuditLogModuleFacade.getAuditLogOlderThanModifiedTime(modifiedTimeStart, changeName);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+   
 }

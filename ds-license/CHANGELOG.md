@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 -  Changed 'og' -> '&' in holdback category names
 
+### Added
+- New API method (/audit/auditEntries) to list AuditLogEntries by modifiedTime and ObjectTypeEnum.
+
 ## [4.0.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-4.0.3) 2026-02-16
 
 ### Changed

@@ -518,7 +518,40 @@ paths:
                 items:
                   $ref: '#/components/schemas/GroupType'
 
-  # Audit
+  # Audit  
+  /audit/auditEntries':
+    get:
+      tags:
+        - 'DsAudit'
+      summary: 'Return list of AuditLog entries. Parameters are modifiedTimeStart and changeName, both are optional. Maximum returned is 100. Use modifiedTime for pagination'
+      operationId: getAuditLogOlderThanModifiedTime
+      security:
+        - KBOAuth:
+            - ds-license-readonly
+            - ds-license-admin
+      parameters:
+        - name: modifiedTimeStart
+          in: query
+          description: 'List latest Auditlog entries less than modifiedTimeStart. Will default to current time if modifiedTimeStart is not set in request.'
+          schema:
+            type: integer
+            format: int64            
+        - name: changeName
+          in: query
+          description: 'List of auditlog entries of this changeName type. If null will return all changeName types.'
+          schema:
+            $ref: '#/components/schemas/ObjectTypeEnum'
+            nullable: true                                                        
+      responses:
+        '200':
+          description: 'List of AuditLogEntryOutput'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditLogEntryOutput'
+
   /audit/auditEntryById:
     get:
       tags:
@@ -2160,7 +2193,7 @@ components:
           type: integer
           format: int32
           description: 'Number of records updated'
-
+                    
   securitySchemes:
     KBOAuth:
       type: oauth2

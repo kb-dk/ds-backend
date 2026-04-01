@@ -95,7 +95,45 @@ public class AuditLogModuleStorageTest extends UnitTestUtil {
             assertEquals(identifier, auditFromStorage.getIdentifier());
             assertEquals(changeComment, auditFromStorage.getChangeComment());
             assertEquals(textBefore, auditFromStorage.getTextBefore());
-            assertEquals(textAfter, auditFromStorage.getTextAfter());
+            assertEquals(textAfter, auditFromStorage.getTextAfter());                                 
         }
     }
+    
+    @Test
+    public void testListAuditLog() throws SQLException, IllegalArgumentException {
+        //Arrange
+        String userName = "mockedName";
+        MessageImpl message = new MessageImpl();
+        AccessToken mockedToken = Mockito.mock(AccessToken.class);
+        Mockito.when(mockedToken.getName()).thenReturn(userName);
+        message.put(KBAuthorizationInterceptor.ACCESS_TOKEN, mockedToken);
+
+        try (MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class)) {
+            mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+
+            Long objectId = 123456789L;
+            ChangeTypeEnumDto changeType = ChangeTypeEnumDto.UPDATE;
+            ObjectTypeEnumDto changeName = ObjectTypeEnumDto.DR_PRODUCTION_ID;
+            String identifier = "1234";
+            String changeComment = "changeComment";
+            String textBefore = "before";
+            String textAfter = "after";
+
+            AuditLogEntry auditLog = new AuditLogEntry(objectId, "", changeType, changeName, identifier, changeComment, textBefore, textAfter);
+            long auditLogId = storage.persistAuditLog(auditLog);
+            
+            long time=System.currentTimeMillis()+1L; //Need to add 1 to time since often it will happen in same millis in test and method is strict less than            
+            //list, all.  
+            List<AuditLogEntryOutputDto> auditLogList = storage.getAuditLogOlderThanModifiedTimeListAll(time);
+            assertEquals(1,auditLogList.size());
+            
+            //list DR_PRODUCTION_ID 
+            auditLogList = storage.getAuditLogOlderThanModifiedTimeListByType(time,ObjectTypeEnumDto.DR_PRODUCTION_ID);
+            assertEquals(1,auditLogList.size());
+
+            //list LICENSE (no rows)
+            auditLogList = storage.getAuditLogOlderThanModifiedTimeListByType(time,ObjectTypeEnumDto.LICENSE);
+            assertEquals(0,auditLogList.size());
+        }
+    }   
 }
