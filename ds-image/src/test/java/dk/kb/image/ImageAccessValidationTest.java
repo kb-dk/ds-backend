@@ -11,7 +11,6 @@ import dk.kb.image.config.ConfigAdjuster;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.Resolver;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

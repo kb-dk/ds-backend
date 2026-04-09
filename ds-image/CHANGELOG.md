@@ -5,6 +5,13 @@ All notable changes to ds-image will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+### Changed
+
+- Removed kaltura dependency. 
+- Removed most kaltura properties from yaml config. Only ones needed are:  url and partnerId.
+- Service method to generate link to thumbnails now takes kalturaId parameter instead of fileId. This is breaking for frontend.
+
 ## [4.0.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-4.0.0) - 2026-01-29
 
 ### Fixed

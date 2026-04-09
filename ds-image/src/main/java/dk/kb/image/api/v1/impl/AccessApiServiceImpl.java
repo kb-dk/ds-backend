@@ -454,7 +454,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      * Return is a list of links that will generate thumbnail for the give program.<br>
      * The first link in the list is the sprite containing all thumbnails.
      * 
-     * @param fileId The externalId we have for the record. 
+     * @param kalturaId The internal Kltura id given by Kaltura on creation, 
      * @param numberOfThumbnails Number of thumbnails. They be divided uniform over the video.
      * @param width Optional width parameter in pixels. Aspect ratio will be kept.
      * @param height Optional height parameter in pixels. Aspect ratio will be kept. 
@@ -462,13 +462,13 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
      * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
      */
     @Override
-    public ThumbnailsDto kalturaThumbnails(String fileId, Integer numberOfThumbnails, Integer secondStartSeek, Integer secondEndSeek, Integer width, Integer height) throws  ServiceException {
+    public ThumbnailsDto kalturaThumbnails(String kalturaId, Integer numberOfThumbnails, Integer secondStartSeek, Integer secondEndSeek, Integer width, Integer height) throws  ServiceException {
      
-        if (fileId == null) {
-            throw new InvalidArgumentServiceException("FileId must not be null");
+        if (kalturaId == null) {
+            throw new InvalidArgumentServiceException("kalturaId must not be null");
         }        
         try {
-           ThumbnailsDto thumbnails = KalturaUtil.getThumbnails(fileId, numberOfThumbnails, secondStartSeek, secondEndSeek,width, height);
+           ThumbnailsDto thumbnails = KalturaUtil.generateThumbnails( kalturaId, numberOfThumbnails, secondStartSeek, secondEndSeek,width, height);
             return thumbnails;
         }
         catch(Exception e) {

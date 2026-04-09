@@ -4,22 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaltura.client.types.APIException;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
-import dk.kb.util.webservice.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.ThumbnailsDto;
-import dk.kb.kaltura.client.DsKalturaClient;
-
-import javax.ws.rs.core.Response;
 
 public class KalturaUtil {
 
     private static final Logger log = LoggerFactory.getLogger(KalturaUtil.class);
-    private static DsKalturaClient kalturaClientInstance;
+
     /**
      *
      * Example url to the sprite with all thumbnails:<br>
@@ -31,7 +25,7 @@ public class KalturaUtil {
      * See <a href="https://developer.kaltura.com/api-docs/Engage_and_Publish/kaltura-thumbnail-api.html">Kaltura Thumbnail API</a> 
      *
      *
-     * @param fileId The externalId we have for the record. 
+     * @param kalturaId The internal Kaltura id given by Kaltura on creation 
      * @param numberOfSlices Number of thumbnails. They be divided uniform over the video.
      * @param secondsStartSeek Generated thumbnails in stream from between secondsStartSeek and secondsEndSeek
      * @param secondsEndSeek Generated thumbnails in stream from between secondsStartSeek and secondsEndSeek. secondsEndSeek must be set for seeking to be active. 
@@ -39,77 +33,42 @@ public class KalturaUtil {
      * @param height Optiomal height parameter in pixels. Aspect ratio will be kept. 
      *
      * @return ThumbnailsDto. Has a default thumbnail, a sprite and list of time sliced thumbnails.
-     * @throws IOException If the fileId is not found or internal server error with Kaltura.
      */
-    public static ThumbnailsDto getThumbnails(String fileId,Integer numberOfSlices, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) throws ServiceException {
+    public static ThumbnailsDto generateThumbnails(String  kalturaId,Integer numberOfSlices, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) {
         ThumbnailsDto thumbnails = new ThumbnailsDto();
         String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
         Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
 
-        try {
-            DsKalturaClient client = getKalturaClient();
-            String kalturaId = client.getKalturaInternalId(fileId);
-
-            if (kalturaId == null) {
-                throw new NotFoundServiceException("FileId not found at Kaltura: '" + fileId + "'.");
-            }
-            log.debug("ReferenceId lookup at kaltura resolved to internalId {} -> {}",fileId,kalturaId);
-            String baseUrl=kalturaUrl+"/p/"+partnerId+"/thumbnail/entry_id/"+kalturaId;
-            if (width != null && width > 0) {
-                baseUrl=baseUrl+"/width/"+width;
-            }
-            if (height != null && height > 0) {
-                baseUrl=baseUrl+"/height/"+height;
-            }
-
-            String seek=""; //if seek not defined, this empty string will just be added
-            if ((secondsEndSeek != null && secondsEndSeek>=0)  || (secondsStartSeek != null && secondsStartSeek>=0)) {
-                seek="?start_sec="+secondsStartSeek+"&end_sec="+secondsEndSeek; 
-            }
-            
-            thumbnails.setDefault(baseUrl); // Example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/
-
-            //This is the sprite version will all thumbnails.
-            //Example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/vid_slices/10
-            baseUrl=baseUrl+"/vid_slices/"+numberOfSlices;
-
-            List<String> timeSliceThumbnails= new ArrayList<>();
-            thumbnails.setSprite(baseUrl);
-            //Add the images slices
-            for (int i=0;i<numberOfSlices;i++ ) {
-                //example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/vid_slices/10/vid_slice/5
-                timeSliceThumbnails.add(baseUrl +"/vid_slice/"+i+seek);  //Yes, slices start with value=0.
-            }
-            thumbnails.setThumbnails(timeSliceThumbnails);
-
-            return thumbnails;
-        } catch (IOException | APIException e) {
-            throw new NotFoundServiceException(e);
+        String baseUrl=kalturaUrl+"/p/"+partnerId+"/thumbnail/entry_id/"+kalturaId;
+        if (width != null && width > 0) {
+            baseUrl=baseUrl+"/width/"+width;
         }
-    }
-
-    private static synchronized DsKalturaClient getKalturaClient() throws IOException, APIException {
-
-        if (kalturaClientInstance != null) {
-            return kalturaClientInstance;
+        if (height != null && height > 0) {
+            baseUrl=baseUrl+"/height/"+height;
         }
 
-        String kalturaUrl = ServiceConfig.getConfig().getString("kaltura.url");
-        String adminSecret = ServiceConfig.getConfig().getString("kaltura.adminSecret"); //Must not be shared or exposed. Use token,tokenId.
-        Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");  
-        String userId = ServiceConfig.getConfig().getString("kaltura.userId");                               
-        String token = ServiceConfig.getConfig().getString("kaltura.token");
-        String tokenId = ServiceConfig.getConfig().getString("kaltura.tokenId");
-        int sessionDurationSeconds = ServiceConfig.getConfig().getInteger("kaltura.sessionDurationSeconds");
-        int sessionRefreshThreshold = ServiceConfig.getConfig().getInteger("kaltura.sessionRefreshThreshold");
-        int conversionQueueThreshold = 0;
-        int conversionQueueRetryDelaySeconds = 0;
+        String seek=""; //if seek not defined, this empty string will just be added
+        if ((secondsEndSeek != null && secondsEndSeek>=0)  || (secondsStartSeek != null && secondsStartSeek>=0)) {
+            seek="?start_sec="+secondsStartSeek+"&end_sec="+secondsEndSeek; 
+        }
 
-        log.info("Creating kaltura client for partnerID: '{}'.", partnerId);
-        DsKalturaClient kalturaClient = new DsKalturaClient(kalturaUrl, userId, partnerId, token, tokenId,
-                adminSecret, sessionDurationSeconds, sessionRefreshThreshold, conversionQueueThreshold, conversionQueueRetryDelaySeconds );
-        kalturaClientInstance=kalturaClient;
-        return kalturaClient;    
+        thumbnails.setDefault(baseUrl); // Example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/
+
+        //This is the sprite version will all thumbnails.
+        //Example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/vid_slices/10
+        baseUrl=baseUrl+"/vid_slices/"+numberOfSlices;
+
+        List<String> timeSliceThumbnails= new ArrayList<>();
+        thumbnails.setSprite(baseUrl);
+        //Add the images slices
+        for (int i=0;i<numberOfSlices;i++ ) {
+            //example: https://api.kaltura.nordu.net/p/380/thumbnail/entry_id/0_dtvciomh/width/200/vid_slices/10/vid_slice/5
+            timeSliceThumbnails.add(baseUrl +"/vid_slice/"+i+seek);  //Yes, slices start with value=0.
+        }
+        thumbnails.setThumbnails(timeSliceThumbnails);
+
+        return thumbnails;
+
     }
 
 }

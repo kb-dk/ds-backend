@@ -19,8 +19,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.StreamingOutput;
 
-import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,7 +251,6 @@ public class ImageAccessValidation {
         return writeImgToStreamingOutput(nonExistingImageName);
     }
 
-    @NotNull
     private static StreamingOutput writeImgToStreamingOutput(String imgName) throws IOException {
         String imgPath = Resolver.getPathFromClasspath(imgName).toString();
         BufferedImage image = ImageIO.read(new File(imgPath));

@@ -527,20 +527,20 @@ paths:
     get:
       tags:
         - 'Access'
-      summary: ' Get urls to thumbnail video images at Kaltura for a record identified by file_id field in Solr.'
+      summary: ' Get urls to thumbnail video images at Kaltura for a record identified by kaltura_id field in Solr.'
       security:
         - KBOAuth:
           - any
       description: |-       
-        Get a list of url to thumbnail vidoe images at Kaltura for a record identified by file_id field in Solr.          
+        Get a list of url to thumbnail vidoe images at Kaltura for a record identified by kaltura_id field in Solr.          
         Will contain a default thumbnail, a sprite and list of time sliced thumbnails.     
         [Kaltura Thumbnail API](https://developer.kaltura.com/api-docs/Engage_and_Publish/kaltura-thumbnail-api.html)                     
       operationId: kalturaThumbnails
    
       parameters:
-        - name: fileId
+        - name: kalturaId
           in: query
-          description: 'The external file reference to the kaltura'           
+          description: 'The internal kaltura entry id given by Kaltura on creation.'           
           required: true
           schema:            
             type: string

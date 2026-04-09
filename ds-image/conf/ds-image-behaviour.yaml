@@ -40,12 +40,6 @@ thumbnail:
 kaltura: 
   url:  https://kmc.kaltura.nordu.net
   partnerId:  398
-  userId:  xxx@kb.dk
-  token: 'yyyyy'
-  tokenId: 'yyyyy'
-  adminSecret: ''
-  sessionDurationSeconds: 86400
-  sessionRefreshThreshold: 3600
 
 security:
   # The security mode. Valid values are
