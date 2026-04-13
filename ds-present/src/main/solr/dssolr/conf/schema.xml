@@ -74,8 +74,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.6: Random sort field added that can be used to randomize order of search results. Does not require reindexing, just configuration update.
 1.8.7: New field transcription that contains full description text. Field is not stored.
 1.8.8: New field has_transcription boolean to see if a document has a transcription. Since transcription field is not stored this can not be seen directly
+1.8.9: Added field for annotations
+
   -->
-  <field name="_ds_1.8.8_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.9_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -202,7 +204,6 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     Serien omfatter 189 kort og haves komplet i flere udgaver?>
     <?example     Daguerreotypi, mål: 81 x 70 mm?>
   </field>
-
 
   <field name="originates_from" type="string">
     <?description Information on the record being migrated from another metadata system. If this value is present, the record has been migrated from another metadata system into
@@ -755,6 +756,11 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example     256?>
   </field>
 
+  <field name="annotation" type="text_general">
+    <?description Contains further information about the resource that does not fit in the description. Such as disclaimers or infomation about low quality streams ?>
+    <?example     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis consequat libero, quis ornare mi.?>
+  </field>
+
   <field name="genre_sub" type="string" docValues="true">
     <?description A sub genre for the resource. This is a more specific category than the one specified in the field genre?>
     <?example     Comedy series?>
@@ -1172,7 +1178,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <!-- Contains the full transcription text without time interval for each sentence.-->
   <field name="transcription" type="text_general" multiValued="false" indexed="true" stored="false">
     <?description Contains the full transcription text without time interval for each sentence. ?>
-    <?example     Velkommen til tv-avisen ?>   
+    <?example     Velkommen til tv-avisen ?>
   </field>
 
   <field name="has_transcription" type="boolean" indexed="true" required="false" docValues="true" stored="true">

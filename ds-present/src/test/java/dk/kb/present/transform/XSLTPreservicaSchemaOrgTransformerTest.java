@@ -629,4 +629,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"kb:contains_ritzau\":false"));
     }
 
+    @Test
+    public void transformationWithAnnotation() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_ANNOTATION);
+        log.info(transformedJSON);
+
+        //Assert
+        assertTrue(transformedJSON.contains("\"annotation\":\"Dette indhold blev sendt i dansk radio under den tyske besættelse af Danmark, hvor Danmarks Radio ikke havde redaktionel frihed. Oprindeligt udsendelses tidspunkt er ukendt, det angivne tidspunkt kan derfor være ukorrekt.\""));
+    }
+
 }
