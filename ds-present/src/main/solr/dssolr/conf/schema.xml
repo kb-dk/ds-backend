@@ -1426,6 +1426,7 @@ When adding fields to this schema please have the following guidelines in mind:
   <copyField source="subtitle" dest="freetext"/>
   <copyField source="alternative_title" dest="freetext"/>
   <copyField source="original_title" dest="freetext"/>
+  <copyField source="transcription" dest="freetext"/>
   <copyField source="title" dest="spellcheck"/> <!--Important field. Will give high ranking(accuracy) when for spellcheck searches -->    
   <copyField source="description" dest="spellcheck"/> <!--This is a large field to copy just for spellcheck  -->
   <copyField source="description" dest="freetext"/>
