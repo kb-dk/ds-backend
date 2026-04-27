@@ -33,6 +33,7 @@ public class SearchComponent extends Component<SearchComponent> {
     protected BooleanParam indent;
     protected StringParam debug;
     protected BooleanParam debugExplainStructured;
+    protected StringParam defType;
 
     public SearchComponent(Profile profile, YAML config) {
         super(profile, "search", config);
@@ -50,6 +51,7 @@ public class SearchComponent extends Component<SearchComponent> {
         addParam(paramsConf, "indent", paramConf -> this.indent = new BooleanParam(profile, paramConf));
         addParam(paramsConf, "debug", paramConf -> this.debug = new StringParam(profile, paramConf, false));
         addParam(paramsConf, "debug.explain.structured", paramConf -> this.debugExplainStructured = new BooleanParam(profile, paramConf));
+        addParam(paramsConf, "defType", paramConf -> this.defType = new StringParam(profile, paramConf, false));
     }
 
     @Override
@@ -65,6 +67,7 @@ public class SearchComponent extends Component<SearchComponent> {
         indent = getParam("indent");
         debug = getParam("debug");
         debugExplainStructured = getParam("debug.explain.structured");
+        defType = getParam("defType");
     }
 
     @Override

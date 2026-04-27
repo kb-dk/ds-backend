@@ -98,7 +98,8 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
     @Override
     public boolean isAllowed(List<String> reasons) {
         if (enabled && !this.allowed) {
-            reasons.add("Param " + name + "=" + value + " not allowed as the param itself is not allowed");
+            String valueStr = value instanceof Object[] ? Arrays.toString((Object[]) value) : Objects.toString(value);
+            reasons.add("Param " + name + "=" + valueStr + " not allowed as the param itself is not allowed");
             return false;
         }
         return true;

@@ -14,7 +14,6 @@
  */
 package dk.kb.discover.util.solrshield;
 
-import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +27,8 @@ import java.util.*;
  * The {@code weight} is a score for how heavy (memory and/or processing power) an incoming request is expected
  * to be when issued against a Solr installation.
  * <p>
- * As of 2024-01-29 the architecture of SolrShield is simple on purpose, focusing of handling the current needs for
- * the Digitale Samlinger / DR Arkiv project at the Royal Danish Library. It is expected that future increase in
- * request complexity will cause rewriting of both code and configuration in the future.
+ * Each instance of SolrShield holds its own configuration and can be used independently, allowing per-collection
+ * shield configurations.
  * <p>
  * The input for SolrShield is an {@code Iterable<Map.Entry<String, String[]>>}. This was chosen to align with
  * {@code SolrParams} / {@code SolrQuery} from SolrJ, in anticipation of a future switch to SolrJ and/or reuse of
@@ -41,7 +39,6 @@ import java.util.*;
 public class SolrShield {
     private static final Logger log = LoggerFactory.getLogger(SolrShield.class);
 
-    public static final String ROOT_KEY = "solr.shield";
     public static final String ENABLED_KEY = "enabled";
 
     /**
@@ -49,51 +46,65 @@ public class SolrShield {
      */
     public static final String MAX_WEIGHT_DEFAULT_KEY = "defaultMaxWeight";
 
-    private static YAML conf = null;
-    private static boolean enabled = true;
-    private static double defaultMaxWeight = -1;
-    static Profile profile;
+    // --- Instance fields ---
+
+    private YAML conf;
+    private boolean enabled = true;
+    private double defaultMaxWeight = -1;
+    Profile profile;
+
+    /**
+     * Create a SolrShield instance from the given configuration.
+     * The configuration must state the SolrShield properties directly at root level
+     * (i.e. not wrapped under {@code solr.shield}).
+     * @param solrShieldConf the configuration for this SolrShield instance.
+     */
+    public SolrShield(YAML solrShieldConf) {
+        this.conf = solrShieldConf;
+        if (conf.containsKey("solr.shield")) {
+            log.warn("SolrShield constructor received a config which contains the key 'solr.shield'. This looks like an error: " +
+                    "The config should state SolrShield properties directly at root level");
+        }
+        enabled = conf.getBoolean(ENABLED_KEY, enabled);
+        defaultMaxWeight = conf.getDouble(MAX_WEIGHT_DEFAULT_KEY, defaultMaxWeight);
+        profile = new Profile(conf);
+        log.info("Initialized SolrShield: enabled={}, defaultMaxWeight={}, profile={}",
+                enabled, defaultMaxWeight, profile);
+    }
+
+    // --- Instance methods ---
 
     /**
      * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
      * as a boolean stated if the request is allowed to be issued.
-     * <p>    
-     * This method used {@link #defaultMaxWeight} as {@code maxWeight}.
+     * This method uses {@link #defaultMaxWeight} as {@code maxWeight}.
      * @param request a Solr request.
      * @return calculated weight etc.
-     * @see #evaluate(Iterable request, Double maxWeight)
      */
-    public static Response evaluate(Map<String, String[]> request) {
-        return evaluate(request.entrySet(), defaultMaxWeight);
+    public Response evaluateRequest(Map<String, String[]> request) {
+        return evaluateRequest(request.entrySet(), defaultMaxWeight);
     }
 
     /**
      * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
      * as a boolean stated if the request is allowed to be issued.
-     * <p>
-     * This method used {@link #defaultMaxWeight} as {@code maxWeight}.
+     * This method uses {@link #defaultMaxWeight} as {@code maxWeight}.
      * @param request a Solr request.
      * @return calculated weight etc.
-     * @see #evaluate(Iterable request, Double maxWeight)
      */
-    public static Response evaluate(Iterable<Map.Entry<String, String[]>> request) {
-        return evaluate(request, defaultMaxWeight);
+    public Response evaluateRequest(Iterable<Map.Entry<String, String[]>> request) {
+        return evaluateRequest(request, defaultMaxWeight);
     }
 
     /**
      * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
      * as a boolean stated if the request is allowed to be issued.
-     * <p>
-     * This method matches the Functional Interface
-     * {@code BiFunction<Iterable<Map.Entry<String, String[]>>, Double, Response>}
-     * and can be used directly as a filter for a stream.
      * @param request a Solr request.
      * @param maxWeight the maximum weight allowed.
      * @return calculated weight etc.
-     * @see #evaluate(Iterable request)
      */
-    public static Response evaluate(Iterable<Map.Entry<String, String[]>> request, Double maxWeight) {
-        Response response = weigh(request).maxWeight(maxWeight);
+    public Response evaluateRequest(Iterable<Map.Entry<String, String[]>> request, Double maxWeight) {
+        Response response = weighRequest(request).maxWeight(maxWeight);
 
         // Is the weight acceptable?
         if (response.maxWeight < response.weight) {
@@ -115,59 +126,17 @@ public class SolrShield {
 
     /**
      * Estimate the weight of the {@code request}.
-     * <p>
      * This also checks for hard limits or non-allowed arguments. If any of those are triggered,
      * {@link Response#allowed} is set to false, else it is set to true.
      * @param request a Solr request.
      * @return calculated weight etc.
-     * @see #evaluate(Iterable)
      */
-    static Response weigh(Iterable<Map.Entry<String, String[]>> request) {
+    Response weighRequest(Iterable<Map.Entry<String, String[]>> request) {
         Profile applied = profile.apply(request);
         List<String> reasons = new ArrayList<>();
         boolean allowed = applied.isAllowed(reasons);
 
         return new Response(request, defaultMaxWeight, allowed, reasons, applied.getWeight());
-    }
-
-    /**
-     * Load the configuration for SolrShield, if not already loaded. The configuration for SolrShield is a sub-config
-     * in the overall application config, located at {@code solr.shield}.
-     */
-    public static void ensureConfig() {
-        log.debug("Load SolrShield configuration");
-        if (conf != null) {
-            return;
-        }
-        if (!ServiceConfig.getConfig().containsKey(ROOT_KEY)) {
-            log.warn("Warning: The sub-config for Solr Shield, expected at '{}', is unavailable. " +
-                    "No Solr calls will be allowed. Set 'solr.shield-.enabled=false in config to disable SolrShield",
-                    ROOT_KEY);
-            conf = new YAML();
-        }
-        setConfig(ServiceConfig.getConfig().getSubMap(ROOT_KEY));
-    }
-
-    /**
-     * Set the configuration for SolrShield.
-     * This is kept as a separate method to enable other configuration sources than the default.
-     * <p>
-     *  Note: This configuration must state the SolrShield properties directly.
-     *        It does not use the sub-configuration structure from {@link #ensureConfig()}.
-     * @param solrShieldConf the configuration for SolrShield.
-     */
-    static void setConfig(YAML solrShieldConf) {
-        conf = solrShieldConf;
-        if (conf.containsKey(ROOT_KEY)) {
-            log.warn("setConfig received a config which contains the key '{}'. This looks like an error: " +
-                    "The setConfig method expects the SolrShield properties to be stated directly at root level",
-                    ROOT_KEY);
-        }
-        enabled = conf.getBoolean(ENABLED_KEY, enabled);
-        defaultMaxWeight = conf.getDouble(MAX_WEIGHT_DEFAULT_KEY, defaultMaxWeight);
-        profile = new Profile(conf);
-        log.info("Initialized SolrShield: enabled={}, defaultMaxWeight={}, profile={}",
-                enabled, defaultMaxWeight, profile);
     }
 
 }

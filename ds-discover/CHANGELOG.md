@@ -5,6 +5,19 @@ All notable changes to ds-discover will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## unreleased
+
+### Changed
+
+  - Per-collection SolrShield support. Each Solr collection in `ds-discover-behaviour.yaml`
+    may now declare its own shield via a new optional `shield:` key pointing at a standalone
+    shield YAML (path absolute or relative to the `ds-discover-*.yaml` files). Collections
+    without a `shield` key run without shielding. ([DRA-1788](https://kb-dk.atlassian.net/browse/DRA-1788))
+  - Config changes: 
+      - New standalone shield config file `conf/solrshield-ds.yaml` (replaces the old `conf/ds-discover-base-solrshield.yaml` wrapping layout — shield YAML is now root-level, with no wrapping key)
+      - Removed the global `solr.extraAllowedParameters` list from `ds-discover-behaviour.yaml`. Replaced by a per-collection `passthroughParameters` list inside each shield's YAML, so pass-through rules now travel with the shield they apply to.
+
+
 ## [4.0.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-4.0.0) - 2026-01-29
 
 ## [3.0.1](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-3.0.1) - 2025-09-01

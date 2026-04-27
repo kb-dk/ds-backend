@@ -17,15 +17,6 @@ openapi:
 
 solr:
 
-  #Additional parameters allowed to be sent to solr. 
-  extraAllowedParameters:
-    # queryUUID is returned to the frontend and used as session tracking.
-    - queryUUID 
-    # Frontend uses facet.limit this for timeline
-    - facet.limit
-    # Frontend is sorting on dates when showing results from "Tidsmaskinen"
-    - sort
-
   # /select specific config
   select:
     # Parameters that are default for all queries, but can be overridden by the request.
@@ -84,7 +75,10 @@ solr:
         # The Solr collection ID
         # Mandatory. Typically the same as the abstract collection name
         collection: 'ds'
-        # TODO: Default params
+        # Path to SolrShield config for this collection
+        # Path can be absolute or relative to the ds-discover-*.yaml files
+        # Optional. If not set, no shield will be usd for this colllection
+        shield: 'solrshield-ds.yaml'
         #
         #
         #

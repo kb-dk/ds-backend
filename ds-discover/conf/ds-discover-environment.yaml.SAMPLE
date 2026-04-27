@@ -37,7 +37,10 @@ solr:
         # The Solr collection ID
         # Mandatory. Typically, the same as the abstract collection name
         collection: 'ds'
-
+        # Path to SolrShield config for this collection
+        # Path can be absolute or relative to the ds-discover-*.yaml files
+        # Optional. If not set, no shield will be usd for this colllection
+        shield: solrshield-ds.yaml
 
 #the license module is called to generate a filter query which is used when calling Solr
 licensemodule:

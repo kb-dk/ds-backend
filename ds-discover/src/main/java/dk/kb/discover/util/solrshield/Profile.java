@@ -14,7 +14,6 @@
  */
 package dk.kb.discover.util.solrshield;
 
-import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +94,12 @@ public class Profile extends ProfileElement<Profile> {
     public Map<String, Field> fields;
 
     /**
+     * Parameters that bypass shield validation entirely. These are application-level parameters that are not
+     * Solr-native and should not be evaluated by SolrShield (e.g. session tracking IDs).
+     */
+    public List<String> extraAllowedParams = Collections.emptyList();
+
+    /**
      * First class search component. Always present, always enabled.
      */
     public SearchComponent search;
@@ -120,6 +125,7 @@ public class Profile extends ProfileElement<Profile> {
 
         unlistedParamsAllowed = config.getBoolean("unlistedParams.allowed", unlistedParamsAllowed);
         unlistedParamsWeight = config.getDouble("unlistedParams.weight", unlistedParamsWeight);
+        extraAllowedParams = new ArrayList<>(config.getList("extraAllowedParams", extraAllowedParams));
 
         search = new SearchComponent(this, config.getSubMap("components.search")); // Mandatory
         facet = new FacetComponent(this, config.getSubMap("components.facet"));    // Mandatory
@@ -162,9 +168,8 @@ public class Profile extends ProfileElement<Profile> {
         Profile clone = deepCopy();
         Set<String> processedKeys = new HashSet<>();
         processedKeys.addAll(clone.search.apply(request));
-        processedKeys.addAll(clone.facet.apply(request));                
-        List<String> extraAllowedParameters = ServiceConfig.getConfig().getList("solr.extraAllowedParameters"); //The value are also checked when sending the solr request.
-        processedKeys.addAll(extraAllowedParameters);       
+        processedKeys.addAll(clone.facet.apply(request));
+        processedKeys.addAll(clone.extraAllowedParams);       
         
         clone.unhandledParams =
                 StreamSupport.stream(request.spliterator(), false)
@@ -177,6 +182,7 @@ public class Profile extends ProfileElement<Profile> {
     protected void deepCopyNonAtomicAttributes(Profile clone) {
         clone.profile = clone; // Profile is the top element
         super.deepCopyNonAtomicAttributes(clone);
+        clone.extraAllowedParams = new ArrayList<>(extraAllowedParams);
         clone.fields = fields.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().deepCopy(clone.profile)));
         clone.search = search.deepCopy(clone.profile);
