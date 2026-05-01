@@ -519,7 +519,7 @@ paths:
                   $ref: '#/components/schemas/GroupType'
 
   # Audit  
-  /audit/auditEntries':
+  /audit/auditEntries:
     get:
       tags:
         - 'DsAudit'

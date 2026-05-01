@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - New API method (/audit/auditEntries) to list AuditLogEntries by modifiedTime and ObjectTypeEnum.
 
+### Fixed
+- Removed `'` from `/audit/auditEntries` in `ds-license-openapi_v1.yaml` file.
+
 ## [4.0.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-4.0.3) 2026-02-16
 
 ### Changed
