@@ -10,9 +10,8 @@ ds-storage/
 kb-util/
 ds-web/
 ds-kaltura/
-config-consumer/
 ds-config/
-ds-scheduling/
+ds-statistics/
 ds-shared/
 ds-stream-resolver/
 ds-test-automation/
