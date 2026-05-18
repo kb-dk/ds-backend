@@ -81,6 +81,10 @@ public class ProxyHelper {
      */
     public static StreamingOutput createStreamingOutput(InputStream inputStream) throws IOException {
         return outputStream -> {
+            if (inputStream == null) {
+                outputStream.close();
+                return;
+            }
             byte[] buffer = new byte[1024];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) != -1) {
