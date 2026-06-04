@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed kaltura dependency. 
 - Removed most kaltura properties from yaml config. Only ones needed are:  url and partnerId.
 - Service method to generate link to thumbnails now takes kalturaId parameter instead of fileId. This is breaking for frontend.
+- Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
 
 ## [4.0.0](https://github.com/kb-dk/ds-image/releases/tag/ds-image-4.0.0) - 2026-01-29
 
