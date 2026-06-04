@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+  - Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
   - Per-collection SolrShield support. Each Solr collection in `ds-discover-behaviour.yaml`
     may now declare its own shield via a new optional `shield:` key pointing at a standalone
     shield YAML (path absolute or relative to the `ds-discover-*.yaml` files). Collections
