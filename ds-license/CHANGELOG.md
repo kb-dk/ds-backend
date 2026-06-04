@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 -  Changed 'og' -> '&' in holdback category names
+-  Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
 
 ### Added
 - New API method (/audit/auditEntries) to list AuditLogEntries by modifiedTime and ObjectTypeEnum.

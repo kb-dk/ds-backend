@@ -234,21 +234,20 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-        </dependency>
-        <!-- Client for ds-storage This will also require the org.openapitools dependency-->
+        </dependency>        
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
             <version>100.0.0-SNAPSHOT</version>
             <type>jar</type>
-            <classifier>classes</classifier>
+            <classifier>api</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+       </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -630,9 +629,9 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-
-                    <!-- Generate a JAR with client classes and openapi-YAML for easy use by other services -->
-                    <attachClasses>true</attachClasses>
+                 
+                   <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->                    
+                   <!-- <attachClasses>true</attachClasses> --> 
 
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
@@ -655,6 +654,27 @@
                         </resource>
                     </webResources>
                 </configuration>
+            </plugin>
+
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-jar-plugin</artifactId>            
+               <executions>
+                   <execution>
+                   <id>build-specific-jar</id>
+                   <phase>package</phase>
+                   <goals>
+                       <goal>jar</goal>
+                   </goals>
+                  <configuration>                
+                      <classifier>api</classifier>
+                      <includes>                       
+                          <include>dk/kb/license/model/**</include>
+                          <include>dk/kb/license/util/DsLicenseClient*</include>                                            
+                      </includes>
+                 </configuration>
+                 </execution>
+              </executions>
             </plugin>
 
             <!-- Used only for mvn jetty:run jetty:run-war -->
