@@ -16,16 +16,17 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Proxy for a ds-storage https://github.com/kb-dk/ds-storage instance.
@@ -88,7 +89,7 @@ public class DSStorage implements Storage {
         try {
             return storageClient.getRecord(id,false);
         } catch (ServiceException e) {
-            log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
+            log.warn("Unable to retrieve record with id: '{}'. URL: '{}'. Exception: ", id, storageUrl, e);
            throw e;
         }
     }
@@ -99,7 +100,7 @@ public class DSStorage implements Storage {
         try {
              return storageClient.getTranscription(fileId);
         } catch (ServiceException e) {
-            log.debug("Unable to retrieve transcription '" + fileId + "' from " + storageUrl + "...", e);
+            log.warn("Unable to retrieve transcription with fileId: '{}'. URL: '{}'. Exception: ", fileId, storageUrl, e);
            throw e;
         }
     }
@@ -117,7 +118,7 @@ public class DSStorage implements Storage {
             }
             return record;
         } catch (ServiceException e){
-            log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
+            log.warn("Unable to retrieve record with id: '{}'. URL: '{}'. Exception: ", id, storageUrl, e);
             throw e;
         }
     }
@@ -138,6 +139,23 @@ public class DSStorage implements Storage {
 
 
         return getDsRecordDtoStream(mTime, maxRecords, origin, recordType);
+    }
+
+    /**
+     * Return rerunCluster from fileId
+     *
+     * @param fileId UUID of fileId.
+     * @return RerunClusterDto
+     */
+    @Override
+    public RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+        log.debug("getRerunClusterByFileId(fileId='{}') called", fileId);
+        try {
+            return storageClient.getRerunClusterByFileId(fileId);
+        } catch (ServiceException e) {
+            log.warn("Unable to retrieve rerun cluster with fileId: '{}'. URL: '{}'. Exception: ", fileId, storageUrl, e);
+            throw e;
+        }
     }
 
     private ContinuationStream<DsRecordDto, Long> getDsRecordDtoStream(

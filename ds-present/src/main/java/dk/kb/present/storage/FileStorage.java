@@ -14,6 +14,7 @@
  */
 package dk.kb.present.storage;
 
+import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.util.webservice.exception.ForbiddenServiceException;
 import dk.kb.storage.model.v1.DsRecordDto;
 
@@ -299,6 +300,11 @@ public class FileStorage implements Storage {
             String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
         // TODO: Make a proper implementation that checks the type (e.g. make getShallow take a filter)
         return getDSRecords(origin, mTime, maxRecords);
+    }
+
+    @Override
+    public RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+        return null;
     }
 
     /**

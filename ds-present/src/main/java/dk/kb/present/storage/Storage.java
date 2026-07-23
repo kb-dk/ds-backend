@@ -16,8 +16,11 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.stream.ContinuationStream;
+
+import java.util.UUID;
 
 /**
  * Provides access to records.
@@ -82,4 +85,11 @@ public interface Storage {
 
     ContinuationStream<DsRecordDto, Long> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords);
 
+    /**
+     * Return rerunCluster from fileId
+     *
+     * @param fileId UUID of fileId.
+     * @return RerunClusterDto
+     */
+    RerunClusterDto getRerunClusterByFileId(UUID fileId);
 }
