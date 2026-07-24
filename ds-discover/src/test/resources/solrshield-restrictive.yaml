@@ -1,0 +1,96 @@
+# Restrictive SolrShield config for testing per-collection shields.
+# Standalone (root-level) — loaded directly by SolrShield constructor.
+# Very low maxWeight so even basic queries are rejected.
+
+defaultMaxWeight: 100
+weightConstant: 100
+
+unlistedFields:
+  allowed: false
+  weight: 100
+
+unlistedParams:
+  allowed: false
+
+extraAllowedParams: []
+
+components:
+  search:
+    defaultEnabled: true
+    allowed: true
+    weightConstant: 100
+    params:
+      q:
+        weightConstant: 10
+        maxChars: 200
+      fq:
+        weightConstant: 0.0
+        weightFactor: 10
+        maxChars: 200
+      fl:
+        defaultEnabled: true
+        weightFactor: 1
+        supportsStar: false
+        defaultFields:
+          - id
+        deniedFields:
+          - text
+      rows:
+        defaultEnabled: true
+        defaultValue: 10
+        weightFactor: 0.1
+        maxValue: 100
+      start:
+        weightFactor: 0.01
+        maxValue: 50
+      q.op:
+      wt:
+      version:
+      indent:
+      debug:
+        weightConstant: 500
+        weightFactor: 1
+      debug.explain.structured:
+      defType:
+        allowed: false
+
+  facet:
+    defaultEnabled: true
+    weightConstant: 100
+    allowed: true
+    params:
+      facet.query:
+        allowed: false
+      facet.field:
+        defaultEnabled: true
+        weightFactor: 1
+        supportsStar: false
+        defaultFields:
+          - catalog
+        allowedFields:
+          - id
+          - catalog
+      facet.limit:
+        defaultEnabled: true
+        defaultValue: 10
+        weightFactor: 0.01
+        maxValue: 100
+      facet.sort:
+        maxChars: 100
+      facet.mincount:
+        defaultValue: 1
+      facet.exists:
+        defaultValue: false
+      facet.excludeTerms:
+        weightFactor: 0.1
+
+defaultField:
+  weight: 1
+
+fields:
+  id:
+    weight: 10
+  title:
+    weight: 50
+  catalog:
+    weight: 10

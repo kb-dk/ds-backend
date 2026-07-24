@@ -1,0 +1,104 @@
+# Permissive SolrShield config for testing per-collection shields.
+# Standalone (root-level) — loaded directly by SolrShield constructor.
+
+defaultMaxWeight: 50000
+weightConstant: 100
+
+unlistedFields:
+  allowed: true
+  weight: 100
+
+unlistedParams:
+  allowed: false
+
+extraAllowedParams:
+  - queryUUID
+
+components:
+  search:
+    defaultEnabled: true
+    allowed: true
+    weightConstant: 100
+    params:
+      q:
+        weightConstant: 10
+        maxChars: 1000
+      fq:
+        weightConstant: 0.0
+        weightFactor: 10
+        maxChars: 1000
+      fl:
+        defaultEnabled: true
+        weightFactor: 1
+        supportsStar: true
+        defaultFields:
+          - title
+          - id
+        deniedFields: []
+      rows:
+        defaultEnabled: true
+        defaultValue: 20
+        weightFactor: 0.1
+        maxValue: 5000
+      start:
+        weightFactor: 0.01
+        maxValue: 1000
+      q.op:
+      wt:
+      version:
+      indent:
+      debug:
+        weightConstant: 500
+        weightFactor: 1
+      debug.explain.structured:
+      defType:
+        allowed: false
+
+  facet:
+    defaultEnabled: true
+    weightConstant: 100
+    allowed: true
+    params:
+      facet.query:
+        allowed: false
+      facet.field:
+        defaultEnabled: true
+        weightFactor: 1
+        supportsStar: false
+        defaultFields:
+          - catalog
+        allowedFields:
+          - id
+          - catalog
+          - genre
+          - collection
+      facet.limit:
+        defaultEnabled: true
+        defaultValue: 20
+        weightFactor: 0.01
+        maxValue: 10000
+      facet.sort:
+        maxChars: 100
+      facet.mincount:
+        defaultValue: 1
+      facet.exists:
+        defaultValue: false
+      facet.excludeTerms:
+        weightFactor: 0.1
+
+defaultField:
+  weight: 1
+
+fields:
+  id:
+    weight: 10
+  title:
+    weight: 50
+  text:
+    weight: 200
+  catalog:
+    weight: 10
+  genre:
+    weight: 10
+  collection:
+    weight: 10
