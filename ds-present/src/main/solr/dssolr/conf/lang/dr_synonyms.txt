@@ -1,0 +1,27 @@
+# This pattern will fix  misspelling. This is often misspelled danish words. Only included somewhat relevant words for dr arkiv.
+# Use lowercase only
+selvskab => selskab
+yngling => yndling
+ærgelig => ærgerlig
+financiere => finansiere
+brædt => bræt
+hovede => hoved 
+linie => linje
+fælleskab => fællesskab
+diciplin => disciplin
+
+
+
+# No longer several words allowed since this breaks spellcheck.
+tva,avis, avisen, tvavis, tvavisen => tv avisen
+frank, kastanjegården, kastanjegård => bondeknolden
+pengene => sorte
+faktor => factor
+bevægelse => morgengymnastik
+løvens => visionærerne
+melodi, grand, prix => mgp
+true, crime  => lyssky
+genstart => dato
+bamsekylling => bamse
+afskedsbrev, third, ruths  =>  kultureliten
+

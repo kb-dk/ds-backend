@@ -1,0 +1,93 @@
+#
+# This config contains environment-data: Servers, usernames, passwords etc.
+# It will be automatically merged with the core config when accesses through the application config system.
+#
+# The environment config is normally controlled by operations and is not part of the code repository.
+#
+
+
+# updateStrategy must match enums defined in open API
+# Origin names must match regexp: a-z][0-9][.]
+origins:
+  - name: ds.tv
+    updateStrategy: NONE
+  - name: ds.radio
+    updateStrategy: NONE  
+  - name: ds.mediestream2.tv
+    updateStrategy: NONE
+  - name: ds.mediestream2.radio
+    updateStrategy: NONE
+  - name: doms.radio
+    updateStrategy: CHILD
+  - name: doms.aviser
+    updateStrategy: PARENT
+  - name: origin.strategy.none
+    updateStrategy: NONE
+  - name: origin.strategy.all
+    updateStrategy: ALL
+  - name: origin.strategy.child
+    updateStrategy: CHILD
+  - name: origin.strategy.parent
+    updateStrategy: PARENT
+  - name : ds.samlingsbilleder
+    updateStrategy: NONE
+  - name : ds.maps
+    updateStrategy: NONE
+  - name : kb.manus.vmanus.ha
+    updateStrategy: NONE
+
+
+db:
+  # In production this will always be PostgreSQL
+  # Only use H2 for smaller-scale (a million records max) test setups
+  url: jdbc:h2:${env:TMPDIR:-/tmp}/h2_ds_storage;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+  # url: jdbc:h2:/home/XXX/workspace/ds-storage/target/h2/ds_storage;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+  driver: org.h2.Driver
+  username: ''
+  password: ''
+  connectionPoolSize: 10
+
+  # Example for postgres
+  #url: jdbc:postgresql://localhost:5432/ds-storage
+  #driver: org.postgresql.Driver
+  #username: username
+  #password: password
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  serverurl: http://localhost:9072/ds-storage/v1
+  
+  
+
+security:
+  # The security mode. Valid values are
+  # OFFLINE: No validation of security tokens: All requests are accepted.
+  # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
+  mode: 'ENABLED'
+  # The OAUth2 server base url, typically ending in "realms"
+  # Sample: https://keycloak-keycloak.example.org/auth/realms
+  baseurl: 'https://keycloak.example.com/realms'
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  # The authentification url with the correct realm value. Does not seem the used active by code but is required when building. (TODO?)
+  auth_url: ' https://api.example.com/oauth2/authorize'
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  realms:
+    - foo-bar
+  public_keys:
+    # The number of seconds that public keys from the realms are cached
+    # Optional, -1 means forever.
+    # Default is 600 (10 minutes)
+    ttl_seconds: 86400
+
+  # Client settings are used if the webapp needs to request tokens from the OAuth2 server
+  client:
+    # Matches OAuth2 server Client ID
+    id: 'some_client'
+    # Secret is used if the service needs to request a token from the OAuth2 server.
+    # This typically used for calls between services, where there is a need for elevated access.
+    secret: '01234567-89ab-cdef-0123-456789abcdef'
+
+  
+
+

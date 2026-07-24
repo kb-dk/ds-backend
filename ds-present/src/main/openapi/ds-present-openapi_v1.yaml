@@ -1,0 +1,1226 @@
+openapi: 3.0.2
+info:
+  version: 'v1'
+  title: '${project.name}'
+  description: |
+    Metadata delivery for the Royal Danish Library.
+    
+    This API delivers metadata from collections at the Royal Danish Library.
+    These metadata can be delivered in different formats. The `/record/{id}`-endpoint can deliver metadata as 
+    [JSON-LD](https://json-ld.org/), [MODS](http://www.loc.gov/standards/mods/) and 
+    [SolrJSON](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates).
+    In general all metadata are represented in both solr and JSON-LD, however, there might be some differences in names.
+    If you are interested in an overview of this mapping it can be found [here](../mappings_radiotv.html). 
+    
+    Furthermore metadata can be delivered as IIIF Presentation manifests through the `/IIIF/{identifier}/manifest`-endpoint. 
+    For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.0 and should be backwards compatible with version 2.1.1
+    
+    This service is under development and is **not** suitable for production!
+    In order to perform calls at an elevanted level, i.e. bypass the license module, add the header
+    `Simulated-OAuth2-Group: admin` to relevant service calls.
+    
+    TODO: Update this description when enabling OAuth2 security
+  contact:
+    email: '${user.name}@kb.dk'
+  license:
+    name: '${license.name}'
+    url: '${license.url}'
+servers:
+  #  /api must match servlet-mapping in web.xml
+  - url: '${config:openapi.serverurl}'
+    description: 'Version 1'
+
+paths:
+
+  # This definition uses path: http://example.com/api/article/article-123A-v2
+  /record/{id}:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Retrieve metadata for the record with the given ID and in the given format.'      
+      security: 
+        - KBOAuth:
+          - any      
+      operationId: getRecord
+      parameters:
+        - name: id
+          in: path
+          description: 'The ID of the record'
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          examples:
+            remote:
+              value: 'ds.tv:oai:du:b1405ff8-6a00-4e20-b2bf-334b22ec2b37'
+              #value: 'remote.images:luftfoto-sample.xml'
+              summary: 'Record fetched from running ds-storage'
+            local:
+              value: 'local.test:luftfoto-sample.xml'
+              summary: 'Record fetched from fixed local test corpus'
+        - name: format
+          in: query
+          description: |
+            The delivery format for the record:
+            * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default)
+            * MODS: [Metadata Object Description Schema](http://www.loc.gov/standards/mods/)
+            * SolrJSON: [Solr JSON Formatted Index Updates](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
+            * raw: Metadata unchanged from the source.
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: 'OK: The record was available in the requested format'
+          content:
+            application/json:
+              schema:
+                description: 'Format specific representation of the record in JSON or JSON-LD. Used for JSON-LD'
+                type: string
+            application/xml:
+              schema:
+                description: 'Format-specific representation of the record in XML. Used for MODS and SolrJSON'
+                type: string
+            text/plain:
+              schema:
+                description: 'Format-specific representation of the record as plain text. Used for raw'
+                type: string
+        '404':
+          description: 'Record ID is unknown'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /records:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Extract records from an origin after a given mTime.'
+      security: 
+        - KBOAuth:
+          - any      
+      description: |
+        The extracted records are returned in sorted order by mTime increasing. By changing the parameter `maxRecords`, 
+        the size of the result can be defined. Records marked with a delete flag will also be returned.
+      operationId: getRecords
+      x-streamingOutput: true
+      parameters:
+        - name: origin
+          in: query
+          description: 'The origin to extract records from.'
+          required: true
+          schema:
+            type: string
+            enum: ["${config:origins[*].*.origin}"]
+        - name: mTime
+          in: query
+          description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 0
+            # Default values for longs does not work with the current version of OpenAPI generator
+            #default: 0
+        - name: maxRecords
+          in: query
+          description: 'Maximum number of records to return. -1 means no limit.'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 1000
+            # Default values for longs does not work with the current version of OpenAPI generator
+            #default: 1000
+        - name: format
+          in: query
+          description: |
+            The delivery format for the record:
+            * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default)
+            * JSON-LD-Lines: [Linked Data in JSON-Lines](https://json-ld.org/)
+            * MODS: [Metadata Object Description Schema](http://www.loc.gov/standards/mods/)
+            * SolrJSON: [Solr JSON Formatted Index Updates](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
+            Note that deleted records are only represented in the SolrJSON and StorageRecord formats.
+            For the other formats, deleted records are skipped silently.
+          required: false
+          schema:
+            $ref: '#/components/schemas/Format'
+
+      responses:
+        '200':
+          description: 'List of records in the requested format.'
+          content:
+            application/ld+json:
+              schema:
+                description: |
+                  JSON-compliant representation of records as linked data. Note that the structure can be unwieldy for
+                  parsing large exports, if the receiver does not use a streaming parser.
+                  Consider using application/x-ndjson instead
+                type: array
+                items:
+                  type: string
+            application/x-ndjson:
+              schema:
+                description: |
+                  Newline separated single-line JSON representations of linked data content.\n
+                  See https://json-ld.org/ https://github.com/ndjson/ndjson-spec or https://jsonlines.org/ for the formats
+                type: string
+            application/xml:
+              schema:
+                description: 'XML-compliant representation of exported records as MODS records.'
+                type: array
+                items:
+                  type: string
+            application/x-solrjsondocuments:
+              schema:
+                description: |
+                  SolrJSONDocuments representation of content, directly indexable in Solr.
+                  See [Solr JSON Formatted Index Updates](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates)
+                type: string
+
+  /recordsraw:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Extract raw records from a collection after a given mTime.'
+      security:
+        - KBOAuth:
+          - any
+      description: |
+        The raw records are returned wrapped in JSON. The records are extracted in sorted order by mTime increasing. 
+        By changing the parameter `maxRecords`, the size of the result can be defined. 
+        Records marked with a delete flag will also be returned.
+        
+        Information on the storage formats can be found here:
+        * StorageRecord: [ds-storage](https://github.com/kb-dk/ds-storage/) record in JSON
+        * StorageRecord-Lines: [ds-storage](https://github.com/kb-dk/ds-storage/) record in JSON-Lines
+      operationId: getRecordsRaw
+      x-streamingOutput: true
+      parameters:
+        - name: origin
+          in: query
+          description: 'The origin to extract records from.'
+          required: true
+          schema:
+            type: string
+            enum: ["${config:origins[*].*.origin}"]
+        - name: mTime
+          in: query
+          description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 0
+            # Default values for longs does not work with the current version of OpenAPI generator
+            #default: 0
+        - name: maxRecords
+          in: query
+          description: 'Maximum number of records to return. -1 means no limit.'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 1000
+        - name: asJsonLines
+          in: query
+          description: 'If true, the records are delivered as JSON Lines instead of plain JSON. Otherwise the endpoint delivers JSON.'
+          required: false
+          schema:
+            type: boolean
+            example: false
+            default: false
+      responses:
+        '200':
+          description: 'List of records in the requested format.'
+          content:
+            application/x-storagerecord:
+              schema:
+                description: |
+                  [ds-storage](https://github.com/kb-dk/ds-storage/) record as JSON.
+                type: string
+            application/x-storagerecord-ndjson:
+              schema:
+                description: |
+                  [ds-storage](https://github.com/kb-dk/ds-storage/) record as JSON-Lines.
+                type: string
+
+  /origin/{id}:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Retrieve a formal description of a single origin.'
+      security:
+        - KBOAuth:
+          - any
+      operationId: getOrigin
+      parameters:
+        - name: id
+          in: path
+          description: 'The ID of the origin'
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            enum: ["${config:origins[*].*.origin}"]
+      responses:
+        '200':
+          description: 'OK: The origin was known and a description is returned.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Origin'
+        '404':
+          description: 'Origin is unknown.'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /origins:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Retrieve a formal description of all available origins.'
+      security:
+        - KBOAuth:
+          - any
+      operationId: getOrigins
+      responses:
+        '200':
+          description: 'OK: Origins are returned.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Origin'
+
+  /transformsolrschema:
+     post:
+       tags:
+         - '${project.name}'
+       summary: 'Transform solr schema to a different format'
+       parameters:
+         - name: format
+           in: query
+           description: 'the requested output format'
+           required: true
+           schema:
+             type: string
+             enum: [ 'html', 'markdown']
+             default: 'html'
+             example: 'html'
+       requestBody:
+         required: true
+         content:
+           application/xml:
+             schema:
+               type: string
+               description: the raw schema.xml
+       responses:
+         '200':
+           description: Successfully transformed the solr schema.
+           content:
+             application/xml:
+               schema:
+                 description: |
+                   Transformed schema
+                 type: string
+         '500':
+           description: Internal server error.
+
+
+# IIIF Presentation endpoints
+  /IIIF/collection/{name}:
+    get:
+      tags:
+        - 'IIIFPresentation'
+      summary: "IIIF Presentation Collection"
+      security:
+        - KBOAuth:
+          - any
+      operationId: getPresentationCollection
+      description: "Collections are used to list the Manifests available for viewing. Collections may include both other Collections and Manifests, in order to form a tree-structured hierarchy."
+      parameters:
+      - name: name
+        in: path
+        description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
+        required: true
+        schema:
+          type: string
+          default: "normal"
+      
+      responses:
+        '200':
+          description: 'Succes!'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+
+  # TODO: Add option to choose parts of manifest to return.
+  /IIIF/{identifier}/manifest:
+    get:
+      tags:
+        - 'IIIFPresentation'
+      summary: "IIIF Presentation manifest"
+      security:
+        - KBOAuth:
+          - any
+      operationId: getPresentationManifest
+      description: "The manifest resource represents a single object and any intellectual work or works embodied within that object. In particular it includes the descriptive, rights and linking information for the object."
+      parameters:
+      - name: identifier
+        in: path
+        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
+        required: true
+        schema:
+          type: string
+      
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manifest'
+
+  # The ping service should be in all projects, should not do any advanced processing
+  # and should respond quickly with a simple message, e.g. "pong".
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the more detailed /monitor/status is defined below.
+  /monitor/ping:
+    get:
+      tags:
+        - Service
+      summary: 'Ping the server to check if the server is reachable.'
+      operationId: ping
+      x-useGenericResponse: false # If enabled the method will return Response
+      x-streamingOutput: false # If enabled the method will return StreamingOutput.
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # The status service should be in all projects and should provide a list of running jobs,
+  # the overall health of the service and similar. While the endpoint should be kept at
+  # /monitor/status, the response should be adjusted to fit the application.
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the simple /monitor/ping is defined above.
+  /monitor/status:
+    get:
+      tags:
+        - Service
+      summary: 'Detailed status / health check for the service'
+      operationId: status
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: 'Internal Error'
+          content:
+            text/plain:
+              schema:
+                type: string
+ 
+  /monitor/whoami:
+    get:
+      tags:
+        - Service
+      summary: 'Extract OAuth2 accessToken in the `Authorization` HTTP header and return the roles from it'
+      operationId: probeWhoami
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Whoami'
+ 
+
+components:
+  schemas:
+    # IIIF Presentation collection response
+    collection: 
+      type: object
+      properties:
+        '@context': 
+          type: string
+          example: "http://iiif.io/api/presentation/3/context.json"
+        id:
+          type: string
+          example: "https://example.org/iiif/collection/top"
+        type:
+          type: string
+          example: "Collection"
+        label: 
+          type: object
+          properties:
+            en:
+              type: array
+              items:
+                type: string
+          example:
+           - en: "Collection for Example Organization"
+        summary: 
+          type: object
+          properties:
+            en:
+              type: array
+              items:
+                type: string
+              example: 
+              - "Short summary of the Collection"
+        requiredStatement:
+          type: object
+          properties:
+            label: 
+              type: object
+              properties:
+                en:
+                  type: array
+                  items:
+                    type: string
+            value: 
+              type: object
+              properties:
+                en:
+                  type: array
+                  items:
+                    type: string
+          example:
+            - label: "Attribution"
+            - value: "Provided by Example Organization"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+              label: 
+                type: object
+                properties:
+                  en:
+                    type: array
+                    items:
+                      type: string
+              thumbnail:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+                    format:
+                      type: string
+            example:
+            - id: "https://example.org/iiif/1/manifest" 
+              type: "Manifest" 
+              label: 
+                en: "Example Manifest 1"
+              thumbnail:
+                id: "https://example.org/manifest1/thumbnail.jpg"
+                type: "Image"
+                format: "image/jpeg"
+    # IIIF Presentation manifest response
+    manifest:
+      type: object
+      properties:
+        # Metadata about the manifest file
+        '@context': 
+          type: string
+          example: "http://iiif.io/api/presentation/2/context.json"
+        '@id':
+          type: string
+          example: "http://example.org/iiif/book1/manifest"
+        '@type':
+          type: string
+          example: "sc:Manifest"
+        # Descriptive metadata about the object/work
+        label: 
+          type: object
+          properties:
+            en:
+              type: array
+              items:
+                type: string
+          example:
+          - en: "Book 1"
+        metadata:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              value:
+                type: string
+          example:
+          - label:
+              en: "Author"
+            value:
+              none: "Anne Author"
+          - label:
+              en: "Published"
+            value:
+              en: "Paris, circa 1400"
+              fr: "Paris, environ 1400"
+        summary:
+          type: string
+          example: "Book 1, written by Anne Author, published in Paris around 1400."
+        thumbnail:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+              format:
+                type: string
+              service:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+                    profile:
+                      type: string
+          example:
+          - id: "http://example.org/images/book1-page1/full/80,100/0/default.jpg"
+            type: "Image"
+            format: "image/jpeg"
+            service: 
+              id: "http://example.org/images/book1-page1"
+              type: "ImageService3"
+              example: "level1"
+        # Presentation information
+        viewingDirection:
+          type: string
+          example: "right-to-left"
+        viewingHint:
+          type: string
+          example: "paged"
+        navDate:
+          type: string
+          format: date-time
+          example: "1856-01-01T00:00:00Z"
+        # Rights information
+        rights:
+          type: string
+          example: "http://creativecommons.org/licenses/by/4.0/"
+        requiredStatement:
+          type: object
+          properties:
+            label:
+              type: string
+            value:
+              type: string
+          example:
+          - label: "Attribution"
+            value: "Provided by Example Organization"
+        provider:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+              label:
+                type: string
+              homepage:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: 
+                      type: string
+                    type:
+                      type: string
+                    label:
+                      type: string
+                    format: 
+                      type: string
+              logo:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+                    format:
+                      type: string
+                    service:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          type: 
+                            type: string
+                          profile:
+                            type: string
+              seeAlso:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: 
+                      type: string
+                    type:
+                      type: string
+                    format:
+                      type: string
+                    profile: 
+                      type: string
+            example:
+            - id: "https://example.org/about"
+              type: "Agent"
+              label: 
+                en: "Example organisation"
+              homepage: 
+                id: "https://example.org/"
+                text: "Text"
+                label:
+                  en: "Example Organization Homepage"
+                format: "text/html"
+              logo:
+                id: "https://example.org/service/inst1/full/max/0/default.png"
+                type: "Image"
+                format: "image/png"
+                service:
+                  id: "https://example.org/service/inst1"
+                  type: "ImageService3"
+                  profile: "level2"
+              seeAlso:
+                id: "https://data.example.org/about/us.jsonld"
+                type: "Dataset"
+                format: "application/ld+json"
+                profile: "https://schema.org/"    
+        # Links
+        homepage:
+          type: array
+          items:
+            type: object
+            properties:
+              id: 
+                type: string
+              type:
+                type: string
+              label:
+                type: string
+              format:
+                type: string
+          example:
+          - id: "https://example.org/info/book1/"
+            type: "Text"
+            label: "Home page for Book 1"
+            format: "text/html"
+        service:
+          type: array
+          items:
+            type: object
+            properties:
+              id: 
+                type: string
+              type:
+                type: string
+              profile:
+                type: string
+          example:
+          - id: "https://example.org/service/example"
+            type: "ExampleExtensionService"
+            profile: "https://example.org/docs/example-service.html"
+        seeAlso:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type: 
+                type: string
+              format: 
+                type: string
+              profile:
+                type: string
+          example:
+          - id: "https://example.org/library/catalog/book1.xml"
+            type: "Dataset"
+            format: "text/xml"
+            profile: "https://example.org/profiles/bibliographic"
+        rendering:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type: 
+                type: string
+              label:
+                type: string
+              format: 
+                type: string
+            example:
+            - id: "https://example.org/iiif/book1.pdf"
+              type: "Text"
+              label: "Download as PDF"
+              format: "application/pdf"
+        partOf:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                  type: string
+              type: 
+                type: string
+          example:
+          - id: "https://example.org/collections/books/"
+            type: "Collection"
+        start:
+          type: object
+          properties:
+            id:
+                type: string
+            type: 
+              type: string
+          example:
+          - id: "https://example.org/iiif/book1/canvas/p2"
+            type: "Canvas"
+        # List of Services, referenced from within items, structures or annotations
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              '@id':
+                type: string
+              '@type':
+                type: string
+              profile:
+                type: string
+              label:
+                type: string
+              service:
+                type: object
+                properties:
+                  '@id':
+                    type: string
+                  '@type':
+                    type: string
+                  profile:
+                    type: string
+          example:
+          - '@id': "https://example.org/iiif/auth/login"
+            '@type': "AuthCookieService1"
+            profile: "http://iiif.io/api/auth/1/login"
+            label: "Login to Example Institution"
+            service:
+              '@id': "https://example.org/iiif/auth/login"
+              '@type': "AuthCookieService1"
+              profile: "http://iiif.io/api/auth/1/login"
+        # List of Canvases
+        items: 
+          type: array
+          items:
+            $ref: '#/components/schemas/canvas'
+        # Structure of the resource, described with Ranges
+        structures:
+          type: array
+          items:
+            $ref: '#/components/schemas/range'
+            # Any additional top level Ranges can be included here
+        # Commentary Annotations on the Manifest
+        annotations:
+          $ref: '#/components/schemas/annotations'
+        # TODO: Figure out if all of presentation API can be contained in one schema
+        
+    # IIIF Presentation canvas response
+    canvas: 
+      type: object
+      properties:
+        #  Metadata about this canvas
+        id: 
+          type: string
+          example: "https://example.org/iiif/book1/canvas/p1"
+        type:
+          type: string
+          example: "Canvas"
+        label: 
+          type: object
+          properties:
+            none:
+              type: array
+              items:
+                type: string
+                example: "p. 1"
+        height:
+          type: integer
+          example: 1000
+        width:
+          type: integer
+          example: 750
+        items: 
+          type: array
+          items: 
+            type: object
+            properties:
+              id: 
+                type: string
+              type:
+                type: string
+              items:
+                type: array
+                items:
+                  type: string
+          example:
+          - id: "https://example.org/iiif/book1/content/p1/1"
+            type: "AnnotationPage"
+            items: 
+              - "Painting Annotations on the Canvas"
+        annotations: 
+          type: array
+          items: 
+            type: object
+            properties:
+              id: 
+                type: string
+              type:
+                type: string
+              items:
+                type: array
+                items:
+                  type: string
+          example: 
+          - id: "https://example.org/iiif/book1/comments/p1/1"
+            type: "AnnotationPage"
+            items: 
+              - "Non-Painting Annotations on the Canvas"
+    
+    # IIIF Presentation range response - used with structures in manifest
+    range:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "https://example.org/iiif/book1/range/r0"
+        type:
+          type: string
+          example: "Range"
+        label:
+          type: object
+          properties:
+            en:
+              type: string
+              example: "Table of Contents"
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  type:
+                    type: string
+                  label:
+                    type: object
+                    properties:
+                      en:
+                        type: string
+                  supplementary:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      type:
+                        type: string
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        type:
+                          type: string
+                        source:
+                          type: string
+                        selector:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            value:
+                              type: string
+              example:
+              - id: "https://example.org/iiif/book1/canvas/cover"
+                type: "Canvas"
+              - id: "https://example.org/iiif/book1/range/r1"
+                type: "Range"
+                label:
+                  en: "Introduction"
+                supplementary:
+                  id: "https://example.org/iiif/book1/annocoll/introTexts"
+                  type: "AnnotationCollection"
+              - items:
+                  id: "https://example.org/iiif/book1/canvas/p1"
+                  type: "Canvas"
+              - items:
+                  id: "https://example.org/iiif/book1/canvas/p2"
+                  type: "Canvas"
+              - items:
+                  type: "SpecificResource"
+                  source: "https://example.org/iiif/book1/canvas/p3"
+                  selector:
+                    type: "FragmentSelector"
+                    value: "xywh=0,0,750,300"
+              - items:
+                  id: "https://example.org/iiif/book1/canvas/backCover"
+                  type: "Canvas"
+
+    # IIIF Presentation annotations response
+    annotations:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+              motivation: 
+                type: string
+              body: 
+                type: object
+                properties:
+                  type:
+                    type: string
+                  language:
+                    type: string
+                  value:
+                    type: string
+              target:
+                type: string
+      example:
+      - id: "https://example.org/iiif/book1/page/manifest/1"
+        type: "AnnotationPage"
+        items:
+          id: "https://example.org/iiif/book1/page/manifest/a1"
+          type: "Annotation"
+          motivation: "commenting"
+          body: 
+            type: "TextualBody"
+            language: "en"
+            value: "I love this manifest!"
+          target: "https://example.org/iiif/book1/manifest"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+    Origin:
+      type: object
+      required:
+        - id
+        - description
+        - views
+      properties:
+        id:
+          description: 'The ID of the origin'
+          type: string
+          example: 'images-DSFL'
+        prefix:
+          description: 'The prefix used by all records in the origin'
+          type: string
+          example: 'images.dsfl:'
+        description:
+          description: 'A human readable description of the origin'
+          type: string
+          example: 'Images from the Danmark Set Fra Luften (Denmark seen from the air) project'
+        views:
+          description: 'Metadata views (aka formats) supported by this origin'
+          type: array
+          items:
+            $ref: '#/components/schemas/View'
+
+    View:
+      type: object
+      required:
+        - id
+        - mime
+      properties:
+        id:
+          description: 'The ID (aka format) of the view'
+          type: string
+          example: 'jsonld'
+        mime:
+          description: 'MIME type for the delivered metadata'
+          type: string
+          example: 'application/json'
+
+    Format:
+      type: string
+      enum:
+        - JSON-LD
+        - JSON-LD-Lines
+        - MODS
+        - SolrJSON
+        - raw
+        #['JSON-LD', 'MODS', 'SolrJSON', "raw"]
+      example: 'JSON-LD'
+      default: 'JSON-LD'
+
+    # Basic status response component.
+    # TODO: Extend this to provide application specific status, such as a list of running jobs or free disk space
+    Status:
+      type: object
+      required:
+        - application
+        - version
+      properties:
+        application:
+          type: string
+          description: 'The name of the application'
+          example: 'MyService'
+        version:
+          type: string
+          description: 'The version of the application'
+          example: '1.2.3'
+        build:
+          type: string
+          description: 'When the application was build'
+          example: '2022-04-21T13:37:16Z'
+        java:
+          type: string
+          description: 'The Java version that runs the container'
+          example: '11.0.11'
+        heap:
+          type: integer
+          format: int64
+          description: 'The maximum number of bytes available to the container in megabytes'
+          example: '4096'
+        server:
+          type: string
+          description: 'The hostname for the server'
+          example: 'miaplacidus'
+        health:
+          type: string
+          description: 'Self diagnosed health'
+          example: 'ok'
+        gitCommitChecksum:
+          type: string
+          description: 'The checksum of the deployed commit.'
+          example: 'ca82a6dff817ec66f44342007202690a93763949'
+        gitBranch:
+          type: string
+          description: 'The current deployed branch.'
+          example: master
+        gitClosestTag:
+          type: string
+          description: 'The closest tag of the deployed branch.'
+        gitCommitTime:
+          type: string
+          description: 'The time for the latest commit of the deployed branch.'
+        stats:
+          type: string
+          description: 'Assorted performance statistics'
+
+
+    Whoami:
+      type: object
+      description: 'OAuth2 information derived from the request'
+      properties:
+        token:
+          type: object
+          required:
+            - present
+          properties:
+            present:
+              type: boolean
+              description: 'True if an OAuth2 accessToken was present in the request, else false'
+              example: true
+            valid:
+              type: boolean
+              description: 'True is an OAuth2 accessToken was present and valid, else false'
+              example: false
+            error:
+              type: string
+              description: 'If the accessToken is not valid, the reason will be stated here'
+            roles:
+              type: array
+              items:
+                type: string
+              description: 'The roles stated in the OAuth2 accessToken'
+              example: [read, write, admin]
+
+  securitySchemes:
+
+    KBOAuth:
+      type: oauth2
+      description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
+      flows:
+        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+          #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
+          #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
+          authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth' 
+          scopes:
+            generic_ds: 'Scope used for all Digitale Samlinger services'
+            # Project specific roles
+            read: 'read data'
+            write: 'modify or delete data'
+
+            # General roles at the Royal Danish Library
+            devel: 'broad read access'
+            admin: 'all rights'
+
+            # Meta role controlling authorization behaviour
+            public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
+            any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
+
+

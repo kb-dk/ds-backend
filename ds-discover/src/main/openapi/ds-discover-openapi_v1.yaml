@@ -1,0 +1,1133 @@
+openapi: 3.0.2
+info:
+  version: 'v1'
+  title: '${project.name}'
+  description: |
+    ${project.description}
+  license:
+    name: '${license.name}'
+    url: '${license.url}'
+servers:
+  #  /api must match servlet-mapping in web.xml
+  - url: '${config:openapi.serverurl}'
+    description: 'Version 1'
+
+paths:
+
+  # The ping service should be in all projects, should not do any advanced processing
+  # and should respond quickly with a simple message, e.g. "pong".
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the more detailed /monitor/status is defined below.
+  /monitor/ping:
+    get:
+      tags:
+        - Service
+      summary: 'Ping the server to check if the server is reachable.'
+      operationId: ping
+      x-useGenericResponse: false # If enabled the method will return Response
+      x-streamingOutput: false # If enabled the method will return StreamingOutput.
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # The status service should be in all projects and should provide a list of running jobs,
+  # the overall health of the service and similar. While the endpoint should be kept at
+  # /monitor/status, the response should be adjusted to fit the application.
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the simple /monitor/ping is defined above.
+  /monitor/status:
+    get:
+      tags:
+        - Service
+      summary: 'Detailed status / health check for the service'
+      operationId: status
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: 'Internal Error'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /documentation/solr/schema:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Get a rendered version of the schema for the given collection. This version of the schema contains documentation of all fields and examples of some usecases.'
+      security:
+        - KBOAuth:
+          - any
+      operationId: documentedSchema
+      parameters:
+        - name: collection
+          in: query
+          description: 'The ID of the Solr collection to get schema for. Available collections can be requested from /solr/admin/collections'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            enum: ["${config:solr.collections[*].*.collection}"]
+        - name: format
+          in: query
+          description: 'The format of the output document.'
+          required: true
+          schema:
+            type: string
+            default: 'xml'
+            enum: ['xml', 'html', 'markdown']
+            example: 'xml'
+      responses:
+        '200':
+          description: 'Documented schema for solr collection.'
+          content:
+            text/xml:
+              schema:
+                description: |
+                  Entire Solr schema in [XML or schema.xml format](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-examples)
+                type: string
+            text/html:
+              schema:
+                description: |
+                  Entire Solr schema in HTML format.
+                type: string
+            text/markdown:
+              schema:
+                description: |
+                  Entire Solr schema in markdown format.
+                type: string
+
+
+  /solr/{collection}/schema:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Get the schema behind the solr index for the given collection. The schema contains information on all fields available for the collection.'
+      operationId: solrSchema
+      security:
+        - KBOAuth:
+          - any
+      parameters:
+        - name: collection
+          in: path
+          description: 'The ID of the Solr collection to get schema for. Available collections can be requested from /solr/admin/collections'
+          required: true
+          schema:
+            type: string
+            enum: ["${config:solr.collections[*].*.collection}"]
+            default: 'ds'
+
+        - name: wt
+          in: query
+          description: |
+            The format for the schema. See [retrieve-schema-information](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-information)
+            for details.
+          
+            * json: Entire schema in JSON format
+            * xml: Entire schema in XML format, with explicit typing of values
+            * schema.xml: Entire schema in schema.xml format. Note that this is raw XML without inline comments
+          required: false
+          schema:
+            type: string
+            enum: ['json', 'xml', 'schema.xml']
+            default: 'json'
+            example: 'json'
+      responses:
+        '200':
+          description: 'Schema for solr collection.'
+          content:
+            application/json:
+              schema:
+                description: |
+                  Entire Solr schema in [JSON schema format](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-examples)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Entire Solr schema in [XML or schema.xml format](https://solr.apache.org/guide/solr/9_0/indexing-guide/schema-api.html#retrieve-schema-examples)
+                type: string
+
+  /solr/{collection}/select:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Perform a Solr-compatible search in the stated collection'
+      operationId: solrSearch
+      security:
+        - KBOAuth:
+          - any            
+      parameters:      
+        - name: collection
+          in: path
+          description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            enum: ["${config:solr.collections[*].*.collection}"]
+
+        - name: q
+          in: query
+          description: 'Solr query param [q](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)'
+          required: true
+          schema:
+            type: string
+            default: '*:*'
+          examples:
+            all:
+              value: '*:*'
+              summary: 'All documents in the collection'
+            free:
+              value: 'jens hansen'
+              summary: 'Free text query'
+            qualified:
+              value: 'author:andersen'
+              summary: 'Qualified query'
+
+        - name: fq
+          in: query
+          description: | 
+            Solr filter query param [fq](https://solr.apache.org/guide/8_10/common-query-parameters.html#fq-filter-query-parameter)
+            
+            Standard query syntax, but all terms must be qualified. Does not affect scoring.
+            If multiple filter queries are provided, the result set is the intersection of the filters.
+            
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+
+        - name: rows
+          in: query
+          description: | 
+            Solr rows param [rows](https://solr.apache.org/guide/8_10/common-query-parameters.html#rows-parameter)
+            
+            The number of documents to return. The default depends on the backing Solr setup, but is typically 10.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
+        - name: start
+          in: query
+          description: | 
+            For pagination. Only return documents in the resultset from position start and forward. Next page typical start from 20                        
+          required: false
+          schema:
+            type: integer
+            format: int32            
+            default: 0
+          examples:
+            from0:
+              value: 0
+              summary: 'from start. First document is document number 0 so returning documents 0,1,2,..,(rows-parameter)'
+            from20:
+              value: 20
+              summary: 'from document 21 and forwards. So returning document 21,22,.., 21+(rows-parameter)'
+            
+        - name: fl
+          in: query
+          description: | 
+            Solr field list param [fl](https://solr.apache.org/guide/8_10/common-query-parameters.html#fl-field-list-parameter)            
+            Solr fields to return in the response. `*` means all available standard fields.
+            It is recommended to include the pseudo-field [[child]](https://solr.apache.org/guide/8_0/transforming-result-documents.html#child-childdoctransformerfactory)
+            to include nested documents.
+          required: false
+          schema:
+            type: string
+            example: '*'
+            default: '*'
+
+        - name: facet
+          in: query
+          description: | 
+            Solr facet enabling [facet](https://solr.apache.org/guide/8_10/faceting.html#general-facet-parameters)
+            
+            If true, faceting will be enabled. This is typically used together with `facet.field`
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+
+        - name: facet.field
+          in: query
+          description: | 
+            Solr facet fields [facet.field](https://solr.apache.org/guide/8_10/faceting.html#field-value-faceting-parameters)
+            
+            If `facet=true`, the listed fields for `facet.fields` will be used for faceting.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            default: ['keyword']
+            example: ['keyword']
+
+        # TODO: Add more facet variables
+
+
+
+        # Spell check fields
+        - name: spellcheck
+          in: query
+          description: | 
+            Solr spellcheck enabling [spellcheck](https://solr.apache.org/guide/solr/latest/query-guide/spell-checking.html)
+            
+            If true, solr response will contain spellcheck information. Spellcheck will only be activated by Solr if no results are found.
+            
+            The spellcheck component will give a query suggesting for another query that will have hits and is close to the original query.
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'true'
+            example: 'true'
+       
+        - name: spellcheck.build
+          in: query
+          description: | 
+            Setting to true will rebuild the spellcheck index. The dictionary will take some time to build, so this parameter should not be sent with every request.
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+
+        - name:  spellcheck.reload 
+          in: query
+          description: | 
+            Setting to true will reload the spellcheck index. 
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+
+        - name: spellcheck.q
+          in: query
+          description: 'Same as the query field, but use this value for spellcheck instead. If empty it will use the query parameter'
+          required: false
+          schema:
+            type: string
+            default: ''
+
+        - name: spellcheck.dictionary
+          in: query
+          description: 'Specific another spellcheck dictionary to use if several are defined'
+          required: false
+          schema:
+            type: string
+            default: ''
+
+        - name: spellcheck.count
+          in: query
+          description: | 
+            Maximum suggestion from the spellcheck compontent                      
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 5
+            default: 5
+        
+        - name: spellcheck.onlyMorePopular 
+          in: query
+          description: | 
+            If true, Solr will only return suggestions that result in more hits for the query than the existing query 
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'false'
+            example: 'false'
+        
+        - name: spellcheck.extendedResults 
+          in: query
+          description: |
+            Causes Solr to return additional information about spellcheck results, such as the frequency of each original term in the index (origFreq) as well as the frequency of each suggestion in the index (frequency).
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'true'
+            example: 'true'
+        
+        - name: spellcheck.collate 
+          in: query
+          description: |          
+            If true, this parameter directs Solr to take the best suggestion for each token (if one exists) and construct a new query from the suggestions.
+                        
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'true'
+            example: 'true'
+
+        - name: spellcheck.maxCollations 
+          in: query
+          description: |
+            This parameter specifies the maximum number of collations to return.
+                        
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+        - name: spellcheck.maxCollationTries
+          in: query
+          description: |
+            This parameter specifies the number of collation possibilities for Solr to try before giving up.
+                        
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
+        - name: spellcheck.accuracy 
+          in: query
+          description: |
+           Specifies an accuracy value to help decide whether a result is worthwhile. Tweaking the value is very depedant on corpus and size of corpus.
+                       
+          required: false
+          schema:
+            type: number
+            format: double
+            example: 0.01
+            default: 0.01
+        
+        - name: q.op
+          in: query
+          description: | 
+            Solr default operator param [q.op](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)
+            
+            Controls wether the implicit boolean operator is `OR` or `AND`.
+          required: false
+          schema:
+            type: string
+            enum:  ['OR', 'AND']
+            default: 'AND'
+            example: 'AND'
+
+        - name: wt
+          in: query
+          description: | 
+            Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
+
+            Controls the response delivery format. Common values (non exhaustive list) are
+            
+            * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
+            * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+            * [xml](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+          required: false
+          schema:
+            type: string
+            default: 'json'
+            example: 'json'
+
+        - name: version
+          in: query
+          description: | 
+            XML Response writer version [version](https://solr.apache.org/guide/8_11/response-writers.html#standard-xml-response-writer)
+            
+            Determines the XML protocol. Only supported value is 2.2.
+            Not mandatory and only included here for completeness.
+          required: false
+          schema:
+            type: string
+            example: '2.2'
+
+        - name: indent
+          in: query
+          description: | 
+            Solr response writer [indent](https://solr.apache.org/guide/8_10/response-writers.html)
+            If non-blank, "Solr will make some attempts at indenting".
+          required: false
+          schema:
+            type: string
+            enum: ['true', 'false']
+            default: 'true'
+            example: 'true'
+
+        - name: debug
+          in: query
+          description: | 
+            Solr debug param [debug](https://solr.apache.org/guide/8_10/common-query-parameters.html#debug-parameter)
+            
+            Used for debugging queries and timing. Documentation from Solr docs:
+            * `query`:  Debug information about the query only
+            * `timing`: Debug information about how long the query took to process
+            * `results`: Debug information about the score results (also known as "explain")
+            * `all`: All available debug information about the request request 
+            * `true`: Backwards compatible version of `all`
+          required: false
+          schema:
+            type: string
+            enum:  ['query', 'timing', 'results', 'all', 'true', 'false']
+
+        - name: debug.explain.structured
+          in: query
+          description: | 
+            Solr debug param [debug](https://solr.apache.org/guide/8_10/common-query-parameters.html#debug-parameter)
+            
+            Solr Doc: Return debug information as nested data structures native to the response format requested by `wt`.
+          required: false
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: 'Structured Solr response'
+          content:
+            application/json:
+              schema:
+                description: |
+                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Output compatible with [Solr XML response](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+                type: string
+            text/csv:
+              schema:
+                description: |
+                  Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+                type: string
+        '400':
+          description: 'An error occurred in the request. This can either be an unsupported param or a wrongly defined request to solr.'
+          content:
+            application/json:
+              schema:
+                type: string
+        '503':
+          description: 'An error occurred when sending the request to solr. The service is currently unavailable.'
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /solr/{collection}/mlt:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Perform a Solr-compatible More Like This (MLT) request in the stated collection. See https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#request-handler-configuration for details'
+      security:
+        - KBOAuth:
+          - any
+      operationId: solrMLT
+      parameters:
+
+        - name: collection
+          in: path
+          description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            enum: ["${config:solr.collections[*].*.collection}"]
+
+        - name: q
+          in: query
+          description: 'Solr query param [q](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)'
+          required: true
+          schema:
+            type: string
+            default: '*:*'
+          examples:
+            all:
+              value: '*:*'
+              summary: 'All documents in the collection'
+            free:
+              value: 'jens hansen'
+              summary: 'Free text query'
+            qualified:
+              value: 'author:andersen'
+              summary: 'Qualified query'
+
+        - name: mlt.fl
+          in: query
+          description: | 
+            MLT param [mlt.fl](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies the fields to use for similarity as a comma separated list.
+            If not specified, a default list of relevant fields are used.
+
+          required: false
+          schema:
+            type: string
+
+        - name: mlt.mintf
+          in: query
+          description: | 
+            MLT param [mlt.mintf](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+
+            Specifies the minimum frequency below which terms will be ignored in the source document.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 2
+            default: 2
+
+        - name: mlt.mindf
+          in: query
+          description: | 
+            MLT param [mlt.mindf](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies the minimum frequency below which terms will be ignored which do not occur in at least this many documents.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 5
+            default: 5
+
+        - name: mlt.maxdf
+          in: query
+          description: | 
+            MLT param [mlt.maxdf](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies the maximum frequency above which terms will be ignored which occur in more than this many documents.
+          required: false
+          schema:
+            type: integer
+            format: int32
+
+        - name: mlt.maxdfpct
+          in: query
+          description: | 
+            MLT param [mlt.maxdfpct](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies the maximum document frequency using a ratio relative to the number of documents in the index. 
+            The value provided must be an integer between `0` and `100`. 
+            For example, `mlt.maxdfpct=75` means the word will be ignored if it occurs in more than 75 percent of the documents in the index.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 75
+            default: 75
+
+        - name: mlt.minwl
+          in: query
+          description: | 
+            MLT param [mlt.minwl](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Sets the minimum word length below which words will be ignored.
+          required: false
+          schema:
+            type: integer
+            format: int32
+
+        - name: mlt.maxwl
+          in: query
+          description: | 
+            MLT param [mlt.maxwl](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Sets the maximum word length above which words will be ignored.
+          required: false
+          schema:
+            type: integer
+            format: int32
+
+        - name: mlt.maxqt
+          in: query
+          description: | 
+            MLT param [mlt.maxqt](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Sets the maximum number of query terms that will be included in any generated query.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 25
+            default: 25
+
+        - name: mlt.boost
+          in: query
+          description: | 
+            MLT param [mlt.boost](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Specifies if the query will be boosted by the interesting term relevance.
+          required: false
+          schema:
+            type: boolean
+            example: false
+            default: false
+
+        - name: mlt.interestingTerms
+          in: query
+          description: | 
+            MLT param [mlt.interestingTerms](https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html#common-handler-and-component-parameters)
+            
+            Adds a section in the response that shows the top terms (based on TF/IDF) used for the MoreLikeThis query.
+            It supports three possible values:
+
+            * list lists the terms.
+            * none lists no terms (the default).
+            * details lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.
+          required: false
+          schema:
+            enum: ['list', 'none', 'detailed']
+            default: 'none'
+            example: 'none'
+
+        - name: fq
+          in: query
+          description: | 
+            Solr filter query param [fq](https://solr.apache.org/guide/8_10/common-query-parameters.html#fq-filter-query-parameter)
+            
+            Standard query syntax, but all terms must be qualified. Does not affect scoring.
+            If multiple filter queries are provided, the result set is the intersection of the filters.
+
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+
+        - name: rows
+          in: query
+          description: | 
+            Solr rows param [rows](https://solr.apache.org/guide/8_10/common-query-parameters.html#rows-parameter)
+            
+            The number of documents to return. The default depends on the backing Solr setup, but is typically 10.
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
+        - name: start
+          in: query
+          description: | 
+            For pagination. Only return documents in the resultset from position start and forward. Next page typical start from 20
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          examples:
+            from0:
+              value: 0
+              summary: 'from start. First document is document number 0 so returning documents 0,1,2,..,(rows-parameter)'
+            from20:
+              value: 20
+              summary: 'from document 21 and forwards. So returning document 21,22,.., 21+(rows-parameter)'
+
+        - name: fl
+          in: query
+          description: | 
+            Solr field list param [fl](https://solr.apache.org/guide/8_10/common-query-parameters.html#fl-field-list-parameter)            
+            Solr fields to return in the response. `*` means all available standard fields.
+            It is recommended to include the pseudo-field [[child]](https://solr.apache.org/guide/8_0/transforming-result-documents.html#child-childdoctransformerfactory)
+            to include nested documents.
+          required: false
+          schema:
+            type: string
+            example: '*'
+            default: '*'
+
+        - name: q.op
+          in: query
+          description: | 
+            Solr default operator param [q.op](https://solr.apache.org/guide/8_10/the-standard-query-parser.html#standard-query-parser-parameters)
+            
+            Controls whether the implicit boolean operator is `OR` or `AND`.
+          required: false
+          schema:
+            type: string
+            enum:  ['OR', 'AND']
+            default: 'AND'
+            example: 'AND'
+
+        - name: wt
+          in: query
+          description: | 
+            Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
+
+            Controls the response delivery format. Common values (non exhaustive list) are
+            
+            * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
+            * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+            * [xml](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+          required: false
+          schema:
+            type: string
+            default: 'json'
+            example: 'json'
+
+      # In principle this could many more params, such as facet or grouping, but this seems out of scope for MLT
+
+      responses:
+        '200':
+          description: 'Structured Solr response'
+          content:
+            application/json:
+              schema:
+                description: |
+                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Output compatible with [Solr XML response](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+                type: string
+            text/csv:
+              schema:
+                description: |
+                  Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+                type: string
+
+
+  /solr/{collection}/suggest:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Perform a Solr suggest in the stated collection and dictionary.  [Solr-Suggest](https://solr.apache.org/guide/solr/9_3/query-guide/suggester.html#adding-the-suggest-request-handler)'
+      operationId: solrSuggest
+      security:
+        - KBOAuth:
+          - any
+      parameters:
+        - name: collection
+          in: path
+          description: 'The ID of the Solr collection to search. Available collections can be requested from /solr/admin/collections.'
+          required: true
+          schema:
+            type: string
+            default: 'ds'
+            enum: ["${config:solr.collections[*].*.collection}"]
+                
+        - name: suggest.dictionary
+          in: query
+          description: 'The suggest dictionary for use. The dictionary must be defined in solr.'
+          required: true
+          schema:
+            type: string
+            default: '${config:openapi.suggester}'
+            example: '${config:openapi.suggester}'
+
+        - name: suggest.q
+          in: query
+          description: 'The query text for suggest. Minimum 2 characters must be present. No solr operators allowed'
+          required: true
+          schema:
+            type: string
+            default: ''
+          examples:
+            lowercase:
+              value: 'tv'
+              summary: 'All documents starting with tv (case sensivive)'
+            uppercase:
+              value: 'TV'
+              summary: 'All documents starting with TV (case sensivive)'
+             
+        - name: suggest.count
+          in: query
+          description: |             
+            The number of suggestions to return. The default is 10
+          required: false
+          schema:
+            type: integer
+            format: int32
+            example: 10
+            default: 10
+
+        - name: wt
+          in: query
+          description: | 
+            Solr response writer [wt](https://solr.apache.org/guide/8_10/response-writers.html)
+
+            Controls the response delivery format. Common values (non exhaustive list) are
+            
+            * [json](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer) (default)
+            * [csv](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+            * [xml](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+          required: false
+          schema:
+            type: string
+            default: 'json'
+            example: 'json'
+
+
+      responses:
+        '200':
+          description: 'Structured Solr response'
+          content:
+            application/json:
+              schema:
+                description: |
+                  Output compatible with [Solr JSON response](https://solr.apache.org/guide/8_10/response-writers.html#json-response-writer)
+                type: string
+            application/xml:
+              schema:
+                description: |
+                  Output compatible with [Solr XML response](https://solr.apache.org/guide/8_10/response-writers.html#standard-xml-response-writer)
+                type: string
+            text/csv:
+              schema:
+                description: |
+                  Output compatible with [Solr CSV response](https://solr.apache.org/guide/8_10/response-writers.html#csv-response-writer)
+                type: string
+
+
+
+  /solr/admin/collections:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Solr [Collection Management Commands](https://solr.apache.org/guide/8_10/collection-management.html)'
+      operationId: collectionAction
+      security:
+        - KBOAuth:
+          - any
+      parameters:
+        - name: action
+          in: query
+          description: | 
+            Collection-action to perform. Note that some actions require high-level permissions:
+            * [LIST](https://solr.apache.org/guide/8_10/collection-management.html#list)
+            * [DELETE](https://solr.apache.org/guide/8_10/collection-management.html#delete)
+          required: true
+          schema:
+            type: string
+            enum:  ['LIST', 'DELETE']
+            example: 'LIST'
+            default: 'LIST'
+        - name: name
+          in: query
+          description: | 
+            Mandatory for the action [DELETE](https://solr.apache.org/guide/8_10/collection-management.html#delete)
+            The name of the collection to delete.
+          required: false
+          schema:
+            type: string
+            example: 'ds'
+        - name: async
+          in: query
+          description: | 
+            Optional for the action [DELETE](https://solr.apache.org/guide/8_10/collection-management.html#delete)
+            Request ID to track this action which will be processed asynchronously.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'JSON structure with Solr collection action response'
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /solr/admin/configs:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Solr [Configsets Commands](https://solr.apache.org/guide/8_10/configsets-api.html)'
+      operationId: configAction
+      security:
+        - KBOAuth:
+          - any   
+      parameters:
+        - name: action
+          in: query
+          description: | 
+            Configset-action to perform. Note that some actions require high-level permissions:
+            * [LIST](https://solr.apache.org/guide/8_10/configsets-api.html#configsets-list)
+            * [DELETE](https://solr.apache.org/guide/8_10/configsets-api.html#configsets-delete)
+          required: true
+          schema:
+            type: string
+            enum:  ['LIST', 'DELETE']
+            example: 'LIST'
+            default: 'LIST'
+        - name: name
+          in: query
+          description: | 
+            Mandatory for the action [DELETE](https://solr.apache.org/guide/8_10/configsets-api.html#configsets-delete)
+            The name of the configset to delete.
+          required: false
+          schema:
+            type: string
+            example: 'ds-conf'
+      responses:
+        '200':
+          description: 'JSON structure with Solr configset action response'
+          content:
+            application/json:
+              schema:
+                type: string
+                
+  /monitor/whoami:
+    get:
+      tags:
+        - Service
+      summary: 'Extract OAuth2 accessToken in the `Authorization` HTTP header and return the roles from it'
+      operationId: probeWhoami
+      security:
+        - KBOAuth:
+          - public
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Whoami'
+                
+                
+
+components:
+  schemas:
+    
+    Whoami:
+      type: object
+      description: 'OAuth2 information derived from the request'
+      properties:
+        token:
+          type: object
+          required:
+            - present
+          properties:
+            present:
+              type: boolean
+              description: 'True if an OAuth2 accessToken was present in the request, else false'
+              example: true
+            valid:
+              type: boolean
+              description: 'True is an OAuth2 accessToken was present and valid, else false'
+              example: false
+            error:
+              type: string
+              description: 'If the accessToken is not valid, the reason will be stated here'
+            roles:
+              type: array
+              items:
+                type: string
+              description: 'The roles stated in the OAuth2 accessToken'
+              example: [read, write, admin]
+
+
+    # Sample status component. Adjust this to provide application specific status
+    # such as a list of running jobs or free disk space
+    Status:
+      type: object
+      required:
+        - application
+        - version
+      properties:
+        application:
+          type: string
+          description: 'The name of the application'
+          example: 'MyService'
+        version:
+          type: string
+          description: 'The version of the application'
+          example: '1.2.3'
+        build:
+          type: string
+          description: 'When the application was build'
+          example: '2022-04-21T13:37:16Z'
+        java:
+          type: string
+          description: 'The Java version that runs the container'
+          example: '11.0.11'
+        heap:
+          type: integer
+          format: int64
+          description: 'The maximum number of bytes available to the container in megabytes'
+          example: '4096'
+        server:
+          type: string
+          description: 'The hostname for the server'
+          example: 'miaplacidus'
+        health:
+          type: string
+          description: 'Self diagnosed health'
+          example: 'ok'
+        gitCommitChecksum:
+          type: string
+          description: 'The checksum of the deployed commit.'
+          example: 'ca82a6dff817ec66f44342007202690a93763949'
+        gitBranch:
+          type: string
+          description: 'The current deployed branch.'
+          example: master
+        gitClosestTag:
+          type: string
+          description: 'The closest tag of the deployed branch.'
+        gitCommitTime:
+          type: string
+          description: 'The time for the latest commit of the deplyed branch.'
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+          
+          
+ # Maybe inject this from properties later. So far only authorizationUrl is injected.
+ #authorizationUrl is required for building the module, but does not seem to be active used in code. (TODO?)
+  securitySchemes:
+    KBOAuth:
+      type: oauth2
+      description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
+      flows:
+        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+          authorizationUrl: '${config:security.auth_url}' #Read from the yaml propertyfile
+          scopes:
+            generic_ds: 'Scope used for all Digitale Samlinger services'
+            # Project specific roles
+            read: 'read data'
+            write: 'modify or delete data'
+
+            # General roles at the Royal Danish Library
+            devel: 'broad read access'
+            admin: 'all rights'
+
+            # Meta role controlling authorization behaviour
+            public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
+            any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
+
+          

@@ -1,0 +1,590 @@
+openapi: 3.0.2
+info:
+  version: 'v1'
+  title: '${project.name}'
+  description: | 
+    ${project.description}
+  contact:
+    email: '${user.name}@kb.dk'
+  license:
+    name: '${license.name}'
+servers:
+  #  /api must match servlet-mapping in web.xml
+  - url: '${config:openapi.serverurl}'
+    description: 'Version 1'
+
+paths:
+
+  /import/zip:
+    post:
+       tags:
+        - '${project.name}'
+       summary: 'Import records from ZIP file with records. Each file in the zip-file is a xml-document for single records. Record format METS with mods. Record  ID from the record is <mods:identifier>. Record ID in storage will be origin:uuid-extracted-from<mods:identifier>'      
+       security: 
+        - KBOAuth:
+          - any           
+       operationId: importFromZip
+       requestBody:
+         content:
+           multipart/form-data:
+             schema:
+              type: object
+              properties:               
+                datasource:
+                  type: string
+                fileName:
+                  type: string
+                  format: binary
+       
+       responses:
+        '200':
+          description: Returns a list of filenames of records that failed.
+          content:
+            application/json:
+              schema:           
+                type: array
+                items:
+                 type: string      
+
+
+  /oai/config:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Retrieve list of configured OAI-PMH targets'
+      operationId: getOaiTargetsConfiguration
+      responses:
+        '200':
+          description: 'The full list of configured OAI-PMH targets will all parameters. The name is the key used when starting a new import.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OaiTargetList'
+
+
+  /oai/import/full:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Start full ingest of a OAI target into DS-storage. From time will be 1900-01-01. When called the job will finished if no errors are encountered even if the socket is closed from the client triggering the call. After full ingest ds-storage will be called again and all older recorders from before the ingest fill be deleted.'
+      security: 
+        - KBOAuth:
+          - any    
+      operationId: oaiIngestFull
+      parameters:
+        - name: oaiTarget
+          in: query
+          description: 'Name of the oai target to start full import. '
+          required: true
+          schema:
+            type: string
+            enum: ["${config:oaiTargets[*].name}"]
+      responses:
+        '200':
+          description: OK. Returns total number of records ingested.
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32      
+
+  /oai/import/delta:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Start delta import of a OAI-target. From time will be the datestamp of the last record imported for that OAI target. When the import has finished it will update the datestamp. When called the job will finished if no errors are encountered even if the socket is closed from the client triggering the call.'
+      security: 
+        - KBOAuth:
+          - any   
+      operationId: oaiIngestDelta
+      parameters:
+        - name: oaiTarget
+          in: query
+          description: 'Name of the oai target to start delta import'
+          required: true
+          schema:            
+            type: string
+            enum: ["${config:oaiTargets[*].name}"]
+      responses:
+        '200':
+          description: OK. Returns total number of records ingested.
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+                
+               
+                
+  /solr/index:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Will start indexing workflow that will read records from ds-storage, xslt transform them in ds-present and post the documents to solr.'
+      security: 
+        - KBOAuth:
+          - any   
+      operationId: indexSolr
+      parameters:
+        - name: origin
+          in: query
+          description: 'Will call ds-present for solr-records that will be posted to solr. Origin must be defined in the ds-present configuration'
+          required: true
+          schema:
+            type: string
+            enum: ["${config:present.origins[*]}"]        
+        - name: type
+          in: query
+          description: |
+                        The type of index. If value is "FULL" then all records from storage will be transformed to solr 
+                        documents and indexed. If value is "DELTA" then only records from ds-storage with an mTime newer
+                        than the last date_modified in the solr index will be fetched, transformed and indexed.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Type'
+
+
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  combinedQTime: 103200
+                  allDocumentsIndexed: 200
+                  lastSolrResponseHeader:
+                    rf: 1
+                    status: 0
+                    QTime: 1200
+                
+                                              
+  /kaltura/deltaupload:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'Start job that uploading streams to kaltura that does not have an kaltura_id already and are not marked with access_malfunction.
+       Will only extract records from solr with access_malfuction:false and production_code_allowed:true
+       Storage records will be updated with the kalturaid. An solr delta index will be started after the job finishes. Also if it finishes unexpected'
+      security: 
+        - KBOAuth:
+          - any   
+      operationId: kalturaDeltaUpload
+      responses:
+        '204':
+          description: No Content - The job finished and the server did not deliver any content.
+
+
+  /transcriptions/load:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'Will process transcription json-files in the configured drop-folder. Each transcription will be created or update existing in the database
+      The transcription files will be moved to the configured completed-folder on success or failure. Each will be have appended .fail or .completed as last extension
+      Each transcription is split into 3 files having suffix extension <file_id>.ner.json , <file_id>.segments.fw.json and <file_id>.info.fw.json.       
+      All 3 files are parsed to extract data and all 3 are moved to the completed folder.'
+      security: 
+        - KBOAuth:
+          - any   
+      operationId: transcriptionsLoad
+      responses:
+        '204':
+          description: No Content - The job finished and the server did not deliver any content.
+                
+                
+
+  # The ping service should be in all projects, should not do any advanced processing
+  # and should respond quickly with a simple message, e.g. "pong".
+  #
+  # Note that it is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  #
+  # Note that the more detailed /monitor/status is defined below.
+  /monitor/ping:
+    get:
+      tags:
+        - Service
+      summary: 'Ping the server to check if the server is reachable.'
+      operationId: ping
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # Note that status is placed under /monitor. The top namespace /monitor is intended for
+  # proxying to monitoring software or manual health checks. All endpoints under that
+  # namespace should be safe to expose: No changes to state, no confidential information!
+  /monitor/status:
+    get:
+      tags:
+        - Service
+      summary: 'Health check'
+      operationId: status
+      responses:
+        '200':
+          description: 'Health check'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '500':
+          description: 'Internal Error'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+
+  /monitor/jobs:
+    get:
+      tags:
+        - Service
+      summary: 'List of running and past jobs'
+      operationId: jobs
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/Category'
+        - name: jobStatus
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/JobStatus'
+      responses:
+        '200':
+          description: 'List of jobs both running and completed since server start. Sorted by most recent jobs first. Still running jobs first'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+        '500':
+          description: 'Internal Error'
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /monitor/whoami:
+    get:
+      tags:
+        - Service
+      summary: 'Extract OAuth2 accessToken in the `Authorization` HTTP header and return the roles from it'
+      operationId: probeWhoami
+      security:
+        - KBOAuth:
+          - public
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Whoami'
+
+components:
+  schemas:
+
+    # Basic status response component.
+    Status:
+      type: object
+      required:
+        - application
+        - version
+      properties:
+        application:
+          type: string
+          description: 'The name of the application'
+          example: 'MyService'
+        version:
+          type: string
+          description: 'The version of the application'
+          example: '1.2.3'
+        build:
+          type: string
+          description: 'When the application was build'
+          example: '2022-04-21T13:37:16Z'
+        java:
+          type: string
+          description: 'The Java version that runs the container'
+          example: '11.0.11'
+        heap:
+          type: integer
+          format: int64
+          description: 'The maximum number of bytes available to the container in megabytes'
+          example: '4096'
+        server:
+          type: string
+          description: 'The hostname for the server'
+          example: 'miaplacidus'
+        health:
+          type: string
+          description: 'Self diagnosed health'
+          example: 'ok'
+        gitCommitChecksum:
+          type: string
+          description: 'The checksum of the deployed commit.'
+          example: 'ca82a6dff817ec66f44342007202690a93763949'
+        gitBranch:
+          type: string
+          description: 'The current deployed branch.'
+          example: master
+        gitClosestTag:
+          type: string
+          description: 'The closest tag of the deployed branch.'
+        gitCommitTime:
+          type: string
+          description: 'The time for the latest commit of the deplyed branch.'
+
+    OaiTargetList:
+      type: array
+      items: 
+        $ref: '#/components/schemas/OaiTarget'
+
+
+    OaiTarget:
+      type: object
+      required:
+        - name
+        - url
+        - set
+        - metadataprefix
+        - datasource
+      properties:
+        name:
+          type: string
+          description: 'Name of the OAI target.'
+          example: 'kb.images.billed.hca'
+        url:
+          type: string
+          description: 'Base URL to the OAI server.'                
+          example: 'http://www5.kb.dk/cop/oai/'
+        set:
+          type: string
+          description: 'Optional OAI parameter to specify which collection to harvest.'                
+          example: 'oai:kb.dk:images:billed:2014:jun:hca'
+        metadataprefix:
+          type: string
+          description: 'Specify for the dataformat. Some OAI servers can return data in different formats.'                
+          example: 'mods'
+        username:
+          type: string
+          description: 'User name if the OAI server require basic authentication'                
+        password:
+          type: string
+          description: 'Password if the OAI server require basic authentication'                
+        datasource:
+          type: string
+          description: |
+            A datasource defines where the OAI harvester has harvested the data from.
+            The datasource must be configured in ds-storage.
+            For most targets, the datasource gets used as the direct origin in DS-Storage. However, some datasources may
+            be split into multiple origins. An example of this are records harvested from preservica, where radio and tv
+            are harvested from one datasource, but are put into their own respective origin in DS-storage.
+          example: 'kb.images.billed.hca'
+        decription:
+          type: string
+          description: 'Human readable name for the collection.'
+          example: 'H.C. Andersen'
+        filter:
+          type: string
+          enum:  ['direct', 'dr', 'preservica']
+          description: |
+            Records from different OAI-PMH targets contain different kinds of metadata. Therefore some special handling
+            of records are required. Possible value are:
+            * `direct`:     No special handling
+            * `dr`:         The DR filter applies to metadata harvested from Preservica. However this filter only lets 
+                            records with value starting with DR in the PBcore field publisher. This ensures that only 
+                            material from DR gets injected into the backing DS-Storage.
+            * `preservica`: When a record is harvested from the newest version (7) of a Preservica system, this filter
+                            should be applied. Here, StructuralObjects are removed and InformationObjects need to have 
+                            a PBCore tag inside of them to be added to storage.
+          example: 'direct'
+          default: 'direct'
+        dateStampFormat:
+          type: string
+          enum:  ['date', 'datetime']
+          description: |
+            Special handling of record. Possible value are
+            * `date`:     Only use format yyyy-MM-dd as from/until parameters
+            * `datetime`:    Use UTC format yyyy-MM-ddThh:mm:ssZ as from/until parameters. This is default.                        
+          example: 'date'
+          default: 'date'
+        fragmentServiceUrl:
+          type: string
+          description: BaseURL for the enrichment fragment service
+          example: 'http://example.com/'
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Job ID (uuid)'
+        type:
+          $ref: '#/components/schemas/Type'
+          description: 'Type of job. Can be OAI or different enrichment jobs'
+        category:
+          $ref: '#/components/schemas/Category'
+          description: 'job category (OAI_HARVEST, SOLR_INDEX or KALTURA_UPLOAD)'
+        source:
+          type: string
+          description: 'Dataset to harvest/index/upload'
+        createdBy:
+          type: string
+          description: 'Who started the job'
+        jobStatus:
+          $ref: '#/components/schemas/JobStatus'
+          description: 'The status of the job'
+        errorCorrelationId:
+          type: string
+          format: uuid
+          description: 'Error correlation ID for error tracking'
+        message:
+          type: string
+          description: 'Job stopped messages'
+        modifiedTimeFrom:
+          type: string
+          format: date-time
+          description: 'Some jobs can be started from a given modifiedTimeFrom or date (datetime or unix timestamp).'
+          example: '2021-01-30T08:30:00Z'
+        startTime:
+          type: string
+          format: date-time
+          description: 'Format YYYY-MM-DDTHH:MM:SSZ'
+          example: '2021-01-30T08:30:00Z'
+        endTime:
+          type: string
+          format: date-time
+          description: 'Format YYYY-MM-DDTHH:MM:SSZ'
+          example: '2021-01-30T08:30:00Z'
+        numberOfRecords:
+          type: integer
+          format: int32
+          description: 'Number of processed records. (if available).'
+        restartValue:
+          type: string
+          format: date-time
+          description: 'Format YYYY-MM-DDTHH:MM:SSZ'
+          example: '2021-01-30T08:30:00Z'
+
+    Type:
+      type: string
+      enum:
+        - full
+        - delta
+      x-enum-varnames:
+        - FULL
+        - DELTA
+      x-enum-descriptions:
+        - full
+        - delta
+
+    Category:
+      type: string
+      enum:
+        - oai harvest
+        - solr index
+        - kaltura upload
+        - transcriptions
+      x-enum-varnames:
+        - OAI_HARVEST
+        - SOLR_INDEX
+        - KALTURA_UPLOAD
+        - TRANSCRIPTIONS
+      x-enum-descriptions:
+        - oai harvest
+        - solr index
+        - kaltura upload
+        - transcriptions
+
+    JobStatus:
+      type: string
+      enum:
+        - running
+        - completed
+        - stopped
+        - failed
+      x-enum-varnames:
+        - RUNNING
+        - COMPLETED
+        - STOPPED
+        - FAILED
+      x-enum-descriptions:
+        - running
+        - completed
+        - stopped
+        - failed
+
+    Whoami:
+      type: object
+      description: 'OAuth2 information derived from the request'
+      properties:
+        token:
+          type: object
+          required:
+            - present
+          properties:
+            present:
+              type: boolean
+              description: 'True if an OAuth2 accessToken was present in the request, else false'
+              example: true
+            valid:
+              type: boolean
+              description: 'True is an OAuth2 accessToken was present and valid, else false'
+              example: false
+            error:
+              type: string
+              description: 'If the accessToken is not valid, the reason will be stated here'
+            roles:
+              type: array
+              items:
+                type: string
+              description: 'The roles stated in the OAuth2 accessToken'
+              example: [read, write, admin]
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+                    
+  securitySchemes:
+
+    KBOAuth:
+      type: oauth2
+      description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
+      flows:
+        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+          #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
+          #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
+          authorizationUrl: https://api.example.com/oauth2/authorize 
+          scopes:
+            generic_ds: 'Scope used for all Digitale Samlinger services'
+            # Project specific roles
+            read: 'read data'
+            write: 'modify or delete data'
+
+            # General roles at the Royal Danish Library
+            devel: 'broad read access'
+            admin: 'all rights'
+
+            # Meta role controlling authorization behaviour
+            public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
+            any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'

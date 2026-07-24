@@ -1,0 +1,49 @@
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  # This is the URL where this service is deployed appended with /v1
+  serverurl: http://localhost:9074/ds-discover/v1
+
+solr:
+  # All solr shield configurations are included here as SolrShield is a new thing and there is a high chance that it will need to be adjusted in production.
+  # Ideally these settings would be handled in the behaviour config. They are only present to handle any temporary problems until a new version has been build
+  #shield:
+    # Whether SolrShield is enabled.
+    # If false, SolrShield evaluation is still performed but the response is only logged.
+    #enabled: false
+
+    # Current max weight is very likely to be too low for practical use.
+    # More experimenting with SolrShield is needed in order to determine a proper max weight
+    #default_max_weight: 2000
+
+  # If permissive is false, only vetted Solr parameters are accepted
+  # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
+  # Intended for development purposes.
+  # WARNING: This should never be true in production.
+  #permissive: false
+
+  # Solr collections which this instance of ds-discover is connected with.
+  collections:
+    # Keys are collection names
+
+    # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost and needs to be configured with production values.
+    - ds: # http://localhost:10007/solr/ds/select?q=foo
+        # The Solr server, including port
+        # Mandatory
+        server: 'http://localhost:10007'
+        # The path for the Solr service
+        # Optional. Default is 'solr'
+        path: 'solr'
+        # The Solr collection ID
+        # Mandatory. Typically, the same as the abstract collection name
+        collection: 'ds'
+        # Path to SolrShield config for this collection
+        # Path can be absolute or relative to the ds-discover-*.yaml files
+        # Optional. If not set, no shield will be usd for this colllection
+        shield: solrshield-ds.yaml
+
+#the license module is called to generate a filter query which is used when calling Solr
+licensemodule:
+  # This is the URL where the ds-license is deployed appended with /v1
+  url: http://localhost:9076/ds-license/v1
+

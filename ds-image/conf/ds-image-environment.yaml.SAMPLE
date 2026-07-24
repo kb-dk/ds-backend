@@ -1,0 +1,46 @@
+#
+# This config contains environment-data: Servers, usernames, passwords etc.
+# If will be automatically merged with the core config when accesses through the application config system.
+#
+# In the code repository, this file is called ds-image-environment.yaml.sample and should not contain real
+# values, only the configuration structure. Due to the ".sample" extension, it will not be loaded by
+# ServiceConfig.
+#
+# When applied to production, the file should be copied, adjusted and renamed to ds-image-environment.yaml
+# The new file ds-image-environment.yaml should NOT be added to the code repository!
+#
+
+
+# Production machine setup
+imageservers:
+  # Full request URL sample: http://example.com:1234/iipsrv/iipsrv.fcgi?FIF=/my_images/hello.tif&CVT=jpg
+  iip:
+    server: 'http://example.com:1234/iipsrv/iipsrv.fcgi'
+
+  # Full request URL sample: http://example.com:1234/non-archival/Images/noerrealle_portraetter/nap_2654/full/!166,/0/native.jpg
+  iiif:
+    server: 'http://example.com:1234/'
+
+  # Deepzoom can be used with different imageservers. Some servers requires DeepZoom as param, others require DeepZoom in path.
+  # This has to be defined below. If you are using a parameter based server you out comment the path argument and vice-versa
+  deepzoom:
+    # Full request URL sample: http://example.com:1234/image_identifier.dzi
+    path: 'http://example.com:1234/'
+    # Full request URL sample: 'http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
+    param: 'http://example.com:1234/iipsrv/iipsrv.fcgi'
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  # This is the URL where this service is deployed appended with /v1
+  serverurl: http://localhost:9077/ds-image/v1
+
+#Url to licensemodule
+licensemodule:
+  url: http://localhost:10001/ds-license/v1/
+
+kaltura:
+  url:  https://kmc.kaltura.nordu.net
+  partnerId:  380
+  userId:  xxx@kb.dk
+  adminSecret: very very secret

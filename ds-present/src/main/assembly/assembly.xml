@@ -1,0 +1,66 @@
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <files>
+    <file>
+      <source>conf/ocp/ds-present.xml</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>ds-present.xml.SAMPLE</destName>
+    </file>
+  </files>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*:war</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+  <fileSets>
+    <fileSet>
+      <outputDirectory>conf</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0744</fileMode>
+      <directory>conf</directory>
+      <excludes>
+	      <exclude>ocp/</exclude>
+	      <exclude>ds-present-local.yaml</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+          <include>CHANGELOG.md</include>
+          <include>README.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/ds-present-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>ds-present.build.properties</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>ds_solr9_conf_${solr.config.version}.zip</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
+
+</assembly>
+

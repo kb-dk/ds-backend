@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<item xmlns:exslt="http://exslt.org/common" xmlns:t="http://www.tei-c.org/ns/1.0" xmlns:x="urn:x" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:georss="http://www.georss.org/georss" xmlns:md="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Micro-XML to demonstrate variable injection in XSLT</title>
+</item>

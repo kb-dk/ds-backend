@@ -1,0 +1,58 @@
+#
+# This is the base config for the project.
+#
+# It will be used when running 'mvn jetty:run' and is expected to be deployed along with the WAR when running under tomcat.
+#
+# The base config will be automatically merged with the 'environment' config when accessed through the
+# application config system.
+#
+# Sensitive information such as machine names and user/passwords MUST NOT be part of this config but should be stated
+# with placeholders and/or overridden in the 'environment' and 'local' configurations.
+#
+
+# Sample configuration values below. Remove from concrete application
+
+
+#Enable auto refresh to enable refresh of encryption salt
+
+config:
+  autoupdate:
+    enabled: true
+    intervalms: 60000
+
+# Keycloak configuration
+keycloak:
+  url: "https://keycloak-devel-01.kb.dk"
+  realm: "ds-poc"
+  clientID: "bff-poc"
+  secret: ""
+
+# Default: false
+redirectAfterAuthentication: false
+
+# Cookie settings
+cookies:
+  # Boolean, default: true
+  secure: true
+  # Boolean, default: true
+  httponly: true
+  # Valid values: none, lax, strict
+  # Enum, default: Strict
+  # See https://owasp.org/www-community/SameSite
+  samesite: 'Strict'
+  # String, optional
+#  domain: example.com
+  # String, optional
+#  path: '/'
+
+
+#secretSalt: "must_be_overridden_so_no_default"
+
+# Available APIs
+# baseURLs will be combined with the service ID: 'ds-image' + 'https://localhost/' = 'https://localhost/ds-image'
+apis:
+#  ds-image:
+#    baseURL: "https://localhost/"
+#  poc-middleware:
+#    baseURL: "http://localhost:9061"
+
