@@ -1,0 +1,59 @@
+<assembly>
+  <id>distribution</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+
+  <files>
+    <file>
+      <source>conf/ocp/ds-discover.xml</source>
+      <outputDirectory>/</outputDirectory>
+      <destName>ds-discover.xml.SAMPLE</destName>
+    </file>
+  </files>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>*:war</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+
+  <fileSets>
+    <fileSet>
+      <outputDirectory>conf</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0744</fileMode>
+      <directory>conf</directory>
+      <excludes>
+	      <exclude>ocp/</exclude>
+	      <exclude>ds-discover-local.yaml</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+          <include>CHANGELOG.md</include>
+          <include>README.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/ds-discover-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>ds-discover.build.properties</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
+
+</assembly>
+
