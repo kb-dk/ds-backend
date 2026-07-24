@@ -23,8 +23,12 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.concurrent.Callable;
 
-public abstract class DsKalturaClientBase {
+public class DsKalturaClientBase {
+
+    public static final int DEFAULT_NUMBER_OF_RETRIES = 3;
+    public static final int DEFAULT_RETRY_DELAY_MILLIS = 10_000;
 
     // Kaltura-default: 30, maximum 500: https://developer.kaltura.com/api-docs/service/eSearch/action/searchEntry
     public static final int MAX_BATCH_SIZE = 500;
@@ -49,6 +53,8 @@ public abstract class DsKalturaClientBase {
     private long lastSessionStart = 0;
     private final int sessionDurationSeconds;
     private int batchSize;
+    private final int numberOfRetries;
+    private final int retryDelayMillis;
 
     /**
      * Instantiate a session to Kaltura that can be used. The sessions can be reused between Kaltura calls without
@@ -66,7 +72,7 @@ public abstract class DsKalturaClientBase {
      */
     public DsKalturaClientBase(String kalturaUrl, String userId, int partnerId, String token, String tokenId,
                                String adminSecret, int sessionDurationSeconds, int sessionRefreshThreshold,
-                               int batchSize) throws APIException {
+                               int batchSize, int numberOfRetries, int retryDelayMillis) throws APIException {
         this.sessionDurationSeconds = sessionDurationSeconds;
         this.sessionKeepAliveSeconds = sessionDurationSeconds - sessionRefreshThreshold;
         this.kalturaUrl = kalturaUrl;
@@ -75,6 +81,9 @@ public abstract class DsKalturaClientBase {
         this.tokenId = tokenId;
         this.adminSecret = adminSecret;
         this.partnerId = partnerId;
+        this.numberOfRetries = numberOfRetries;
+        this.retryDelayMillis = retryDelayMillis;
+
         setBatchSize(batchSize);
 
         if (sessionKeepAliveSeconds < 600) { //Enforce some kind of reuse of session since authenticating sessions
@@ -85,7 +94,14 @@ public abstract class DsKalturaClientBase {
         initializeKalturaClient();
     }
 
-    public int getBatchSize() {
+    public DsKalturaClientBase(String kalturaUrl, String userId, int partnerId, String token, String tokenId,
+                               String adminSecret, int sessionDurationSeconds, int sessionRefreshThreshold,
+                               int batchSize) throws APIException {
+        this(kalturaUrl, userId, partnerId, token, tokenId, adminSecret, sessionDurationSeconds,
+                sessionRefreshThreshold, batchSize, DEFAULT_NUMBER_OF_RETRIES, DEFAULT_RETRY_DELAY_MILLIS);
+    }
+
+    protected int getBatchSize() {
         return batchSize;
     }
 
@@ -102,23 +118,30 @@ public abstract class DsKalturaClientBase {
      *
      * @param requestBuilder the request builder to create and execute the request
      * @param refreshSession if true, refresh the session before executing the request
+     * @param retry if true, retry the request operation in case of failure
      * @param <ReturnedType> the type of the response expected from the request
      * @param <SelfType>     the type of request
      * @return a Response object containing the results of the executed request
      * @throws APIException if an API error occurs during the request execution
      */
-    protected <ReturnedType, SelfType extends BaseRequestBuilder<ReturnedType, SelfType>> Response<?> buildAndExecute(SelfType requestBuilder, boolean refreshSession) throws
+    protected <ReturnedType, SelfType extends BaseRequestBuilder<ReturnedType, SelfType>> Response<?> buildAndExecute(SelfType requestBuilder, boolean refreshSession,
+                                       boolean retry) throws
             APIException {
         if (refreshSession) {
             getClientInstance();
         }
         RequestElement<ReturnedType> request = requestBuilder.build(client);
-        return APIOkRequestsExecutor.getExecutor().execute(request);
+        if (retry) {
+            return retryOperation(() -> APIOkRequestsExecutor.getExecutor().execute(request), numberOfRetries,
+                    retryDelayMillis, request.getTag());
+        }else{
+            return APIOkRequestsExecutor.getExecutor().execute(request);
+        }
     }
 
     /**
      * Handles a request using the specified request builder.
-     * This method defaults to refreshing the session.
+     * This method defaults to refreshing the session and retrying the request.
      *
      * @param requestBuilder the request builder to create and execute the request
      * @param <ReturnedType> the type of the response expected from the request
@@ -128,14 +151,15 @@ public abstract class DsKalturaClientBase {
      */
     public <ReturnedType, SelfType extends BaseRequestBuilder<ReturnedType, SelfType>>
     ReturnedType handleRequest(SelfType requestBuilder) throws APIException {
-        return handleRequest(requestBuilder, true);
+        return handleRequest(requestBuilder, true, true);
     }
 
     /**
-     * Handles a request using the specified request builder with options to refresh the session.
+     * Handles a request using the specified request builder with options to refresh the session and retry the request.
      *
      * @param requestBuilder the request builder to create and execute the request
      * @param refreshSession if true, refresh the session before executing the request
+     * @param retry if true, retry the request operation in case of failure
      * @param <ReturnedType> the type of the response expected from the request
      * @param <SelfType>     the type of request
      * @return the result of the executed request
@@ -144,10 +168,10 @@ public abstract class DsKalturaClientBase {
      */
     @SuppressWarnings("unchecked")
     protected <ReturnedType, SelfType extends BaseRequestBuilder<ReturnedType, SelfType>>
-    ReturnedType handleRequest(SelfType requestBuilder, boolean refreshSession)
+        ReturnedType handleRequest(SelfType requestBuilder, boolean refreshSession, boolean retry)
             throws APIException {
         try {
-            Response<?> response = buildAndExecute(requestBuilder, refreshSession);
+            Response<?> response = buildAndExecute(requestBuilder, refreshSession, retry);
 
             if (!response.isSuccess()) {
                 throw response.error;
@@ -159,6 +183,38 @@ public abstract class DsKalturaClientBase {
                     "'");
             throw e;
         }
+    }
+
+    /**
+     * Retries a given operation a specified number of times with a delay between attempts.
+     *
+     * @param operation the operation to be executed, which may throw an exception
+     * @param retries the number of times to retry the operation upon failure
+     * @param delay the delay in milliseconds between retry attempts
+     * @param operationName a descriptive name for the operation, used for logging
+     * @param <T> the type of the result returned by the operation
+     * @return the result of the operation if successful
+     * @throws RuntimeException if the operation fails after all retry attempts
+     */
+    private static <T> T retryOperation(Callable<T> operation, int retries, long delay, String operationName) {
+        RuntimeException lastException = null;
+        for (int attempt = 1; attempt <= retries; attempt++) {
+            try {
+                return operation.call(); // Try the operation
+            } catch (Exception e) {
+                log.error("Attempt {} of '{}' failed: '{}'", attempt, operationName, e.getClass().getSimpleName());
+                lastException = new RuntimeException(e); // Catch the exception and save it
+                if (attempt < retries) {
+                    try {
+                        Thread.sleep(delay);// Wait before the next attempt
+                    } catch (InterruptedException ie) {
+                        throw new RuntimeException(ie);
+                    }
+                }
+            }
+        }
+        assert lastException != null;
+        throw lastException; // Throw the last exception if all attempts failed
     }
 
     /**
@@ -178,7 +234,7 @@ public abstract class DsKalturaClientBase {
         } else {
             requestBuilder = SessionService.startWidgetSession(widgetId, expiry);
         }
-        StartWidgetSessionResponse results = handleRequest(requestBuilder, false);
+        StartWidgetSessionResponse results = handleRequest(requestBuilder, false, true);
         log.debug("Widget Session started successfully");
 
         return results.getKs();
@@ -193,7 +249,7 @@ public abstract class DsKalturaClientBase {
     public void logSessionInfo(String ks) throws APIException {
 
         SessionService.GetSessionBuilder requestBuilder = SessionService.get(ks);
-        SessionInfo result = handleRequest(requestBuilder, false);
+        SessionInfo result = handleRequest(requestBuilder, false, true);
 
         // Convert Unix time to Instant
         ZonedDateTime expiry = Instant.ofEpochSecond(result.getExpiry()).atZone(ZoneId.systemDefault());
@@ -244,7 +300,7 @@ public abstract class DsKalturaClientBase {
      * Start a creates a new Kaltura session and add it to client. If secret is available in conf, it will take
      * precedent over appTokens.
      *
-     * @throws Exception
+     * @throws APIException
      */
     private void startClientSession() throws APIException {
 
@@ -313,8 +369,7 @@ public abstract class DsKalturaClientBase {
         String hash = computeHash(token, widgetSession);
         AppTokenService.StartSessionAppTokenBuilder sessionBuilder =
                 AppTokenService.startSession(tokenId, hash, null, type, sessionDurationSeconds);
-        return handleRequest(sessionBuilder, false).getKs();
-
+        return handleRequest(sessionBuilder, false, true).getKs();
     }
 
 }
