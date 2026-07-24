@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?><mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:pbcore="http://www.pbcore.org/PBCore/PBCoreNamespace.html" xmlns:premis="http://www.loc.gov/premis/v3" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://id.kb.dk/standards/mets/version_1_11/mets.xsd" TYPE="File" OBJID="b1e99ed2-ab15-4cd1-a0e2-49ffc24c541a" PROFILE="http://id.kb.dk/standards/mets/profiles/version_2/kbMetsProfile.xml">
+    <mets:metsHdr CREATEDATE="2023-03-23T10:12:05.679+01:00">
+        <mets:agent ID="kbDk" ROLE="CREATOR" TYPE="ORGANIZATION">
+            <mets:name>kbDk</mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+        <mets:agent ID="kbDkCumulusBevaringsService" ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="API">
+            <mets:name>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </mets:name>
+            <mets:note>kbDkInternal</mets:note>
+        </mets:agent>
+    </mets:metsHdr>
+    <mets:dmdSec CREATED="2023-03-23T10:12:05.679+01:00" ID="Mods1">
+        <mets:mdWrap MDTYPE="MODS">
+            <mets:xmlData>
+                <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                    <mods:genre>Topografi</mods:genre>
+                    <mods:genre type="Categories">Slovakiet, Tjekkiet, Seriekort Slovakiet, Tjekkiet, Ungarn, Østrig 1880-1939 1:75 000</mods:genre>
+                    <mods:identifier type="uri">urn:uuid:0c02aa10-b657-11e6-aedf-00505688346e</mods:identifier>
+                    <mods:identifier type="local">au000297.tif</mods:identifier>
+                    <mods:identifier type="Asset Reference">cumulus-core-01:/Depot/DAM/Maps/0000/075/171/au000297.tif</mods:identifier>
+                    <mods:identifier type="Original Asset Reference">cumulus-core-01:/Depot/nb/preingest/DP/Maps/austrian/au000297.tif</mods:identifier>
+                    <mods:language>
+                        <mods:languageTerm authority="rfc4646" type="code">cze</mods:languageTerm>
+                    </mods:language>
+                    <mods:location>
+                        <mods:shelfLocator>KBK Depot</mods:shelfLocator>
+                    </mods:location>
+                    <mods:name type="personal">
+                        <mods:role>
+                            <mods:roleTerm type="code">cre</mods:roleTerm>
+                        </mods:role>
+                        <mods:affiliation>Vojenský Zemĕpisný Ustav</mods:affiliation>
+                    </mods:name>
+                    <mods:note type="content">Kortet hører til: Speciálni mapa 1:75 000</mods:note>
+                    <mods:note type="content">[Československa Republika]</mods:note>
+                    <mods:note type="content">Vojenský Zemĕpisný Ustav</mods:note>
+                    <mods:note type="content">Signaturforklaring</mods:note>
+                    <mods:note type="content">Serien omfatter 189 kort og haves komplet i flere udgaver</mods:note>
+                    <mods:note displayLabel="Catalog Name">Maps</mods:note>
+                    <mods:originInfo>
+                        <mods:place>
+                            <mods:placeTerm type="text">Tjekkiet</mods:placeTerm>
+                        </mods:place>
+                    </mods:originInfo>
+                    <mods:originInfo altRepGroup="original">
+                        <mods:dateCreated>1924-1936</mods:dateCreated>
+                        <mods:dateCreated point="start">1924</mods:dateCreated>
+                        <mods:dateCreated point="end">1936</mods:dateCreated>
+                    </mods:originInfo>
+                    <mods:physicalDescription>
+                        <mods:form type="Dimensions">1 kort i farver på ark 78 x 63 cm eller mindre</mods:form>
+                    </mods:physicalDescription>
+                    <mods:recordInfo>
+                        <mods:languageOfCataloging>
+                            <mods:languageTerm authority="rfc4646" type="code">da</mods:languageTerm>
+                        </mods:languageOfCataloging>
+                    </mods:recordInfo>
+                    <mods:relatedItem type="otherFormat">
+                        <mods:identifier displayLabel="image" type="uri">http://kb-images.kb.dk/DAMJP2/DAM/Maps/0000/075/171/au000297.jp2</mods:identifier>
+                    </mods:relatedItem>
+                    <mods:subject>
+                        <mods:hierarchicalGeographic>
+                            <mods:area areaType="area">Tjekkoslovakiet</mods:area>
+                        </mods:hierarchicalGeographic>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:topic lang="da">Tjekkiet</mods:topic>
+                        <mods:topic lang="da">Slovakiet</mods:topic>
+                        <mods:topic lang="da">Praha</mods:topic>
+                    </mods:subject>
+                    <mods:subject>
+                        <mods:cartographics>
+                            <mods:scale>Målestok 1:75 000</mods:scale>
+                        </mods:cartographics>
+                    </mods:subject>
+                    <mods:subject displayLabel="Topographical Number">
+                        <mods:geographicCode>1155</mods:geographicCode>
+                    </mods:subject>
+                    <mods:titleInfo>
+                        <mods:title>[Tjekkoslovakiet] 1:75 000 Chomutov a Žatec 3851</mods:title>
+                    </mods:titleInfo>
+                    <mods:typeOfResource displayLabel="Resource Description">Kort</mods:typeOfResource>
+                </mods:mods>
+            </mets:xmlData>
+        </mets:mdWrap>
+    </mets:dmdSec>
+    <mets:amdSec>
+        <mets:techMD CREATED="2023-03-23T10:12:05.694+01:00" ID="PremisObject1">
+            <mets:mdWrap MDTYPE="PREMIS:OBJECT">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:file">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>0c02aa10-b657-11e6-aedf-00505688346e</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:objectCharacteristics>
+                            <premis:compositionLevel>0</premis:compositionLevel>
+                            <premis:fixity>
+                                <premis:messageDigestAlgorithm>MD5</premis:messageDigestAlgorithm>
+                                <premis:messageDigest>c629a15edb1a10c0a1ab28220daab98e</premis:messageDigest>
+                            </premis:fixity>
+                            <premis:size>70684714</premis:size>
+                            <premis:format>
+                                <premis:formatDesignation>
+                                    <premis:formatName>TIFF Image</premis:formatName>
+                                    <premis:formatVersion/>
+                                </premis:formatDesignation>
+                                <premis:formatNote>Validated by Cumulus version: 11.1.8</premis:formatNote>
+                            </premis:format>
+                            <premis:creatingApplication>
+                                <premis:creatingApplicationName>Adobe Photoshop Camera Raw 8.4 (Windows)</premis:creatingApplicationName>
+                            </premis:creatingApplication>
+                            <premis:objectCharacteristicsExtension>
+                                <mix:mix xsi:schemaLocation="http://www.loc.gov/mix/v20 http://id.kb.dk/standards/mix/version_2_0/mix.xsd">
+                                    <mix:BasicDigitalObjectInformation>
+                                        <mix:ObjectIdentifier>
+                                            <mix:objectIdentifierType>UUID</mix:objectIdentifierType>
+                                            <mix:objectIdentifierValue>0c02aa10-b657-11e6-aedf-00505688346e</mix:objectIdentifierValue>
+                                        </mix:ObjectIdentifier>
+                                        <mix:fileSize>70684714</mix:fileSize>
+                                        <mix:FormatDesignation>
+                                            <mix:formatName>TIFF Image</mix:formatName>
+                                            <mix:formatVersion/>
+                                        </mix:FormatDesignation>
+                                        <mix:byteOrder>big endian</mix:byteOrder>
+                                        <mix:Compression>
+                                            <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                                        </mix:Compression>
+                                        <mix:Fixity>
+                                            <mix:messageDigestAlgorithm>MD5</mix:messageDigestAlgorithm>
+                                            <mix:messageDigest>c629a15edb1a10c0a1ab28220daab98e</mix:messageDigest>
+                                        </mix:Fixity>
+                                    </mix:BasicDigitalObjectInformation>
+                                    <mix:BasicImageInformation>
+                                        <mix:BasicImageCharacteristics>
+                                            <mix:imageWidth>5584</mix:imageWidth>
+                                            <mix:imageHeight>4218</mix:imageHeight>
+                                            <mix:PhotometricInterpretation>
+                                                <mix:colorSpace>RGB</mix:colorSpace>
+                                                <mix:ColorProfile>
+                                                    <mix:IccProfile>
+                                                        <mix:iccProfileName>Adobe RGB (1998)</mix:iccProfileName>
+                                                    </mix:IccProfile>
+                                                </mix:ColorProfile>
+                                            </mix:PhotometricInterpretation>
+                                        </mix:BasicImageCharacteristics>
+                                    </mix:BasicImageInformation>
+                                    <mix:ImageCaptureMetadata>
+                                        <mix:GeneralCaptureInformation>
+                                            <mix:dateTimeCreated>2023-03-23T10:12:05.696+01:00</mix:dateTimeCreated>
+                                        </mix:GeneralCaptureInformation>
+                                        <mix:ScannerCapture>
+                                            <mix:MaximumOpticalResolution>
+                                                <mix:xOpticalResolution>300</mix:xOpticalResolution>
+                                                <mix:yOpticalResolution>300</mix:yOpticalResolution>
+                                            </mix:MaximumOpticalResolution>
+                                        </mix:ScannerCapture>
+                                        <mix:orientation>normal*</mix:orientation>
+                                    </mix:ImageCaptureMetadata>
+                                    <mix:ImageAssessmentMetadata>
+                                        <mix:ImageColorEncoding>
+                                            <mix:BitsPerSample>
+                                                <mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
+                                                <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
+                                            </mix:BitsPerSample>
+                                            <mix:samplesPerPixel>3</mix:samplesPerPixel>
+                                        </mix:ImageColorEncoding>
+                                    </mix:ImageAssessmentMetadata>
+                                    <mix:ChangeHistory>
+                                        <mix:ImageProcessing>
+                                            <mix:sourceData>initial capture</mix:sourceData>
+                                            <mix:ProcessingSoftware>
+                                                <mix:processingSoftwareName>Adobe Photoshop Camera Raw 8.4 (Windows)</mix:processingSoftwareName>
+                                            </mix:ProcessingSoftware>
+                                        </mix:ImageProcessing>
+                                    </mix:ChangeHistory>
+                                </mix:mix>
+                            </premis:objectCharacteristicsExtension>
+                        </premis:objectCharacteristics>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:techMD>
+        <mets:rightsMD CREATED="2023-03-23T10:12:05.698+01:00" ID="ModsRights1">
+            <mets:mdWrap MDTYPE="MODS">
+                <mets:xmlData>
+                    <mods:mods xmlns:dk="http://id.kb.dk/dk-corporate-creator" xmlns:cdl="http://www.cdlib.org/inside/diglib/copyrightMD" version="3.7" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://id.kb.dk/standards/mods/version_3_7/mods-3-7.xsd">
+                        <mods:accessCondition>
+                            <cdl:copyright publication.status="unknown" copyright.status="copyrighted" xsi:schemaLocation="http://www.cdlib.org/inside/diglib/copyrightMD http://id.kb.dk/schemas/dk-corporate-creator/copyright-md.xsd">
+                                <cdl:creator>
+                                    <dk:creator.corporate>
+                                        <cdl:name>Vojenský Zemĕpisný Ustav</cdl:name>
+                                    </dk:creator.corporate>
+                                </cdl:creator>
+                            </cdl:copyright>
+                        </mods:accessCondition>
+                    </mods:mods>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:rightsMD>
+        <mets:digiprovMD CREATED="2023-03-23T10:12:05.698+01:00" ID="PremisEvent1">
+            <mets:mdWrap MDTYPE="PREMIS:EVENT">
+                <mets:xmlData>
+                    <premis:event version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd">
+                        <premis:eventIdentifier>
+                            <premis:eventIdentifierType>UUID</premis:eventIdentifierType>
+                            <premis:eventIdentifierValue>6139eda7-0e9a-4a98-a03e-c4563035787d</premis:eventIdentifierValue>
+                        </premis:eventIdentifier>
+                        <premis:eventType>ingestion</premis:eventType>
+                        <premis:eventDateTime>2023-03-23T10:12:05.699+01:00</premis:eventDateTime>
+                        <premis:eventDetailInformation>
+                            <premis:eventDetail>awt.toolkit: sun.awt.X11.XToolkit
+file.encoding: UTF-8
+file.encoding.pkg: sun.io
+file.separator: /
+java.awt.graphicsenv: sun.awt.X11GraphicsEnvironment
+java.class.version: 52.0
+java.runtime.version: 1.8.0_332-b09
+java.specification.version: 1.8
+java.vm.info: mixed mode
+java.vm.name: OpenJDK 64-Bit Server VM
+java.vm.specification.name: Java Virtual Machine Specification
+java.vm.version: 25.332-b09
+java.vm.vendor: Red Hat, Inc.
+line.separator: 
+
+os.arch: amd64
+os.name: Linux
+os.version: 4.18.0-372.9.1.el8.x86_64
+sun.arch.data.model: 64
+sun.boot.library.path: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.332.b09-2.el8_6.x86_64/jre/lib/amd64
+sun.cpu.endian: little
+sun.io.unicode.encoding: UnicodeLittle
+sun.java.launcher: SUN_STANDARD
+sun.jnu.encoding: UTF-8
+sun.management.compiler: HotSpot 64-Bit Tiered Compilers
+sun.os.patch.level: unknown
+user.country: DK
+user.home: /home/tomcat
+user.timezone: Europe/Copenhagen
+user.language: da
+
+</premis:eventDetail>
+                        </premis:eventDetailInformation>
+                        <premis:linkingAgentIdentifier>
+                            <premis:linkingAgentIdentifierType>kbDkInternal</premis:linkingAgentIdentifierType>
+                            <premis:linkingAgentIdentifierValue>kbDkCumulusBevaringsService (v. 2.2.0-SNAPSHOT) </premis:linkingAgentIdentifierValue>
+                        </premis:linkingAgentIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>0c02aa10-b657-11e6-aedf-00505688346e</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                        <premis:linkingObjectIdentifier>
+                            <premis:linkingObjectIdentifierType>UUID</premis:linkingObjectIdentifierType>
+                            <premis:linkingObjectIdentifierValue>b1e99ed2-ab15-4cd1-a0e2-49ffc24c541a</premis:linkingObjectIdentifierValue>
+                        </premis:linkingObjectIdentifier>
+                    </premis:event>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+        <mets:digiprovMD CREATED="2023-03-23T10:12:05.699+01:00" ID="PremisRepresentation1">
+            <mets:mdWrap MDTYPE="PREMIS">
+                <mets:xmlData>
+                    <premis:object version="3.0" xsi:schemaLocation="http://www.loc.gov/premis/v3 http://id.kb.dk/standards/premis/version_3_0/premis.xsd" xsi:type="premis:representation">
+                        <premis:objectIdentifier>
+                            <premis:objectIdentifierType>UUID</premis:objectIdentifierType>
+                            <premis:objectIdentifierValue>b1e99ed2-ab15-4cd1-a0e2-49ffc24c541a</premis:objectIdentifierValue>
+                        </premis:objectIdentifier>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>bitSafety</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Medium</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-23T10:12:05.699+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>logical</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Migration</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-23T10:12:05.700+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:preservationLevel>
+                            <premis:preservationLevelType>confidentiality</premis:preservationLevelType>
+                            <premis:preservationLevelValue>Low</premis:preservationLevelValue>
+                            <premis:preservationLevelDateAssigned>2023-03-23T10:12:05.700+01:00</premis:preservationLevelDateAssigned>
+                        </premis:preservationLevel>
+                        <premis:relationship>
+                            <premis:relationshipType>structural</premis:relationshipType>
+                            <premis:relationshipSubType>represents</premis:relationshipSubType>
+                            <premis:relatedObjectIdentifier>
+                                <premis:relatedObjectIdentifierType>UUID</premis:relatedObjectIdentifierType>
+                                <premis:relatedObjectIdentifierValue>09b508a0-aa28-4ec9-9421-6a2993112d1e</premis:relatedObjectIdentifierValue>
+                            </premis:relatedObjectIdentifier>
+                        </premis:relationship>
+                    </premis:object>
+                </mets:xmlData>
+            </mets:mdWrap>
+        </mets:digiprovMD>
+    </mets:amdSec>
+    <mets:fileSec>
+        <mets:fileGrp>
+            <mets:file ID="fileId1">
+                <mets:FLocat LOCTYPE="URN" xlink:href="urn:uuid:0c02aa10-b657-11e6-aedf-00505688346e"/>
+            </mets:file>
+        </mets:fileGrp>
+    </mets:fileSec>
+    <mets:structMap TYPE="logical">
+        <mets:div DMDID="Mods1" ADMID="ModsRights1 PremisEvent1 PremisObject1 PremisRepresentation1">
+            <mets:fptr FILEID="fileId1"/>
+        </mets:div>
+    </mets:structMap>
+</mets:mets>

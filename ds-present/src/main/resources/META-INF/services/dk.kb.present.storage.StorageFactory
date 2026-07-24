@@ -1,0 +1,3 @@
+dk.kb.present.storage.FileStorageFactory
+dk.kb.present.storage.DSStorageFactory
+dk.kb.present.storage.FailStorageFactory
