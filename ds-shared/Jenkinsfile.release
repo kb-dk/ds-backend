@@ -1,0 +1,16 @@
+library identifier: "releasePipeline@master",
+    retriever: modernSCM(
+        scm: [
+            $class: "GitSCMSource",
+            remote: "https://sbprojects.statsbiblioteket.dk/stash/scm/ist/jenkins-shared.git",
+            credentialsId: "crowd"
+        ],
+        libraryPath: "Arkivblik"
+    ) _
+
+releasePipeline(
+    project: "ds-shared",
+    buildToTrigger: "ds-storage",
+    // List only the versions this specific repo needs
+    extraParameters: ["ds-parent"]
+)

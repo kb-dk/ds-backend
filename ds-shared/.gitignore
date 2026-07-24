@@ -1,0 +1,8 @@
+target/
+.classpath
+.project
+.settings/
+
+# We use pom.xml as the source of truth and don't rely on a specific IDE
+.idea
+*.iml
