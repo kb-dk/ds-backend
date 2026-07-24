@@ -1,0 +1,160 @@
+#
+# This config contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
+#
+# The behaviour config is normally controlled by developers and is part of the code repository.
+# Sensitive information such as machine names and user/passwords should not be part of this config.
+#
+# It will be automatically merged with the environment config when accessed through the
+# application config system.
+#
+#
+
+openapi:
+  serverurl: http://localhost:9071/ds-datahandler/v1
+
+# List of oai targets
+oaiTargets:
+
+  - name: kb.pamphlets.dasmaa.smaatryk
+    datasource: kb.pamphlets.dasmaa.smaatryk
+    url: http://www5.kb.dk/cop/oai/
+    set: oai:kb.dk:pamphlets:dasmaa:2012:jul:smaatryk
+    metadataPrefix: mods
+    description: Småtryk
+    filter: direct
+
+  - name: ds.radiotv
+    # Internal information for pvica.devel is provided by internal config files
+    datasource: ds.radiotv
+    url: https://XXXXXXXXX.statsbiblioteket.dk/OAI-PMH/
+    user: XXXXXXXXX
+    password: XXXXXXXXX
+    metadataPrefix: XIP_full_schema
+    description: Radio- og TV-udsendelser
+    filter: dr
+
+# Settings for OAI-PMH harvest
+oaiSettings:
+  # If response is not HTTP 200, retry after x times after sleeping for x seconds
+  retryTimes: 10
+  retrySeconds: 10
+ 
+
+# Save timestamps of last OAI harvest for each target in this folder. This is used for incremental delta-imports.                
+timestamps:
+ folder: /tmp/ds-datahandler/oai.timestamps/
+
+# The ds-storage server to ingest data into 
+storage:
+  url: http://localhost:9072/ds-storage/v1    
+
+# solr. Used by workflow that extracts from storage, xslt and index into solr.
+# Batchsize 100 or 1000 does not increase performance much. May change with large scale data.
+solr:
+  update:
+    url: http://localhost:10011/solr/ds-write
+    requestHandler: /update
+  queryUrl: http://localhost:10011/solr/ds
+  batchSize: 500
+
+# Configuration of preservica endpoints. These are used to fetch IDs/filenames for presentation manifestations. All settings here are related to accessing the Preservica APIs
+preservica:
+  baseUrl: preservicaUrl/
+  user: user
+  password: password
+  keepAliveSeconds: 600 # The access token is valid for 15 minuts. If this value is not set, 14 minuts is used as the default
+  retryTimes: 5
+  retrySeconds: 900 # Please keep retrySeconds bugger than keepAliveSeconds
+  threads: 5
+
+
+# The ds-present server used for xslt
+present:
+  url: http://localhost:9073/ds-present/v1
+  # The following origins are available in ds-present. These values are used to define the list of available origins
+  # used when indexing through the '/solr/index'-endpoint. The first value in the list is used as example value for the
+  # endpoint as well.
+  origins:
+    - ds.tv
+    - ds.radio    
+    - ds.samlingsbilleder
+    - ds.radiotv
+    - kb.images.billed.hca
+    - kb.image.judsam.jsmss
+    - kb.images.luftfo.luftfoto
+    - kb.pamphlets.dasmaa.smaatryk
+  headers:
+    # This is not security!
+    # This is used for establishing token flows using HTTP headers un preparation of OAuth2 support
+    # Set this to internal_service to bypass the ds-license based access server
+    - Simulated-OAuth2-Group: anonymous
+
+
+# Kaltura properties. Use token+tokenId as credentials instead of admin-secret. 
+# The two flavour params depend on the kaltura partnerId. The values 3 and 359 match stage and prod kaltura.
+# If called by integration test, the integration next needs to load the integration unittest property file (from aegis) and also mark test as integrationtesdt
+kaltura:
+  url:  'XX'
+  partnerId:  399
+  userId:  'xxx@kb.dk'
+  adminSecret: ''
+  token: 'XXXX'
+  tokenId: 'XXX'
+  sessionDurationSeconds: 86400
+  sessionRefreshThreshold: 3600
+  conversionProfileIdAudio: '1234'
+  conversionProfileIdVideo: '1234'
+  conversionQueueThreshold: 50
+  conversionQueueDelaySeconds: 30
+
+streams:
+  domsRadioTvPath: '/radio-tv/'
+  preservicaTvPath: '/kuana-store/bart-access-copies-tv/'
+  preservicaRadioPath: '/kuana-store/bart-access-copies-radio/'
+
+# Transcription files (json) dropped the dropFolder will be processed by ds-datahandler when the transcription job is started
+# When processing the transcriptions job will call ds-storage that will save the transcriptions. So they can be used when indexing etc.
+# The files will be moved to the completedFolder and addition extension .completed or .failed will be added to the filename.
+
+transcriptions:
+  dropFolder: '/home/xxx/transcriptions/completed' 
+  completedFolder: '/home/xxx/transcriptions/completed'
+
+security:
+  # The security mode. Valid values are
+  # OFFLINE: No validation of security tokens: All requests are accepted.
+  # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
+  mode: 'ENABLED'
+  # The OAUth2 server base url, typically ending in "realms"
+  # Sample: https://keycloak-keycloak.example.org/auth/realms
+  baseurl: 'https://keycloak.example.com/realms'
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  # The authentification url with the correct realm value. Does not seem the used active by code but is required when building. (TODO?)
+  auth_url: ' https://api.example.com/oauth2/authorize'
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  realms:
+    - foo-bar
+  public_keys:
+    # The number of seconds that public keys from the realms are cached
+    # Optional, -1 means forever.
+    # Default is 600 (10 minutes)
+    ttl_seconds: 86400
+
+  # Client settings are used if the webapp needs to request tokens from the OAuth2 server
+  client:
+    # Matches OAuth2 server Client ID
+    id: 'some_client'
+    # Secret is used if the service needs to request a token from the OAuth2 server.
+    # This typically used for calls between services, where there is a need for elevated access.
+    secret: '01234567-89ab-cdef-0123-456789abcdef'
+
+db:
+  # In production this will always be PostgreSQL
+  # Only use H2 for smaller-scale (a million records max) test setups
+  url: jdbc:h2:${env:TMPDIR:-/tmp}/h2_ds_storage;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+  # url: jdbc:h2:/home/XXX/workspace/ds-storage/target/h2/ds_storage;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+  driver: org.h2.Driver
+  username: ''
+  password: ''
+  connectionPoolSize: 10
+      
