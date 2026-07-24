@@ -75,9 +75,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.7: New field transcription that contains full description text. Field is not stored.
 1.8.8: New field has_transcription boolean to see if a document has a transcription. Since transcription field is not stored this can not be seen directly
 1.8.9: Added field for annotations
+1.8.10: Add rerun_cluster_id and rerun_cluster_count field
 
   -->
-  <field name="_ds_1.8.9_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.10_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->

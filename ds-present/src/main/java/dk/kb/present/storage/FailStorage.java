@@ -17,12 +17,15 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.UUID;
 
 /**
  * Storage that always fails. Can  used for signalling unsupported formats.
@@ -75,6 +78,16 @@ public class FailStorage implements Storage {
     }
 
     @Override
+    public TranscriptionDto getTranscription(String fileId) throws ServiceException{
+        return null;
+    }
+
+    @Override
+    public RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+        return null;
+    }
+
+    @Override
     public String getID() {
         return id;
     }
@@ -87,11 +100,6 @@ public class FailStorage implements Storage {
     @Override
     public boolean isDefault() {
         return isDefault;
-    }
-    
-    @Override
-    public TranscriptionDto getTranscription(String fileId) throws ServiceException{
-        return null;
     }
 
     @Override

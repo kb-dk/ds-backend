@@ -18,6 +18,7 @@ package dk.kb.present.storage;
 import dk.kb.present.util.Combiner;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -74,7 +75,7 @@ public class MultiStorage implements Storage {
     public TranscriptionDto getTranscription(String file) {
       return null;
     }
-    
+
     @Override
     public DsRecordDto getDSRecordTreeLocal(String id) {
         return getDSRecord(getStorages(), id);
@@ -94,7 +95,7 @@ public class MultiStorage implements Storage {
     public boolean isDefault() {
         return isDefault;
     }
-    
+
     /**
      * @return all storages as a stream which is sequential or parallel depending on {@link #order}.
      */
@@ -125,9 +126,9 @@ public class MultiStorage implements Storage {
         throw new NotFoundServiceException("Unable to locate record with id '" + id + "'");
     }
 
-    
-    
-    
+
+
+
     /**
      * Iterate the storageStream and attempt to retrieve a record with the given ID.
      * @param storageStream stream of storages to query. If a parallel stream is given,
@@ -163,6 +164,11 @@ public class MultiStorage implements Storage {
     public ContinuationStream<DsRecordDto, Long> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords) {
         // TODO: Make a proper implementation that filters on type
         return getDSRecords(origin, mTime, maxRecords);
+    }
+
+    @Override
+    public RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+        return null;
     }
 
     /**
