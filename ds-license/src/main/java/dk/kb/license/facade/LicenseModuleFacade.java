@@ -1,0 +1,661 @@
+package dk.kb.license.facade;
+
+import dk.kb.license.model.v1.*;
+import dk.kb.license.storage.*;
+import dk.kb.license.util.ChangeDifferenceText;
+import dk.kb.license.util.LicenseChangelogGenerator;
+import dk.kb.license.validation.InputValidator;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * The LicenseModuleFacade exposes all methods that can be called on a LicenceModule. This includes both persistence logic and business logic resolving licence access.
+ * <p>
+ * This facade class is also responsible for the transactional integrity of a storage. The storage model will never commit or rollback. All storage
+ * transactional logic is controlled by this class. This makes it possible to use multiple storage methods as building blocks and rollback
+ * everything if one of the steps fails.
+ */
+public class LicenseModuleFacade {
+    private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacade.class);
+    private static final InputValidator inputValidator = new InputValidator();
+
+    /**
+     * Create a new {@link PresentationType} which can then be added to licences. A new created PresentationType will
+     * not be added the any existing licences. Licences can be edited and the new {@link PresentationType} can be added.
+     *
+     * @param key      Unique identifier for the {@link PresentationType} that is used when requesting access.
+     *                 Use alphanumeric values with no white spaces. Examples: Thumbnails, Search, Stream
+     * @param value_dk This text (danish) will be shown to end users. Keep it short.
+     * @param value_en This text (english) will be shown to end users. Keep it short.
+     */
+    public static long persistLicensePresentationType(String key, String value_dk, String value_en, HttpSession session) {
+        Long objectId = BaseModuleStorage.performStorageAction("persistLicensePresentationType(" + key + "," + value_dk + "," + value_en + ")", LicenseModuleStorage.class, storage -> {
+
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null;
+
+            PresentationType newType = new PresentationType(key, value_dk, value_en);
+            long id = ((LicenseModuleStorage) storage).persistLicensePresentationType(key, value_dk, value_en);
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(null, newType);
+
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.PRESENTATION_TYPE, key, null, changes.getBefore(), changes.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+
+            return id;
+
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+        return objectId;
+    }
+
+    /**
+     * Get a list of all defined Presentation types.
+     * <p>
+     * This is only intended to be called from the admin GUI when creating or updating a license
+     * to show all possible presentation types that can be added to the licence.
+     *
+     * @return List of presentationtype DTO's
+     */
+    public static ArrayList<PresentationType> getLicensePresentationTypes() {
+        return BaseModuleStorage.performStorageAction("persistLicensePresentationType()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getLicensePresentationTypes();
+        });
+
+    }
+
+    /**
+     * Delete a license completely.
+     * Instead of deleting a license it is also an option to disable it by changing the valid-to attribute.
+     *
+     * @param id The unique id for the license. Instead of deleting a license, you can also change valid to/from for the license to disable it instead.
+     */
+    public static RecordsCountDto deleteLicense(Long id, HttpSession session, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateId(id);
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
+        // Retrieve object from database
+        License license = getLicense(id);
+
+        BaseModuleStorage.performStorageAction("deleteLicense(" + id + ")", LicenseModuleStorage.class, storage -> {
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null;
+            // Delete entry from database
+            RecordsCountDto recordsCountDto = new RecordsCountDto();
+            ((LicenseModuleStorage) storage).deleteLicense(id);
+
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(license, null);
+
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), deleteReasonDto.getChangeComment(), changes.getBefore(), changes.getAfter());
+
+
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+            return null;
+
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+        return null;
+    }
+
+    /**
+     * Create a new {@link GroupType}. The new GroupType will not be attached to any existing licenses.
+     * <p>
+     * A group type has to be one of the two types:  access-giving(pakke) or restriction(klausulering).
+     * The group type must define a solr query string. In case of access-giving(pakke) the query will include
+     * additional content. In case of a restriction, the query will remove content unless the user has a license
+     * which removes the restriction.
+     * <p>
+     * After creation of the GroupType, it is not added to any licences,
+     * but can be used when creating or editing an existing license.
+     *
+     * @param key            This is the name seen from the license page of the GUI when selecting among {@link GroupType}s.
+     *                       Example:  'Access to DR-arkiv'
+     * @param value          Small description in danish. Often this description equals the key-param.
+     * @param value_en       Small description in english. Often this description equals the key-param.
+     * @param description    A longer and more detailed description in danish
+     *                       which will only be shown on the create/edit page for GroupTypes.
+     * @param description_en A longer and more detailed description in english
+     *                       which will only be shown on the create/edit page for GroupTypes.
+     * @param query          A solr query which defines the material covered by this {@link GroupType} at access-giving or
+     *                       restriction. Make sure the query is correct and has all parentheses matched.
+     * @param isRestriction  if false the type is access-giving(pakke). If true it will be a restriction(klausulering).
+     */
+    public static void persistLicenseGroupType(String key, String value, String value_en, String description, String description_en, String query, boolean isRestriction, HttpSession session) {
+        BaseModuleStorage.performStorageAction("persistLicenseGroupType(" + key + "," + value + "," + value_en + "," + description + "," + description_en + "," + query + "," + isRestriction + ")", LicenseModuleStorage.class, storage -> {
+            GroupType g = new GroupType(0L, key, value, value_en, description, description_en, query, isRestriction);
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null;
+
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(null, g);
+            long id = ((LicenseModuleStorage) storage).persistLicenseGroupType(key, value, value_en, description, description_en, query, isRestriction);
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.GROUP_TYPE, key, null, changes.getBefore(), changes.getAfter());
+
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+            return null;
+
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+    }
+
+    /**
+     * Update an existing {@link GroupType}.
+     * If query is changed it will have influence on all licenses giving access with this group.
+     *
+     * @param id             The unique ID for the grouptype.
+     * @param value_dk       Name (Danish)
+     * @param value_en       Name (English)
+     * @param description    Description (danish)
+     * @param description_en Description (english)
+     * @param query          A solr query which defines the material covered by this {@link GroupType} at access-giving or
+     *                       restriction. Make sure the query is correct and has all parentheses matched. Example: collection:dr
+     * @param isRestriction  Is package (includes) or restriction(excludes)
+     */
+    public static void updateLicenseGroupType(long id, String value_dk, String value_en, String description, String description_en, String query, boolean isRestriction, HttpSession session) {
+        BaseModuleStorage.performStorageAction("updateLicenseGroupType(" + id + "," + value_dk + "," + value_en + "," + description + "," + description_en + "," + query + "," + isRestriction + ")", LicenseModuleStorage.class, storage -> {
+            GroupType oldGroupType = ((LicenseModuleStorage) storage).getGroupTypeById(id);
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null;
+            GroupType updateGroupType = new GroupType(0L, oldGroupType.getKey(), value_dk, value_en, description, description_en, query, isRestriction);
+
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getGroupTypeChanges(oldGroupType, updateGroupType);
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.GROUP_TYPE, value_dk, null, changes.getBefore(), changes.getAfter());
+            ((LicenseModuleStorage) storage).updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, isRestriction);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+            return null;
+
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+    }
+
+    /**
+     * Update a {@link PresentationType}. It is possible to update a PresentationType which is already used by licences.
+     * It is not possible to change the 'key' field, only the descriptions.
+     *
+     * @param id       the for presentationtype
+     * @param value_dk the danish short description
+     * @param value_en the english short description
+     */
+    public static void updatePresentationType(long id, String value_dk, String value_en, HttpSession session) {
+        BaseModuleStorage.performStorageAction("updateLicenseGroupType(" + id + "," + value_dk + "," + value_en + ")", LicenseModuleStorage.class, storage -> {
+
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null;
+            PresentationType oldType = ((LicenseModuleStorage) storage).getPresentationTypeById(id);
+            PresentationType newType = new PresentationType(oldType.getKey(), value_dk, value_en);
+            ((LicenseModuleStorage) storage).updatePresentationType(id, value_dk, value_en);
+
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, newType);
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.PRESENTATION_TYPE, oldType.getKey(), null, changes.getBefore(), changes.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+            return null;
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+    }
+
+    /**
+     * Delete a {@link GroupType}. If a group type is used by any license, it can not be deleted.
+     *
+     * @param groupName The unique name of the grouptype
+     */
+    public static RecordsCountDto deleteLicenseGroupType(String groupName, HttpSession session, DeleteReasonDto deleteReasonDto) {
+
+        inputValidator.validateString(groupName, "groupName");
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
+
+        BaseModuleStorage.performStorageAction("deleteLicenseGroupType(" + groupName + ")", LicenseModuleStorage.class, storage -> {
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
+
+            long id = ((LicenseModuleStorage) storage).deleteLicenseGroupType(groupName);
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.GROUP_TYPE, groupName, deleteReasonDto.getChangeComment(), groupName, null);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+
+            return null;
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+        return null;
+    }
+
+    /**
+     * Delete a {@link PresentationType}.
+     * It is not possible to delete a Presentation type that is being used by any licenses.
+     * Licences using a PresentationType must remove them before the PresentationType can be deleted.
+     *
+     * @param presentationName The given identifier for the PresentationType to delete.
+     */
+    public static RecordsCountDto deletePresentationType(String presentationName, HttpSession session, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateString(presentationName, "presentationName");
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
+
+        BaseModuleStorage.performStorageAction("deletePresentationType(" + presentationName + ")", LicenseModuleStorage.class, storage -> {
+            PresentationType oldType = ((LicenseModuleStorage) storage).getPresentationTypeByKey(presentationName);
+            ((LicenseModuleStorage) storage).deletePresentationType(presentationName);
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
+
+            ChangeDifferenceText changes = LicenseChangelogGenerator.getPresentationTypeChanges(oldType, null);
+            AuditLogEntry auditLog = new AuditLogEntry(oldType.getId(), user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.PRESENTATION_TYPE, oldType.getKey(), deleteReasonDto.getChangeComment(), changes.getBefore(), changes.getAfter());
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+            return null;
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+        return null;
+    }
+
+    /**
+     * Create or update a license.
+     * If license id=0 a new license will be created. Else it will update the license with the id
+     *
+     * @param license A licenseDTO having all information about date to/from, PresentationTypes,
+     *                attribute groups and GroupTypes.
+     */
+    public static void persistLicense(License license, HttpSession session) {
+        BaseModuleStorage.performStorageAction("persistLicense(description_dk=" + license.getDescription_dk() + ")", LicenseModuleStorage.class, storage -> {
+            AuditLogEntry auditLog = null;
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
+
+            //audit log
+            if (license.getId() == 0) {
+                long id = ((LicenseModuleStorage) storage).persistLicense(license);
+                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null, license);
+                auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), null, changes.getBefore(), changes.getAfter());
+
+            } else {
+                License oldLicense = ((LicenseModuleStorage) storage).getLicense(license.getId());
+                ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(oldLicense, license);
+                long id = ((LicenseModuleStorage) storage).persistLicense(license);
+                auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.UPDATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), null, changes.getBefore(), changes.getAfter());
+            }
+
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+
+            return null;
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+    }
+
+    /**
+     * Get a list of all defined {@link GroupType}s.
+     *
+     * @return List of all GroupTypes define in this instance of LicenseModule
+     */
+    public static ArrayList<GroupType> getLicenseGroupTypes() {
+
+        return BaseModuleStorage.performStorageAction("getLicenseGroupTypes()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getLicenseGroupTypes();
+        });
+    }
+
+    /**
+     * Get a {@link GroupType} by id.
+     *
+     * @return GroupType with the given id
+     */
+    public static GroupType getLicenseGroupType(long id) {
+        return BaseModuleStorage.performStorageAction("getGroupTypeById(" + id +")", LicenseModuleStorage.class, storage -> {
+           GroupType groupType = ((LicenseModuleStorage) storage).getGroupTypeById(id);
+            return groupType;
+        });
+    }
+
+    /**
+     * Persist a new attribute name that can be used by licenses to identify users.
+     *
+     * @param attributeTypeName The new attribute. Example: wayf.mail
+     */
+    public static void persistAttributeType(String attributeTypeName, HttpSession session) {
+        BaseModuleStorage.performStorageAction("persistAttributeType(" + attributeTypeName + ")", LicenseModuleStorage.class, storage -> {
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
+            long id = ((LicenseModuleStorage) storage).persistAttributeType(attributeTypeName);
+
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.ATTRIBUTE_NAME, attributeTypeName, null, null, attributeTypeName);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+            return null;
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+    }
+
+    /**
+     * Delete an {@link AttributeType}.
+     *
+     * @param attributeTypeName The unique name of the AttributeType.
+     *                          If the AttributeType is actively used by any licenses, it can not be deleted.
+     */
+    public static RecordsCountDto deleteAttributeType(String attributeTypeName, HttpSession session, DeleteReasonDto deleteReasonDto) {
+        inputValidator.validateString(attributeTypeName, "attributeTypeName");
+        inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
+
+        // Retrieve object from database
+
+        BaseModuleStorage.performStorageAction("deleteAttributeType(" + attributeTypeName + ")", LicenseModuleStorage.class, storage -> {
+            long id = ((LicenseModuleStorage) storage).deleteAttributeType(attributeTypeName);
+            String user = (session != null) ? (String) session.getAttribute("oauth_user") : null; //This should be removed if not before, then when jsp sites is absolute
+
+            AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.ATTRIBUTE_NAME, attributeTypeName, deleteReasonDto.getChangeComment(), attributeTypeName, null);
+            ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
+            return null;
+        });
+        LicenseCache.reloadCache(); // Database changed, so reload cache
+        return null;
+    }
+
+    /**
+     * Retrieve a list of all defined {@link AttributeType}s.
+     *
+     * @return List of all AttributeTypes.
+     */
+    public static ArrayList<AttributeType> getAttributeTypes() {
+        return BaseModuleStorage.performStorageAction("getAttributeTypes()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getAttributeTypes();
+        });
+    }
+
+    /**
+     * Retrieve a list of all licenses for overview.
+     * The licenses will only have the name field and valid to/from date loaded.
+     *
+     * @return List of licenses that will have name and valid date to/from loaded.
+     */
+    public static ArrayList<License> getAllLicenseNames() {
+        return BaseModuleStorage.performStorageAction("getAllLicenseNames()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getAllLicenseNames();
+        });
+    }
+
+    /**
+     * Get a specific license.
+     *
+     * @param id The unique id of the license.
+     * @return License The unique license with this id.
+     */
+    public static License getLicense(Long id) {
+        return BaseModuleStorage.performStorageAction("getLicense(" + id + ")", LicenseModuleStorage.class, storage -> {
+            License license = ((LicenseModuleStorage) storage).getLicense(id);
+
+            if (license == null) {
+                final String errorMessage = "'id': " + id + " not found";
+                log.error(errorMessage);
+                throw new NotFoundServiceException(errorMessage);
+            }
+
+            return license;
+        });
+    }
+
+    private  static AttributeTypeDto convertAttributeTypeToDto(AttributeType attributeType) {
+        AttributeTypeDto attributeTypeDto = new AttributeTypeDto();
+        attributeTypeDto.setId(attributeType.getId());
+        attributeTypeDto.setValue(attributeType.getValue());
+        return attributeTypeDto;
+    }
+
+    private  static AttributeType convertDtoToAttributeType(AttributeTypeDto attributeTypeDto) {
+        AttributeType attributeType = new AttributeType(attributeTypeDto.getValue());
+        attributeType.setId(attributeTypeDto.getId());
+        return attributeType;
+    }
+
+    private static AttributeDto convertAttributeToAttributeDto(Attribute attribute) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        AttributeDto attributeDto = new AttributeDto();
+        attributeDto.setId(attribute.getId());
+        attributeDto.setAttributeName(attribute.getAttributeName());
+
+        ArrayList<AttributeValueDto> attributeValueDtos = new ArrayList<>();
+        for ( AttributeValue value : attribute.getValues() ){
+            AttributeValueDto attributeValueDto = new AttributeValueDto();
+            attributeValueDto.setId(value.getId());
+            attributeValueDto.setValue(value.getValue());
+            attributeValueDtos.add(attributeValueDto);
+        }
+
+        attributeDto.setValues(attributeValueDtos);
+
+        return attributeDto;
+
+    }
+
+    private static Attribute convertAttributeDtoToAttribute(AttributeDto attributeDto) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        Attribute attribute = new Attribute();
+        attribute.setId(attributeDto.getId());
+        attribute.setAttributeName(attributeDto.getAttributeName());
+
+        ArrayList<AttributeValue> attributeValues = new ArrayList<>();
+        for ( AttributeValueDto value : attributeDto.getValues() ){
+            AttributeValue attributeValue = new AttributeValue(value.getValue());
+            attributeValue.setId(value.getId());
+            attributeValues.add(attributeValue);
+        }
+
+        attribute.setValues(attributeValues);
+
+        return attribute;
+
+    }
+
+    private static AttributeGroupDto convertAttributeGroupToDto(AttributeGroup attributeGroup){ //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        AttributeGroupDto attributeGroupDto = new AttributeGroupDto();
+        attributeGroupDto.setId(attributeGroup.getId());
+        attributeGroupDto.setNumber(attributeGroup.getNumber());
+
+        ArrayList<AttributeDto> attributeDtos = new ArrayList<>();
+        attributeGroup.getAttributes().forEach(attribute -> attributeDtos.add(convertAttributeToAttributeDto(attribute)));
+
+        attributeGroupDto.setAttributes(attributeDtos);
+
+        return attributeGroupDto;
+
+    }
+
+    private static AttributeGroup convertDtoToAttributeGroup(AttributeGroupDto attributeGroupDto){ //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        AttributeGroup attributeGroup = new AttributeGroup(attributeGroupDto.getNumber());
+        attributeGroup.setId(attributeGroupDto.getId());
+
+        ArrayList<Attribute> attributes = new ArrayList<>();
+        attributeGroupDto.getAttributes().forEach(attribute -> attributes.add(convertAttributeDtoToAttribute(attribute)));
+
+        attributeGroup.setAttributes(attributes);
+
+        return attributeGroup;
+
+    }
+
+    private static LicenseContentDto convertLicenseContentToDto(LicenseContent licenseContent) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        LicenseContentDto licenseContentDto = new LicenseContentDto();
+        licenseContentDto.setId(licenseContent.getId());
+        licenseContentDto.setName(licenseContent.getName());
+
+        ArrayList<PresentationDto> presentationDtos = new ArrayList<>();
+
+        for ( Presentation presentation : licenseContent.getPresentations() ) {
+            PresentationDto presentationDto = new PresentationDto();
+            presentationDto.setId(presentation.getId());
+            presentationDto.setKey(presentation.getKey());
+
+            presentationDtos.add(presentationDto);
+
+        }
+
+        licenseContentDto.setPresentations(presentationDtos);
+
+        return licenseContentDto;
+
+    }
+
+    private static LicenseContent convertDtoToLicenseContent(LicenseContentDto licenseContentDto) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
+        LicenseContent licenseContent = new LicenseContent();
+        licenseContent.setId(licenseContentDto.getId());
+        licenseContent.setName(licenseContentDto.getName());
+
+        ArrayList<Presentation> presentations = new ArrayList<>();
+
+        for ( PresentationDto presentationDto : licenseContentDto.getPresentations() ) {
+            Presentation presentation = new Presentation();
+            presentation.setId(presentationDto.getId());
+            presentation.setKey(presentationDto.getKey());
+
+            presentations.add(presentation);
+
+        }
+
+        licenseContent.setPresentations(presentations);
+
+        return licenseContent;
+
+    }
+
+    private static GroupTypeDto convertGroupTypeToDto(GroupType groupType) {
+        GroupTypeDto groupTypeDto = new GroupTypeDto();
+
+        groupTypeDto.setId(groupType.getId());
+        groupTypeDto.setDescriptionDk(groupType.getDescription_dk());
+        groupTypeDto.setDescriptionEn(groupType.getDescription_en());
+        groupTypeDto.setKey(groupType.getKey());
+        groupTypeDto.setValueDk(groupType.getValue_dk());
+        groupTypeDto.setValueEn(groupType.getValue_en());
+        groupTypeDto.setQuery(groupType.getQuery());
+        groupTypeDto.setRestriction(groupType.isRestrictionGroup());
+
+        return  groupTypeDto;
+    }
+
+    private static LicenseDto convertLicenseToLicenseDto(License license) {
+        LicenseDto licenseDto = new LicenseDto();
+        licenseDto.setId(license.getId());
+        licenseDto.setDescriptionDk(license.getDescription_dk());
+        licenseDto.setLicenseName(license.getLicenseName());
+        licenseDto.setDescriptionEn(license.getDescription_en());
+        licenseDto.setLicenseNameEn(license.getLicenseName_en());
+        licenseDto.setValidFrom(license.getValidFrom());
+        licenseDto.setValidTo(license.getValidTo());
+
+        ArrayList<AttributeGroup> attributeGroups = license.getAttributeGroups();
+        ArrayList<AttributeGroupDto> attributeGroupsDto = new ArrayList<>();
+
+        attributeGroups.forEach(attributeGroup -> attributeGroupsDto.add(convertAttributeGroupToDto(attributeGroup)));
+        licenseDto.setAttributeGroups(attributeGroupsDto);
+
+        ArrayList<LicenseContent> licenseContents = license.getLicenseContents();
+        ArrayList<LicenseContentDto> licenseContentDtos = new ArrayList<>();
+
+        licenseContents.forEach(licenseContent -> licenseContentDtos.add(convertLicenseContentToDto(licenseContent)));
+
+        licenseDto.setLicenseContents(licenseContentDtos);
+
+        return licenseDto;
+    }
+
+    private static License convertLicenseDtoToLicense(LicenseDto licenseDto) {
+        License license = new License();
+        license.setId(licenseDto.getId());
+        license.setDescription_dk(licenseDto.getDescriptionDk());
+        license.setLicenseName(licenseDto.getLicenseName());
+        license.setDescription_en(licenseDto.getDescriptionEn());
+        license.setLicenseName_en(licenseDto.getLicenseNameEn());
+        license.setValidFrom(licenseDto.getValidFrom());
+        license.setValidTo(licenseDto.getValidTo());
+
+        List<AttributeGroupDto> attributeGroupDtos = licenseDto.getAttributeGroups();
+        ArrayList<AttributeGroup> attributeGroups = new ArrayList<>();
+
+        attributeGroupDtos.forEach(attributeGroupDto -> attributeGroups.add(convertDtoToAttributeGroup(attributeGroupDto)));
+        license.setAttributeGroups(attributeGroups);
+
+        ArrayList<LicenseContentDto> licenseContentDtos = (ArrayList<LicenseContentDto>) licenseDto.getLicenseContents();
+        ArrayList<LicenseContent> licenseContents = new ArrayList<>();
+
+        licenseContentDtos.forEach(licenseContentDto -> licenseContents.add(convertDtoToLicenseContent(licenseContentDto)));
+
+        license.setLicenseContents(licenseContents);
+
+        return license;
+    }
+
+    public static LicenseDto getLicenseById(Long id) {
+        return convertLicenseToLicenseDto(getLicense(id));
+    }
+
+    public static void persistLicenseDto(LicenseDto licenseDto) {
+        persistLicense(convertLicenseDtoToLicense(licenseDto), null);
+    }
+
+    public static ArrayList<LicenseDto> getLicenses() {
+        ArrayList<License> licenseIds = BaseModuleStorage.performStorageAction("getAllLicenseNames()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getAllLicenseNames();
+        });
+
+        ArrayList<LicenseDto> licenseDtos = new ArrayList<>();
+        licenseIds.forEach(licenseId -> licenseDtos.add(getLicenseById(licenseId.getId())));
+        return licenseDtos;
+    }
+
+    public static PresentationTypeDto getPresentationTypeById(Long id){
+
+        PresentationType presentationType = BaseModuleStorage.performStorageAction("getPresentationTypeById()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getPresentationTypeById(id);
+        });
+
+        PresentationTypeDto presentationTypeDto = new PresentationTypeDto();
+
+        presentationTypeDto.setId(presentationType.getId());
+        presentationTypeDto.setKey(presentationType.getKey());
+        presentationTypeDto.setValueEn(presentationType.getValue_en());
+        presentationTypeDto.setValueDk(presentationType.getValue_dk());
+
+        return presentationTypeDto;
+    }
+
+    public static ArrayList<PresentationTypeDto> getPresentationTypes(){
+        ArrayList<PresentationType> presentationTypes = BaseModuleStorage.performStorageAction("getLicensePresentationTypes()", LicenseModuleStorage.class, storage -> {
+            return ((LicenseModuleStorage) storage).getLicensePresentationTypes();
+        });
+
+        ArrayList<PresentationTypeDto> presentationTypeDtos = new ArrayList<>();
+        presentationTypes.forEach(presentationType -> presentationTypeDtos.add(getPresentationTypeById(presentationType.getId())));
+
+        return presentationTypeDtos;
+    }
+
+    public static ArrayList<AttributeTypeDto> getAttributeTypesDto() {
+
+        ArrayList<AttributeType> attributeTypes = getAttributeTypes();
+
+        ArrayList<AttributeTypeDto> attributeTypeDto = new ArrayList();
+
+        attributeTypes.forEach(attributeType -> attributeTypeDto.add(convertAttributeTypeToDto(attributeType)));
+
+        return attributeTypeDto;
+    }
+
+    public static GroupTypeDto getGroupTypeById(Long id){
+        GroupTypeDto groupTypeDto = convertGroupTypeToDto(getLicenseGroupType(id));
+        return groupTypeDto;
+    }
+
+    public static ArrayList<GroupTypeDto> getGroupTypes(){
+        ArrayList<GroupTypeDto> GroupTypesDto = new ArrayList<>();
+        ArrayList<GroupType> GroupTypes = getLicenseGroupTypes();
+        GroupTypes.forEach(groupType -> GroupTypesDto.add(convertGroupTypeToDto(groupType)));
+        return GroupTypesDto;
+    }
+
+    public static void persistPresentationType(PresentationTypeDto presentationTypeDto) {
+
+        if (presentationTypeDto.getId() == 0) {
+            persistLicensePresentationType(presentationTypeDto.getKey(), presentationTypeDto.getValueDk(), presentationTypeDto.getValueEn(), null);
+        }
+        else {
+            updatePresentationType(presentationTypeDto.getId(), presentationTypeDto.getValueDk(), presentationTypeDto.getValueEn(), null);
+        }
+    }
+
+    public static void persistGroupType(GroupTypeDto groupTypeDto) {
+
+        if (groupTypeDto.getId() == 0) {
+            persistLicenseGroupType(groupTypeDto.getKey(), groupTypeDto.getValueDk(), groupTypeDto.getValueEn(), groupTypeDto.getDescriptionDk(), groupTypeDto.getDescriptionEn(), groupTypeDto.getQuery(), groupTypeDto.getRestriction(), null);
+        }
+        else {
+            updateLicenseGroupType(groupTypeDto.getId(), groupTypeDto.getValueDk(), groupTypeDto.getValueEn(), groupTypeDto.getDescriptionDk(), groupTypeDto.getDescriptionEn(), groupTypeDto.getQuery(), groupTypeDto.getRestriction(), null);
+        }
+    }
+
+    public static void persistAttributeTypeDto(AttributeTypeDto attributeTypeDto) {
+        persistAttributeType(attributeTypeDto.getValue(), null);
+    }
+
+}
