@@ -1,5 +1,6 @@
 package dk.kb.kaltura.client;
 
+import com.google.common.io.Files;
 import com.kaltura.client.enums.*;
 import com.kaltura.client.services.BaseEntryService;
 import com.kaltura.client.services.ESearchService;
@@ -16,9 +17,11 @@ import dk.kb.kaltura.enums.FileExtension;
 import dk.kb.kaltura.enums.MimeType;
 
 import javax.annotation.Nullable;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +41,9 @@ import java.util.stream.Collectors;
 public class DsKalturaClient extends DsKalturaClientBase {
 
     private static final Integer MAX_RETRY_COUNT = 3;
+    public static final String DEFAULT_TRANSCODE_TAG = "transcoded";
+    public static final String DEFAULT_TRANSCODE_ERROR_TAG = "FAILED_TRANSCODE";
+
 
     private final Integer conversionQueueThreshold;
     private final Integer conversionQueueRetryDelaySeconds;
@@ -49,7 +55,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * Instantiate a session to Kaltura that can be used. The sessions can be reused between Kaltura calls without
      * authenticating again. Either a token/tokenId a adminSecret must be provided for authentication.
      *
-     * @param kalturaUrl                       The Kaltura API url. Using the baseUrl will automatic append the API service part to the URL.
+     * @param kalturaUrl                       The Kaltura API url. Using the baseUrl will automatically append the API service part to the URL.
      * @param userId                           The userId that must be defined in the kaltura, userId is email xxx@kb.dk in our kaltura
      * @param partnerId                        The partner id for kaltura. Kind of a collectionId.
      * @param token                            The application token used for generating client sessions
@@ -111,7 +117,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
     /**
      * <p>
      * Block a stream and all meta-data for the record in Kaltura.
-     * The stream can not be played. An Kaltura administrator can still see the stream in the KMC and remove the flag it needed.
+     * The stream can not be played. A Kaltura administrator can still see the stream in the KMC and remove the flag it needed.
      * In KMC refine -> moderation status -> rejected so see a list of all rejected streams and search in them
      * </p>
      *
@@ -124,8 +130,10 @@ public class DsKalturaClient extends DsKalturaClientBase {
         return buildAndExecute(request, true).isSuccess();
     }
 
-    public ListResponse<MediaEntry> listMediaEntry(MediaEntryFilter filter) throws APIException {
-        return handleRequest(MediaService.list(filter));
+    public List<MediaEntry> listMediaEntry(MediaEntryFilter filter) throws APIException {
+        FilterPager pager = new FilterPager();
+        pager.setPageSize(getBatchSize());
+        return handleRequest(MediaService.list(filter, pager)).getObjects();
     }
 
     public int countMediaEntry(MediaEntryFilter filter) throws APIException {
@@ -137,12 +145,12 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * Search Kaltura for a referenceId. The referenceId was given to Kaltura when uploading the record.<br>
      * We use filenames (file_id) as refereceIds. Example: b16bc5cb-1ea9-48d4-8e3c-2a94abae501b <br>
      * <br>
-     * The Kaltura response contains a lot more information that is required, so it is not a light weight call against Kaltura.
+     * The Kaltura response contains a lot more information that is required, so it is not a lightweight call against Kaltura.
      *
      * @param referenceId External reference ID given when uploading the entry to Kaltura.
      * @return The Kaltura id (internal id). Return null if the refId is not found.
      * @throws IOException  if more than 1 entry was found with the referenceId.
-     * @throws APIException if the client failed to establish an kaltura session or if the request itself was
+     * @throws APIException if the client failed to establish a kaltura session or if the request itself was
      *                      unsuccessful.
      */
     public String getKalturaInternalId(String referenceId) throws IOException, APIException {
@@ -167,7 +175,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * @param referenceIds a list of {@code referenceIDs}, typically UUIDs from stream filenames.
      * @return a map from {@code referenceID} to {@code kalturaID}.
      * Unresolvable {@code referenceIDs} will not be present in the map.
-     * @throws APIException if the client failed to establish an kaltura session or if the request itself was
+     * @throws APIException if the client failed to establish a Kaltura session or if the request itself was
      *                      unsuccessful.
      */
     public Map<String, String> getKalturaIds(List<String> referenceIds) throws APIException {
@@ -365,7 +373,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
     /**
      * Adds en Entry to Kaltura containing only metadata.
      *
-     * @param mediaType   Intended type of media. Either MediaType.AUDIO or MediaType.VIDEO
+     * @param mediaType   Intended type of media. Either {@link MediaType#AUDIO} or {@link MediaType#VIDEO}
      * @param title       Title of video/audio
      * @param description description
      * @param referenceId Id external from Kaltura
@@ -413,7 +421,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
     private String addUploadTokenToEntry(String uploadtokenId, String entryId)
             throws APIException {
 
-        //Connect uploaded file with meta data entry
+        //Connect uploaded file with metadata entry
         UploadedFileTokenResource resource = new UploadedFileTokenResource();
         resource.setToken(uploadtokenId);
         AddContentMediaBuilder requestBuilder;
@@ -441,8 +449,9 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * <p>
      * </ul><p>
      * <p>
-     * If there for some reason happens an error after the file is uploaded and not connected to the metadata record, it does not
-     * seem possible to later see the file in the kaltura administration gui. This error has only happened because I forced it.
+     * If for some reason an error happens after the file is uploaded and not connected to the metadata record,
+     * it does not seem possible to later see the file in the kaltura administration gui. This error has only
+     * happened because I forced it.
      *
      * @param filePath            File path to the media file to upload.
      * @param referenceId         Use our internal ID's there. This referenceId can be used to find the record at Kaltura and also map to internal KalturaId.
@@ -556,6 +565,93 @@ public class DsKalturaClient extends DsKalturaClientBase {
         int sum = countList.stream().mapToInt(x -> (int) x).sum();
         log.debug("Queue length is : {}", sum);
         return sum;
+    }
+
+    public MediaEntry updateContent(String entryId, int sourceFlavor, int conversionProfileId) throws APIException {
+        EntryResource entryResource = new EntryResource();
+        entryResource.setEntryId(entryId);
+        entryResource.setFlavorParamsId(sourceFlavor);
+
+        return handleRequest(MediaService.updateContent(entryId, entryResource, conversionProfileId));
+    }
+
+    private MediaEntry updateEntry(String entryId, MediaEntry mediaEntry) throws APIException {
+        return handleRequest(MediaService.update(entryId, mediaEntry));
+    }
+
+    public void updateAllContent(MediaEntryFilter filter, int audioSourceFlavor,
+                                 int videoSourceFlavorParamId, int conversionProfileIdAudio,
+                                 int conversionProfileIdVideo, String outputFile, @Nullable String successTag,
+                                 @Nullable String failTag)
+            throws APIException, IOException {
+
+        if (successTag == null) {
+            successTag = DEFAULT_TRANSCODE_TAG;
+        }
+        if (failTag == null) {
+            successTag = DEFAULT_TRANSCODE_ERROR_TAG;
+        }
+
+
+        try (BufferedWriter writer = Files.newWriter(new File(outputFile), Charset.defaultCharset())) {
+
+            while (true) {
+                int count = countMediaEntry(filter);
+                log.info("Entries remaining: {}", count);
+                List<MediaEntry> entries = listMediaEntry(filter);
+                if (entries.isEmpty()) {
+                    return;
+                }
+                if (entries.size() > entries.stream().map(MediaEntry::getId).distinct().count()) {
+                    throw new RuntimeException("Duplicates in list API");
+                }
+
+                for (MediaEntry entry : entries) {
+                    conversionQueueCheckAndWait();
+                    int conversionProfileId = 0;
+                    int sourceFlavorParamId = 0;
+                    switch (entry.getMediaType()) {
+                        case AUDIO:
+                            conversionProfileId = conversionProfileIdAudio;
+                            sourceFlavorParamId = audioSourceFlavor;
+                            break;
+                        case VIDEO:
+                            conversionProfileId = conversionProfileIdVideo;
+                            sourceFlavorParamId = videoSourceFlavorParamId;
+                            break;
+                        default:
+                            throw new RuntimeException("Unknown MediaType");
+                    }
+                    if (!entry.getFlavorParamsIds().contains(Integer.toString(sourceFlavorParamId))) {
+                        log.error("Entry {} was skipped due since its flavorParamIds do not contain expected source " +
+                                "flavorParamID: {} not in {}", entry.getId(), conversionProfileId, entry.getFlavorParamsIds());
+                        MediaEntry tagContainer = new MediaEntry();
+                        tagContainer.setTags(entry.getTags() + "," + failTag);
+                        updateEntry(entry.getId(), tagContainer);
+
+                        continue;
+                    }
+                    String convertedId;
+                    try {
+                        convertedId = updateContent(entry.getId(), sourceFlavorParamId, conversionProfileId).getReplacingEntryId();
+                    } catch (Exception e) {
+                        log.error("id: {}, tag: {}", entry.getId(), "ERROR");
+                        throw e;
+                    }
+                    estimatedQueueLength++;
+
+                    MediaEntry tagContainer = new MediaEntry();
+                    tagContainer.setTags(entry.getTags() + "," + successTag);
+                    updateEntry(entry.getId(), tagContainer);
+//                    log.info("id: {}, convertedId: {}, tag: {}", entry.getId(), convertedId, successTag);
+
+                    writer.append(entry.getId()).append(", ").append(convertedId).append("\n");
+                    writer.flush();
+
+                }
+
+            }
+        }
     }
 
 

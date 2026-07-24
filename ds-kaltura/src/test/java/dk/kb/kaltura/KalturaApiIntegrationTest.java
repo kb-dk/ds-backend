@@ -246,6 +246,16 @@ public class KalturaApiIntegrationTest {
         }
     }
 
+
+
+
+    @Test
+    public void updateContent() throws APIException {
+        DsKalturaClient client = getClient();
+        client.updateContent("0_yo5n21py", 3, 1406);
+
+    }
+
     private DsKalturaClient getClient() throws APIException {
         final YAML conf = ServiceConfig.getConfig().getSubMap("kaltura");
         return new DsKalturaClient(
@@ -255,8 +265,8 @@ public class KalturaApiIntegrationTest {
                 conf.getString("token"),
                 conf.getString("tokenId"),
                 conf.getString("adminSecret", null),
-                conf.getInteger("sessionDurationSeconds", DEFAULT_SESSION_DURATION_SECONDS),
-                conf.getInteger("sessionRefreshThreshold", DEFAULT_REFRESH_THRESHOLD),
+                conf.getInteger("sessionDurationSeconds"),
+                conf.getInteger("sessionRefreshThreshold"),
                 conf.getInteger("conversionQueueThreshold"),
                 conf.getInteger("conversionQueueDelaySeconds"));
     }
