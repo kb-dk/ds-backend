@@ -1,0 +1,8 @@
+
+TODO:
+Validation of parent does not have parent. (optimize by storing in memory?).
+create database option -C (Postgres only)
+
+billede samling OAI-PMH:
+ http://www5.kb.dk/cop/oai/?metadataPrefix=mods&set=oai:kb.dk:images:billed:2010:okt:billeder&verb=ListRecords
+

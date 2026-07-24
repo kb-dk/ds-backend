@@ -1,0 +1,329 @@
+package dk.kb.license.api.v1.impl;
+
+import dk.kb.license.api.v1.DsLicenseApi;
+import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.facade.LicenseModuleFacade;
+import dk.kb.license.model.v1.*;
+import dk.kb.license.storage.*;
+import dk.kb.license.validation.LicenseValidator;
+import dk.kb.util.webservice.ImplBase;
+import org.apache.cxf.interceptor.InInterceptors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * ds-license by the Royal Danish Library
+ */
+@InInterceptors(interceptors = "dk.kb.license.webservice.KBAuthorizationInterceptor")
+public class DsLicenseApiServiceImpl extends ImplBase implements DsLicenseApi {
+    private static final Logger log = LoggerFactory.getLogger(DsLicenseApiServiceImpl.class);
+
+    @Override
+    public CheckAccessForIdsOutputDto checkAccessForIds(@NotNull CheckAccessForIdsInputDto input) {
+        log.debug("checkAccessForIds(...) called with call details: {}", getCallDetails());
+
+        try {
+            PresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
+        } catch (IllegalArgumentException e) {
+            log.error("Unknown presentationtype: " + input.getPresentationType());
+            CheckAccessForIdsOutputDto output = new CheckAccessForIdsOutputDto();
+            output.setAccessIds(new ArrayList<String>());
+            output.setPresentationType(input.getPresentationType());
+            output.setQuery("(NoAccess:NoAccess)"); //query that returns nothing
+
+            return output;
+        }
+
+        try {
+            CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input, ServiceConfig.SOLR_FILTER_ID_FIELD);
+
+            return output;
+        } catch (Exception e) {
+            log.error("Error in checkAccessForIds: ", e);
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public CheckAccessForIdsOutputDto checkAccessForResourceIds(@NotNull CheckAccessForIdsInputDto input) {
+        log.debug("checkAccessForResourceIds(...) called with call details: {}", getCallDetails());
+
+        try {
+            PresentationType presentationType = LicenseValidator.matchPresentationtype(input.getPresentationType());
+        } catch (IllegalArgumentException e) {
+            log.error("Unknown presentationtype: " + input.getPresentationType());
+            CheckAccessForIdsOutputDto output = new CheckAccessForIdsOutputDto();
+            output.setAccessIds(new ArrayList<String>());
+            output.setPresentationType(input.getPresentationType());
+            output.setQuery("(NoAccess:NoAccess)"); //query that returns nothing
+
+            return output;
+        }
+
+        try {
+            CheckAccessForIdsOutputDto output = LicenseValidator.checkAccessForIds(input, ServiceConfig.SOLR_FILTER_RESOURCE_ID_FIELD);
+
+            return output;
+        } catch (Exception e) {
+            log.error("Error in checkAccessForResourceIds: ", e);
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ValidateAccessOutputDto validateAccess(@Valid ValidateAccessInputDto input) {
+        log.debug("validateAccess(...) called with call details: {}", getCallDetails());
+        try {
+            boolean access = LicenseValidator.validateAccess(input);
+            ValidateAccessOutputDto output = new ValidateAccessOutputDto();
+            output.setAccess(access);
+
+            return output;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public GetUsersLicensesOutputDto getUserLicenses(@NotNull GetUsersLicensesInputDto input) {
+        log.debug("getUserLicenses(...) called with call details: {}", getCallDetails());
+
+        ArrayList<LicenseOverviewDto> list = new ArrayList<LicenseOverviewDto>();
+        GetUsersLicensesOutputDto output = new GetUsersLicensesOutputDto();
+        output.setLicenses(list);
+        try {
+            ArrayList<License> licenses = LicenseValidator.getUsersLicenses(input);
+
+            for (License current : licenses) {
+                LicenseOverviewDto item = new LicenseOverviewDto();
+                if ("en".equals(input.getLocale())) {
+                    item.setName(current.getLicenseName_en());
+                    item.setDescription(current.getDescription_en());
+                } else {
+                    item.setName(current.getLicenseName());
+                    item.setDescription(current.getDescription_dk());
+                }
+
+                item.setValidFrom(current.getValidFrom());
+                item.setValidTo(current.getValidTo());
+                list.add(item);
+            }
+
+            return output;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    public GetUsersFilterQueryOutputDto getUserLicenseQuery(@NotNull GetUserQueryInputDto input) {
+        log.debug("getUserLicenseQuery(...) called with call details: {}", getCallDetails());
+
+        try {
+            GetUserQueryOutputDto output = LicenseValidator.getUserQuery(input);
+
+            log.debug("-------------------getUserLicenseQuery----------------");
+            log.debug("input (presentationtype): " + input.getPresentationType());
+            log.debug("input (attributes): " + input.getAttributes());
+            log.debug("output (User license query): " + output.getQuery());
+            log.debug("output (groups) " + output.getUserLicenseGroups());
+
+            GetUsersFilterQueryOutputDto filterQuery = new GetUsersFilterQueryOutputDto();
+            filterQuery.setFilterQuery(output.getQuery());
+
+            return filterQuery;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public GetUserGroupsOutputDto getUserGroups(GetUserGroupsInputDto input) {
+        log.debug("getUserGroups(...) called with call details: {}", getCallDetails());
+        try {
+            ArrayList<UserGroupDto> groups = LicenseValidator.getUsersGroups(input);
+            GetUserGroupsOutputDto output = new GetUserGroupsOutputDto();
+            output.setGroups(groups);
+
+            return output;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public GetUserGroupsAndLicensesOutputDto getUserGroupsAndLicenses(GetUserGroupsAndLicensesInputDto input) {
+        log.debug("getUserGroupsAndLicenses(...) called with call details: {}", getCallDetails());
+
+        GetUserGroupsInputDto input1 = new GetUserGroupsInputDto();
+        input1.setAttributes(input.getAttributes());
+        input1.setLocale(input.getLocale());
+
+        GetUsersLicensesInputDto input2 = new GetUsersLicensesInputDto();
+        input2.setAttributes(input.getAttributes());
+        input2.setLocale(input.getLocale());
+
+        GetUserGroupsOutputDto userGroups = getUserGroups(input1);
+
+        GetUsersLicensesOutputDto userLicenses = getUserLicenses(input2);
+        GetUserGroupsAndLicensesOutputDto output = new GetUserGroupsAndLicensesOutputDto();
+        output.setAllPresentationTypes(LicenseValidator.getAllPresentationtypeNames(input.getLocale()));
+        output.setAllGroups(LicenseValidator.getAllGroupeNames(input.getLocale()));
+        output.setGroups(userGroups.getGroups());
+        output.setLicenses(userLicenses.getLicenses());
+
+        return output;
+    }
+
+    @Override
+    public LicenseDto getLicenseById(Long id) {
+        try {
+            LicenseDto result = LicenseModuleFacade.getLicenseById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<LicenseDto> getLicenses() {
+        try {
+            ArrayList<LicenseDto> result = LicenseModuleFacade.getLicenses();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public PresentationTypeDto getPresentationTypeById(Long id) {
+        try {
+            PresentationTypeDto result = LicenseModuleFacade.getPresentationTypeById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<PresentationTypeDto> getPresentationTypes() {
+        try {
+            ArrayList<PresentationTypeDto> result = LicenseModuleFacade.getPresentationTypes();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistPresentationType(PresentationTypeDto presentationTypeDto) {
+        try {
+            LicenseModuleFacade.persistPresentationType(presentationTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistGroupType(GroupTypeDto groupTypeDto) {
+        try {
+            LicenseModuleFacade.persistGroupType(groupTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<AttributeTypeDto> getAttributeTypesDto() {
+        try {
+            ArrayList<AttributeTypeDto> result = LicenseModuleFacade.getAttributeTypesDto();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public GroupTypeDto getGroupTypeById(Long id) {
+        try {
+            GroupTypeDto result = LicenseModuleFacade.getGroupTypeById(id);
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public ArrayList<GroupTypeDto> getGroupTypes() {
+        try {
+            ArrayList<GroupTypeDto> result = LicenseModuleFacade.getGroupTypes();
+            return result;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistLicenseDto(LicenseDto licenseDto) {
+        try {
+            LicenseModuleFacade.persistLicenseDto(licenseDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public void persistAttributeTypeDto(AttributeTypeDto attributeTypeDto) {
+        try {
+            LicenseModuleFacade.persistAttributeTypeDto(attributeTypeDto);
+            return;
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public RecordsCountDto deleteLicense(Long id, DeleteReasonDto deleteReasonDto) {
+        try {
+            return LicenseModuleFacade.deleteLicense(id, null, deleteReasonDto);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public RecordsCountDto deletePresentationType(String key, DeleteReasonDto deleteReasonDto) {
+        try {
+            LicenseModuleFacade.deletePresentationType(key, null, deleteReasonDto);
+            return new RecordsCountDto();
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public RecordsCountDto deleteGroupType(String key, DeleteReasonDto deleteReasonDto) {
+        try {
+            LicenseModuleFacade.deleteLicenseGroupType(key, null, deleteReasonDto);
+            return new RecordsCountDto();
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
+    public RecordsCountDto deleteAttributeType(String key, DeleteReasonDto deleteReasonDto) {
+        try {
+            return LicenseModuleFacade.deleteAttributeType(key, null, deleteReasonDto);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+}

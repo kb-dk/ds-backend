@@ -1,203 +1,91 @@
 package dk.kb.kaltura;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kaltura.client.enums.EntryModerationStatus;
-import com.kaltura.client.enums.EntryStatus;
-import com.kaltura.client.enums.ReportType;
-import com.kaltura.client.services.MediaService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import com.kaltura.client.types.APIException;
-import com.kaltura.client.types.BaseEntry;
-import com.kaltura.client.types.MediaEntryFilter;
-import com.kaltura.client.types.ReportInputFilter;
+import com.kaltura.client.types.MediaEntry;
 import dk.kb.kaltura.client.DsKalturaAnalytics;
-import dk.kb.kaltura.config.ServiceConfig;
-import dk.kb.kaltura.domain.ReportTableDto;
-import dk.kb.kaltura.domain.TopContentDto;
-import dk.kb.util.yaml.YAML;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-
-@Tag("integration")
 public class KalturaAnalyticsTest {
 
-    private static final Logger log = LoggerFactory.getLogger(KalturaAnalyticsTest.class);
-    private static final int DEFAULT_SESSION_DURATION_SECONDS = 86400;
-    private static final int DEFAULT_REFRESH_THRESHOLD = 3600;
+  DsKalturaAnalytics dsKalturaAnalytics;
 
+  @BeforeEach
+  void beforeEach() throws APIException {
+    dsKalturaAnalytics = new DsKalturaAnalytics(
+        "https://example.com",
+        "",
+        0,
+        "",
+        "",
+        "",
+        600,
+        0);
+  }
 
-    @BeforeAll
-    public static void setup() throws IOException {
-        ServiceConfig.initialize("src/main/conf/ds-kaltura-*.yaml"); // Does not seem like a solid construction
-        if ("yyyyy".equals(ServiceConfig.getConfig().getString("kaltura.tokenId")) &&
-                ("yyyyy".equals(ServiceConfig.getConfig().getString("kaltura.token")))) {
-            throw new IllegalStateException("An kaltura.token and kaltura.tokenId must be set to perform integration test. Please generate an appToken and" +
-                    "add it to the local configuration (NOT the *-behaviour.YAML configuration)");
-        }
-    }
+  @Test
+  public void getEntriesFromIdList_whenListOfObjectIdsIsNull_thenThrowIllegalArgumentException() {
+    // Arrange
+    List<String> nullList = null;
 
-    @Test
-    public void listAllRejectedEntriesGenericTest() throws APIException {
-        DsKalturaAnalytics client = getClient();
-        MediaEntryFilter mediaEntryFilter = new MediaEntryFilter();
-        mediaEntryFilter.setModerationStatusEqual(EntryModerationStatus.REJECTED);
-        String filename = "RejectedEntries_test.json";
-        client.exportAllEntriesToFile(mediaEntryFilter, MediaService::list, filename);
-    }
+    // Act and Assert
+    Exception exception = assertThrows(IllegalArgumentException.class,
+        () -> dsKalturaAnalytics.getEntriesFromIdList(nullList));
+    assertEquals("Null or empty objectIds list", exception.getMessage());
+  }
 
-    @Test
-    public void listAllEntriesGenericTest() throws APIException {
-        DsKalturaAnalytics client = getClient();
-        MediaEntryFilter mediaEntryFilter = new MediaEntryFilter();
-        mediaEntryFilter.statusIn(EntryStatus.READY.getValue());
-        mediaEntryFilter.setModerationStatusNotIn("notModerationStatus");
-        String filename = "AllEntries.json";
-        client.exportAllEntriesToFile(mediaEntryFilter, MediaService::list, filename);
-    }
+  @Test
+  public void getEntriesFromIdList_whenListOfObjectIdsIsEmpty_thenThrowIllegalArgumentException() {
+    // Arrange
+    List<String> emptyList = List.of();
 
-    @Test
-    public void listMediaEntriesTest() throws APIException {
-        List<String> kalturaIds = List.of(
-                "0_w5s6vp2a",
-                "0_o2e4ngw7",
-                "0_qbpo11nc",
-                "0_akjkov8b",
-                "0_r99v3ofh",
-                "0_hsdoxvuj",
-                "0_mznmaip5",
-                "0_83guhx04",
-                "0_nvjplxiv",
-                "0_5n5gsh0q",
-                "0_bbendl8f",
-                "0_zri8pmvr",
-                "0_6ck2166o",
-                "0_1ginfxxa",
-                "0_icg8mrky",
-                "0_h4ey0nco");
-        DsKalturaAnalytics client = getClient();
-        for (BaseEntry entry : client.getEntriesFromIdList(kalturaIds)) {
-            kalturaIds.contains(entry.getId());
-        }
-    }
+    // Act and Assert
+    Exception exception = assertThrows(IllegalArgumentException.class,
+        () -> dsKalturaAnalytics.getEntriesFromIdList(emptyList));
+    assertEquals("Null or empty objectIds list", exception.getMessage());
+  }
 
-    @Test
-    public void listMediaFromFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/test/resources/test_files" +
-                "/newStageEntryIds.txt",
-                StandardCharsets.UTF_8));) { // file where each line is a KalturaId
-            List<String> kalturaIds = reader.lines()
-                    .limit(10000)
-                    .map(String::strip)
-                    .collect(Collectors.toList());
+  @Test
+  public void listEntryBatch_whenListOfObjectIdsIsGreaterThanBatchSize_thenThrowIllegalArgumentException() {
+    // Arrange
+    List<String> mockList = mock(List.class);
+    when(mockList.size()).thenReturn(501);
 
-            System.out.println("KalturaIds: " + kalturaIds);
-            DsKalturaAnalytics client = getClient();
-            List<String> results = client.getEntriesFromIdList(kalturaIds).stream().map(BaseEntry::getId).collect(Collectors.toList());
+    // Act and Assert
+    Exception exception = assertThrows(IllegalArgumentException.class,
+        () -> dsKalturaAnalytics.listEntryBatch(mockList));
+    assertEquals("Size of objectIds: 501 is greater than batchSize: 500", exception.getMessage());
+  }
 
-            for (String id : kalturaIds) {
-                assertTrue(results.contains(id), "Id was not found in results: " + id);
-            }
+  @Test
+  public void listEntryBatch_whenHavingOneObjectId_thenReturnCorrespondingMediaEntry()
+      throws APIException {
+    // Arrange
+    DsKalturaAnalytics spyDsKalturaAnalytics = spy(dsKalturaAnalytics);
 
-        } catch (IOException | APIException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    UUID objectId = UUID.fromString("a00a0a00-a0aa-00a0-a000-00aaa00000a0");
 
-    @Test
-    public void getReportTableNoObjectIds() throws APIException {
-        DsKalturaAnalytics client = getClient();
-        ReportInputFilter filter = new ReportInputFilter();
-        filter.setFromDay("20250101");
-        filter.setToDay("20260101");
-        filter.setDomainIn("");
-        ReportType reportType = ReportType.TOP_CONTENT;
-        ReportTableDto map = client.getReportTable(reportType, filter, null, null);
-        String path = "src/test/resources/test_files/" + reportType.name() + "-" + LocalDateTime.now(ZoneId.systemDefault());
-        writeToFile(path, map);
-    }
+    MediaEntry mediaEntry = new MediaEntry();
+    mediaEntry.setReferenceId(objectId.toString());
+    List<MediaEntry> mediaEntryList = List.of(mediaEntry);
 
-    @Test
-    public void getReportFromEntryIds() throws APIException, IOException {
-        final YAML conf = ServiceConfig.getConfig().getSubMap("kaltura");
+    List<String> objectIds = List.of(objectId.toString());
 
-        List<String> ids =
-                readFromFile("./JsonObjects")
-                        .stream()
-                        .limit(10000)
-                        .map(x -> x.get("id").asText())
-                        .collect(Collectors.toList());
-//        ids.forEach(System.out::println);
-        LocalDate fromDay = LocalDate.of(2025, 1, 1);
-        LocalDate toDay = LocalDate.of(2026, 1, 1);
-        String domain = "www.kb.dk";
+    doReturn(mediaEntryList).when(spyDsKalturaAnalytics).getMediaEntries(objectIds);
 
-        DsKalturaAnalytics client = getClient();
-        List<TopContentDto> dtos = client.getTopContentFromIdList(fromDay, toDay, null, ids);
-        dtos.forEach(System.out::println);
-    }
+    // Act
+    List<MediaEntry> resultBaseEntryList = spyDsKalturaAnalytics.listEntryBatch(objectIds);
 
-    private void writeToFile(String filename, ReportTableDto reportTableDto) {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), Charset.defaultCharset()))) {
-            writer.write(reportTableDto.getHeader());
-            writer.newLine();
-            Arrays.stream(reportTableDto.getData().split(";")).forEach(line -> {
-                try {
-                    writer.write(line);
-                    writer.newLine();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            writer.flush();
-        } catch (IOException e) {
-            //TODO handle exception
-            e.printStackTrace();
-        }
-    }
-
-    public List<JsonNode> readFromFile(String filename) throws IOException {
-        List<JsonNode> jsonNodes = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), Charset.defaultCharset()))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                // Parse the JSON line into Params
-                JsonNode jsonNode = mapper.readValue(line, JsonNode.class);
-                jsonNodes.add(jsonNode);
-            }
-        }
-
-        return jsonNodes;
-    }
-
-    private DsKalturaAnalytics getClient() throws APIException {
-        final YAML conf = ServiceConfig.getConfig().getSubMap("kaltura");
-        return new DsKalturaAnalytics(
-                conf.getString("url"),
-                conf.getString("userId"),
-                conf.getInteger("partnerId"),
-                conf.getString("token"),
-                conf.getString("tokenId"),
-                conf.getString("adminSecret", null),
-                conf.getInteger("sessionDurationSeconds"),
-                conf.getInteger("sessionRefreshThreshold"));
-    }
+    // Assert
+    assertEquals(1, resultBaseEntryList.size());
+  }
 }
