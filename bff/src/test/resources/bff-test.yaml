@@ -1,0 +1,16 @@
+keycloak:
+  url: "https://keycloak-devel-01.kb.dk"
+  realm: "ds-poc"
+  clientID: "bff-poc"
+  secret: ""
+
+config:
+  autoupdate:
+    enabled: false
+
+
+messages:
+  msg1: "text1"
+  msg2: "text2"
+
+secretSalt: "averysecretSalt"
