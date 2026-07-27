@@ -7,7 +7,7 @@
 # Keycloak configuration
 keycloak:
   # URL should point to correct keycloak server
-  url: "https://keycloak-devel-01.kb.dk"
+  url: "https://keycloak.example.com"
   realm: "ds-poc"
   clientID: "bff-poc"
   # Secret used by BFF to communicate with keycloack
