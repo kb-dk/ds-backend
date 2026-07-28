@@ -1177,18 +1177,12 @@
       </xsl:when>
     </xsl:choose>
     <!-- Create boolean for premiere-->
-    <xsl:choose>
-      <xsl:when test="$pbcExtensions[f:contains(., 'premiere:ikke premiere')]">
-        <f:boolean key="kb:premiere">
-          <xsl:value-of select="false()"/>
-        </f:boolean>
-      </xsl:when>
-      <xsl:when test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
-        <f:boolean key="kb:premiere">
-          <xsl:value-of select="true()"/>
-        </f:boolean>
-      </xsl:when>
-    </xsl:choose>
+    <xsl:call-template name="pbc-extension-extract-boolean-value">
+      <xsl:with-param name="ext" select="$pbcExtensions[. = 'premiere:premiere' or . = 'premiere:ikke premiere']"/>
+      <xsl:with-param name="key" select="'premiere'"/>
+      <xsl:with-param name="affirmative" select="'premiere'"/>
+      <xsl:with-param name="outputKey" select="'kb:premiere'"/>
+    </xsl:call-template>
     <!-- Extract format identifiers -->
     <xsl:for-each select="$pbCore/pbcoreInstantiation/pbcoreFormatID">
       <xsl:choose>
@@ -1211,18 +1205,12 @@
     </xsl:for-each>
     <!--TODO: Figure if retransmission can fit into real schema.org -->
     <!-- Create boolean for retransmission-->
-    <xsl:choose>
-      <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:ikke genudsendelse')]">
-        <f:boolean key="kb:retransmission">
-          <xsl:value-of select="false()"/>
-        </f:boolean>
-      </xsl:when>
-      <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:genudsendelse')]">
-        <f:boolean key="kb:retransmission">
-          <xsl:value-of select="true()"/>
-        </f:boolean>
-      </xsl:when>
-    </xsl:choose>
+    <xsl:call-template name="pbc-extension-extract-boolean-value">
+      <xsl:with-param name="ext" select="$pbcExtensions[. = 'genudsendelse:genudsendelse' or . = 'genudsendelse:ikke genudsendelse']"/>
+      <xsl:with-param name="key" select="'genudsendelse'"/>
+      <xsl:with-param name="affirmative" select="'genudsendelse'"/>
+      <xsl:with-param name="outputKey" select="'kb:retransmission'"/>
+    </xsl:call-template>
     <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
          Some have external value, while others primarily are for internal usage.-->
     <xsl:for-each select="$pbCore/pbcoreExtension">
@@ -1366,6 +1354,28 @@
     </xsl:choose>
   </xsl:template>
 
+  <!-- EMIT A BOOLEAN FIELD FROM A 'key:X' / 'key:ikke X' PBCore extension.
+       Many extensions encode a boolean as the affirmative phrase X or its negation 'ikke X', e.g.
+       'tekstet:tekstet' (true) / 'tekstet:ikke tekstet' (false). This template emits
+       <f:boolean key="{outputKey}"> accordingly, and emits nothing when the extension matches
+       neither exact form. The affirmative phrase X is not derivable from the key (e.g. ttv -> 'tekst-tv'),
+       so it is supplied per call. -->
+  <xsl:template name="pbc-extension-extract-boolean-value">
+    <xsl:param name="ext"/>          <!-- the extension value(s) to test -->
+    <xsl:param name="key"/>          <!-- the extension key, e.g. 'tekstet' -->
+    <xsl:param name="affirmative"/>  <!-- the affirmative phrase X; 'ikke X' is the negation -->
+    <xsl:param name="outputKey"/>    <!-- the JSON field key to emit, e.g. 'kb:has_subtitles' -->
+    <xsl:variable name="prefix" select="$key || ':'"/>
+    <xsl:choose>
+      <xsl:when test="$ext = $prefix || 'ikke ' || $affirmative">
+        <f:boolean key="{$outputKey}"><xsl:value-of select="false()"/></f:boolean>
+      </xsl:when>
+      <xsl:when test="$ext = $prefix || $affirmative">
+        <f:boolean key="{$outputKey}"><xsl:value-of select="true()"/></f:boolean>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+
   <!-- EXTRACT VALUES FROM PBCORE EXTENSIONS TO KB:INTERNAL MAP. These extensions can contain many different values.
        Some might be relevant in relation to schema.org and can be elevated to the correct structure.-->
   <xsl:template name="extension-extractor">
@@ -1422,19 +1432,12 @@
       </xsl:when>
       <!-- Check if there has been a stop in the transmission-->
       <xsl:when test="f:starts-with(extension , 'program_ophold:')">
-        <!-- inner XSLT Choose which determines if program_ophold is false or true -->
-        <xsl:choose>
-          <xsl:when test="extension = 'program_ophold:ikke program ophold'">
-            <f:boolean key="kb:program_ophold">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test="extension = 'program_ophold:program ophold'">
-            <f:boolean key="kb:program_ophold">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
+        <xsl:call-template name="pbc-extension-extract-boolean-value">
+          <xsl:with-param name="ext" select="extension"/>
+          <xsl:with-param name="key" select="'program_ophold'"/>
+          <xsl:with-param name="affirmative" select="'program ophold'"/>
+          <xsl:with-param name="outputKey" select="'kb:program_ophold'"/>
+        </xsl:call-template>
       </xsl:when>
     </xsl:choose>
   </xsl:template>
@@ -1451,52 +1454,31 @@
       <!-- TODO: Check if has_subtitles fits in schema.org-->
       <!-- Boolean for if the program contains subtitles.-->
       <xsl:when test="f:starts-with(. , 'tekstet:')">
-        <!-- Inner XSLT  choose to determine value of boolean -->
-        <xsl:choose>
-          <xsl:when test=". = 'tekstet:ikke tekstet'">
-            <f:boolean key="kb:has_subtitles">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test=". = 'tekstet:tekstet'">
-            <f:boolean key="kb:has_subtitles">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
+        <xsl:call-template name="pbc-extension-extract-boolean-value">
+          <xsl:with-param name="ext" select="."/>
+          <xsl:with-param name="key" select="'tekstet'"/>
+          <xsl:with-param name="affirmative" select="'tekstet'"/>
+          <xsl:with-param name="outputKey" select="'kb:has_subtitles'"/>
+        </xsl:call-template>
       </xsl:when>
       <!-- Is the resource teletext?-->
       <xsl:when test="f:starts-with(. , 'ttv:')">
-        <!-- Inner XSLT  choose to determine value of boolean -->
-        <xsl:choose>
-          <xsl:when test=". = 'ttv:ikke tekst-tv'">
-            <f:boolean key="kb:is_teletext">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test=". = 'ttv:tekst-tv'">
-            <f:boolean key="kb:is_teletext">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
+        <xsl:call-template name="pbc-extension-extract-boolean-value">
+          <xsl:with-param name="ext" select="."/>
+          <xsl:with-param name="key" select="'ttv'"/>
+          <xsl:with-param name="affirmative" select="'tekst-tv'"/>
+          <xsl:with-param name="outputKey" select="'kb:is_teletext'"/>
+        </xsl:call-template>
       </xsl:when>
       <!--TODO: Check if subtitles for hearing impaired can be described in schema.org'-->
       <!-- Boolean value - does the resource contain subtitles for hearing impaired?-->
       <xsl:when test="f:starts-with(. , 'th:')">
-        <!-- Inner XSLT  choose to determine value of boolean -->
-        <xsl:choose>
-          <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
-            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test=". = 'th:tekstet for hørehæmmede'">
-            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
+        <xsl:call-template name="pbc-extension-extract-boolean-value">
+          <xsl:with-param name="ext" select="."/>
+          <xsl:with-param name="key" select="'th'"/>
+          <xsl:with-param name="affirmative" select="'tekstet for hørehæmmede'"/>
+          <xsl:with-param name="outputKey" select="'kb:has_subtitles_for_hearing_impaired'"/>
+        </xsl:call-template>
       </xsl:when>
     </xsl:choose>
   </xsl:template>
