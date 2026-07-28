@@ -122,7 +122,7 @@ COPY --from=builder /build/ds-datahandler/target/*.war /usr/local/tomcat/webapps
 COPY --from=builder /build/conf/ds-datahandler/local/ds-datahandler.logback.xml .
 COPY --from=builder /build/conf/ds-datahandler/local/ds-datahandler-devel.template.yaml .
 COPY --from=builder /build/conf/ds-datahandler/local/entrypoint.sh /entrypoint.sh
-COPY --from=builder /build/conf/ds-datahandler/local/ds.radiotv.txt ./oai.timestamps/
+COPY --from=builder /build/conf/ds-datahandler/local/stage_preservica_dr_arkiv.txt ./oai.timestamps/
 
 # CRITICAL: Copy the XML to the specific directory Tomcat monitors
 COPY --from=builder /build/conf/ds-datahandler/local/ds-datahandler.xml /usr/local/tomcat/conf/Catalina/localhost/ds-datahandler.xml
