@@ -14,15 +14,6 @@ openapi:
 
 # List of oai targets
 oaiTargets:
-  - name: dev_preservica_dr_arkiv
-    datasource: "${preservica_radio_tv_datasource}"
-    url: "${preservica_dev_url}"
-    user: "${preservica_dev_username}"
-    password: "${preservica_dev_password}"
-    metadataPrefix: xip
-    description: Radio- of TV-udsendelser
-    filter: dr
-    dateStampFormat: datetime
   - name: stage_preservica_dr_arkiv
     datasource: "${preservica_radio_tv_datasource}"
     url: "${preservica_stage_url}"
@@ -95,6 +86,8 @@ kaltura:
   adminSecret: ""
   token: "${kaltura_token}"
   tokenId: "${kaltura_token_id}"
+  sessionDurationSeconds: 86400
+  sessionRefreshThreshold: 3600
   conversionProfileIdAudio: 1403
   conversionProfileIdVideo: 1406
   conversionQueueThreshold: 50

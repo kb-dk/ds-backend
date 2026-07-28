@@ -51,7 +51,7 @@ OBS: The Keycloak container is sometimes a little while to start, so if you get 
 #### Fetch records from Preservica and save it in ds_records table:
 
 ```shell
-curl -X 'GET' 'http://localhost:8084/ds-datahandler/v1/oai/import/delta?oaiTarget=ds.radiotv' -H 'accept: application/json' -H "Authorization: Bearer $ACCESS_TOKEN"
+curl -X 'GET' 'http://localhost:8084/ds-datahandler/v1/oai/import/delta?oaiTarget=stage_preservica_dr_arkiv' -H 'accept: application/json' -H "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
 #### Solr indexing (we only have one collection (read and write in one))
