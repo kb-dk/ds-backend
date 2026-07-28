@@ -406,20 +406,8 @@
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
     <!-- TODO: Do some validation of titles - check with metadata schema when they are set.    -->
-    <xsl:variable name="title">
-      <xsl:for-each select="./pbcoreTitle">
-        <xsl:if test="./titleType = 'titel'">
-          <xsl:value-of select="./title"/>
-        </xsl:if>
-      </xsl:for-each>
-    </xsl:variable>
-    <xsl:variable name="original-title">
-      <xsl:for-each select="/pbcoreTitle">
-        <xsl:if test="./titleType = 'originaltitel'">
-          <xsl:value-of select="./title"/>
-        </xsl:if>
-      </xsl:for-each>
-    </xsl:variable>
+    <xsl:variable name="title" select="string-join(pbcoreTitle[titleType = 'titel']/title, ' ')"/>
+    <xsl:variable name="original-title" select="string-join(pbcoreTitle[titleType = 'originaltitel']/title, ' ')"/>
 
     <xsl:choose>
       <xsl:when test="$title = $original-title and $title != '' or ($title != '' and $original-title = '')">
@@ -444,23 +432,8 @@
 
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
       We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
-    <xsl:variable name="publisherSpecificIfExists">
-      <xsl:for-each select="./pbcorePublisher">
-        <xsl:if test="./publisherRole ='kanalnavn'">
-          <xsl:value-of select="./publisher"/>
-        </xsl:if>
-      </xsl:for-each>
-    </xsl:variable>
-    <xsl:variable name="publisherGeneralIfExists">
-      <xsl:for-each select="./pbcorePublisher">
-        <xsl:choose>
-          <xsl:when test="./publisherRole ='channel_name'">
-            <xsl:value-of select="./publisher"/>
-          </xsl:when>
-          <xsl:otherwise></xsl:otherwise>
-        </xsl:choose>
-      </xsl:for-each>
-    </xsl:variable>
+    <xsl:variable name="publisherSpecificIfExists" select="string-join(pbcorePublisher[publisherRole = 'kanalnavn']/publisher, ' ')"/>
+    <xsl:variable name="publisherGeneralIfExists" select="string-join(pbcorePublisher[publisherRole = 'channel_name']/publisher, ' ')"/>
 
     <xsl:variable name="publisherSpecific">
       <xsl:choose>
