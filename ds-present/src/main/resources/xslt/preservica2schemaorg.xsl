@@ -134,26 +134,13 @@
         <xsl:variable name="errorDoc">
           <f:map>
             <!-- First three fields for schema.org are these no matter which object the transformer transforms to. -->
-            <f:string key="@context">http://schema.org/</f:string>
-            <f:string key="@type"><xsl:value-of select="$type"/></f:string>
-            <f:string key="id">
-              <xsl:value-of select="$recordID"/>
-            </f:string>
-            <f:array key="identifier">
-              <f:map>
-                <f:string key="@type">PropertyValue</f:string>
-                <f:string key="PropertyID">Origin</f:string>
-                <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-              </f:map>
-            </f:array>
-            <f:map key="kb:internal">
-              <!-- Internal value for backing ds-storage mTime-->
-              <f:string key="kb:storage_mTime">
-                <xsl:value-of select="format-number($mTime, '0')"/>
-              </f:string>
-              <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
-              <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
-            </f:map>
+            <xsl:call-template name="schema-context-and-type">
+              <xsl:with-param name="type" select="$type"/>
+            </xsl:call-template>
+            <xsl:call-template name="origin-identifier"/>
+            <xsl:call-template name="error-internal-map">
+              <xsl:with-param name="errorDescription" select="concat($err:code, ': ', $err:description)"/>
+            </xsl:call-template>
           </f:map>
         </xsl:variable>
         <xsl:value-of select="f:xml-to-json($errorDoc)"/>
@@ -270,21 +257,10 @@
         <!-- Catches all errors in sequence constructors (places where data can be used as input). If an error occurs
              the field origin will be created and internal fields about the error will be created as well. -->
         <xsl:catch errors="*">
-          <f:array key="identifier">
-            <f:map>
-              <f:string key="@type">PropertyValue</f:string>
-              <f:string key="PropertyID">Origin</f:string>
-              <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-            </f:map>
-          </f:array>
-          <f:map key="kb:internal">
-            <!-- Internal value for backing ds-storage mTime-->
-            <f:string key="kb:storage_mTime">
-              <xsl:value-of select="format-number($mTime, '0')"/>
-            </f:string>
-            <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
-            <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
-          </f:map>
+          <xsl:call-template name="origin-identifier"/>
+          <xsl:call-template name="error-internal-map">
+            <xsl:with-param name="errorDescription" select="concat($err:code, ': ', $err:description)"/>
+          </xsl:call-template>
         </xsl:catch>
       </xsl:try>
 
@@ -354,13 +330,7 @@
             </xsl:for-each>
           </xsl:when>
           <xsl:otherwise>
-            <f:array key="identifier">
-              <f:map>
-                <f:string key="@type">PropertyValue</f:string>
-                <f:string key="PropertyID">Origin</f:string>
-                <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-              </f:map>
-            </f:array>
+            <xsl:call-template name="origin-identifier"/>
           </xsl:otherwise>
         </xsl:choose>
 
@@ -378,21 +348,10 @@
         <!-- Catches all errors in sequence constructors (places where data can be used as input). If an error occurs
            the field origin will be created and internal fields about the error will be created as well. -->
         <xsl:catch>
-          <f:array key="identifier">
-            <f:map>
-              <f:string key="@type">PropertyValue</f:string>
-              <f:string key="PropertyID">Origin</f:string>
-              <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-            </f:map>
-          </f:array>
-          <f:map key="kb:internal">
-            <!-- Internal value for backing ds-storage mTime-->
-            <f:string key="kb:storage_mTime">
-              <xsl:value-of select="format-number($mTime, '0')"/>
-            </f:string>
-            <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
-            <f:string key="kb:transformation_error_description"><xsl:value-of select="$err:description"/></f:string>
-          </f:map>
+          <xsl:call-template name="origin-identifier"/>
+          <xsl:call-template name="error-internal-map">
+            <xsl:with-param name="errorDescription" select="$err:description"/>
+          </xsl:call-template>
         </xsl:catch>
       </xsl:try>
     </f:map>
@@ -407,6 +366,33 @@
     <f:string key="id">
       <xsl:value-of select="$recordID"/>
     </f:string>
+  </xsl:template>
+
+  <!-- The 'identifier' array carrying only the Origin PropertyValue. Emitted on its own in the
+       error/fallback paths, where the full identifier array (with RecordID etc.) is not available. -->
+  <xsl:template name="origin-identifier">
+    <f:array key="identifier">
+      <f:map>
+        <f:string key="@type">PropertyValue</f:string>
+        <f:string key="PropertyID">Origin</f:string>
+        <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+      </f:map>
+    </f:array>
+  </xsl:template>
+
+  <!-- The 'kb:internal' map produced when a transformation error is caught: the storage mTime plus
+       the error flag and description. The description differs per call site, so it is passed in
+       (it must be computed where the err: error variables are in scope, i.e. inside xsl:catch). -->
+  <xsl:template name="error-internal-map">
+    <xsl:param name="errorDescription"/>
+    <f:map key="kb:internal">
+      <!-- Internal value for backing ds-storage mTime-->
+      <f:string key="kb:storage_mTime">
+        <xsl:value-of select="format-number($mTime, '0')"/>
+      </f:string>
+      <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
+      <f:string key="kb:transformation_error_description"><xsl:value-of select="$errorDescription"/></f:string>
+    </f:map>
   </xsl:template>
 
 
