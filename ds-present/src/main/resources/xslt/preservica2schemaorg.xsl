@@ -577,35 +577,29 @@
       </f:map>
     </xsl:if>
 
-    <!-- Create boolean containing true, if either 'produktionsland' or 'produktionsland_id' is present in metadata. -->
-    <xsl:variable name="produktionslandBoolean">
-      <xsl:choose>
-        <xsl:when test="$pbcExtensions[f:contains(., 'produktionsland:') or f:contains(., 'produktionsland_id:')]">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
+    <!-- True if either 'produktionsland' or 'produktionsland_id' is present in metadata.
+         Kept on contains() (not my:valueFromPBCoreExtensionKey) so an empty-valued extension still yields a bare
+         Country map, exactly as before. -->
+    <xsl:variable name="produktionslandBoolean"
+                  select="exists($pbcExtensions[f:contains(., 'produktionsland:') or f:contains(., 'produktionsland_id:')])"/>
 
     <!-- Create country of origin and add the identifier for the production country as text. -->
-    <xsl:if test="$produktionslandBoolean = f:true()">
+    <xsl:if test="$produktionslandBoolean">
       <f:map key="countryOfOrigin">
         <f:string key="@type">Country</f:string>
         <xsl:for-each select="./pbcoreExtension/extension">
-          <xsl:choose>
-            <xsl:when test="f:contains(. , 'produktionsland:') and substring-after(. , 'produktionsland:') != ''">
-              <f:string key="name">
-                <xsl:value-of select="f:substring-after(. , 'produktionsland:')"/>
-              </f:string>
-            </xsl:when>
-            <xsl:when test="f:contains(. , 'produktionsland_id:') and substring-after(. , 'produktionsland_id:') != ''">
-              <f:string key="identifier">
-                <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
-              </f:string>
-            </xsl:when>
-          </xsl:choose>
+          <!-- A single extension is either produktionsland:X or produktionsland_id:Y, so the
+               two branches are mutually exclusive and can be independent xsl:if. -->
+          <xsl:if test="my:valueFromPBCoreExtensionString(., 'produktionsland')">
+            <f:string key="name">
+              <xsl:value-of select="my:valueFromPBCoreExtensionString(., 'produktionsland')"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="my:valueFromPBCoreExtensionString(., 'produktionsland_id')">
+            <f:string key="identifier">
+              <xsl:value-of select="my:valueFromPBCoreExtensionString(., 'produktionsland_id')"/>
+            </f:string>
+          </xsl:if>
         </xsl:for-each>
       </f:map>
     </xsl:if>
@@ -1176,11 +1170,14 @@
           </f:boolean>
       </xsl:if>
 
-    <!-- Extract subgenre if present -->
+    <!-- Extract subgenre if present
+        <pbcoreGenre>
+          <genre>undergenre: Alle</genre>
+        </pbcoreGenre> -->
     <xsl:for-each select="$pbCore/pbcoreGenre/genre">
-      <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
+      <xsl:if test="my:valueFromPBCoreExtensionString(., 'undergenre')">
         <f:string key="kb:genre_sub">
-          <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
+          <xsl:value-of select="normalize-space(my:valueFromPBCoreExtensionString(., 'undergenre'))"/>
         </f:string>
       </xsl:if>
     </xsl:for-each>

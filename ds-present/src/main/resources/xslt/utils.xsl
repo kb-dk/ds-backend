@@ -16,6 +16,17 @@
   </xsl:param>
 
   <!-- FUNCTIONS -->
+  <!-- Value of a "key:value" PBCore extension string $extensionString for $key, or the empty sequence when the key value
+       does not match  -->
+  <xsl:function name="my:valueFromPBCoreExtensionString" as="xs:string?">
+    <xsl:param name="extentionString" as="xs:string?"/>
+    <xsl:param name="key" as="xs:string"/>
+    <xsl:variable name="marker" select="$key || ':'"/>
+    <xsl:sequence select="if (f:contains($extentionString, $marker) and f:substring-after($extentionString, $marker) ne '')
+                          then f:substring-after($extentionString, $marker)
+                          else ()"/>
+  </xsl:function>
+
   <!-- Get milliseconds between two datetimes. -->
   <xsl:function name="my:toMilliseconds" as="xs:integer">
     <xsl:param name="startDate" as="xs:dateTime"/>
