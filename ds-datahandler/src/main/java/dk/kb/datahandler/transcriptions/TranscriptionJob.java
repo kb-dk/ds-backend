@@ -20,7 +20,6 @@ public class TranscriptionJob {
     /**
      * Process all files in the transcription drop folder.
      * Each transcription is created from 3 different files that have same name but different suffixes.
-     *
      * Example names of the 3 files:
      *  <ul>
      *   <li>ab6afdbc-baa7-4f91-80f8-00ef54b9ee7e.info.fw.json</li>

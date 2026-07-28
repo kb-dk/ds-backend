@@ -5,16 +5,21 @@ All notable changes to ds-license will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [5.0.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-5.0.0) 2026-06-10
 
 ### Changed
+
 -  Changed 'og' -> '&' in holdback category names
 -  Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
 
 ### Added
+
 - New API method (/audit/auditEntries) to list AuditLogEntries by modifiedTime and ObjectTypeEnum.
 
 ### Fixed
+
 - Removed `'` from `/audit/auditEntries` in `ds-license-openapi_v1.yaml` file.
 
 ## [4.0.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-4.0.3) 2026-02-16

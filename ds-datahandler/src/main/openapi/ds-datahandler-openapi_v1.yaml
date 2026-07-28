@@ -184,7 +184,7 @@ paths:
       The transcription files will be moved to the configured completed folder on success or failure. Each will be have appended .fail or .completed as last extension
       Each transcription is split into 3 files having suffix extension <file_id>.ner.json , <file_id>.segments.fw.json and <file_id>.info.fw.json.       
       All 3 files are parsed to extract data and all 3 are moved to the completed folder.'
-      security: 
+      security:
         - KBOAuth:
           - any   
       operationId: transcriptionsLoad

@@ -15,7 +15,6 @@ public class TranscriptionsTest {
 
     @Test
     void parseTranscriptionFilesTest() throws Exception {
-
         //Load all 3 files and test mapping to TranscriptionDto
         String ner="transcriptions/ab6afdbc-baa7-4f91-80f8-00ef54b9ee7e.ner.json";
         URL nerFile = Resolver.resolveURL(ner);
@@ -31,5 +30,5 @@ public class TranscriptionsTest {
 
         String transcriptionLines=trans.getTranscriptionLines();
         assertTrue(transcriptionLines.startsWith("73.55 - 115.25 Her er transcription segment1\n")); //Notice double white space and new line
-   }
+    }
 }

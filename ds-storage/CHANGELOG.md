@@ -5,25 +5,32 @@ All notable changes to ds-storage will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [5.0.0](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-5.0.0) - 2026-06-10
 
 ### Changed
+
 - Removed all logic using intermediate Kaltura Mapping table. Not used any longer.
 - Table can be deleted with: DROP TABLE DS_MAPPING;
 - Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
 
 ### Fixed
+
 - Fixed keeping kalturaID in table when updating a record, if referenceID is the same for new and old record.
 
 ## [4.0.0](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-4.0.0) - 2026-01-29
 
 ### Added
+
 - New table in database (ds_transcriptions). DDL to create the table must be run for new release.
 - New service method transcription(POST) to add or update a transcription. Also added to DsStorageClient.(It was not, but is now)
 - New service method to load a transcription. Key is the external fileId (filename).
 
 ## [3.0.3](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-3.0.3) - 2025-12-03
+
 ### Fixed
+
 - Fix multiple records have same stream defined.This should not happen but it does due to data errors.
 
 ## [3.0.1](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-3.0.1) 2025-09-01
