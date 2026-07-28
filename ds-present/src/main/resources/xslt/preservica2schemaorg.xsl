@@ -217,10 +217,10 @@
           <!-- Aspect ratio contains many dirty values. such as ',', ', ', '16:9,' and '16:9, '. -->
           <xsl:choose>
             <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = ','"/>
-            <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9,' or normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9, '">
+            <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9,'">
               <f:string key="videoFrameSize">16:9</f:string>
             </xsl:when>
-            <xsl:when test="$pbCore/pbcoreInstantiation/formatAspectRatio != '' and normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) != ',' or ', '">
+            <xsl:when test="$pbCore/pbcoreInstantiation/formatAspectRatio != ''">
               <f:string key="videoFrameSize">
                 <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
               </f:string>
