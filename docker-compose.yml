@@ -1,0 +1,188 @@
+services:
+  ds-storage:
+    image: ds-storage/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-storage
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    ports:
+      - "8081:8080"
+    env_file:
+      - aegis/docker_compose/.env
+    restart: always
+
+  ds-license:
+    image: ds-license/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-license
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    ports:
+      - "8082:8080"
+    env_file:
+      - aegis/docker_compose/.env
+    restart: always
+
+  ds-present:
+    image: ds-present/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-present
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    ports:
+      - "8083:8080"
+    env_file:
+      - aegis/docker_compose/.env
+    restart: always
+
+  ds-datahandler:
+    image: ds-datahandler/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-datahandler
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    ports:
+      - "8084:8080"
+    env_file:
+      - aegis/docker_compose/.env
+    restart: always
+
+  ds-discover:
+    image: ds-discover/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-discover
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    ports:
+      - "8085:8080"
+    env_file:
+      - aegis/docker_compose/.env
+    restart: always
+
+  ds-image:
+    image: ds-image/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-image
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    ports:
+      - "8086:8080"
+    env_file:
+      - aegis/docker_compose/.env
+    restart: always
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev --import-realm --http-port=8087
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: user
+      KC_BOOTSTRAP_ADMIN_PASSWORD: changeit
+      KC_HTTP_ENABLED: "true"
+      # Sets the uniform identity for token issuance across your entire environment
+      KC_HOSTNAME: http://keycloak.local:8087
+    ports:
+      - "8087:8087"
+    networks:
+      default:
+        aliases:
+          - keycloak.local
+    volumes:
+      - ./compose-files/keycloak-import:/opt/keycloak/data/import
+      - keycloak_data:/opt/keycloak/data
+
+  postgres:
+    image: postgres:18-alpine3.24
+    container_name: digisam_postgres
+    environment:
+      POSTGRES_DB: digisam
+      POSTGRES_USER: digisam
+      POSTGRES_PASSWORD: p0stgr3s
+    ports:
+      - "8088:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./compose-files/apply-ordered-sql.sh:/docker-entrypoint-initdb.d/apply-ordered-sql.sh:ro
+      - ./compose-files/order.txt:/init-scripts/order.txt:ro
+      - ./ds-datahandler/src/test/resources/ddl/create_ds_datahandler_db.ddl:/init-scripts/create_ds_datahandler_db.ddl:ro
+      - ./ds-license/src/test/resources/ddl/licensemodule_create_db.ddl:/init-scripts/licensemodule_create_db.ddl:ro
+      - ./ds-license/src/test/resources/ddl/audit_log_module_create_db.ddl:/init-scripts/audit_log_module_create_db.ddl:ro
+      - ./ds-license/src/test/resources/ddl/rightsmodule_create.ddl:/init-scripts/rightsmodule_create.ddl:ro
+      - ./ds-storage/src/test/resources/ddl/create_ds_storage.ddl:/init-scripts/create_ds_storage.ddl:ro
+      - ./ds-license/src/test/resources/ddl/licensemodule_default_configuration.ddl:/init-scripts/licensemodule_default_configuration.ddl:ro
+      - ./ds-license/src/test/resources/ddl/rightsmodule_create_db.ddl:/init-scripts/rightsmodule_create_db.ddl:ro
+      - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_categories_data.sql:/init-scripts/rightsmodule_default_dr_holdback_categories_data.sql:ro
+      - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_ranges_data.sql:/init-scripts/rightsmodule_default_dr_holdback_ranges_data.sql:ro
+      - ./ds-license/src/test/resources/ddl/licensemodule_create_devel_license.sql:/init-scripts/licensemodule_create_devel_license.sql:ro
+
+  solr:
+    image: solr-image/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: solr
+    container_name: ds-solr
+    environment:
+      SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
+    ports:
+      - "8089:8983"
+      - "9983:9983"
+    env_file:
+      - aegis/docker_compose/.env
+    command: ["solr-foreground", "-c"]
+    volumes:
+      - solr_data:/opt/solr/server/solr/writable
+    restart: unless-stopped
+
+  bff-image:
+    image: bff/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bff
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    ports:
+      - "8091:8080"
+    env_file:
+      - aegis/docker_compose/.env
+    restart: always
+
+  ds-web:
+    image: ds-web/local:latest
+    container_name: web
+    ports:
+      - "8090:3000"
+    env_file:
+      - aegis/docker_compose/.env
+    restart: always
+
+volumes:
+  solr_data:
+  keycloak_data:
+  postgres_data:
+
+secrets:
+   maven_settings:
+     file: ~/.m2/settings.xml
+   maven_settings_security:
+     file: ~/.m2/settings-security.xml

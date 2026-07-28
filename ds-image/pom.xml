@@ -11,7 +11,7 @@
     <groupId>dk.kb.image</groupId>
     <artifactId>ds-image</artifactId>
     <version>100.0.0-SNAPSHOT</version>
-    
+
     <packaging>war</packaging>
     <description>ds-image by the Royal Danish Library</description>
 
@@ -55,9 +55,7 @@
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
-
-        <!-- Client for ds-license. This will also require the org.openapitools dependency-->
-       <dependency>
+        <dependency>
             <groupId>dk.kb.license</groupId>
             <artifactId>ds-license</artifactId>
             <version>100.0.0-SNAPSHOT</version>
@@ -149,12 +147,12 @@
              <exclusions>
                 <exclusion>
                      <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
-                    <artifactId>org.slf4j</artifactId>                              
+                    <artifactId>org.slf4j</artifactId>
                     <groupId>slf4j-simple</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
-        
+
         <!-- URI templating by RFC6570 -->
         <dependency>
           <groupId>com.damnhandy</groupId>
@@ -230,7 +228,10 @@
 
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
                         <!--This ensures that the ds-image-openapi_*.yaml have been filtered and copied to target/classes
@@ -380,9 +381,8 @@
                         </manifest>
                     </archive>
 
-                   <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->                    
-                   <!-- <attachClasses>true</attachClasses> --> 
-
+                   <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->
+                   <!-- <attachClasses>true</attachClasses> -->
 
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
@@ -406,10 +406,9 @@
                     </webResources>
                 </configuration>
             </plugin>
-
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>            
+               <artifactId>maven-jar-plugin</artifactId>
                <executions>
                    <execution>
                    <id>build-specific-jar</id>
@@ -417,18 +416,16 @@
                    <goals>
                        <goal>jar</goal>
                    </goals>
-                  <configuration>                
+                  <configuration>
                       <classifier>api</classifier>
-                      <includes>                       
+                      <includes>
                           <include>dk/kb/image/model/**</include>
-                          <include>dk/kb/image/util/DsImageClient*</include>                                            
+                          <include>dk/kb/image/util/DsImageClient*</include>
                       </includes>
                  </configuration>
                  </execution>
               </executions>
             </plugin>
-
-
 
             <!-- Used only for mvn jetty:run jetty:run-war -->
             <plugin>
@@ -494,5 +491,4 @@
           </plugin>
         </plugins>
     </build>
-
 </project>

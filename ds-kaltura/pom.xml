@@ -104,7 +104,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.7.1</version>
+                <version>3.8.0</version>
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -112,37 +112,10 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-
-                    <!-- was missing the following one -->
-                    <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
-                    </execution>
-
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <tarLongFileMode>posix</tarLongFileMode>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>

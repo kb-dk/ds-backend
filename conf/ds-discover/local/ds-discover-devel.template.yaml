@@ -1,0 +1,113 @@
+# This config contains developer specific overrides, such as read-only account credentials and test server locations.
+# It is a mix of behaviour and environmental setup.
+#
+# If will be automatically merged with the ds-discover-behaviour.yams upon application start.
+# Values in the ds-discover-local.yaml files takes precedence over the behaviour file as the files are sorted
+# alphanumerically by name and applied in order.
+#
+# This config is controlled by the individual developer and is not part of the code repository.
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  serverurl: "${discover_url}"
+  # SuggestComponent used by the backing solr. This sets the default and example suggester in the OpenAPI interface.
+  suggester: radiotv_title_suggest
+
+solr:
+  # /select specific config
+  select:
+    # Parameters that are default for all queries, but can be overridden by the request.
+    # The values of the params are either scalars or lists of scalars.
+    # Unless there are special reasons not to, default params should be specified
+    # in solrconfig.xml.
+    # The 'fq' param has no special status here: If the request contains 1 or more fq
+    # values, they will override any fq specified under defaultParams.
+    defaultParams:
+      # Compensate for a Solr bug causing crashes when the config has this
+      # parameter as default for the /select handler.
+      # This param should be made part of solrconfig.xml when the Solr bug
+      # has been resolved
+      spellcheck.maxCollationRetries: 10
+    # Parameters that are forced for all queries, overriding params from the request.
+    # The values of the params are either scalars or lists of scalars.
+    # The param 'fq' is special as it appends to any existing 'fq' while all other
+    # params are overwritten
+    forcedParams:
+
+  # /mlt specific config
+  mlt:
+    # Unless there are special reasons not to, default params should be specified
+    # in solrconfig.xml. See solr.select for description of default- and forced-params
+    defaultParams:
+    forcedParams:
+
+  shield:
+    # Whether SolrShield is enabled.
+    # If false, SolrShield evaluation is still performed but the response is only logged.
+    # IS only set to false because of: https://kb-dk.atlassian.net/browse/DRA-1788
+    enabled: true
+    # Current max weight is very likely to be too low for practical use.
+    # More experimenting with SolrShield is needed in order to determine a proper max weight
+    defaultMaxWeight: 2000
+
+  # Allow all Solr parameters (only set to true if local / devel)
+  # If permissive is false, only vetted Solr parameters are accepted
+  # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
+  # Intended for development purposes.
+  # WARNING: This should never be true in production.
+  permissive: false
+
+  # Test purpose only in ds-discover-behaviour.yaml. Override in environment configuration.
+  collections:
+    # Keys are collection names
+    # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost
+    - ds: # ${solr_url}/solr/${solr_read_collection}/select?q=foo
+        # The Solr server, including port
+        # Mandatory
+        server: "${solr_url}"
+        # The path for the Solr service
+        # Optional. Default is "solr"
+        path: "solr"
+        # The Solr collection ID
+        # Mandatory. Typically the same as the abstract collection name
+        collection: "${solr_read_collection}"
+        # Path to SolrShield config for this collection
+        # Path can be absolute or relative to the ds-discover-*.yaml files
+        # Optional. If not set, no shield will be usd for this colllection
+        # shield: "solrshield-ds.yaml"
+  #Minimum number of characters required for suggest
+  suggestMinimumLength: 3
+
+#License module is called to generate a filter query that is used when calling Solr
+licensemodule:
+  url: "${license_url}"
+
+security:
+  # The security mode. Valid values are
+  # OFFLINE: No validation of security tokens: All requests are accepted.
+  # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
+  mode: "${security_mode}"
+  # The OAUth2 server base url, typically ending in "realms"
+  # Sample: https://keycloak-keycloak.example.org/auth/realms
+  baseurl: "${keycloak_url}/realms"
+  # The authentification url with the correct realm value. Does not seem the used active by code but is required when building. (TODO?)
+  auth_url: "https://api.example.com/oauth2/authorize"
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  realms:
+    - "${keycloak_realm}"
+  public_keys:
+    # The number of seconds that public keys from the realms are cached
+    # Optional, -1 means forever.
+    # Default is 600 (10 minutes)
+    ttl_seconds: 86400
+  # Client settings are used if the webapp needs to request tokens from the OAuth2 server
+  client:
+    # Matches OAuth2 server Client ID
+    id: "${keycloak_client_id}"
+    # Secret is used if the service needs to request a token from the OAuth2 server.
+    # This typically used for calls between services, where there is a need for elevated access.
+    secret: "${keycloak_client_secret}"
+
+present:
+  url: "${present_url}"

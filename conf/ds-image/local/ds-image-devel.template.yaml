@@ -1,0 +1,103 @@
+#
+# This config contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
+#
+# The behaviour config is normally controlled by developers and is part of the code repository.
+# Sensitive information such as machine names and user/passwords should not be part of this config but belong
+# in the 'environment' and 'local' configurations
+#
+# It will be automatically merged with the environment config when accessed through the
+# application config system.
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  # This is the URL where this service is deployed appended with /v1
+  serverurl: "${image_url}"
+  exampleid: online_master_arkiv_5/non-archival/Manus/JUDSAM/2008/csh0004/csh0004_00528/
+
+# Url to licensemodule
+licensemodule:
+  url: "${license_url}"
+
+# Only for testing!
+imageservers:
+  iip:
+    # https://imagenes.rjb.csic.es/fcgi-bin/iipsrv.fcgi?FIF=/Catalogo/Fanerogamia/IMGS_web/IMGS_jp2/MA-03-00736771.jp2&WID=2200&QLT=40&CVT=jpeg
+
+    # https://collectionimages.npg.org.uk/matbzooms?FIF=static/matb/zooms/2094.tif&WID=1000&CVT=jpg
+
+    # Current 2022-11-28
+    # Full request URL sample: ${image_url}/IIP/?FIF=%2FDAMJP2%2Fonline_master_arkiv_3%2Fnon-archival%2FImages%2FBILLED%2FPOSTKORT_VESTINDIEN%2FPOSTKORT_KASSE_3%2FDPK001466&ROT=0&CVT=jpeg
+    server: "${kb_iip_stage_url}"
+
+  # Full request URL sample: http://example.com:1234/non-archival/Images/noerrealle_portraetter/nap_2654/full/!166,/0/native.jpg
+  iiif:
+    #server: "http://kb-images.kb.dk/"
+    # Current 2022-11-28
+    server: "${kb_iip_stage_url}"
+
+  # Deepzoom can be used with different imageservers. Some servers requires DeepZoom as param, others require DeepZoom in path.
+  # This has to be defined below. If you are using a parameter based server you out comment the path argument and vice-versa
+  deepzoom:
+    # Full request URL sample: http://example.com:1234/image_identifier.dzi
+    # path: "http://example.com:1234/"
+    # Full request URL sample: "http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
+    #param: "http://example.com:1234/iipsrv/iipsrv.fcgi"
+
+    # Examples:
+    # path: https://labs.statsbiblioteket.dk/anskuelse/adams_history/18068.dzi
+    # param: https://imagenes.rjb.csic.es/fcgi-bin/iipsrv.fcgi?DeepZoom=/Catalogo/Fanerogamia/IMGS_web/IMGS_jp2/MA-02-00564160.jp2.dzi
+    #path: "https://labs.statsbiblioteket.dk/anskuelse/adams_history/"
+
+    # duomo.dzi
+    #path: "https://openseadragon.github.io/example-images/duomo/"
+    # param: "https://imagenes.rjb.csic.es/fcgi-bin/iipsrv.fcgi"
+
+    # KB stage
+    param: "${kb_iip_stage_url}"
+
+# Default images returned if there is no access to image or image(id) does not exist
+images:
+  noAccess: noAccess.jpg
+  nonExisting: nonExisting.jpg
+
+# Image sizes to determine thumbnail from full size. Licence module determine access to images.
+# "Thumbnails" and "Fullsize" are two different presentation types.
+# If custom IIIF or IIP parameters except for size are defined it will always be fullsize. If only size are defined and smaller than these limit, then it will be thumbnail
+thumbnail:
+  height:
+    max: 150
+  width:
+    max: 150
+
+# Use token and tokenId instead of admin secret
+kaltura:
+  url: "${kaltura_url}"
+  partnerId: "${kaltura_partner_id}"
+
+security:
+  # The security mode. Valid values are
+  # OFFLINE: No validation of security tokens: All requests are accepted.
+  # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
+  mode: "${security_mode}"
+  # The OAUth2 server base url, typically ending in "realms"
+  # Sample: https://keycloak-keycloak.example.org/auth/realms
+  baseurl: "${keycloak_url}/realms"
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  # The authentification url with the correct realm value. Does not seem the used active by code but is required when building. (TODO?)
+  auth_url: "${keycloak_url}/oauth2/authorize"
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  realms:
+    - DS
+  public_keys:
+    # The number of seconds that public keys from the realms are cached
+    # Optional, -1 means forever.
+    # Default is 600 (10 minutes)
+    ttl_seconds: 86400
+  # Client settings are used if the webapp needs to request tokens from the OAuth2 server
+  client:
+    # Matches OAuth2 server Client ID
+    id: "${keycloak_client_id}"
+    # Secret is used if the service needs to request a token from the OAuth2 server.
+    # This typically used for calls between services, where there is a need for elevated access.
+    secret: "${keycloak_client_secret}"

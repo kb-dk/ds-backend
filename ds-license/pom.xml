@@ -234,7 +234,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
@@ -247,7 +247,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-       </dependency>
+        </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -456,7 +456,10 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
                         <!--This ensures that the openapi_*.yaml have been filtered and copied to target/classes
@@ -629,9 +632,9 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-                 
-                   <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->                    
-                   <!-- <attachClasses>true</attachClasses> --> 
+
+                   <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->
+                   <!-- <attachClasses>true</attachClasses> -->
 
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
@@ -658,7 +661,7 @@
 
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>            
+               <artifactId>maven-jar-plugin</artifactId>
                <executions>
                    <execution>
                    <id>build-specific-jar</id>
@@ -666,11 +669,11 @@
                    <goals>
                        <goal>jar</goal>
                    </goals>
-                  <configuration>                
+                  <configuration>
                       <classifier>api</classifier>
-                      <includes>                       
+                      <includes>
                           <include>dk/kb/license/model/**</include>
-                          <include>dk/kb/license/util/DsLicenseClient*</include>                                            
+                          <include>dk/kb/license/util/DsLicenseClient*</include>
                       </includes>
                  </configuration>
                  </execution>

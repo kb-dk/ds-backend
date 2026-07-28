@@ -301,6 +301,7 @@ paths:
        tags:
          - '${project.name}'
        summary: 'Transform solr schema to a different format'
+       operationId: transformSolrSchema
        parameters:
          - name: format
            in: query

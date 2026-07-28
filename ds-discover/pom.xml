@@ -55,8 +55,7 @@
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
-
-     <dependency>
+        <dependency>
             <groupId>dk.kb.license</groupId>
             <artifactId>ds-license</artifactId>
             <version>100.0.0-SNAPSHOT</version>
@@ -251,7 +250,10 @@
 
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
                         <!--This ensures that the openapi_*.yaml have been filtered and copied to target/classes
@@ -409,8 +411,8 @@
                         </manifest>
                     </archive>
 
-                   <!-- Generation of API jar is done in seperate plugin and only contains DTOs and client class -->                    
-                   <!-- <attachClasses>true</attachClasses> --> 
+                   <!-- Generation of API jar is done in seperate plugin and only contains DTOs and client class -->
+                   <!-- <attachClasses>true</attachClasses> -->
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
@@ -437,7 +439,7 @@
 
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>            
+               <artifactId>maven-jar-plugin</artifactId>
                <executions>
                    <execution>
                    <id>build-specific-jar</id>
@@ -445,11 +447,11 @@
                    <goals>
                        <goal>jar</goal>
                    </goals>
-                  <configuration>                
+                  <configuration>
                       <classifier>api</classifier>
-                      <includes>                       
+                      <includes>
                           <include>dk/kb/discover/model/**</include>
-                          <include>dk/kb/discover/util/DsDiscoverClient*</include>                                            
+                          <include>dk/kb/discover/util/DsDiscoverClient*</include>
                       </includes>
                  </configuration>
                  </execution>
@@ -520,5 +522,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
