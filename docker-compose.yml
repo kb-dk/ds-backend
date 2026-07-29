@@ -12,6 +12,8 @@ services:
       - "8081:8080"
     env_file:
       - aegis/docker_compose/.env
+    networks:
+      - default
     restart: always
 
   ds-license:
@@ -27,6 +29,8 @@ services:
       - "8082:8080"
     env_file:
       - aegis/docker_compose/.env
+    networks:
+      - default
     restart: always
 
   ds-present:
@@ -42,6 +46,8 @@ services:
       - "8083:8080"
     env_file:
       - aegis/docker_compose/.env
+    networks:
+      - default
     restart: always
 
   ds-datahandler:
@@ -57,6 +63,8 @@ services:
       - "8084:8080"
     env_file:
       - aegis/docker_compose/.env
+    networks:
+      - default
     restart: always
 
   ds-discover:
@@ -72,6 +80,8 @@ services:
       - "8085:8080"
     env_file:
       - aegis/docker_compose/.env
+    networks:
+      - default
     restart: always
 
   ds-image:
@@ -87,6 +97,8 @@ services:
       - "8086:8080"
     env_file:
       - aegis/docker_compose/.env
+    networks:
+      - default
     restart: always
 
   keycloak:
@@ -132,6 +144,8 @@ services:
       - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_categories_data.sql:/init-scripts/rightsmodule_default_dr_holdback_categories_data.sql:ro
       - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_ranges_data.sql:/init-scripts/rightsmodule_default_dr_holdback_ranges_data.sql:ro
       - ./ds-license/src/test/resources/ddl/licensemodule_create_devel_license.sql:/init-scripts/licensemodule_create_devel_license.sql:ro
+    networks:
+      - default
 
   solr:
     image: solr-image/master:latest
@@ -150,9 +164,11 @@ services:
     command: ["solr-foreground", "-c"]
     volumes:
       - solr_data:/opt/solr/server/solr/writable
-    restart: unless-stopped
+    networks:
+      - default
+    restart: always
 
-  bff-image:
+  bff:
     image: bff/master:latest
     build:
       context: .
@@ -165,6 +181,8 @@ services:
       - "8091:8080"
     env_file:
       - aegis/docker_compose/.env
+    networks:
+      - default
     restart: always
 
   ds-web:
@@ -174,6 +192,8 @@ services:
       - "8090:3000"
     env_file:
       - aegis/docker_compose/.env
+    networks:
+      - default
     restart: always
 
 volumes:
