@@ -81,19 +81,10 @@
     <xsl:if test="./pbcorePublisher">
       <f:map key="publication">
         <f:string key="@type">BroadcastEvent</f:string>
-        <!-- Define isLiveBroadcast from live extension field.  -->
-        <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
-        <xsl:for-each select="./pbcoreExtension/extension">
-          <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live:ikke live')">
-            <f:boolean key="isLiveBroadcast">
-              <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
-              <xsl:choose>
-                <xsl:when test="contains(., 'live:live')"><xsl:value-of select="true()"/></xsl:when>
-                <xsl:when test="contains(., 'live:ikke live')"><xsl:value-of select="false()"/></xsl:when>
-              </xsl:choose>
-            </f:boolean>
-          </xsl:if>
-        </xsl:for-each>
+        <!-- Define isLiveBroadcast from the 'live' extension: live:live -> true, live:ikke live -> false,
+             nothing when absent. Same helper as the kb:* booleans (exact match over the whole extension set).
+             TODO: Figure out what to do when the live field isn't present in metadata. -->
+        <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'live', 'live', 'ikke live', 'isLiveBroadcast')"/>
         <!-- Preservica contains two different fields for broadcaster-->
         <xsl:if test="$publisherSpecific != ''">
           <f:map key="publishedOn">
