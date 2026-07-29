@@ -1351,15 +1351,49 @@
 
   <!-- EXTRACT VALUES FROM PBCORE EXTENSIONS TO KB:INTERNAL MAP. These extensions can contain many different values.
        Some might be relevant in relation to schema.org and can be elevated to the correct structure.-->
+  <!-- PBCore "prefix:value" extension strings that map straight onto a <f:string key="kb:..."> field.
+       Kept as two disjoint maps because the two extractor templates below iterate over the SAME set of
+       extensions but must each emit only their own fields (a shared map would duplicate keys). Add a
+       plain id field by adding one entry here instead of a new xsl:when branch. -->
+  <xsl:variable name="extensionIdFieldMap" as="map(xs:string, xs:string)">
+    <xsl:map>
+      <xsl:map-entry key="'hovedgenre_id'" select="'kb:maingenre_id'"/>
+      <xsl:map-entry key="'program_id'"    select="'kb:ritzau_program_id'"/>
+      <xsl:map-entry key="'undergenre_id'" select="'kb:subgenre_id'"/>
+      <xsl:map-entry key="'afsnit_id'"     select="'kb:episode_id'"/>
+      <xsl:map-entry key="'saeson_id'"     select="'kb:season_id'"/>
+      <xsl:map-entry key="'serie_id'"      select="'kb:series_id'"/>
+    </xsl:map>
+  </xsl:variable>
+  <xsl:variable name="videoExtensionStringFieldMap" as="map(xs:string, xs:string)">
+    <xsl:map>
+      <xsl:map-entry key="'showviewcode'" select="'kb:showviewcode'"/>
+    </xsl:map>
+  </xsl:variable>
+
+  <!-- For a PBCore extension text of the form "prefix:value", emit <f:string key="{mapped key}">value</f:string>
+       when "prefix" is a key in $fieldMap; otherwise nothing. Preserves the old substring-after semantics:
+       an empty value (e.g. "serie_id:") still produces an empty-valued field. -->
+  <xsl:function name="my:extensionStringField">
+    <xsl:param name="extensionText" as="xs:string?"/>
+    <xsl:param name="fieldMap" as="map(xs:string, xs:string)"/>
+    <xsl:variable name="prefix" as="xs:string" select="f:substring-before($extensionText, ':')"/>
+    <xsl:variable name="outputKey" as="xs:string?" select="$fieldMap($prefix)"/>
+    <xsl:if test="exists($outputKey)">
+      <f:string key="{$outputKey}">
+        <xsl:value-of select="f:substring-after($extensionText, $prefix || ':')"/>
+      </f:string>
+    </xsl:if>
+  </xsl:function>
+
   <xsl:template name="extension-extractor">
     <xsl:param name="type"/>
     <!-- Extracts multiple internal ids. -->
+    <!-- Simple "prefix:value" -> <f:string key="kb:..."> id fields are table-driven via $extensionIdFieldMap.
+         Only extensions that need extra logic remain as explicit branches below: a numeric channel id that is
+         resolved against an authority, and the program_ophold boolean. -->
+    <xsl:sequence select="my:extensionStringField(extension, $extensionIdFieldMap)"/>
     <xsl:choose>
-      <xsl:when test="f:starts-with(extension, 'hovedgenre_id:')">
-        <f:string key="kb:maingenre_id">
-          <xsl:value-of select="substring-after(extension , 'hovedgenre_id:')"/>
-        </f:string>
-      </xsl:when>
       <xsl:when test="f:starts-with(extension , 'kanalid:') and f:string-length(normalize-space(substring-after(extension , 'kanalid:'))) > 0">
         <xsl:variable name="channelId">
           <xsl:value-of select="number(normalize-space(substring-after(extension , 'kanalid:')))"/>
@@ -1378,31 +1412,6 @@
           </xsl:when>
         </xsl:choose>
       </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'program_id:')">
-        <f:string key="kb:ritzau_program_id">
-          <xsl:value-of select="f:substring-after(extension , 'program_id:')"/>
-        </f:string>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'undergenre_id:')">
-        <f:string key="kb:subgenre_id">
-          <xsl:value-of select="f:substring-after(extension , 'undergenre_id:')"/>
-        </f:string>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'afsnit_id:')">
-        <f:string key="kb:episode_id">
-          <xsl:value-of select="f:substring-after(extension , 'afsnit_id:')"/>
-        </f:string>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'saeson_id:')">
-        <f:string key="kb:season_id">
-          <xsl:value-of select="f:substring-after(extension , 'saeson_id:')"/>
-        </f:string>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'serie_id:')">
-        <f:string key="kb:series_id">
-          <xsl:value-of select="f:substring-after(extension , 'serie_id:')"/>
-        </f:string>
-      </xsl:when>
       <!-- Check if there has been a stop in the transmission-->
       <xsl:when test="f:starts-with(extension , 'program_ophold:')">
         <xsl:call-template name="pbc-extension-extract-boolean-value">
@@ -1417,13 +1426,10 @@
 
   <!-- Extracts extensions that are only applicable for video objects. -->
   <xsl:template name="video-extension-extractor">
+    <!-- showviewcode is a simple "prefix:value" -> <f:string> id field (table-driven via
+         $videoExtensionStringFieldMap); the remaining extensions are booleans handled below. -->
+    <xsl:sequence select="my:extensionStringField(., $videoExtensionStringFieldMap)"/>
     <xsl:choose>
-      <!--Extract internal showviewcode -->
-      <xsl:when test="f:starts-with(. , 'showviewcode:')">
-        <f:string key="kb:showviewcode">
-          <xsl:value-of select="f:substring-after(. , 'showviewcode:')"/>
-        </f:string>
-      </xsl:when>
       <!-- TODO: Check if has_subtitles fits in schema.org-->
       <!-- Boolean for if the program contains subtitles.-->
       <xsl:when test="f:starts-with(. , 'tekstet:')">
