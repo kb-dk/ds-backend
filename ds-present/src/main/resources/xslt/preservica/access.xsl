@@ -62,7 +62,7 @@
     <xsl:choose>
       <xsl:when test="overlaps != ''">
         <f:string key="kb:program_structure_overlaps">
-          <xsl:value-of select="f:true()"/>
+          <xsl:value-of select="true()"/>
         </f:string>
         <f:array key="kb:program_structure_overlap">
           <xsl:for-each select="overlaps/overlap">
@@ -88,7 +88,7 @@
       </xsl:when>
       <xsl:otherwise>
         <f:string key="kb:program_structure_overlaps">
-          <xsl:value-of select="f:false()"/>
+          <xsl:value-of select="false()"/>
         </f:string>
       </xsl:otherwise>
     </xsl:choose>

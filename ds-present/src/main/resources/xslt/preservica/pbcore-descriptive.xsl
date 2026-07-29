@@ -88,7 +88,7 @@
             <f:boolean key="isLiveBroadcast">
               <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
               <xsl:choose>
-                <xsl:when test="contains(., 'live:live')"><xsl:value-of select="f:true()"/></xsl:when>
+                <xsl:when test="contains(., 'live:live')"><xsl:value-of select="true()"/></xsl:when>
                 <xsl:when test="contains(., 'live:ikke live')"><xsl:value-of select="false()"/></xsl:when>
               </xsl:choose>
             </f:boolean>
