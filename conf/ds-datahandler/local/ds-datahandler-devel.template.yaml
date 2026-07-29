@@ -15,10 +15,10 @@ openapi:
 # List of oai targets
 oaiTargets:
   - name: stage_preservica_dr_arkiv
-    datasource: "${preservica_radio_tv_datasource}"
-    url: "${preservica_stage_url}"
-    user: "${preservica_stage_username}"
-    password: "${preservica_stage_password}"
+    datasource: ds.radiotv
+    url: "${preservica_url}"
+    user: "${preservica_username}"
+    password: "${preservica_password}"
     metadataPrefix: xip
     description: Radio- og TV-udsendelser
     filter: dr
