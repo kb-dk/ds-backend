@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
-
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
     <version>100.0.0-SNAPSHOT</version>
@@ -195,14 +196,12 @@
 
     Developed and maintained by the Royal Danish Library.
     </description>
-
     <scm>
-        <url>https://github.com/kb-dk/ds-license</url>
-        <connection>scm:git:git@github.com:kb-dk/ds-license.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/ds-license.git</developerConnection>
+        <url>https://github.com/kb-dk/ds_backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
     <licenses>
         <!--SBForge stuff should have a license-->
         <license>
@@ -210,7 +209,6 @@
             <url>${license.url}</url>
         </license>
     </licenses>
-
     <properties>
         <!-- Specify java version here, to support forbiddenapis plugin -->
         <maven.compiler.source>11</maven.compiler.source>
@@ -221,10 +219,8 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
-
         <project.package>dk.kb.license</project.package>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
@@ -234,7 +230,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
@@ -247,7 +243,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-       </dependency>
+        </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -259,7 +255,6 @@
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
         </dependency>
-
         <!-- Apache CXF and servlet stuff -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
@@ -279,7 +274,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider -->
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -293,50 +287,42 @@
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
-
         <!-- database -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-
         <dependency>
             <groupId>dk.statsbiblioteket.sbutil</groupId>
             <artifactId>sbutil-common</artifactId>
             <version>0.5.56</version>
         </dependency>
-
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>4.4.0</version>
         </dependency>
-
         <!--For the standard unit test-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
             <version>9.10.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-client</artifactId>
@@ -355,12 +341,10 @@
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
         </dependency>
-
         <!-- openapitools dependency -->
         <dependency>
             <groupId>io.swagger</groupId>
@@ -379,7 +363,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -401,7 +384,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-
         <!-- Unit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -416,7 +398,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
         <dependency>
             <groupId>org.mock-server</groupId>
@@ -426,13 +407,11 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>
@@ -456,7 +435,10 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
                         <!--This ensures that the openapi_*.yaml have been filtered and copied to target/classes
@@ -486,7 +468,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -496,9 +477,9 @@
                      which seems to be an unresolved issue: https://github.com/OpenAPITools/openapi-generator/issues/9008 -->
                 <configuration>
                     <!-- https://openapi-generator.tech/docs/generators/java/ -->
-
                     <generatorName>jaxrs-cxf-extended</generatorName>
-                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec> <!-- Will always be overridden -->
+                    <!-- Will always be overridden -->
+                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec>
                     <modelNameSuffix>Dto</modelNameSuffix>
                     <generateSupportingFiles>false</generateSupportingFiles>
                     <generateApiTests>false</generateApiTests>
@@ -508,7 +489,8 @@
                     <output>${project.basedir}</output>
                     <templateDirectory>src/main/templates/</templateDirectory>
                     <configOptions>
-                        <withXml>true</withXml> <!-- Needed for XML serialization support in the Model -->
+                        <!-- Needed for XML serialization support in the Model -->
+                        <withXml>true</withXml>
                         <!--https://openapi-generator.tech/docs/generators/jaxrs-cxf-extended/-->
                         <sourceFolder>target/generated-sources</sourceFolder>
                         <useSwaggerFeature>true</useSwaggerFeature>
@@ -523,7 +505,6 @@
                     <packageName>${project.package}</packageName>
                 </configuration>
                 <executions>
-
                     <!-- Version 1 -->
                     <!-- When a new version is needed, make a copy of three v1-related executions below, then change
                          v1 to v2 in the copy.
@@ -548,7 +529,6 @@
                             <ignoreFileOverride>
                                 ${project.basedir}/.openapi-codegen-ignore-api
                             </ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -570,7 +550,6 @@
                         <configuration>
                             <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-impl</ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -592,7 +571,6 @@
                             <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-model</ignoreFileOverride>
                             <generatorName>java</generatorName>
-
                             <configOptions>
                                 <generateOperationBody>false</generateOperationBody>
                             </configOptions>
@@ -601,7 +579,6 @@
                     <!-- Client for the backend -->
                 </executions>
             </plugin>
-
             <!-- The generated classes for the OpenAPI client are problematic. Disable checking of those for now -->
             <plugin>
                 <groupId>de.thetaphi</groupId>
@@ -616,11 +593,9 @@
                     </excludes>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-
                 <!-- Shared configuration -->
                 <configuration>
                     <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
@@ -629,14 +604,13 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-                 
-                   <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->                    
-                   <!-- <attachClasses>true</attachClasses> --> 
-
+                    <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->
+                    <!-- <attachClasses>true</attachClasses> -->
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
-                        <webResource> <!-- Store application name, version and build time -->
+                        <!-- Store application name, version and build time -->
+                        <webResource>
                             <directory>${basedir}/src/main/resources/</directory>
                             <includes>
                                 <include>ds-license.build.properties</include>
@@ -655,28 +629,26 @@
                     </webResources>
                 </configuration>
             </plugin>
-
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>            
-               <executions>
-                   <execution>
-                   <id>build-specific-jar</id>
-                   <phase>package</phase>
-                   <goals>
-                       <goal>jar</goal>
-                   </goals>
-                  <configuration>                
-                      <classifier>api</classifier>
-                      <includes>                       
-                          <include>dk/kb/license/model/**</include>
-                          <include>dk/kb/license/util/DsLicenseClient*</include>                                            
-                      </includes>
-                 </configuration>
-                 </execution>
-              </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-specific-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>api</classifier>
+                            <includes>
+                                <include>dk/kb/license/model/**</include>
+                                <include>dk/kb/license/util/DsLicenseClient*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
             <!-- Used only for mvn jetty:run jetty:run-war -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>

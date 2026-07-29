@@ -8,9 +8,4 @@ library identifier: "releasePipeline@master",
         libraryPath: "Arkivblik"
     ) _
 
-releasePipeline(
-    project: "ds-parent",
-    buildToTrigger: "ds-shared",
-    // List only the versions this specific repo needs
-    extraParameters: []
-)
+releasePipeline()

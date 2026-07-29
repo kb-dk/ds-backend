@@ -232,6 +232,7 @@ paths:
         - KBOAuth:
           - any   
       description: 'A record can have a single optional parent and may have multiple children'
+      operationId: createOrUpdateRecord
       requestBody:
         content:
           application/json:    # Media type
