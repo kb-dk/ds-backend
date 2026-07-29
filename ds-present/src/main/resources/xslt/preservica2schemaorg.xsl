@@ -1064,7 +1064,7 @@
         <xsl:choose>
           <!-- When access/defekt is Ja, then there is no access copy for the DOMS record -->
           <xsl:when test="/XIP/Metadata/Content/access/defekt = 'Ja'">
-            <xsl:value-of select="false"/>
+            <xsl:value-of select="false()"/>
           </xsl:when>
           <!-- When there is a progam structure object present, there is a presentation copy present, however it might be so bad, that it cannot be shown.
                 The default configuration for missing seconds from the old transcoder was 120 for not generating the access copy. Mediestream set the value to 90, which
