@@ -46,14 +46,7 @@
     
     <!-- Boolean value which determins if the record has a stream available at Kaltura.-->
     <f:boolean key="kb:has_kaltura_id">
-      <xsl:choose>
-        <xsl:when test="$kalturaID != ''">
-          <xsl:value-of select="true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="$kalturaID != ''"/>
     </f:boolean>
 
     <!-- Extration of migration details if present. Implemented as a choose statement. -->
@@ -265,50 +258,22 @@
 
     <!-- Create a field with a boolean value representing if the record has the extra dr_archive_supplementary_rights_metadata fragment -->
     <f:boolean key="kb:contains_dr_archive_supplementary_rights_metadata">
-      <xsl:choose>
-        <xsl:when test="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata']">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="exists(/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata'])"/>
     </f:boolean>
 
     <!-- Create a field with a boolean value representing if the record has the extra tvmeter fragment -->
     <f:boolean key="kb:contains_tvmeter">
-      <xsl:choose>
-        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_tvmeter_metadata']">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="exists(//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_tvmeter_metadata'])"/>
     </f:boolean>
 
     <!-- Create a field with a boolean value representing if the record has the extra nielsen fragment -->
     <f:boolean key="kb:contains_nielsen">
-      <xsl:choose>
-        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_nielsen_metadata']">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="f:false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="exists(//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_nielsen_metadata'])"/>
     </f:boolean>
 
     <!-- Create a field with a boolean value representing if the record has the extra ritzau fragment -->
     <f:boolean key="kb:contains_ritzau">
-      <xsl:choose>
-        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_ritzau_metadata']">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="f:false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="exists(//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_ritzau_metadata'])"/>
     </f:boolean>
 
     <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
@@ -347,14 +312,9 @@
 
 
     <!-- Create boolean for color for tv resources-->
-    <xsl:choose>
-      <xsl:when test="$pbCore/pbcoreInstantiation/formatColors = 'farve'">
-        <f:boolean key="kb:color"><xsl:value-of select="true()"/></f:boolean>
-      </xsl:when>
-      <xsl:otherwise>
-        <f:boolean key="kb:color"><xsl:value-of select="false()"/></f:boolean>
-      </xsl:otherwise>
-    </xsl:choose>
+    <f:boolean key="kb:color">
+      <xsl:value-of select="$pbCore/pbcoreInstantiation/formatColors = 'farve'"/>
+    </f:boolean>
   </xsl:template>
 
   <!-- EMIT A BOOLEAN FIELD FROM A 'prefix:affirmative' / 'prefix:nonAffirmative' PBCore extension.
