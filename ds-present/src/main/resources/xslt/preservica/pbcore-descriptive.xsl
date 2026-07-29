@@ -220,60 +220,30 @@
                   </f:number>
                 </xsl:if>
 
-                <f:map key="partOfSeason">
-                  <f:string key="@type"><xsl:value-of select="my:seasonType($type)"/></f:string>
-                  <xsl:variable name="numberOfEpisodes">
-                    <xsl:value-of select="number(normalize-space(substring-after($episodeInfo, ':')))"/>
-                  </xsl:variable>
-                  <xsl:if test="string($numberOfEpisodes) != 'NaN'">
-                    <f:number key="numberOfEpisodes">
-                      <xsl:value-of select="substring-after($episodeInfo, ':')"/>
-                    </f:number>
-                  </xsl:if>
-                </f:map>
+                <xsl:sequence select="my:partOfSeason(substring-after($episodeInfo, ':'), $type)"/>
             </xsl:when>
             <xsl:otherwise>
-              <!-- Extract metadata from PBC extensions related to episodes -->
-              <xsl:for-each select=".">
-                <!-- Extract episode number if present.
-                     Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
-                <xsl:if test="f:contains(., 'episodenr:') and f:string-length(normalize-space(substring-after(., 'episodenr:'))) > 0">
-                  <xsl:variable name="episodeNumber">
-                      <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
-                  </xsl:variable>
-                  <!-- Check that variable only contains valid digits and not crazy stuff like 2+3 to show that both episode 2 and 3 are present in this program. -->
-                  <xsl:if test="string($episodeNumber) != 'NaN' and matches($episodeNumber, '^\d+$')">
-                    <f:number key="episodeNumber">
-                      <xsl:value-of select="substring-after(., 'episodenr:')"/>
-                    </f:number>
-                  </xsl:if>
+              <!-- Separate 'episodenr:N' / 'antalepisoder:M' extensions (not the combined episodenr:N:M form). -->
+              <!-- Episode number, only when it is a plain integer - not e.g. '2+3' meaning episodes 2 and 3. -->
+              <xsl:if test="f:contains(., 'episodenr:') and f:string-length(normalize-space(substring-after(., 'episodenr:'))) > 0">
+                <xsl:variable name="episodeNumber">
+                    <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
+                </xsl:variable>
+                <xsl:if test="string($episodeNumber) != 'NaN' and matches($episodeNumber, '^\d+$')">
+                  <f:number key="episodeNumber">
+                    <xsl:value-of select="substring-after(., 'episodenr:')"/>
+                  </f:number>
                 </xsl:if>
-              </xsl:for-each>
+              </xsl:if>
 
-              <!-- Extract metadata from PBC extensions related to season length. -->
-              <xsl:for-each select=".">
-                <!-- Extract number of episodes in a season, if present.
-                     Checks for 'antalepisoder' in PBC extension and checks that the value is not an empty string or 0.
-                     Create partOfSeason field, if any metadata is present. -->
-                <xsl:if test="f:contains(., 'antalepisoder:') and
-                          not(f:contains(., 'antalepisoder:0')) and
-                          f:string-length(substring-after(., 'antalepisoder:')) > 0">
-                  <!-- TODO: Figure if  there is a difference between no value and 0.
-                       Could one mean that a series is related but no data on it and
-                       the other means individual program with no series? -->
-                  <f:map key="partOfSeason">
-                    <f:string key="@type"><xsl:value-of select="my:seasonType($type)"/></f:string>
-                    <xsl:variable name="numberOfEpisodes">
-                      <xsl:value-of select="number(normalize-space(substring-after(., 'antalepisoder:')))"/>
-                    </xsl:variable>
-                    <xsl:if test="string($numberOfEpisodes) != 'NaN'">
-                      <f:number key="numberOfEpisodes">
-                        <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
-                      </f:number>
-                    </xsl:if>
-                  </f:map>
-                </xsl:if>
-              </xsl:for-each>
+              <!-- Number of episodes in the season, when 'antalepisoder' has a non-empty, non-zero value.
+                   TODO: Figure if there is a difference between no value and 0. Could one mean a series is
+                   related but no data on it, and the other an individual program with no series? -->
+              <xsl:if test="f:contains(., 'antalepisoder:') and
+                        not(f:contains(., 'antalepisoder:0')) and
+                        f:string-length(substring-after(., 'antalepisoder:')) > 0">
+                <xsl:sequence select="my:partOfSeason(substring-after(., 'antalepisoder:'), $type)"/>
+              </xsl:if>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:for-each>
@@ -580,6 +550,20 @@
     <xsl:sequence select="if ($type = 'VideoObject') then 'TV-rodekasse'
                           else if ($type = 'AudioObject') then 'Radio-rodekasse'
                           else ''"/>
+  </xsl:function>
+
+  <!-- The encodesCreativeWork/partOfSeason map. $numberOfEpisodes is emitted verbatim as numberOfEpisodes,
+       but only when it parses to a number (matching the original guard). Used for both the combined
+       'episodenr:N:M' form and the separate 'antalepisoder:M' form. -->
+  <xsl:function name="my:partOfSeason">
+    <xsl:param name="numberOfEpisodes" as="xs:string?"/>
+    <xsl:param name="type" as="xs:string?"/>
+    <f:map key="partOfSeason">
+      <f:string key="@type"><xsl:value-of select="my:seasonType($type)"/></f:string>
+      <xsl:if test="string(number(normalize-space($numberOfEpisodes))) != 'NaN'">
+        <f:number key="numberOfEpisodes"><xsl:value-of select="$numberOfEpisodes"/></f:number>
+      </xsl:if>
+    </f:map>
   </xsl:function>
 
 </xsl:transform>
