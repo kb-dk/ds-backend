@@ -2,8 +2,8 @@
 
 All notable changes to ds-discover will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
@@ -13,12 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
 - Per-collection SolrShield support. Each Solr collection in `ds-discover-behaviour.yaml`
-  may now declare its own shield via a new optional `shield:` key pointing at a standalone
-  shield YAML (path absolute or relative to the `ds-discover-*.yaml` files). Collections
-  without a `shield` key run without shielding. ([DRA-1788](https://kb-dk.atlassian.net/browse/DRA-1788))
+  may now declare its own shield via a new optional `shield:` key pointing at a standalone shield YAML (path absolute or
+  relative to the `ds-discover-*.yaml` files). Collections without a `shield` key run without shielding.
+  ([DRA-1788](https://kb-dk.atlassian.net/browse/DRA-1788))
 - Config changes:
-  - New standalone shield config file `conf/solrshield-ds.yaml` (replaces the old `conf/ds-discover-base-solrshield.yaml` wrapping layout — shield YAML is now root-level, with no wrapping key)
-  - Removed the global `solr.extraAllowedParameters` list from `ds-discover-behaviour.yaml`. Replaced by a per-collection `passthroughParameters` list inside each shield's YAML, so pass-through rules now travel with the shield they apply to.
+  - New standalone shield config file `conf/solrshield-ds.yaml` (replaces the old
+    `conf/ds-discover-base-solrshield.yaml` wrapping layout — shield YAML is now root-level, with no wrapping key)
+  - Removed the global `solr.extraAllowedParameters` list from `ds-discover-behaviour.yaml`. Replaced by a
+    per-collection `passthroughParameters` list inside each shield's YAML, so pass-through rules now travel with the
+    shield they apply to.
 
 ## [4.0.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-4.0.0) - 2026-01-29
 
@@ -92,8 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Enabled OAuth2 on /select (solrSearch) endpoint. Much is copy-paste from ds-image to see it working in two different
-  modules.
-  Plans are to refactor common functionality out into kb-util/template projects.
+  modules. Plans are to refactor common functionality out into kb-util/template projects.
 
 ### Changed
 
@@ -144,12 +146,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for dynamically updating values in OpenAPI spec through internal JIRA
-  issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
-- spellcheck.maxCollationRetries=10 is injected per default for Solr
-  /select [DRA-319](https://kb-dk.atlassian.net/browse/DRA-319)
-- Added sample config files and documentation to distribution tar
-  archive. [DRA-413](https://kb-dk.atlassian.net/browse/DRA-413)
+- Support for dynamically updating values in OpenAPI spec through internal JIRA issue [DRA-139](https://kb-dk.atlassian.net/browse/DRA-139).
+- spellcheck.maxCollationRetries=10 is injected per default for Solr /select [DRA-319](https://kb-dk.atlassian.net/browse/DRA-319)
+- Added sample config files and documentation to distribution tar archive. [DRA-413](https://kb-dk.atlassian.net/browse/DRA-413)
 
 ## Changed
 
@@ -160,8 +159,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Switch from Jersey to Apache URI Builder to handle parameters
-  containing '{' [DRA-338](https://kb-dk.atlassian.net/browse/DRA-338)
+- Switch from Jersey to Apache URI Builder to handle parameters containing '{' [DRA-338](https://kb-dk.atlassian.net/browse/DRA-338)
 - Correct resolving of maven build time in project properties. [DRA-413](https://kb-dk.atlassian.net/browse/DRA-413)
 
 ## [1.2.2](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-1.2.2) - 2024-03-11

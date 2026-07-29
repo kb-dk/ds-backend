@@ -2,8 +2,8 @@
 
 All notable changes to ds-license will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
@@ -11,8 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
--  Changed 'og' -> '&' in holdback category names
--  Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
+- Changed 'og' -> '&' in holdback category names
+- Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
 
 ### Added
 
@@ -25,19 +25,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-4.0.3) 2026-02-16
 
 ### Changed
--  Initialization of SolrClients moved (back) into ServiceConfig initialize method so it only happens once.
+
+- Initialization of SolrClients moved (back) into ServiceConfig initialize method so it only happens once.
 
 ## [4.0.2](https://github.com/kb-dk/ds-license/releases/tag/ds-license-4.0.2) 2026-02-13
 
 ### Changed
--  Http2SolrClient (v9) forced to use HTTP 1.1
 
+- Http2SolrClient (v9) forced to use HTTP 1.1
 
 ## [4.0.1](https://github.com/kb-dk/ds-license/releases/tag/ds-license-4.0.1) 2026-02-13
 
 ### Changed
-- Upgraded from HttpSolrClient(v8) to Http2SolrClient (v9).
 
+- Upgraded from HttpSolrClient (v8) to Http2SolrClient (v9).
 
 ## [4.0.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-4.0.0) 2026-01-29
 
@@ -53,9 +54,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (**Remember: migration for OPS to be found in `audit_log_module_column_name_change.ddl`**)
 - Updated code to use `identifier` and `changecomment`
 - Endpoint `POST /rights/restrictedIds/delete` with request body of a list of RestrictedIdInputDto. It deletes
-  restricted ids if they exit, and returns a ProcessedRestrictedIdsOutputDto response body that holds information
-  about how many successfully restricted ids has been deleted and a list of FailedIdDto that holds information about
-  failed deleting of restricted ids and their error message.
+  restricted ids if they exit, and returns a ProcessedRestrictedIdsOutputDto response body that holds information about
+  how many successfully restricted ids has been deleted and a list of FailedIdDto that holds information about failed
+  deleting of restricted ids and their error message.
 - Deletion of objects are saved/reflected in the audit log.
 - Added `HOLDBACK_CATEGORY` in `ObjectTypeEnumDto`.
 - Renamed `rightsmodule_default_holdbackrulesdata.sql.sql` -> `rightsmodule_default_dr_holdback_categories_data.sql`
@@ -83,9 +84,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * returns a RestrictedIdOutputDto as response instead of void.
 - Move audit log from `BaseModuleStorage.class` into own `AuditLogModuleStorage.class`
 - Move method `convertRsToAuditLog(ResultSet rs)` into own `AuditLogEntryOutputDtoMapper.class`
-- Change endpoints `DELETE` into `POST` with path variables and a request body `DeleteObject` that
-  has a `changeComment` field. The endpoints return a response body `RecordsCount` that tells how many rows was
-  deleted instead of void:
+- Change endpoints `DELETE` into `POST` with path variables and a request body `DeleteObject` that has a `changeComment`
+  field. The endpoints return a response body `RecordsCount` that tells how many rows was deleted instead of void:
     * `DELETE /rights/restrictedId` -> `POST /rights/restrictedId/delete/{id}`
     * `DELETE /rights/drHoldbackRule` -> `POST /rights/drHoldbackRule/delete/{id}`
     * `DELETE /rights/drHoldbackRanges` -> `POST /rights/drHoldbackRanges/delete/{drHoldbackValue}`
@@ -107,13 +107,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed endpoint `GET /rights/getDrHoldbackValueFromContentAndForm` ->
   `GET /rights/getDrHoldbackCategoryByContentAndForm`.
 - Refactored validate methods for input Strings and Integers.
-- Test deleteDrHoldbackCategory_whenThereIsADrHoldbackRange_thenThrowJdbcSQLIntegrityConstraintViolationException in Changed test in RightsModuleStorageTest.java
-  no longer relies on error message containing: `CONSTRAINT_35`.
+- Test deleteDrHoldbackCategory_whenThereIsADrHoldbackRange_thenThrowJdbcSQLIntegrityConstraintViolationException in
+  Changed test in RightsModuleStorageTest.java no longer relies on error message containing: `CONSTRAINT_35`.
 
 ### Fixed
+
 - Fixed JSP pages with default DeleteReasonDto so it is still possible to delete objects from JSP GUI.
 
 ### Removed
+
 - Removed `HOLDBACK_DAY` and `HOLDBACK_RULE` in `ObjectTypeEnumDto`.
 
 ## [3.0.3](https://github.com/kb-dk/ds-license/releases/tag/ds-license-3.0.3) 2025-12-01
@@ -143,7 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deleted API request to delete multiple restricted IDs
 - Moved storage method that is only used by unit tests to a storage subclass used by unittest. The methods are very
   destructive such as clearing all tables.
-- OAuth enabled on all methods except /rights/calculate (and monitor methods). In Ingest(write) environment OAuth must
+- OAuth enabled on all methods except /rights/calculate (and monitor methods). In Ingest (write) environment OAuth must
   be enabled for ds-license as well, since new ds-license-web calls methods that modifies configuration in the database.
   All calls are logged in the audit log with username from Oauth token.
 - Deleted redundant audit columns from the restricted_ids table (**Remember: Delta migrations for OPS to be found in
@@ -214,8 +216,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Enabled OAuth2 on module. Much is copy-paste from ds-image to see it working in two different modules. Plans are to
-  refactor common functionality out into kb-util/template projects.
-  No methods are defined to require OAuth yet!
+  refactor common functionality out into kb-util/template projects. No methods are defined to require OAuth yet!
 
 ## [1.4.2](https://github.com/kb-dk/ds-license/releases/tag/ds-license-1.4.2) 2024-06-11
 

@@ -2,8 +2,8 @@
 
 All notable changes to ds-present will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Marked unittest with @Tag("integration") so it can build without aegis. 
+- Marked unittest with @Tag ("integration") so it can build without aegis.
 - Bumb solr schema version to 1.8.9
 - Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
 
@@ -29,9 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [4.0.0](https://github.com/kb-dk/ds-present/releases/tag/ds-present-4.0.0) 2026-01-29
 
 ### Added
+
 - Solr field for platform
 - Extraction of values from "fuzzy" metadatafragment in rights calculations
-- Solr field for full transcription text. 
+- Solr field for full transcription text.
 - Solr field for has_transcription (boolean)
 - Solr version bumped to v. 1.8.7
 - Solr version bumped to v. 1.8.8
@@ -39,21 +40,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New boolean property to also index transcriptions. Default true.
 
 ### Changed
+
 - Solr version bumped to v. 1.8.5
 - Solr version bumped to v. 1.8.6
-- Random sort field added that can be used to randomize order of search results. Does not require reindexing, just configuration update. (solr v. 1.8.6)
-- Use 'referenceId' to find file_path and file_extension from the correct specificRadioTvTranscodingStatus when transforming to solr.
+- Random sort field added that can be used to randomize order of search results. Does not require reindexing, just
+  configuration update. (solr v. 1.8.6)
+- Use 'referenceId' to find file_path and file_extension from the correct specificRadioTvTranscodingStatus when
+  transforming to solr.
 
 ### Fixed
+
 - Fixed error when kanalnavn is missing in preservica
 
 ## [3.0.5](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.5) 2025-12-08
 
 ### Added
+
 - Added solr field for indexint file extension
 
 ### Changed
-- Minor change for synonyms for tv-avisen,tva etc. Will no longer find results with tv only. Require full reindex, but can wait for more important causes.
+
+- Minor change for synonyms for tv-avisen,tva etc. Will no longer find results with tv only. Require full reindex, but
+  can wait for more important causes.
 - Solr (schema.xml) version bumped to v. 1.8.4
 
 ### Removed
@@ -61,15 +69,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ## [3.0.4](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.4) 2025-12-01
+
 ### Added
+
 - Solr field for contains_dr_archive_supplementary_rights_metadata
-- Added support for dr_archive_supplementary_rights_metadata fragment in Preservica files 
+- Added support for dr_archive_supplementary_rights_metadata fragment in Preservica files
 
 ### Changed
+
 - Solr version bumped to v. 1.8.3
 
 ## [3.0.3](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.3) 2025-11-20
+
 ### Fixed
+
 - Update so we can handle new naming of access tag in Preservica
 
 ## [3.0.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-3.0.2) 2025-09-03
@@ -100,7 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed all multi terms synonyms in dr_synonyms.txt due to bug in spellcheck(Solr) compontent.
+- Removed all multi terms synonyms in dr_synonyms.txt due to bug in spellcheck (Solr) compontent.
 
 ### Fixed
 
@@ -214,8 +227,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added field own_production to all radio records, so that all records have a value for this field.
 - Solr 1.7.7: Add boolean field to show if record is restricted by DR.
 - Add boolean fields related to which kind of extra metadata that have been added to the records after OAI harvest to
-  the transformations. These fields are also present in solr
-  schema version 1.7.7
+  the transformations. These fields are also present in solr schema version 1.7.7
 - Add boolean field `has_kaltura_id`.
 
 ### Changed:
@@ -238,8 +250,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Removed Schema.org field `conditionsOfAccess` and solr field `conditions_of_access` as this field was never used and
-  the DR rights management couldn't be done in a single value
-  field.
+  the DR rights management couldn't be done in a single value field.
 
 ### Fixed
 
@@ -271,8 +282,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- solr maxBooleanClauses increased from 1024 til 8192. This is because licensmodule queries can have several 100
-  terms. (solr.config=1.7.2)
+- solr maxBooleanClauses increased from 1024 til 8192. This is because licensmodule queries can have several 100 terms.
+  (solr.config=1.7.2)
   For this to also work on a solr cloud setup the solr start script must have:  export SOLR_OPTS="
   -Dsolr.allowPaths=/solr-c-backup -Dsolr.max.booleanClauses=8192
 
@@ -331,8 +342,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added more synonyms to dr_synonyms.txt. This require a new deploy to solr (and version bump)
 
 - Enabled OAuth2 on module. Much is copy-paste from ds-image to see it working in two different modules. Plans are to
-  refactor common functionality out into kb-util/
-  Only method getRecord (show full-record called by frontend) has OAuth enabled
+  refactor common functionality out into kb-util/ Only method getRecord (show full-record called by frontend) has OAuth
+  enabled
 
 ### Changed
 
