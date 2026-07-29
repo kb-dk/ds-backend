@@ -360,46 +360,25 @@
             <f:string key="keywords">
               <xsl:value-of select="$keywordsString"/>
             </f:string>
-            <xsl:variable name="genreValue">
-              <xsl:choose>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $NewsPoliticsSociety)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Music)">
-                  <xsl:value-of select="'Musik'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Culture)">
-                  <xsl:value-of select="'Kultur og oplysning'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Sport)">
-                  <xsl:value-of select="'Sport'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Entertainment)">
-                  <xsl:value-of select="'Humor, quiz og underholdning'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ChildrenYouth)">
-                  <xsl:value-of select="'Børn og unge'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Documentary)">
-                  <xsl:value-of select="'Dokumentar'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Fiction)">
-                  <xsl:value-of select="'Film og serier'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Lifestyle)">
-                  <xsl:value-of select="'Livsstil'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ScienceNature)">
-                  <xsl:value-of select="'Natur og videnskab'"/>
-                </xsl:when>
-                <!-- The former 'Misc' genre category mapped to the same rodekasse bucket as the
-                     no-match fall-through, so it was a no-op branch and has been removed; both the
-                     Misc-category genres and any unmatched genre land here. -->
-                <xsl:otherwise>
-                  <xsl:value-of select="my:rodekasse($type)"/>
-                </xsl:otherwise>
-              </xsl:choose>
-            </xsl:variable>
+            <!-- Genre categories, in priority order: the first whose value list intersects the record's
+                 keywords wins. An unmatched genre (formerly incl. the removed 'Misc' list) falls back to
+                 the rodekasse bucket. Add/adjust a category by editing one row here. -->
+            <xsl:variable name="genreCategories" as="map(*)*" select="(
+              map { 'label': 'Nyheder, politik og samfund', 'values': $NewsPoliticsSociety },
+              map { 'label': 'Musik',                        'values': $Music },
+              map { 'label': 'Kultur og oplysning',          'values': $Culture },
+              map { 'label': 'Sport',                        'values': $Sport },
+              map { 'label': 'Humor, quiz og underholdning', 'values': $Entertainment },
+              map { 'label': 'Børn og unge',                 'values': $ChildrenYouth },
+              map { 'label': 'Dokumentar',                   'values': $Documentary },
+              map { 'label': 'Film og serier',               'values': $Fiction },
+              map { 'label': 'Livsstil',                     'values': $Lifestyle },
+              map { 'label': 'Natur og videnskab',           'values': $ScienceNature })"/>
+            <xsl:variable name="matchedGenre" as="xs:string?"
+                          select="(for $cat in $genreCategories
+                                   return if (my:sequenceAContainsValueFromSequenceB($keywordsSequence, $cat?values))
+                                          then $cat?label else ())[1]"/>
+            <xsl:variable name="genreValue" select="($matchedGenre, my:rodekasse($type))[1]"/>
             <f:string key="genre">
               <xsl:value-of select="$genreValue"/>
             </f:string>
