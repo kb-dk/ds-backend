@@ -16,9 +16,9 @@
     <description>ds-image by the Royal Danish Library</description>
 
     <scm>
-        <url>https://github.com/kb-dk/ds-image</url>
-        <connection>scm:git:git@github.com:kb-dk/ds-image.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/ds-image.git</developerConnection>
+        <url>https://github.com/kb-dk/ds_backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

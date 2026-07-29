@@ -16,9 +16,9 @@
     <description>ds-discover by the Royal Danish Library</description>
 
     <scm>
-        <url>https://github.com/kb-dk/ds-discover</url>
-        <connection>scm:git:git@github.com:kb-dk/ds-discover.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/ds-discover.git</developerConnection>
+        <url>https://github.com/kb-dk/ds_backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

@@ -14,9 +14,9 @@
     <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
 
     <scm>
-        <url>https://github.com/kb-dk/ds-present</url>
-        <connection>scm:git:git@github.com:kb-dk/ds-present.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/ds-present.git</developerConnection>
+        <url>https://github.com/kb-dk/ds_backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
