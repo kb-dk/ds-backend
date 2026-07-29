@@ -88,7 +88,6 @@
                 <xsl:when test="holes/hole/holeLength[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
                 <xsl:when test="missingStart/missingSeconds[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
                 <xsl:when test="missingEnd/missingSeconds[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
-                <xsl:when test="holes/hole/holeLength[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
                 <!-- A program exists and there is not more than 90 seconds missing from each element above. -->
                 <xsl:otherwise><xsl:value-of select="true()"/></xsl:otherwise>
               </xsl:choose>
