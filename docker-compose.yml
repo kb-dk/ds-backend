@@ -90,7 +90,7 @@ services:
     restart: always
 
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.7.0-1
     container_name: keycloak
     command: start-dev --import-realm --http-port=8087
     environment:
