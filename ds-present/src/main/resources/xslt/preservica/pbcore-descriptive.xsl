@@ -391,9 +391,8 @@
         <!-- These values should map to: Videnskab og natur-->
         <xsl:variable name="ScienceNature" as="item()*"
                       select="('videnskab &amp; forskning', 'videnskab &amp; teknologi', 'natur &amp; miljø', 'natur', 'natur og kultur (fakta)', 'sundhed', 'naturvidenskab')"/>
-        <!-- These values should map to: Diverse-->
-        <xsl:variable name="Misc" as="item()*"
-                      select="('alle', 'andet', 'andet.', 'blandet', 'ikke formålsfordelt', 'N/A', 'n/a', 'præsentation og services', 'øvrige programsatte udsendelser')"/>
+        <!-- The former 'Misc'/'Diverse' category list ('alle', 'andet', 'blandet', ...) was removed: it
+             mapped to the same rodekasse bucket as the no-match fall-through, so it never affected output. -->
 
         <!-- Save keywords as a sequence -->
         <xsl:variable name="keywordsSequence" as="item()*">
@@ -450,16 +449,9 @@
                 <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ScienceNature)">
                   <xsl:value-of select="'Natur og videnskab'"/>
                 </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Misc)">
-                  <xsl:choose>
-                    <xsl:when test="$type = 'VideoObject'">
-                      <xsl:value-of select="'TV-rodekasse'"/>
-                    </xsl:when>
-                    <xsl:when test="$type = 'AudioObject'">
-                      <xsl:value-of select="'Radio-rodekasse'"/>
-                    </xsl:when>
-                  </xsl:choose>
-                </xsl:when>
+                <!-- The former 'Misc' genre category mapped to the same rodekasse bucket as the
+                     no-match fall-through, so it was a no-op branch and has been removed; both the
+                     Misc-category genres and any unmatched genre land here. -->
                 <xsl:otherwise>
                   <xsl:choose>
                     <xsl:when test="$type = 'VideoObject'">
