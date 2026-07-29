@@ -270,16 +270,20 @@
     </f:map>
   </xsl:template>
 
-  <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. The template requires the following five parameters:
-        type: The type of schema-org object in hand.
-        pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
-                       the transformation. -->
+  <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. Parameters:
+        pbCore:        The PBCore metadata document node.
+        type:          The type of schema-org object in hand (here always 'AudioObject').
+        pbcExtensions: All PBCore Extensions, for retrieval of specific extensions during the transformation.
+
+        This is an INTENTIONAL extension point. AudioObjects are dispatched here (rather than straight to
+        generic-transformation) so audio-specific mapping can be added in one place without touching the
+        generic path shared with MediaObject. There is no audio-specific logic yet, so it currently just
+        delegates to generic-transformation - add audio-only fields here when they arise. -->
   <xsl:template name="audio-transformation">
     <xsl:param name="pbCore"/>
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
 
-    <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
       <xsl:with-param name="pbCore" select="$pbCore"/>
       <xsl:with-param name="type" select="$type"/>
@@ -1179,12 +1183,11 @@
     <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'genudsendelse', 'genudsendelse', 'ikke genudsendelse', 'kb:retransmission')"/>
     <!-- Boolean for whether there was a stop in the transmission -->
     <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'program_ophold', 'program ophold', 'ikke program ophold', 'kb:program_ophold')"/>
+    <!-- Extension-derived KB id fields. Each is the value of its "prefix:value" extension, found in the
+         whole extension set. kanalid is the exception: it emits a number resolved against the sibling
+         extensionAuthorityUsed, so it needs the pbcoreExtension node, not just the extension text. It is
+         placed between maingenre and program to keep the order the (order-sensitive) Java assertions pin. -->
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'hovedgenre_id', 'kb:maingenre_id')"/>
-    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'program_id', 'kb:ritzau_program_id')"/>
-    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'undergenre_id', 'kb:subgenre_id')"/>
-    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'afsnit_id', 'kb:episode_id')"/>
-    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'saeson_id', 'kb:season_id')"/>
-    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'serie_id', 'kb:series_id')"/>
     <xsl:for-each select="$pbCore/pbcoreExtension[f:starts-with(extension , 'kanalid:') and f:string-length(normalize-space(substring-after(extension , 'kanalid:'))) > 0]">
       <xsl:variable name="channelId">
         <xsl:value-of select="number(normalize-space(substring-after(extension , 'kanalid:')))"/>
@@ -1202,6 +1205,11 @@
         </xsl:when>
       </xsl:choose>
     </xsl:for-each>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'program_id', 'kb:ritzau_program_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'undergenre_id', 'kb:subgenre_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'afsnit_id', 'kb:episode_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'saeson_id', 'kb:season_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'serie_id', 'kb:series_id')"/>
 
     <!-- Extracts information on video padding. -->
     <xsl:for-each select="/XIP/Metadata/Content/padding:padding/paddingSeconds">

@@ -274,14 +274,6 @@
     </xsl:choose>
   </xsl:function>
 
-  <!-- Named template to create a genre string containing the value given as a parameter to the template. -->
-  <xsl:template name="my:createGenreString">
-    <xsl:param name="genreValue"/>
-    <f:string key="genre">
-      <xsl:value-of select="$genreValue"/>
-    </f:string>
-  </xsl:template>
-
   <!-- Check if a sequence contains values from another sequence. Returns boolean true if sequence A contains a value also present in sequence B. -->
   <xsl:function name="my:sequenceAContainsValueFromSequenceB" as="xs:boolean">
     <xsl:param name="sequenceA"/>
