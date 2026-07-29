@@ -192,13 +192,7 @@
                   f:string-length(substring-after(., 'antalepisoder:')) > 0)]">
       <f:map key="encodesCreativeWork">
         <!-- Determine the type of episode based on the general type of the metadata record.-->
-        <f:string key="@type">
-          <xsl:choose>
-            <xsl:when test="$type = 'VideoObject'">TVEpisode</xsl:when>
-            <xsl:when test="$type = 'AudioObject'">RadioEpisode</xsl:when>
-            <xsl:otherwise>Episode</xsl:otherwise>
-          </xsl:choose>
-        </f:string>
+        <f:string key="@type"><xsl:value-of select="my:episodeType($type)"/></f:string>
 
         <!-- If episode titel is defined it is extracted here. -->
         <xsl:for-each select="./pbcoreTitle">
@@ -227,13 +221,7 @@
                 </xsl:if>
 
                 <f:map key="partOfSeason">
-                  <f:string key="@type">
-                    <xsl:choose>
-                      <xsl:when test="$type = 'VideoObject'">TVSeason</xsl:when>
-                      <xsl:when test="$type = 'AudioObject'">RadioSeason</xsl:when>
-                      <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
-                    </xsl:choose>
-                  </f:string>
+                  <f:string key="@type"><xsl:value-of select="my:seasonType($type)"/></f:string>
                   <xsl:variable name="numberOfEpisodes">
                     <xsl:value-of select="number(normalize-space(substring-after($episodeInfo, ':')))"/>
                   </xsl:variable>
@@ -274,13 +262,7 @@
                        Could one mean that a series is related but no data on it and
                        the other means individual program with no series? -->
                   <f:map key="partOfSeason">
-                    <f:string key="@type">
-                      <xsl:choose>
-                        <xsl:when test="$type = 'VideoObject'">TVSeason</xsl:when>
-                        <xsl:when test="$type = 'AudioObject'">RadioSeason</xsl:when>
-                        <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
-                      </xsl:choose>
-                    </f:string>
+                    <f:string key="@type"><xsl:value-of select="my:seasonType($type)"/></f:string>
                     <xsl:variable name="numberOfEpisodes">
                       <xsl:value-of select="number(normalize-space(substring-after(., 'antalepisoder:')))"/>
                     </xsl:variable>
@@ -444,14 +426,7 @@
                      no-match fall-through, so it was a no-op branch and has been removed; both the
                      Misc-category genres and any unmatched genre land here. -->
                 <xsl:otherwise>
-                  <xsl:choose>
-                    <xsl:when test="$type = 'VideoObject'">
-                      <xsl:value-of select="'TV-rodekasse'"/>
-                    </xsl:when>
-                    <xsl:when test="$type = 'AudioObject'">
-                      <xsl:value-of select="'Radio-rodekasse'"/>
-                    </xsl:when>
-                  </xsl:choose>
+                  <xsl:value-of select="my:rodekasse($type)"/>
                 </xsl:otherwise>
               </xsl:choose>
             </xsl:variable>
@@ -463,16 +438,7 @@
       </xsl:when>
       <!-- Adding a fallback to 'Rodekassen' as we have 160K records without genre at all. -->
       <xsl:otherwise>
-        <f:string key="genre">
-          <xsl:choose>
-            <xsl:when test="$type = 'VideoObject'">
-              <xsl:value-of select="'TV-rodekasse'"/>
-            </xsl:when>
-            <xsl:when test="$type = 'AudioObject'">
-              <xsl:value-of select="'Radio-rodekasse'"/>
-            </xsl:when>
-          </xsl:choose>
-        </f:string>
+        <f:string key="genre"><xsl:value-of select="my:rodekasse($type)"/></f:string>
       </xsl:otherwise>
     </xsl:choose>
 
@@ -593,6 +559,27 @@
         </xsl:for-each>
       </f:array>
     </xsl:if>
+  </xsl:function>
+
+  <!-- schema.org type labels derived from the record's object type ($type: VideoObject / AudioObject / other). -->
+  <xsl:function name="my:episodeType" as="xs:string">
+    <xsl:param name="type" as="xs:string?"/>
+    <xsl:sequence select="if ($type = 'VideoObject') then 'TVEpisode'
+                          else if ($type = 'AudioObject') then 'RadioEpisode'
+                          else 'Episode'"/>
+  </xsl:function>
+  <xsl:function name="my:seasonType" as="xs:string">
+    <xsl:param name="type" as="xs:string?"/>
+    <xsl:sequence select="if ($type = 'VideoObject') then 'TVSeason'
+                          else if ($type = 'AudioObject') then 'RadioSeason'
+                          else 'CreativeWorkSeason'"/>
+  </xsl:function>
+  <!-- The 'rodekasse' catch-all genre bucket; empty for non tv/radio types, matching the original choose. -->
+  <xsl:function name="my:rodekasse" as="xs:string">
+    <xsl:param name="type" as="xs:string?"/>
+    <xsl:sequence select="if ($type = 'VideoObject') then 'TV-rodekasse'
+                          else if ($type = 'AudioObject') then 'Radio-rodekasse'
+                          else ''"/>
   </xsl:function>
 
 </xsl:transform>
