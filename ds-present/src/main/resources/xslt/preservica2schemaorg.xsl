@@ -326,21 +326,9 @@
               </xsl:call-template>
 
 
-              <!-- Extract contributor if any present in metadata. see https://schema.org/contributor and the JSON.LD example -->
-              <xsl:if test="$pbCore/pbcoreContributor/contributorRole = 'medvirkende' and ./pbcoreContributor/contributor != ''">
-                <f:array key="contributor">
-                  <xsl:for-each select="./pbcoreContributor">
-                    <xsl:if test="./contributorRole = 'medvirkende' and ./contributor != ''">
-                      <f:map>
-                        <f:string key="@type">Person</f:string>
-                        <f:string key="name">
-                          <xsl:value-of select="normalize-space(./contributor)"/>
-                        </f:string>
-                      </f:map>
-                    </xsl:if>
-                  </xsl:for-each>
-                </f:array>
-              </xsl:if>
+              <!-- Contributors with role 'medvirkende' as a schema.org person array.
+                   see https://schema.org/contributor and the JSON.LD example -->
+              <xsl:sequence select="my:personArray($pbCore/pbcoreContributor[contributorRole = 'medvirkende' and contributor != '']/contributor, 'contributor')"/>
             </xsl:for-each>
           </xsl:when>
           <xsl:otherwise>

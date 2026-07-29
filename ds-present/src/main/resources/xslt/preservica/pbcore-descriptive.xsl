@@ -477,37 +477,12 @@
     </xsl:choose>
 
     <!-- Extract directors if any present in metadata. see https://schema.org/director -->
-    <!-- In our devel system we dont have any records where there are more than one contributer with the role 'instruktion' therefore this is not implemented as an array. -->
-    <xsl:if test="./pbcoreContributor/contributorRole = 'instruktion' and ./pbcoreContributor/contributor != ''">
-      <f:array key="director">
-        <xsl:for-each select="./pbcoreContributor">
-          <xsl:if test="./contributorRole = 'instruktion' and ./contributor != ''">
-            <f:map>
-              <f:string key="@type">Person</f:string>
-              <f:string key="name">
-                <xsl:value-of select="normalize-space(./contributor)"/>
-              </f:string>
-            </f:map>
-          </xsl:if>
-        </xsl:for-each>
-      </f:array>
-    </xsl:if>
+    <!-- Directors: contributors with role 'instruktion' as a schema.org person array. -->
+    <xsl:sequence select="my:personArray(pbcoreContributor[contributorRole = 'instruktion' and contributor != '']/contributor, 'director')"/>
 
-    <!-- Extract authors/creators here we are using creators as these two can be used for the same content and we are using creator for images as well. -->
-    <xsl:if test="./pbcoreCreator/creatorRole = 'forfatter' and ./pbcoreCreator/creator != ''">
-      <f:array key="creator">
-        <xsl:for-each select="./pbcoreCreator">
-          <xsl:if test="./creatorRole = 'forfatter' and ./creator != ''">
-            <f:map>
-              <f:string key="@type">Person</f:string>
-              <f:string key="name">
-                <xsl:value-of select="normalize-space(./creator)"/>
-              </f:string>
-            </f:map>
-          </xsl:if>
-        </xsl:for-each>
-      </f:array>
-    </xsl:if>
+    <!-- Creators/authors: pbcoreCreator with role 'forfatter' as a schema.org person array (creator is
+         also used for images, hence the shared field). -->
+    <xsl:sequence select="my:personArray(pbcoreCreator[creatorRole = 'forfatter' and creator != '']/creator, 'creator')"/>
 
     <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
     <f:array key="identifier">
@@ -602,6 +577,22 @@
     </xsl:if>
   </xsl:template>
 
-
+  <!-- Build a schema.org person array (creator / director / contributor): one {@type:Person, name} map
+       per name in $names, or nothing when the sequence is empty. Callers pass the already-filtered name
+       nodes, e.g. pbcoreCreator[creatorRole = 'forfatter' and creator != '']/creator. -->
+  <xsl:function name="my:personArray" visibility="public">
+    <xsl:param name="names" as="xs:string*"/>
+    <xsl:param name="outputKey" as="xs:string"/>
+    <xsl:if test="exists($names)">
+      <f:array key="{$outputKey}">
+        <xsl:for-each select="$names">
+          <f:map>
+            <f:string key="@type">Person</f:string>
+            <f:string key="name"><xsl:value-of select="normalize-space(.)"/></f:string>
+          </f:map>
+        </xsl:for-each>
+      </f:array>
+    </xsl:if>
+  </xsl:function>
 
 </xsl:transform>
