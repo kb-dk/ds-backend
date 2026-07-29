@@ -10,12 +10,6 @@ README.md
 CHANGELOG.md
 **/target/
 
-# Ignore compose-files folder
-compose-files
-
-# But include compose-files/init-solr.sh
-!compose-files/init-solr.sh
-
 # These config files should NEVER be in git, as they can contain passwords
 *-environment.yaml
 *-local.yaml

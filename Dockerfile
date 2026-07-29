@@ -224,7 +224,7 @@ CMD ["catalina.sh", "run"]
 FROM solr:9.4.0 AS solr
 
 COPY --chown=solr:solr --from=builder /build/ds-present/target/solr/dssolr/conf /opt/solr/user_config/conf
-COPY --chown=solr:solr --from=builder /build/compose-files/init-solr.sh /docker-entrypoint-initdb.d/init-solr.sh
+COPY --chown=solr:solr --from=builder /build/conf/init-solr.sh /docker-entrypoint-initdb.d/init-solr.sh
 COPY --chown=solr:solr --from=builder /build/ds-present/src/main/solr/solr.xml /opt/solr-9.4.0/server/solr/solr.xml
 
 RUN chmod +x /docker-entrypoint-initdb.d/init-solr.sh
