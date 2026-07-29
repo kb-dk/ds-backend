@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
-
     <groupId>dk.kb.kaltura</groupId>
     <artifactId>ds-kaltura</artifactId>
     <version>100.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
     <scm>
         <url>https://github.com/kb-dk/ds_backend</url>
         <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
     <properties>
         <!-- Specify java version here, to support forbiddenapis plugin -->
         <maven.compiler.source>11</maven.compiler.source>
@@ -28,12 +27,10 @@
              <api.check.phase>none</api.check.phase>
              to disable forbidden APIs check -->
         <api.check.phase>process-test-classes</api.check.phase>
-
         <!-- Needed to populate build.properties -->
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
@@ -90,7 +87,6 @@
             <version>2.20.0</version>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>

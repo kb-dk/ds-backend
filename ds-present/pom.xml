@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
-
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
     <version>100.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD and SolrJsonDocument.</description>
-
+    <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for
+        [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD
+        and SolrJsonDocument.
+    </description>
     <scm>
         <url>https://github.com/kb-dk/ds_backend</url>
         <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
     <licenses>
         <!--SBForge stuff should have a license-->
         <license>
@@ -27,7 +30,6 @@
             <url>${license.url}</url>
         </license>
     </licenses>
-
     <properties>
         <!-- Enable forbiddenapis plugin, do disable set to none -->
         <api.check.phase>process-test-classes</api.check.phase>
@@ -35,11 +37,10 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
-        <solr.config.version>1.8.9</solr.config.version> <!-- Semantic versioning of solr config and schema -->
-
+        <!-- Semantic versioning of solr config and schema -->
+        <solr.config.version>1.8.9</solr.config.version>
         <project.package>dk.kb.present</project.package>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
@@ -50,7 +51,6 @@
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
         </dependency>
-
         <dependency>
             <groupId>dk.kb.license</groupId>
             <artifactId>ds-license</artifactId>
@@ -64,7 +64,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
@@ -78,41 +77,35 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-      <!-- Remember to include caffeine when using ds license client-->
-      <!-- https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine -->
-      <!-- Used for DsLicenseClient -->
-      <dependency>
-        <groupId>com.github.ben-manes.caffeine</groupId>
-        <artifactId>caffeine</artifactId>
-        <version>3.1.8</version>
-      </dependency>
-
-      <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>poi-ooxml</artifactId>
-        <version>5.3.0</version>
-      </dependency>
-      <!-- POI 5.3.0 needs commons-io -->
-      <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>2.16.1</version>
-      </dependency>
-
-
-      <dependency>
+        <!-- Remember to include caffeine when using ds license client-->
+        <!-- https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine -->
+        <!-- Used for DsLicenseClient -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.3.0</version>
+        </dependency>
+        <!-- POI 5.3.0 needs commons-io -->
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.16.1</version>
+        </dependency>
+        <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
-
-
         <!-- Apache CXF and servlet stuff -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
@@ -120,8 +113,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
-          <artifactId>cxf-rt-transports-http</artifactId>
-          <scope>runtime</scope>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -129,20 +122,20 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.xml.ws/jaxws-api -->
         <dependency>
-          <groupId>javax.xml.ws</groupId>
-          <artifactId>jaxws-api</artifactId>
-          <exclusions>
-            <!-- Project has jakarta.xml.bind-api v. 2.3.3 from cxf-rt-transports-http-->
-            <exclusion>
-              <groupId>javax.xml.bind</groupId>
-              <artifactId>jaxb-api</artifactId>
-            </exclusion>
-            <!-- Project has jakarta.annotation-api v.1.3.5 through KB-util dependency.-->
-            <exclusion>
-              <groupId>javax.annotation</groupId>
-              <artifactId>javax.annotation-api</artifactId>
-            </exclusion>
-          </exclusions>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <exclusions>
+                <!-- Project has jakarta.xml.bind-api v. 2.3.3 from cxf-rt-transports-http-->
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <!-- Project has jakarta.annotation-api v.1.3.5 through KB-util dependency.-->
+                <exclusion>
+                    <groupId>javax.annotation</groupId>
+                    <artifactId>javax.annotation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -170,7 +163,6 @@
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
         </dependency>
-
         <!-- openapitools dependency -->
         <dependency>
             <groupId>io.swagger</groupId>
@@ -178,163 +170,145 @@
         </dependency>
         <!-- To get date parsing to work? -->
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-modules-java8 -->
-<!--        <dependency>
+        <!-- <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-modules-java8</artifactId>
             <version>2.13.1</version>
             <type>pom</type>
             <scope>runtime</scope>
-        </dependency>-->
-
+        </dependency> -->
         <!-- Logging dependencies -->
         <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jul-to-slf4j</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jcl-over-slf4j</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-ext</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-ext</artifactId>
         </dependency>
         <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
         <!-- Unit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
         <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-junit-jupiter</artifactId>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
         </dependency>
-
         <!--Pretty print from unittests -->
         <dependency>
-           <groupId>com.google.code.gson</groupId>
-           <artifactId>gson</artifactId>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
         <dependency>
-          <groupId>org.mock-server</groupId>
-          <artifactId>mockserver-junit-jupiter</artifactId>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-junit-jupiter</artifactId>
         </dependency>
-
-
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider -->
-
         <!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
         <dependency>
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
         </dependency>
-
-
-
-          <dependency>
-              <groupId>org.openapitools</groupId>
-              <artifactId>jackson-databind-nullable</artifactId>
-          </dependency>
-
-
-
-
-          <!-- Enmbedded solr for unittest -->
-          <dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+        </dependency>
+        <!-- Enmbedded solr for unittest -->
+        <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
             <version>9.4.1</version>
             <scope>test</scope>
-             <exclusions>
+            <exclusions>
                 <exclusion>
-                      <groupId>org.slf4j</groupId>
-                      <artifactId>*</artifactId>
-                  </exclusion>
-                  <exclusion>
-                      <groupId>log4j</groupId>
-                      <artifactId>*</artifactId>
-                  </exclusion>
-                  <exclusion>
-                      <groupId>org.apache.logging.log4j</groupId>
-                      <artifactId>*</artifactId>
-                  </exclusion>
-              </exclusions>
-             </dependency>
-
-             <dependency>
-               <groupId>org.apache.solr</groupId>
-               <artifactId>solr-test-framework</artifactId>
-               <version>9.4.1</version>
-               <scope>test</scope>
-               <exclusions>
-                 <exclusion> <!-- Solves the "multiple slf bindings" warning -->
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>*</artifactId>
-                 </exclusion>
-                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>*</artifactId>
-                 </exclusion>
-                 <exclusion>
+                </exclusion>
+                <exclusion>
                     <groupId>log4j</groupId>
                     <artifactId>*</artifactId>
-                 </exclusion>
-                 <exclusion>
-                   <groupId>org.xerial.snappy</groupId>
-                   <artifactId>snappy-java</artifactId>
-                 </exclusion>
-                 <exclusion>
-                   <groupId>org.eclipse.jetty.toolchain</groupId>
-                   <artifactId>jetty-servlet-api</artifactId>
-                 </exclusion>
-                 <exclusion>
-                   <groupId>org.hamcrest</groupId>
-                   <artifactId>hamcrest-core</artifactId>
-                 </exclusion>
-                </exclusions>
-              </dependency>
-              <!-- https://mvnrepository.com/artifact/org.apache.solr/solr-analysis-extras -->
-              <dependency>
-                <groupId>org.apache.solr</groupId>
-                <artifactId>solr-analysis-extras</artifactId>
-                <version>9.4.1</version>
-              </dependency>
-
-             <dependency>
-                 <groupId>org.apache.httpcomponents.client5</groupId>
-                 <artifactId>httpclient5</artifactId>
-             </dependency>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-test-framework</artifactId>
+            <version>9.4.1</version>
+            <scope>test</scope>
+            <exclusions>
+                <!-- Solves the "multiple slf bindings" warning -->
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.xerial.snappy</groupId>
+                    <artifactId>snappy-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty.toolchain</groupId>
+                    <artifactId>jetty-servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.solr/solr-analysis-extras -->
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-analysis-extras</artifactId>
+            <version>9.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>
@@ -359,26 +333,26 @@
             <!-- Plugin used to extract information on the current git setup.
                  See: https://github.com/git-commit-id/git-commit-id-maven-plugin -->
             <plugin>
-              <groupId>io.github.git-commit-id</groupId>
-              <artifactId>git-commit-id-maven-plugin</artifactId>
-              <version>7.0.0</version>
-              <executions>
-                <execution>
-                  <id>get-the-git-infos</id>
-                  <goals>
-                    <goal>revision</goal>
-                  </goals>
-                  <phase>initialize</phase>
-                </execution>
-              </executions>
-              <configuration>
-                <includeOnlyProperties>
-                  <includeOnlyProperty>git.commit.id</includeOnlyProperty>
-                  <includeOnlyProperty>git.branch</includeOnlyProperty>
-                  <includeOnlyProperty>git.closest.tag.name</includeOnlyProperty>
-                  <includeOnlyProperty>git.commit.author.time</includeOnlyProperty>
-                </includeOnlyProperties>
-              </configuration>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>7.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>git.commit.id</includeOnlyProperty>
+                        <includeOnlyProperty>git.branch</includeOnlyProperty>
+                        <includeOnlyProperty>git.closest.tag.name</includeOnlyProperty>
+                        <includeOnlyProperty>git.commit.author.time</includeOnlyProperty>
+                    </includeOnlyProperties>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -432,7 +406,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -442,7 +415,8 @@
                      which seems to be an unresolved issue: https://github.com/OpenAPITools/openapi-generator/issues/9008 -->
                 <configuration>
                     <generatorName>jaxrs-cxf-extended</generatorName>
-                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec><!-- Will always be overridden -->
+                    <!-- Will always be overridden -->
+                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec>
                     <modelNameSuffix>Dto</modelNameSuffix>
                     <generateSupportingFiles>false</generateSupportingFiles>
                     <generateApiTests>false</generateApiTests>
@@ -450,7 +424,6 @@
                     <generateApis>true</generateApis>
                     <output>${project.basedir}</output>
                     <templateDirectory>src/main/templates/</templateDirectory>
-
                     <configOptions>
                         <!--https://openapi-generator.tech/docs/generators/jaxrs-cxf-extended/-->
                         <!-- https://openapi-generator.tech/docs/generators/java/ -->
@@ -467,10 +440,8 @@
                     </configOptions>
                     <packageName>${project.package}</packageName>
                 </configuration>
-
-
-                    <!-- Version 1 -->
-                    <!-- When a new version is needed, make a copy of two v1-related executions below, then change
+                <!-- Version 1 -->
+                <!-- When a new version is needed, make a copy of two v1-related executions below, then change
                          v1 to v2 in the copy.
                          Go to plugin.configuration.webResources.resource.includes in this pom.xml and extend the list
                          with v2 versions of the JSON & YAML files.
@@ -481,8 +452,7 @@
                          * Update src/main/webapp/WEB-INF/web.xml
                          * Update src/main/webapp/api/index.html
                     -->
-
-                 <executions>
+                <executions>
                     <execution>
                         <!-- Generate API and Model-files from the OpenAPI specification (positioned under the target/generated-sources/ folder).
                              These files are overwritten on all builds, so they should never be edited manually. -->
@@ -495,7 +465,6 @@
                             <ignoreFileOverride>
                                 ${project.basedir}/.openapi-codegen-ignore-api
                             </ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -519,7 +488,6 @@
                             <ignoreFileOverride>
                                 ${project.basedir}/.openapi-codegen-ignore-impl
                             </ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -528,48 +496,42 @@
                             <skipOverwrite>true</skipOverwrite>
                         </configuration>
                     </execution>
-
-                     <!-- Client for the backend -->
-                     <execution>
-                         <id>Generate client for JAR package and use by other services</id>
-                         <goals>
-                             <goal>generate</goal>
-                         </goals>
-                         <configuration>
-                             <inputSpec>${project.build.outputDirectory}/ds-present-openapi_v1.yaml</inputSpec>
-                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-api</ignoreFileOverride>
-                             <generatorName>java</generatorName>
-                             <library>native</library>
-
-                             <!-- Do not generate doc or tests for this client, we will handle this ourselves-->
-                             <generateApis>true</generateApis>
-                             <generateApiTests>false</generateApiTests>
-                             <generateApiDocumentation>false</generateApiDocumentation>
-                             <generateModels>false</generateModels>
-                             <generateModelTests>false</generateModelTests>
-                             <generateModelDocumentation>false</generateModelDocumentation>
-
-                             <!-- Ensure ONLY the ApiClient and supporting classes are created, not the gradle mess-->
-                             <generateSupportingFiles>true</generateSupportingFiles>
-                             <supportingFilesToGenerate>ApiClient.java,ApiException.java,Configuration.java,Pair.java</supportingFilesToGenerate>
-
-                             <!-- Do NOT use the customised templates as they are only for the webservice part, not the client-->
-                             <!-- Hacked by Asger by setting to an existing folder without templates -->
-                             <templateDirectory>src/main/</templateDirectory>
-
-                             <configOptions>
-                                 <apiPackage>${project.package}.client.v1</apiPackage>
-                                 <modelPackage>${project.package}.model.v1</modelPackage>
-                                 <invokerPackage>${project.package}.invoker.v1</invokerPackage>
-                                 <sourceFolder>target/generated-sources</sourceFolder>
-                                 <implFolder>target/generated-sources</implFolder>
-                             </configOptions>
-                         </configuration>
-                     </execution>
-
+                    <!-- Client for the backend -->
+                    <execution>
+                        <id>Generate client for JAR package and use by other services</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.build.outputDirectory}/ds-present-openapi_v1.yaml</inputSpec>
+                            <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-api</ignoreFileOverride>
+                            <generatorName>java</generatorName>
+                            <library>native</library>
+                            <!-- Do not generate doc or tests for this client, we will handle this ourselves-->
+                            <generateApis>true</generateApis>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <!-- Ensure ONLY the ApiClient and supporting classes are created, not the gradle mess-->
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <supportingFilesToGenerate>ApiClient.java,ApiException.java,Configuration.java,Pair.java
+                            </supportingFilesToGenerate>
+                            <!-- Do NOT use the customised templates as they are only for the webservice part, not the client-->
+                            <!-- Hacked by Asger by setting to an existing folder without templates -->
+                            <templateDirectory>src/main/</templateDirectory>
+                            <configOptions>
+                                <apiPackage>${project.package}.client.v1</apiPackage>
+                                <modelPackage>${project.package}.model.v1</modelPackage>
+                                <invokerPackage>${project.package}.invoker.v1</invokerPackage>
+                                <sourceFolder>target/generated-sources</sourceFolder>
+                                <implFolder>target/generated-sources</implFolder>
+                            </configOptions>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
-
             <!-- The generated classes for the OpenAPI client are problematic. Disable checking of those for now -->
             <plugin>
                 <groupId>de.thetaphi</groupId>
@@ -583,7 +545,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -595,19 +556,18 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-
                     <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->
                     <!--<attachClasses>true</attachClasses> -->
-
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
-                        <webResource> <!-- Store application name, version and build time -->
-                          <directory>${basedir}/src/main/resources/</directory>
-                          <includes>
-                              <include>ds-present.build.properties</include>
-                          </includes>
-                          <filtering>true</filtering>
+                        <!-- Store application name, version and build time -->
+                        <webResource>
+                            <directory>${basedir}/src/main/resources/</directory>
+                            <includes>
+                                <include>ds-present.build.properties</include>
+                            </includes>
+                            <filtering>true</filtering>
                         </webResource>
                         <resource>
                             <!--Include the openapi spec files so we can serve them-->
@@ -621,28 +581,26 @@
                     </webResources>
                 </configuration>
             </plugin>
-
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>
-               <executions>
-                   <execution>
-                   <id>build-specific-jar</id>
-                   <phase>package</phase>
-                   <goals>
-                       <goal>jar</goal>
-                   </goals>
-                  <configuration>
-                      <classifier>api</classifier>
-                      <includes>
-                          <include>dk/kb/present/model/**</include>
-                          <include>dk/kb/present/util/DsPresentClient*</include>
-                      </includes>
-                 </configuration>
-                 </execution>
-              </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-specific-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>api</classifier>
+                            <includes>
+                                <include>dk/kb/present/model/**</include>
+                                <include>dk/kb/present/util/DsPresentClient*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
             <!-- Used only for mvn jetty:run jetty:run-war -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
@@ -663,7 +621,7 @@
                     </webApp>
                 </configuration>
             </plugin>
-          <plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.6.0</version>
                 <configuration>
@@ -671,20 +629,21 @@
                 </configuration>
                 <executions>
                     <execution>
-                      <id>solr-assembly</id> <!-- Unique identifier for this execution -->
-                      <phase>package</phase>
-                      <goals>
-                        <goal>single</goal>
-                      </goals>
-                      <configuration>
-                        <descriptors>
-                          <descriptor>src/main/assembly/solrAssembly.xml</descriptor>
-                        </descriptors>
-                        <!-- Specify the finalName for the specific assembly -->
-                        <finalName>ds_solr9_conf_${solr.config.version}</finalName>
-                        <appendAssemblyId>false</appendAssemblyId>
-                        <attach>true</attach>
-                      </configuration>
+                        <!-- Unique identifier for this execution -->
+                        <id>solr-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/solrAssembly.xml</descriptor>
+                            </descriptors>
+                            <!-- Specify the finalName for the specific assembly -->
+                            <finalName>ds_solr9_conf_${solr.config.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <attach>true</attach>
+                        </configuration>
                     </execution>
                     <execution>
                         <goals>
@@ -692,9 +651,9 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                          <descriptors>
-                            <descriptor>src/main/assembly/assembly.xml</descriptor>
-                          </descriptors>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>
