@@ -247,11 +247,14 @@
           <xsl:with-param name="pbCore" select="$pbCore"/>
         </xsl:call-template>
 
-        <!-- This template also extracts internal fields only relevant for video. The rest of the extension extraction
-             is handled in the kb-internal template called above. -->
-        <xsl:for-each select="$pbCore//pbcoreExtension/extension">
-          <xsl:call-template name="video-extension-extractor"/>
-        </xsl:for-each>
+        <!-- Video-only extension fields, each found in the whole extension set: showviewcode carries a
+             value; the subtitle / teletext / hearing-impaired flags are booleans. Handled elsewhere for
+             non-video records via kb-internal above.
+             TODO: check whether has_subtitles / subtitles-for-hearing-impaired can be described in schema.org. -->
+        <xsl:sequence select="my:extensionStringField($pbcExtensions, 'showviewcode', 'kb:showviewcode')"/>
+        <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'tekstet', 'tekstet', 'ikke tekstet', 'kb:has_subtitles')"/>
+        <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'th', 'tekstet for hørehæmmede', 'ikke tekstet for hørehæmmede', 'kb:has_subtitles_for_hearing_impaired')"/>
+        <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'ttv', 'tekst-tv', 'ikke tekst-tv', 'kb:is_teletext')"/>
         </f:map>
 
         <!-- Catches all errors in sequence constructors (places where data can be used as input). If an error occurs
@@ -1150,12 +1153,7 @@
       </xsl:when>
     </xsl:choose>
     <!-- Create boolean for premiere-->
-    <xsl:call-template name="pbc-extension-extract-boolean-value">
-      <xsl:with-param name="ext" select="$pbcExtensions[. = 'premiere:premiere' or . = 'premiere:ikke premiere']"/>
-      <xsl:with-param name="key" select="'premiere'"/>
-      <xsl:with-param name="affirmative" select="'premiere'"/>
-      <xsl:with-param name="outputKey" select="'kb:premiere'"/>
-    </xsl:call-template>
+    <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'premiere', 'premiere', 'ikke premiere', 'kb:premiere')"/>
     <!-- Extract format identifiers -->
     <xsl:for-each select="$pbCore/pbcoreInstantiation/pbcoreFormatID">
       <xsl:choose>
@@ -1178,18 +1176,31 @@
     </xsl:for-each>
     <!--TODO: Figure if retransmission can fit into real schema.org -->
     <!-- Create boolean for retransmission-->
-    <xsl:call-template name="pbc-extension-extract-boolean-value">
-      <xsl:with-param name="ext" select="$pbcExtensions[. = 'genudsendelse:genudsendelse' or . = 'genudsendelse:ikke genudsendelse']"/>
-      <xsl:with-param name="key" select="'genudsendelse'"/>
-      <xsl:with-param name="affirmative" select="'genudsendelse'"/>
-      <xsl:with-param name="outputKey" select="'kb:retransmission'"/>
-    </xsl:call-template>
-    <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
-         Some have external value, while others primarily are for internal usage.-->
-    <xsl:for-each select="$pbCore/pbcoreExtension">
-      <xsl:call-template name="extension-extractor">
-      <xsl:with-param name="type" select="$type"/>
-      </xsl:call-template>
+    <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'genudsendelse', 'genudsendelse', 'ikke genudsendelse', 'kb:retransmission')"/>
+    <!-- Boolean for whether there was a stop in the transmission -->
+    <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'program_ophold', 'program ophold', 'ikke program ophold', 'kb:program_ophold')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'hovedgenre_id', 'kb:maingenre_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'program_id', 'kb:ritzau_program_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'undergenre_id', 'kb:subgenre_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'afsnit_id', 'kb:episode_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'saeson_id', 'kb:season_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'serie_id', 'kb:series_id')"/>
+    <xsl:for-each select="$pbCore/pbcoreExtension[f:starts-with(extension , 'kanalid:') and f:string-length(normalize-space(substring-after(extension , 'kanalid:'))) > 0]">
+      <xsl:variable name="channelId">
+        <xsl:value-of select="number(normalize-space(substring-after(extension , 'kanalid:')))"/>
+      </xsl:variable>
+      <xsl:choose>
+        <xsl:when test="extensionAuthorityUsed = 'ritzau' and string($channelId) != 'NaN'">
+          <f:number key="kb:ritzau_channel_id">
+            <xsl:value-of select="$channelId"/>
+          </f:number>
+        </xsl:when>
+        <xsl:when test="extensionAuthorityUsed = 'nielsen' and string($channelId) != 'NaN'">
+          <f:number key="kb:nielsen_channel_id">
+            <xsl:value-of select="$channelId"/>
+          </f:number>
+        </xsl:when>
+      </xsl:choose>
     </xsl:for-each>
 
     <!-- Extracts information on video padding. -->
@@ -1327,140 +1338,47 @@
     </xsl:choose>
   </xsl:template>
 
-  <!-- EMIT A BOOLEAN FIELD FROM A 'key:X' / 'key:ikke X' PBCore extension.
-       Many extensions encode a boolean as the affirmative phrase X or its negation 'ikke X', e.g.
-       'tekstet:tekstet' (true) / 'tekstet:ikke tekstet' (false). This template emits
-       <f:boolean key="{outputKey}"> accordingly, and emits nothing when the extension matches
-       neither exact form. The affirmative phrase X is not derivable from the key (e.g. ttv -> 'tekst-tv'),
-       so it is supplied per call. -->
-  <xsl:template name="pbc-extension-extract-boolean-value">
-    <xsl:param name="ext"/>          <!-- the extension value(s) to test -->
-    <xsl:param name="key"/>          <!-- the extension key, e.g. 'tekstet' -->
-    <xsl:param name="affirmative"/>  <!-- the affirmative phrase X; 'ikke X' is the negation -->
-    <xsl:param name="outputKey"/>    <!-- the JSON field key to emit, e.g. 'kb:has_subtitles' -->
-    <xsl:variable name="prefix" select="$key || ':'"/>
+  <!-- EMIT A BOOLEAN FIELD FROM A 'prefix:affirmative' / 'prefix:nonAffirmative' PBCore extension.
+       Many extensions encode a boolean as an affirmative phrase or its negation, e.g.
+       'tekstet:tekstet' (true) / 'tekstet:ikke tekstet' (false). Given the whole extension set, this
+       emits <f:boolean key="{outputKey}"> true when the affirmative form is present, false when the
+       negative form is present, and nothing otherwise. It tests the full set with an existential '=',
+       so callers pass $pbcExtensions directly - no per-extension loop and no pre-filtering needed. The
+       phrases are not derivable from the prefix (e.g. ttv -> 'tekst-tv'), so all three are passed in. -->
+  <xsl:function name="my:extensionBooleanField" visibility="public">
+    <xsl:param name="extensions" as="xs:string*"/>
+    <xsl:param name="prefix" as="xs:string"/>
+    <xsl:param name="affirmative" as="xs:string"/>
+    <xsl:param name="nonAffirmative" as="xs:string"/>
+    <xsl:param name="outputKey" as="xs:string"/>
     <xsl:choose>
-      <xsl:when test="$ext = $prefix || 'ikke ' || $affirmative">
+      <xsl:when test="$extensions = $prefix || ':' || $nonAffirmative">
         <f:boolean key="{$outputKey}"><xsl:value-of select="false()"/></f:boolean>
       </xsl:when>
-      <xsl:when test="$ext = $prefix || $affirmative">
+      <xsl:when test="$extensions = $prefix || ':' || $affirmative">
         <f:boolean key="{$outputKey}"><xsl:value-of select="true()"/></f:boolean>
       </xsl:when>
     </xsl:choose>
-  </xsl:template>
+  </xsl:function>
 
   <!-- EXTRACT VALUES FROM PBCORE EXTENSIONS TO KB:INTERNAL MAP. These extensions can contain many different values.
        Some might be relevant in relation to schema.org and can be elevated to the correct structure.-->
-  <!-- PBCore "prefix:value" extension strings that map straight onto a <f:string key="kb:..."> field.
-       Kept as two disjoint maps because the two extractor templates below iterate over the SAME set of
-       extensions but must each emit only their own fields (a shared map would duplicate keys). Add a
-       plain id field by adding one entry here instead of a new xsl:when branch. -->
-  <xsl:variable name="extensionIdFieldMap" as="map(xs:string, xs:string)">
-    <xsl:map>
-      <xsl:map-entry key="'hovedgenre_id'" select="'kb:maingenre_id'"/>
-      <xsl:map-entry key="'program_id'"    select="'kb:ritzau_program_id'"/>
-      <xsl:map-entry key="'undergenre_id'" select="'kb:subgenre_id'"/>
-      <xsl:map-entry key="'afsnit_id'"     select="'kb:episode_id'"/>
-      <xsl:map-entry key="'saeson_id'"     select="'kb:season_id'"/>
-      <xsl:map-entry key="'serie_id'"      select="'kb:series_id'"/>
-    </xsl:map>
-  </xsl:variable>
-  <xsl:variable name="videoExtensionStringFieldMap" as="map(xs:string, xs:string)">
-    <xsl:map>
-      <xsl:map-entry key="'showviewcode'" select="'kb:showviewcode'"/>
-    </xsl:map>
-  </xsl:variable>
-
-  <!-- For a PBCore extension text of the form "prefix:value", emit <f:string key="{mapped key}">value</f:string>
-       when "prefix" is a key in $fieldMap; otherwise nothing. Preserves the old substring-after semantics:
-       an empty value (e.g. "serie_id:") still produces an empty-valued field. -->
-  <xsl:function name="my:extensionStringField">
-    <xsl:param name="extensionText" as="xs:string?"/>
-    <xsl:param name="fieldMap" as="map(xs:string, xs:string)"/>
-    <xsl:variable name="prefix" as="xs:string" select="f:substring-before($extensionText, ':')"/>
-    <xsl:variable name="outputKey" as="xs:string?" select="$fieldMap($prefix)"/>
-    <xsl:if test="exists($outputKey)">
+  <!-- Emit <f:string key="{outputKey}"> carrying the value of the first "prefix:value" extension in the set,
+       or nothing if none is present. Given the whole extension set (existential match), so callers pass
+       $pbcExtensions directly - the mirror of my:extensionBooleanField for value-bearing fields. Preserves
+       the old substring-after semantics: an empty value (e.g. "serie_id:") still produces an empty field. -->
+  <xsl:function name="my:extensionStringField" visibility="public">
+    <xsl:param name="extensions" as="xs:string*"/>
+    <xsl:param name="prefix" as="xs:string"/>
+    <xsl:param name="outputKey" as="xs:string"/>
+    <xsl:variable name="marker" select="$prefix || ':'"/>
+    <xsl:variable name="matching" select="$extensions[f:starts-with(., $marker)]"/>
+    <xsl:if test="exists($matching)">
       <f:string key="{$outputKey}">
-        <xsl:value-of select="f:substring-after($extensionText, $prefix || ':')"/>
+        <xsl:value-of select="f:substring-after($matching[1], $marker)"/>
       </f:string>
     </xsl:if>
   </xsl:function>
-
-  <xsl:template name="extension-extractor">
-    <xsl:param name="type"/>
-    <!-- Extracts multiple internal ids. -->
-    <!-- Simple "prefix:value" -> <f:string key="kb:..."> id fields are table-driven via $extensionIdFieldMap.
-         Only extensions that need extra logic remain as explicit branches below: a numeric channel id that is
-         resolved against an authority, and the program_ophold boolean. -->
-    <xsl:sequence select="my:extensionStringField(extension, $extensionIdFieldMap)"/>
-    <xsl:choose>
-      <xsl:when test="f:starts-with(extension , 'kanalid:') and f:string-length(normalize-space(substring-after(extension , 'kanalid:'))) > 0">
-        <xsl:variable name="channelId">
-          <xsl:value-of select="number(normalize-space(substring-after(extension , 'kanalid:')))"/>
-        </xsl:variable>
-
-        <xsl:choose>
-          <xsl:when test="extensionAuthorityUsed = 'ritzau' and string($channelId) != 'NaN'">
-            <f:number key="kb:ritzau_channel_id">
-              <xsl:value-of select="$channelId"/>
-            </f:number>
-          </xsl:when>
-          <xsl:when test="extensionAuthorityUsed = 'nielsen' and string($channelId) != 'NaN'">
-            <f:number key="kb:nielsen_channel_id">
-              <xsl:value-of select="$channelId"/>
-            </f:number>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:when>
-      <!-- Check if there has been a stop in the transmission-->
-      <xsl:when test="f:starts-with(extension , 'program_ophold:')">
-        <xsl:call-template name="pbc-extension-extract-boolean-value">
-          <xsl:with-param name="ext" select="extension"/>
-          <xsl:with-param name="key" select="'program_ophold'"/>
-          <xsl:with-param name="affirmative" select="'program ophold'"/>
-          <xsl:with-param name="outputKey" select="'kb:program_ophold'"/>
-        </xsl:call-template>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
-
-  <!-- Extracts extensions that are only applicable for video objects. -->
-  <xsl:template name="video-extension-extractor">
-    <!-- showviewcode is a simple "prefix:value" -> <f:string> id field (table-driven via
-         $videoExtensionStringFieldMap); the remaining extensions are booleans handled below. -->
-    <xsl:sequence select="my:extensionStringField(., $videoExtensionStringFieldMap)"/>
-    <xsl:choose>
-      <!-- TODO: Check if has_subtitles fits in schema.org-->
-      <!-- Boolean for if the program contains subtitles.-->
-      <xsl:when test="f:starts-with(. , 'tekstet:')">
-        <xsl:call-template name="pbc-extension-extract-boolean-value">
-          <xsl:with-param name="ext" select="."/>
-          <xsl:with-param name="key" select="'tekstet'"/>
-          <xsl:with-param name="affirmative" select="'tekstet'"/>
-          <xsl:with-param name="outputKey" select="'kb:has_subtitles'"/>
-        </xsl:call-template>
-      </xsl:when>
-      <!-- Is the resource teletext?-->
-      <xsl:when test="f:starts-with(. , 'ttv:')">
-        <xsl:call-template name="pbc-extension-extract-boolean-value">
-          <xsl:with-param name="ext" select="."/>
-          <xsl:with-param name="key" select="'ttv'"/>
-          <xsl:with-param name="affirmative" select="'tekst-tv'"/>
-          <xsl:with-param name="outputKey" select="'kb:is_teletext'"/>
-        </xsl:call-template>
-      </xsl:when>
-      <!--TODO: Check if subtitles for hearing impaired can be described in schema.org'-->
-      <!-- Boolean value - does the resource contain subtitles for hearing impaired?-->
-      <xsl:when test="f:starts-with(. , 'th:')">
-        <xsl:call-template name="pbc-extension-extract-boolean-value">
-          <xsl:with-param name="ext" select="."/>
-          <xsl:with-param name="key" select="'th'"/>
-          <xsl:with-param name="affirmative" select="'tekstet for hørehæmmede'"/>
-          <xsl:with-param name="outputKey" select="'kb:has_subtitles_for_hearing_impaired'"/>
-        </xsl:call-template>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
 
   <!-- TEMPLATE FOR ACCESSING ACCESS METADATA.-->
   <xsl:template name="access-template">
