@@ -110,7 +110,7 @@ services:
       - keycloak_data:/opt/keycloak/data
 
   postgres:
-    image: postgres:18-alpine3.24
+    image: postgres:13.23-alpine3.21
     container_name: digisam_postgres
     environment:
       POSTGRES_DB: digisam
@@ -119,7 +119,7 @@ services:
     ports:
       - "8088:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
       - ./compose-files/apply-ordered-sql.sh:/docker-entrypoint-initdb.d/apply-ordered-sql.sh:ro
       - ./compose-files/order.txt:/init-scripts/order.txt:ro
       - ./ds-datahandler/src/test/resources/ddl/create_ds_datahandler_db.ddl:/init-scripts/create_ds_datahandler_db.ddl:ro
