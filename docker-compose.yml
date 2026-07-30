@@ -16,7 +16,6 @@ services:
       - ./aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-license:
     image: ds-license/master:latest
@@ -35,7 +34,6 @@ services:
       - ./aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-present:
     image: ds-present/master:latest
@@ -54,7 +52,6 @@ services:
       - ./aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-datahandler:
     image: ds-datahandler/master:latest
@@ -73,7 +70,6 @@ services:
       - ./aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-discover:
     image: ds-discover/master:latest
@@ -92,7 +88,6 @@ services:
       - ./aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-image:
     image: ds-image/master:latest
@@ -111,7 +106,6 @@ services:
       - ./aegis/docker/.env
     networks:
       - default
-    restart: always
 
   bff:
     image: bff/master:latest
@@ -130,7 +124,6 @@ services:
       - ./aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-web:
     image: ds-web/local:latest
@@ -142,7 +135,6 @@ services:
       - ./aegis/docker/.env
     networks:
       - default
-    restart: always
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.0-1
@@ -209,7 +201,6 @@ services:
       - solr_data:/opt/solr/server/solr/writable
     networks:
       - default
-    restart: always
 
 volumes:
   solr_data:
