@@ -109,6 +109,10 @@ services:
       - "8086:8080"
     env_file:
       - ./aegis/docker/.env
+    networks:
+      - default
+    restart: always
+
   bff:
     image: bff/master:latest
     build:
@@ -213,7 +217,11 @@ volumes:
   postgres_data:
 
 secrets:
-   maven_settings:
-     file: ~/.m2/settings.xml
-   maven_settings_security:
-     file: ~/.m2/settings-security.xml
+  maven_settings:
+    file: ~/.m2/settings.xml
+  maven_settings_security:
+    file: ~/.m2/settings-security.xml
+
+networks:
+  default:
+    name: ds_archive_network
