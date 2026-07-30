@@ -142,7 +142,6 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.0-1
-    container_name: keycloak
     command: start-dev --import-realm --http-port=8087
     environment:
       TZ: UTC
@@ -163,7 +162,6 @@ services:
 
   postgres:
     image: postgres:13.23-alpine3.21
-    container_name: digisam_postgres
     environment:
       TZ: UTC
       POSTGRES_DB: digisam
@@ -194,7 +192,6 @@ services:
       context: .
       dockerfile: Dockerfile
       target: solr
-    container_name: ds-solr
     environment:
       TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
@@ -210,7 +207,6 @@ services:
       - default
     restart: always
 
-    container_name: web
 volumes:
   solr_data:
   keycloak_data:
