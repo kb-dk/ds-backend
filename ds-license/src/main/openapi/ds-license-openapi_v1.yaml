@@ -597,7 +597,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AttributeType'
-                  
+
   /groupType:
     get:
       tags:
@@ -708,13 +708,13 @@ paths:
           description: 'List latest Auditlog entries less than modifiedTimeStart. Will default to current time if modifiedTimeStart is not set in request.'
           schema:
             type: integer
-            format: int64            
+            format: int64
         - name: changeName
           in: query
           description: 'List of auditlog entries of this changeName type. If null will return all changeName types.'
           schema:
             $ref: '#/components/schemas/ObjectTypeEnum'
-            nullable: true                                                        
+            nullable: true
       responses:
         '200':
           description: 'List of AuditLogEntryOutput'
@@ -1208,7 +1208,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/DrHoldbackCategoryOutput'
+                $ref: '#/components/schemas/DrHoldbackCategoryOutput'
 
   /rights/drHoldbackCategory/{id}:
     put:
@@ -2366,7 +2366,7 @@ components:
           type: integer
           format: int32
           description: 'Number of records updated'
-                    
+
   securitySchemes:
     KBOAuth:
       type: oauth2
