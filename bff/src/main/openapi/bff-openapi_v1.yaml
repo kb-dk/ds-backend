@@ -13,10 +13,6 @@ info:
 
     example call of proxied api:
     > `https://digisam-devel.statsbiblioteket.dk/bff/v1/proxy/ds-image/...`
-
-
-
-
   contact:
     email: '${user.name}@kb.dk'
   license:

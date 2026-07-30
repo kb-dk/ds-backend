@@ -9,14 +9,13 @@
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
+    <!-- Human-readable name, uppercase and spaces welcome -->
+    <name>ds-present</name>
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
     <version>100.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <description>Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for
-        [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD
-        and SolrJsonDocument.
-    </description>
+    <description>ds-present by the Royal Danish Library</description>
     <scm>
         <url>https://github.com/kb-dk/ds_backend</url>
         <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
