@@ -8,6 +8,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8081:8080"
     env_file:
@@ -25,6 +27,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8082:8080"
     env_file:
@@ -42,6 +46,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8083:8080"
     env_file:
@@ -59,6 +65,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8084:8080"
     env_file:
@@ -76,6 +84,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8085:8080"
     env_file:
@@ -93,10 +103,16 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8086:8080"
     env_file:
       - aegis/docker/.env
+    environment:
+      TZ: UTC
+    environment:
+      TZ: UTC
     networks:
       - default
     restart: always
@@ -106,6 +122,7 @@ services:
     container_name: keycloak
     command: start-dev --import-realm --http-port=8087
     environment:
+      TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: user
       KC_BOOTSTRAP_ADMIN_PASSWORD: changeit
       KC_HTTP_ENABLED: "true"
@@ -125,6 +142,7 @@ services:
     image: postgres:13.23-alpine3.21
     container_name: digisam_postgres
     environment:
+      TZ: UTC
       POSTGRES_DB: digisam
       POSTGRES_USER: digisam
       POSTGRES_PASSWORD: p0stgr3s
@@ -155,6 +173,7 @@ services:
       target: solr
     container_name: ds-solr
     environment:
+      TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
     ports:
       - "8089:8983"
