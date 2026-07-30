@@ -13,7 +13,7 @@ services:
     ports:
       - "8081:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
     networks:
       - default
     restart: always
@@ -32,7 +32,7 @@ services:
     ports:
       - "8082:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
     networks:
       - default
     restart: always
@@ -51,7 +51,7 @@ services:
     ports:
       - "8083:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
     networks:
       - default
     restart: always
@@ -70,7 +70,7 @@ services:
     ports:
       - "8084:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
     networks:
       - default
     restart: always
@@ -89,7 +89,7 @@ services:
     ports:
       - "8085:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
     networks:
       - default
     restart: always
@@ -108,7 +108,7 @@ services:
     ports:
       - "8086:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
   bff:
     image: bff/master:latest
     build:
@@ -202,8 +202,8 @@ services:
       - "8089:8983"
       - "9983:9983"
     env_file:
-      - aegis/docker/.env
     command: ["solr-foreground", "-c"]
+      - ./aegis/docker/.env
     volumes:
       - solr_data:/opt/solr/server/solr/writable
     networks:
