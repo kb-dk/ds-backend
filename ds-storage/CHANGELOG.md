@@ -30,6 +30,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `KBAuthorizationInterceptor`.
 - Renamed class `DsStorageUnitTestUtil` to `UnitTestUtil` and refactored the class so it is possible to have multiple
   unit test storage classes.
+- Formatted `openapi` file.
+- Moved OpenAPI description from `pom.xml` into `openapi` file.
+- Added `name` in `pom.xml`.
+- Formatted `pom.xml`.
 
 ### Deleted
 
