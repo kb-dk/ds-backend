@@ -14,6 +14,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Start on unittest for `DsKalturaAnalytics`.
 - Refactored creating search query and call to Kaltura from method `listEntryBatch` into own method `getMediaEntries`.
 - Changed method `listEntryBatch` from `private` to `public` to be able to unittest the behavior.
+- Formatted `openapi` file.
+- Added `description` and `name` in `pom.xml`.
+- Formatted `pom.xml`.
 
 ## [5.0.0](https://github.com/kb-dk/ds-kaltura/releases/tag/ds-kaltura-5.0.0) - 2026-06-10
 

@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Formatted `openapi` file.
+- Added hyphen between `human-readable` in `pom.xml`.
+- Formatted `pom.xml`.
+
 ## [5.0.0](https://github.com/kb-dk/ds-discover/releases/tag/ds-discover-5.0.0) - 2026-06-10
 
 ### Changed
