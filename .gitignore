@@ -1,23 +1,23 @@
 # We use pom.xml as the source of truth and don't rely on a specific IDE
-.idea
+.idea/
 aegis/
 .env
 .git
 
 ## Contains KB-internal information for testing
 # These config files should NEVER be in git, as they can contain passwords or information that must not be public
-**oai_harvest.conf
-**kb-internal-test.yaml
-**internal-test-setup.yaml
-**environment.yaml
-**local.yaml
-**security-salt.yaml
-**unittest.yaml
-**integration-test.yaml
-**NoisyPillars.mp3
-**/src/test/resources/xml/*.xml
-**/src/test/resources/rightsModuleMigratedData/*
-**/internal_test_files/
+*oai_harvest.conf
+*kb-internal-test.yaml
+*internal-test-setup.yaml
+*environment.yaml
+*local.yaml
+*security-salt.yaml
+*unittest.yaml
+*integration-test.yaml
+*NoisyPillars.mp3
+*/src/test/resources/xml/*.xml
+*/src/test/resources/rightsModuleMigratedData/*
+*internal_test_files/
 
 # compiled files
 *.class
@@ -30,8 +30,7 @@ aegis/
 *.iml
 *.ipr
 
-# build files
-**/target/
+# Maven build files
 target/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
