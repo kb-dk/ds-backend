@@ -109,10 +109,33 @@ services:
       - "8086:8080"
     env_file:
       - aegis/docker/.env
+  bff:
+    image: bff/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bff
+      secrets:
+        - maven_settings
+        - maven_settings_security
     environment:
       TZ: UTC
+    ports:
+      - "8091:8080"
+    env_file:
+      - ./aegis/docker/.env
+    networks:
+      - default
+    restart: always
+
+  ds-web:
+    image: ds-web/local:latest
     environment:
       TZ: UTC
+    ports:
+      - "8090:3000"
+    env_file:
+      - ./aegis/docker/.env
     networks:
       - default
     restart: always
@@ -187,34 +210,7 @@ services:
       - default
     restart: always
 
-  bff:
-    image: bff/master:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: bff
-      secrets:
-        - maven_settings
-        - maven_settings_security
-    ports:
-      - "8091:8080"
-    env_file:
-      - aegis/docker/.env
-    networks:
-      - default
-    restart: always
-
-  ds-web:
-    image: ds-web/local:latest
     container_name: web
-    ports:
-      - "8090:3000"
-    env_file:
-      - aegis/docker/.env
-    networks:
-      - default
-    restart: always
-
 volumes:
   solr_data:
   keycloak_data:
