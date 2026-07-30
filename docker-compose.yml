@@ -8,13 +8,14 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8081:8080"
     env_file:
       - aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-license:
     image: ds-license/master:latest
@@ -25,13 +26,14 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8082:8080"
     env_file:
       - aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-present:
     image: ds-present/master:latest
@@ -42,13 +44,14 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8083:8080"
     env_file:
       - aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-datahandler:
     image: ds-datahandler/master:latest
@@ -59,13 +62,14 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8084:8080"
     env_file:
       - aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-discover:
     image: ds-discover/master:latest
@@ -76,13 +80,14 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8085:8080"
     env_file:
       - aegis/docker/.env
     networks:
       - default
-    restart: always
 
   ds-image:
     image: ds-image/master:latest
@@ -93,22 +98,52 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
     ports:
       - "8086:8080"
     env_file:
       - aegis/docker/.env
     networks:
       - default
-    restart: always
+
+  bff:
+    image: bff/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bff
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    environment:
+      TZ: UTC
+    ports:
+      - "8091:8080"
+    env_file:
+      - ./aegis/docker/.env
+    networks:
+      - default
+
+  ds-web:
+    image: ds-web/local:latest
+    environment:
+      TZ: UTC
+    ports:
+      - "8090:3000"
+    env_file:
+      - ./aegis/docker/.env
+    networks:
+      - default
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.0-1
-    container_name: keycloak
-    command: start-dev --import-realm --http-port=8087
+    command: [ "start-dev", "--import-realm", "--http-port=8087" ]
     environment:
+      TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: user
       KC_BOOTSTRAP_ADMIN_PASSWORD: changeit
-      KC_HTTP_ENABLED: "true"
+      KC_HTTP_ENABLED: true
       # Sets the uniform identity for token issuance across your entire environment
       KC_HOSTNAME: http://keycloak.local:8087
     ports:
@@ -123,8 +158,8 @@ services:
 
   postgres:
     image: postgres:13.23-alpine3.21
-    container_name: digisam_postgres
     environment:
+      TZ: UTC
       POSTGRES_DB: digisam
       POSTGRES_USER: digisam
       POSTGRES_PASSWORD: p0stgr3s
@@ -153,48 +188,19 @@ services:
       context: .
       dockerfile: Dockerfile
       target: solr
-    container_name: ds-solr
     environment:
+      TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
     ports:
       - "8089:8983"
       - "9983:9983"
     env_file:
       - aegis/docker/.env
-    command: ["solr-foreground", "-c"]
+    command: [ "solr-foreground", "-c" ]
     volumes:
       - solr_data:/opt/solr/server/solr/writable
     networks:
       - default
-    restart: always
-
-  bff:
-    image: bff/master:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: bff
-      secrets:
-        - maven_settings
-        - maven_settings_security
-    ports:
-      - "8091:8080"
-    env_file:
-      - aegis/docker/.env
-    networks:
-      - default
-    restart: always
-
-  ds-web:
-    image: ds-web/local:latest
-    container_name: web
-    ports:
-      - "8090:3000"
-    env_file:
-      - aegis/docker/.env
-    networks:
-      - default
-    restart: always
 
 volumes:
   solr_data:
@@ -202,7 +208,11 @@ volumes:
   postgres_data:
 
 secrets:
-   maven_settings:
-     file: ~/.m2/settings.xml
-   maven_settings_security:
-     file: ~/.m2/settings-security.xml
+  maven_settings:
+    file: ~/.m2/settings.xml
+  maven_settings_security:
+    file: ~/.m2/settings-security.xml
+
+networks:
+  default:
+    name: ds_archive_network
