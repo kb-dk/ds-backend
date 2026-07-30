@@ -3,7 +3,7 @@ info:
   version: 'v1'
   title: '${project.name}'
   description: |
-    ${project.description}
+    ds-discover by the Royal Danish Library
   license:
     name: '${license.name}'
     url: '${license.url}'
