@@ -187,7 +187,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
     }
 
     @Override
-    public String transformsolrschemaPost(String format, String rawSchema) {
+    public String transformSolrSchema(String format, String rawSchema) {
         try {
             return PresentFacade.transformSolrSchema(rawSchema, format);
         } catch (IOException e) {

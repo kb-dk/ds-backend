@@ -1,32 +1,32 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>dk.statsbiblioteket.sbprojects</groupId>
         <artifactId>sbprojects-parent</artifactId>
         <version>80</version>
     </parent>
-
+    <!-- Human-readable name, uppercase and spaces welcome -->
+    <name>ds-parent</name>
     <groupId>dk.kb.dsparent</groupId>
     <artifactId>ds-parent</artifactId>
     <version>100.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-
+    <description>ds-parent by the Royal Danish Library</description>
     <scm>
-        <url>https://github.com/kb-dk/ds-parent</url>
-        <connection>scm:git:git@github.com:kb-dk/ds-parent.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/ds-parent.git</developerConnection>
+        <url>https://github.com/kb-dk/ds_backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <org.junit.version>5.13.4</org.junit.version>
     </properties>
-
     <modules>
         <module>ds-shared</module>
         <module>ds-storage</module>
@@ -38,7 +38,6 @@
         <module>ds-image</module>
         <module>bff</module>
     </modules>
-
     <repositories>
         <repository>
             <id>sbforge-nexus</id>
@@ -61,7 +60,6 @@
             </snapshots>
         </repository>
     </repositories>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -223,7 +221,6 @@
                 <artifactId>handy-uri-templates</artifactId>
                 <version>2.1.7</version>
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable
              Used for OpenAPI client generation -->
             <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable -->
@@ -232,7 +229,6 @@
                 <artifactId>jackson-databind-nullable</artifactId>
                 <version>0.2.2</version>
             </dependency>
-
             <!-- OAuth  support -->
             <!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-core -->
             <dependency>
@@ -252,7 +248,6 @@
                 <artifactId>keycloak-authz-client</artifactId>
                 <version>23.0.6</version>
             </dependency>
-
             <!-- openapitools dependency -->
             <dependency>
                 <groupId>io.swagger</groupId>
@@ -274,23 +269,19 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <!-- Database dependencies-->
-
             <!-- database -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
                 <version>2.0</version>
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>42.7.8</version>
             </dependency>
-
             <!--For the standard unit test-->
             <dependency>
                 <groupId>com.h2database</groupId>
@@ -298,7 +289,6 @@
                 <version>2.3.232</version>
                 <scope>test</scope>
             </dependency>
-
             <!-- TEST -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -330,7 +320,6 @@
                 <version>5.23.0</version>
                 <scope>test</scope>
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
             <dependency>
                 <groupId>org.mock-server</groupId>

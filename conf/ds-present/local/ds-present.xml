@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Environment name="ds-present-logback-config"
+                 value="/usr/local/tomcat/conf/ds-present-configs/ds-present.logback.xml"
+                 type="java.lang.String"
+                 override="false"/>
+
+    <Environment name="application-config"
+                 value="/usr/local/tomcat/conf/ds-present-configs/ds-present-devel.yaml"
+                 type="java.lang.String"
+                 override="false"/>
+</Context>

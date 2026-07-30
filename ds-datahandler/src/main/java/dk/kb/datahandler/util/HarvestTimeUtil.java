@@ -169,7 +169,7 @@ public class HarvestTimeUtil {
 
     /**
      * Some OAI targets needs to be split into days instead of a full date interval. 
-     * Will format from and until date to a format supported by the OAI target<br> 
+     * Will format from and until date to a format supported by the OAI target
      * 
      * @param oaiTarget The OAI target to generate intervals for. The interval timeformat will match what the oai target has defined. 
      * @param from  Generate day intervals starting from this day (included). If null it will start from the start_day attribute defined for the oai target.

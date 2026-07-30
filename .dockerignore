@@ -1,0 +1,16 @@
+.idea/
+aegis/
+*.iml
+.env
+.env.template
+docker-compose.yml
+Jenkinsfile
+Jenkinsfile.release
+README.md
+CHANGELOG.md
+**/target/
+
+# These config files should NEVER be in git, as they can contain passwords
+*-environment.yaml
+*-local.yaml
+*-unittest.yaml

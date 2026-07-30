@@ -35,9 +35,8 @@ paths:
       summary: 'IIIF Image Request'
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: IIIFImageRequest
-      
       # All parameters are required in the original IIIF Image Requests and has to be specified in the implementation in a specific order.
       # The order in the original IIIF Image Requests is as follows: 
       # Region THEN Size THEN Rotation THEN Quality THEN Format
@@ -49,10 +48,9 @@ paths:
           schema:
             type: string
             example: '${config:openapi.exampleid}'
-            
         - name: region
           in: path
-          description: |- 
+          description: |-
             The region parameter defines the rectangular portion of the underlying image content to be returned
             
             Region can be specified by pixel coordinates, percentage or by the value full, which specifies that the full image should be returned.
@@ -69,10 +67,9 @@ paths:
           schema:
             type: string
             default: "full"
-            
         - name: size
           in: path
-          description: |- 
+          description: |-
             The size parameter specifies the dimensions to which the extracted region, which might be the full image, is to be scaled. With the exception of the w,h and ^w,h forms, the returned image maintains the aspect ratio of the extracted region as closely as possible. 
             
             Sizes prefixed with ^ allow upscaling of the extracted region when its pixel dimensions are less than the pixel dimensions of the scaled region.
@@ -97,7 +94,6 @@ paths:
           schema:
             type: string
             default: "400,"
-            
         - name: rotation
           in: path
           description: |-
@@ -127,8 +123,6 @@ paths:
             rotate_and_flip:
               value: "!165"
               summary: Mirror and rotate 165 degrees
-                
-            
         - name: quality
           in: path
           description: |-
@@ -148,9 +142,8 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["color","gray","bitonal","default", "native"]
+            enum: [ "color","gray","bitonal","default", "native" ]
             default: "default"
-        
         - name: format
           in: path
           description: |-
@@ -158,9 +151,8 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["jpg","tif","png","gif","jp2","pdf","webp"]
-            
-      x-streamingOutput: true        
+            enum: [ "jpg","tif","png","gif","jp2","pdf","webp" ]
+      x-streamingOutput: true
       responses:
         '200':
           description: 'Succes!'
@@ -184,7 +176,7 @@ paths:
             Check for syntax errors in size parameter
             
             A rotation value that is out of range or unsupported should result in a 400 (Bad Request) status code.
-            
+
   # IIIF Image Information
   # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.getImageInformationNonescaped must
   #       be manually adjusted to match the new AccessApiServiceImpl.getImageInformation annotations
@@ -195,39 +187,37 @@ paths:
       summary: 'IIIF Image Information'
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: getImageInformation
       parameters:
-      - name: identifier
-        in: path
-        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded. The OpenAPI grafical user interface takes care of the encoding when experimenting"
-        required: true
-        schema:
-          type: string
-          example: '${config:openapi.exampleid}'
-      
-      - name: format
-        in: path
-        description: "The service returns technical information about the requested image in JSON format. XML is also supported as it was used in version one of the IIIF API"
-        required: true
-        schema:
-          type: string
-          enum: ["json", "xml"]
-
+        - name: identifier
+          in: path
+          description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded. The OpenAPI grafical user interface takes care of the encoding when experimenting"
+          required: true
+          schema:
+            type: string
+            example: '${config:openapi.exampleid}'
+        - name: format
+          in: path
+          description: "The service returns technical information about the requested image in JSON format. XML is also supported as it was used in version one of the IIIF API"
+          required: true
+          schema:
+            type: string
+            enum: [ "json", "xml" ]
       # TODO: This is not very clean, but the alternative seems to be to copy JSONs. Find a third way
       x-streamingOutput: true
       responses:
         '200':
-            description: 'Succes!'
-            content: 
-              application/ld+json:
-                schema:
-                  $ref: '#/components/schemas/IIIF_info'
-              application/xml:
-                schema:
-                  $ref: '#/components/schemas/IIIF_info'
+          description: 'Succes!'
+          content:
+            application/ld+json:
+              schema:
+                $ref: '#/components/schemas/IIIF_info'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/IIIF_info'
 
-# Internet Imaging Protocol
+  # Internet Imaging Protocol
   /IIP/:
     get:
       tags:
@@ -235,7 +225,7 @@ paths:
       summary: 'Internet Imaging Protocol'
       security:
         - KBOAuth:
-          - any
+            - any
       description: |-
         Most of our services at the Royal Library makes use of the IIIF standard.
         IIP is currently supported for backwards compatibility and support might be dropped in the future.
@@ -245,7 +235,7 @@ paths:
       parameters:
         - name: FIF
           in: query
-          description: |- 
+          description: |-
             Full image path. If the FILESYSTEM_PREFIX server parameter has been set, the path is relative to that path.
             
             Note that all IIP protocol requests must start with the FIF parameter
@@ -253,17 +243,15 @@ paths:
           schema:
             type: string
             example: '${config:openapi.exampleid}'
-
         - name: WID
           in: query
-          description: |- 
+          description: |-
             Specify width in pixels, w, for exports with CVT request.
             
             **WID requires CVT**
           schema:
             type: integer
             format: int64
-            
         - name: HEI
           in: query
           description: |-
@@ -273,10 +261,9 @@ paths:
           schema:
             type: integer
             format: int64
-
         - name: RGN
           in: query
-          description: |- 
+          description: |-
             Define a region of interest starting at relative coordinates x,y with width w and height h.
             
             For use with CVT requests. All values should be ratios in the range 0 – 1.0
@@ -285,9 +272,9 @@ paths:
             If WID is not adjusted accordingly you will receive an upscale version of the region requested. 
             WID defaults to the original image width in pixels.
             The original width of the image, can be obtained through the ```/IIIF/{identifier}/info.{format}```-endpoint.  
-              
+            
             **RGN has to be defined as x,y,w,h and requires CVT, WID & HEI** 
-          schema: 
+          schema:
             type: array
             items:
               type: number
@@ -298,12 +285,11 @@ paths:
             maxItems: 4
           style: form
           explode: false
-          
         - name: QLT
           in: query
-          description: |- 
+          description: |-
             Set the output compression level, q.
-              
+            
             Valid ranges are JPEG: 0-100 and for PNG: 0-9 where a higher value means more compression
             
             JPEG is always lossy even with a value of 100, while PNG is lossles.
@@ -312,12 +298,9 @@ paths:
             format: int32
             minimum: 0
             maximum: 100
-        
         # Equlization and Stretch are mentioned in the short documentation at https://iipimage.sourceforge.io/documentation/protocol/. However it is not clear how it is used. Furthermore these parameters are not described in the thorough descriiption at https://iipimage.sourceforge.io/IIPv105.pd
-        
         # As of now, EQ and ST are not implemented in the OpenAPI version
         - $ref: '#/components/parameters/CNT'
-
         - name: ROT
           in: query
           description: |-
@@ -336,14 +319,11 @@ paths:
             flip_and_rotate:
               value: "!90"
               summary: "Flips image and rotates 90 degrees"
-        
         - $ref: '#/components/parameters/GAM'
-        
         - $ref: '#/components/parameters/CMP'
-            
         - name: PFL
           in: query
-          description: |- 
+          description: |-
             Export profile in JSON format at resolution r from position x1,y1 to x2, y2.
             
             Only horizontal or vertical profiles are currently supported.
@@ -353,50 +333,42 @@ paths:
             **Example 800:20,20-440,440**
           schema:
             type: string
-        
         - $ref: '#/components/parameters/CTW'
-        
         # TODO: How do we handle empty arguments in the tooling?
         # OpenAPI does not like empty arguments.
         - $ref: '#/components/parameters/INV'
-        
         - $ref: '#/components/parameters/COL'
-        
-         # JTL, PTL and CVT has to be set after all other parameters in the implementation
+        # JTL, PTL and CVT has to be set after all other parameters in the implementation
         - name: JTL
           in: query
-          description: |- 
+          description: |-
             Return a tile in JPEG format with index n at resolution level r
             
-            **JTL has to be specified as r,n** 
-          
+            **JTL has to be specified as r,n**
           schema:
             $ref: '#/components/schemas/JTL_PTL'
           style: form
           explode: false
-        
         # JTL, PTL and CVT has to be set after all other parameters in the implementation
         - name: PTL
           in: query
-          description: |- 
+          description: |-
             Return a tile in PNG format at resolution level r with index n
-              
+            
             **PTL has to be specified as r,n**
-          schema: 
+          schema:
             $ref: '#/components/schemas/JTL_PTL'
           style: form
           explode: false
-        
         # JTL, PTL and CVT has to be set after all other parameters in the implementation  
         - name: CVT
           in: query
-          description: |- 
+          description: |-
             Export the full image or a region in the specified format (JPEG and PNG currently supported)
           schema:
             type: string
-            enum: ["jpeg", "png"]
+            enum: [ "jpeg", "png" ]
             default: "jpeg"
-
       x-streamingOutput: true
       responses:
         '200':
@@ -409,12 +381,12 @@ paths:
             image/png:
               schema:
                 type: string
-                format: binary      
+                format: binary
         '400':
           description: Bad Request. PFL or CTW has been defined incorrectly.
         '404':
           description: An image with the provided FIF was not found.
-  
+
   # DeepZoom
   # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.getDeepzoomDZINonescaped must
   #       be manually adjusted to match the new AccessApiServiceImpl.getDeepzoomDZI annotations
@@ -425,8 +397,8 @@ paths:
       summary: 'DeepZoom Image information'
       security:
         - KBOAuth:
-          - any
-      description: |- 
+            - any
+      description: |-
         DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.  
 
         DeepZoom is almost always used with the OpenSeadragon software. OpenSeadragon is capable of using IIIF directly through IIIF's *myimage/info.json*. 
@@ -435,27 +407,26 @@ paths:
       operationId: getDeepzoomDZI
       deprecated: true
       parameters:
-      - name: imageid
-        in: path
-        description: "Identifier for image."
-        required: true
-        schema:
-          type: string
-        example: "/avis-show/symlinks/0/0/0/0/00001afe-9d6b-46e7-b7f3-5fb70d832d4e"
-
+        - name: imageid
+          in: path
+          description: "Identifier for image."
+          required: true
+          schema:
+            type: string
+          example: "/avis-show/symlinks/0/0/0/0/00001afe-9d6b-46e7-b7f3-5fb70d832d4e"
       # Stream to avoid "retrieving, deserializing JSON, constructing POJOs, serializing JSON, sending JSON"-chain
       x-streamingOutput: true
       responses:
         '200':
-            description: 'Succes!'
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/DeepzoomDZI'
-              application/xml:
-                schema:
-                  $ref: '#/components/schemas/DeepzoomDZI'
-                  
+          description: 'Succes!'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeepzoomDZI'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/DeepzoomDZI'
+
   # Note: If the signature of this endpoint is changed, AccessApiServiceImpl.getDeepzoomTileNonescaped must
   #       be manually adjusted to match the new AccessApiServiceImpl.getDeepzoomTile annotations
   /deepzoom/{imageid}_files/{layer}/{tiles}.{format}:
@@ -465,8 +436,8 @@ paths:
       summary: 'DeepZoom Tile'
       security:
         - KBOAuth:
-          - any
-      description: |- 
+            - any
+      description: |-
         DeepZoom is deprecated. Internally it is used for one specific service, which is to be handled differently in the future.
 
         DeepZoom is almost always used with the OpenSeadragon software. OpenSeadragon is capable of using IIIF directly through IIIF's *myimage/info.json*. 
@@ -475,44 +446,42 @@ paths:
       operationId: getDeepzoomTile
       deprecated: true
       parameters:
-      - name: imageid
-        in: path
-        description: 'Identifier/path for image.'
-        required: true
-        schema:
-          type: string
-        example: "image/path.tif"
-      - name: layer
-        in: path
-        description: 'Zoom layer for the tile'
-        required: true
-        schema:
-          type: integer
-          format: int32
-          default: 8
-      - name: tiles
-        in: path
-        description: 'Tile specified as x_y at the given layer'
-        required: true
-        schema:
-          type: string
-        example: "0_0"
-      - name: format
-        in: path
-        description: 'Output format'
-        required: true
-        schema:
-          type: string
-          enum: ["jpg", "png", "jpeg"]
-          
-      # IIP parameters 
-      - $ref: '#/components/parameters/CNT'
-      - $ref: '#/components/parameters/GAM'
-      - $ref: '#/components/parameters/CMP'
-      - $ref: '#/components/parameters/CTW'
-      - $ref: '#/components/parameters/INV'
-      - $ref: '#/components/parameters/COL'
-        
+        - name: imageid
+          in: path
+          description: 'Identifier/path for image.'
+          required: true
+          schema:
+            type: string
+          example: "image/path.tif"
+        - name: layer
+          in: path
+          description: 'Zoom layer for the tile'
+          required: true
+          schema:
+            type: integer
+            format: int32
+            default: 8
+        - name: tiles
+          in: path
+          description: 'Tile specified as x_y at the given layer'
+          required: true
+          schema:
+            type: string
+          example: "0_0"
+        - name: format
+          in: path
+          description: 'Output format'
+          required: true
+          schema:
+            type: string
+            enum: [ "jpg", "png", "jpeg" ]
+        # IIP parameters
+        - $ref: '#/components/parameters/CNT'
+        - $ref: '#/components/parameters/GAM'
+        - $ref: '#/components/parameters/CMP'
+        - $ref: '#/components/parameters/CTW'
+        - $ref: '#/components/parameters/INV'
+        - $ref: '#/components/parameters/COL'
       x-streamingOutput: true
       responses:
         '200':
@@ -530,49 +499,48 @@ paths:
       summary: ' Get urls to thumbnail video images at Kaltura for a record identified by kaltura_id field in Solr.'
       security:
         - KBOAuth:
-          - any
-      description: |-       
+            - any
+      description: |-
         Get a list of url to thumbnail vidoe images at Kaltura for a record identified by kaltura_id field in Solr.          
         Will contain a default thumbnail, a sprite and list of time sliced thumbnails.     
         [Kaltura Thumbnail API](https://developer.kaltura.com/api-docs/Engage_and_Publish/kaltura-thumbnail-api.html)                     
       operationId: kalturaThumbnails
-   
       parameters:
         - name: kalturaId
           in: query
-          description: 'The internal kaltura entry id given by Kaltura on creation.'           
+          description: 'The internal kaltura entry id given by Kaltura on creation.'
           required: true
-          schema:            
+          schema:
             type: string
         - name: numberOfThumbnails
           in: query
           description: 'The number of thumbnails. The thumbnails will be spread evenly over the duration of the video. Maximum of 100 is allowed.'
           required: true
-          schema:            
+          schema:
             type: integer
             minimum: 1
-            maximum: 100            
+            maximum: 100
             default: 20
         - name: secondsStartSeek
           in: query
-          description: 'secondsEndSeek must also be defined for seeking to be  activated. The thumbnails will be generated from between secondsStartSeek and secondsEndSeek '          
-          schema:            
+          description: 'secondsEndSeek must also be defined for seeking to be  activated. The thumbnails will be generated from between secondsStartSeek and secondsEndSeek '
+          schema:
             type: integer
             minimum: 0
             maximum: 86400
-            default: 0            
+            default: 0
         - name: secondsEndSeek
           in: query
-          description: 'If secondsEndSeek is defined the thumbnails will be generated from between secondsStartSeek and secondsEndSeek.'          
-          schema:            
+          description: 'If secondsEndSeek is defined the thumbnails will be generated from between secondsStartSeek and secondsEndSeek.'
+          schema:
             type: integer
             minimum: 5
-            maximum: 86400                                
+            maximum: 86400
         - name: width
           in: query
           description: 'Width of the thumbnails'
           required: false
-          schema:            
+          schema:
             type: integer
             minimum: 1
             maximum: 10000
@@ -580,19 +548,18 @@ paths:
           in: query
           description: 'Heigth of the thumbnails'
           required: false
-          schema:            
+          schema:
             type: integer
             minimum: 1
-            maximum: 10000            
-                       
+            maximum: 10000
       responses:
         '200':
           description: OK. List of links to thumbnail images. First link is a sprite containing all images
           content:
             application/json:
-             schema:
-                $ref: '#/components/schemas/Thumbnails'                    
-              
+              schema:
+                $ref: '#/components/schemas/Thumbnails'
+
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
   #
@@ -629,7 +596,6 @@ paths:
               schema:
                 type: string
 
-  
   # The status service should be in all projects and should provide a list of running jobs,
   # the overall health of the service and similar. While the endpoint should be kept at
   # /monitor/status, the response should be adjusted to fit the application.
@@ -667,7 +633,7 @@ paths:
       operationId: probeWhoami
       security:
         - KBOAuth:
-          - public
+            - public
       responses:
         '200':
           description: 'OK'
@@ -700,7 +666,7 @@ components:
           example: "http://iiif.io/api/image/3/context.json"
         id:
           type: string
-          description:   The base URI of the image as defined in URI Syntax, including scheme, server, prefix and identifier without a trailing slash.
+          description: The base URI of the image as defined in URI Syntax, including scheme, server, prefix and identifier without a trailing slash.
           example: "{scheme}://{server}{/prefix}/{identifier}"
         type:
           type: string
@@ -758,16 +724,16 @@ components:
                 type: integer
                 format: int64
                 description: The height in pixels of the image to be requested, given as an integer.
-                example: 100 
+                example: 100
             required:
-            - width
-            - height
+              - width
+              - height
         tiles:
           type: array
           description: An array of JSON objects describing the parameters to use to request regions of the image (tiles) that are efficient for the server to deliver. Each description gives a width, optionally a height for non-square tiles, and a set of scale factors at which tiles of those dimensions are available
           items:
             type: object
-            properties: 
+            properties:
               type:
                 type: string
                 description: The type of the object. If present, the value must be the string Tile.
@@ -789,8 +755,8 @@ components:
                 description: The height in pixels of the predefined tiles to be requested, given as an integer. If it is not specified in the JSON, then it defaults to the same as width, resulting in square tiles.
                 example: 512
             required:
-            - scaleFactor
-            - width
+              - scaleFactor
+              - width
         preferredFormats:
           description: An array of strings that are the preferred format parameter values, arranged in order of preference. The format parameter values listed must be among those specified in the referenced profile or listed in the extraFormats property
           type: array
@@ -820,10 +786,10 @@ components:
           items:
             type: string
             example: "rotationArbitrary"
-        partOf: 
+        partOf:
           type: array
-          description:   A link to another resource that references this image service, for example a link to a Canvas or Manifest. The value must be an array of JSON objects. Each item must have the id and type properties, and should have the label property.
-          items: 
+          description: A link to another resource that references this image service, for example a link to a Canvas or Manifest. The value must be an array of JSON objects. Each item must have the id and type properties, and should have the label property.
+          items:
             type: object
             properties:
               id:
@@ -839,8 +805,8 @@ components:
                 description: A human-readable label for this resource. The label property can be fully internationalized, and each language can have multiple values. This pattern is described in more detail in the languages section of the Presentation API.
                 example: "A Book"
             required:
-            - id
-            - type
+              - id
+              - type
         seeAlso:
           type: array
           description: A link to an external, machine-readable resource that is related to this resource, such as an XML or RDF description. Properties of the external resource should be given to help the client select between multiple descriptions (if provided), and to make appropriate use of the document. The URI of the document must identify a single representation of the data in a particular format. The value must be an array of JSON objects. Each item must have the id and type properties, and should have the label, format and profile properties
@@ -859,7 +825,7 @@ components:
                 type: string
                 description: A human-readable label for this resource. The label property can be fully internationalized, and each language can have multiple values. This pattern is described in more detail in the languages section of the Presentation API.
                 example: "Technical image metadata"
-              format: 
+              format:
                 type: string
                 description: The specific media type (often called a MIME type) for this content resource, for example “image/jpeg”. This is important for distinguishing different formats of the same overall type of resource, such as distinguishing text in XML from plain text. The value must be a string, and it should be the value of the Content-Type header returned when this resource is dereferenced.
                 example: "text/xml"
@@ -868,8 +834,8 @@ components:
                 description: A schema or named set of functionality available from this resource. The profile can further clarify the type and/or format of an external resource. The value must be a string, either taken from the Registry of Profiles or a URI.
                 example: "https://example.org/profiles/imagedata"
             required:
-            - id
-            - type
+              - id
+              - type
         service:
           type: array
           description: A reference to an external service that the client might interact with directly to gain additional information or functionality, for example a link to an authentication service. The value must be an array of JSON objects. Each object will have properties depending on the service’s definition, but must have either the id and type properties, or the @id and @type properties for backwards compatibility with other IIIF APIs. Each object should have a profile property. See the Service Registry for known service type
@@ -888,21 +854,21 @@ components:
                 type: string
                 description: A schema or named set of functionality available from this resource. The profile can further clarify the type and/or format of an external resource. The value must be a string, either taken from the Registry of Profiles or a URI.
                 example: "http://iiif.io/api/auth/1/login"
-            required: 
-            - id
-            - type
+            required:
+              - id
+              - type
       required:
-      - context
-      - id
-      - type
-      - protocol
-      - profile
-      - width
-      - height
-    
+        - context
+        - id
+        - type
+        - protocol
+        - profile
+        - width
+        - height
+
     # Response for Deepzoom DZI
     DeepzoomDZI:
-      xml: 
+      xml:
         name: 'Image'
         namespace: 'http://schemas.microsoft.com/deepzoom/2008'
       type: object
@@ -946,17 +912,16 @@ components:
       properties:
         default:
           type: string
-          description: 'Default thumbnail defined for the video. This is a thumbnail that can be changed by Kaltura administrators'      
+          description: 'Default thumbnail defined for the video. This is a thumbnail that can be changed by Kaltura administrators'
         sprite:
           type: string
-          description: 'Link to image with all thumbnails.'            
-        thumbnails:        
+          description: 'Link to image with all thumbnails.'
+        thumbnails:
           type: array
-          description: 'List to the time slice thumbnails in chronological order ' 
-          items: 
+          description: 'List to the time slice thumbnails in chronological order '
+          items:
             type: string
 
- 
     # Basic status response component.
     Status:
       type: object
@@ -1033,7 +998,7 @@ components:
               items:
                 type: string
               description: 'The roles stated in the OAuth2 accessToken'
-              example: [read, write, admin]
+              example: [ read, write, admin ]
 
     Error:
       type: object
@@ -1046,14 +1011,14 @@ components:
           format: int32
         message:
           type: string
-  
+
   parameters:
     # CNT for IIP and DeepZoom
     CNT:
       name: CNT
       in: query
       description: |-
-          Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float > 0. A value of 1.0 indicates no contrast change
+        Contrast adjustment: multiplication of pixel values by factor, c. Value should be an integer or float > 0. A value of 1.0 indicates no contrast change
       schema:
         type: number
         format: float
@@ -1063,7 +1028,7 @@ components:
     GAM:
       name: GAM
       in: query
-      description: |- 
+      description: |-
         Apply gamma correction, g: each pixel value to the power of g.
         
         If g=log or g=logarithm, the logarithm is applied
@@ -1075,14 +1040,14 @@ components:
       name: CMP
       in: query
       description: "Generate colormap using one of the standard colormap schemes, s: GREY, JET, COLD, HOT, RED, GREEN and BLUE."
-      schema: 
+      schema:
         type: string
-        enum: ["GREY", "JET", "COLD", "HOT", "RED", "GREEN", "BLUE"]
+        enum: [ "GREY", "JET", "COLD", "HOT", "RED", "GREEN", "BLUE" ]
     # CTW for IIP and DeepZoom
     CTW:
       name: CTW
       in: query
-      description: |- 
+      description: |-
         Color twist / channel recombination. Recombine the available image channels into a new color image by multiplication through a matrix. Columns are separated by commas and rows are separated by semi-colons. Values can also be negative.
         
         Thus, for the 3×3 matrix example provided below, the RGB output image will have bands R = R*r1 + G*g1 + B*b1, G = R*r2 + G*g2 + B*b2, B = R*r3 + G*g3 + B*b3.
@@ -1099,7 +1064,7 @@ components:
         To create a false-color image from a 4-band RGB-IR image by mapping the G,R,IR channels to the output RGB: CTW=[0,1,0,0;0,0,1,0;0,0,0,1]
         
         **CTW has to be defined as [array;array;array] using ; as delimter between arrays and , between integers**
-      schema: 
+      schema:
         type: string
     # INV for IIP and DeepZoom
     # OpenAPI does not like empty arguments. Here we are defining it as a boolean and handling it in the implementation
@@ -1107,32 +1072,30 @@ components:
       name: INV
       in: query
       description: "Invert image (no argument)"
-      schema: 
+      schema:
         type: boolean
     # COL for IIP and DeepZoom
     COL:
       name: COL
       in: query
-      description: |- 
+      description: |-
         Color transformation to output space, c. Valid values are greyscale (GREY or GRAY) or to binary (BINARY). 
         
         Examples:
         Convert to greyscale: COL=gray
         
         Convert to binary: COL=binary
-      schema: 
-          type: string
-          enum: ["gray", "grey", "binary"]
-    
+      schema:
+        type: string
+        enum: [ "gray", "grey", "binary" ]
 
   # TODO: Inject this from properties when DRA-139 has been implemented
   securitySchemes:
-
     KBOAuth:
       type: oauth2
       description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
       flows:
-        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+        implicit: # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth'
           #authorizationUrl: https://api.example.com/oauth2/authorize # Overridden by the configuration
           scopes:
@@ -1140,12 +1103,9 @@ components:
             # Project specific roles
             read: 'read data'
             write: 'modify or delete data'
-
             # General roles at the Royal Danish Library
             devel: 'broad read access'
             admin: 'all rights'
-
             # Meta role controlling authorization behaviour
             public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
             any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
-
