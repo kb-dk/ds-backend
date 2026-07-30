@@ -7,6 +7,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Formatted `openapi` file.
+- Moved OpenAPI description from `pom.xml` into `openapi` file.
+- Added `name` in `pom.xml`.
+- Formatted `pom.xml`.
+
 ## [5.0.0](https://github.com/kb-dk/ds-license/releases/tag/ds-license-5.0.0) 2026-06-10
 
 ### Changed

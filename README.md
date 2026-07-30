@@ -42,7 +42,13 @@ go, or example `docker compose logs ds-discover` to only see logs from one conta
 #### Retrieve keycloak token from local keycloak (it is valid for an hour)
 
 ```shell
-export ACCESS_TOKEN=$(curl -X POST "http://keycloak.local:8087/realms/DS/protocol/openid-connect/token" -d "client_id=kb-ad" -d "client_secret=my-super-secure-dev-secret-12345" -d "username=testuser" -d "password=password123" -d "grant_type=password" | jq -r .access_token)
+export ACCESS_TOKEN=$(curl --request POST "http://keycloak.local:8087/realms/DS/protocol/openid-connect/token" \
+--data "client_id=kb-ad" \
+--data "client_secret=my-super-secure-dev-secret-12345" \
+--data "username=testuser" \
+--data "password=password123" \
+--data "grant_type=password" \
+| jq --raw-output .access_token)
 ```
 
 OBS: The Keycloak container is sometimes a little while to start, so if you get the following error
@@ -51,7 +57,8 @@ OBS: The Keycloak container is sometimes a little while to start, so if you get 
 #### Fetch records from Preservica and save it in ds_records table:
 
 ```shell
-curl -X 'GET' 'http://localhost:8084/ds-datahandler/v1/oai/import/delta?oaiTarget=stage_preservica_dr_arkiv' -H 'accept: application/json' -H "Authorization: Bearer $ACCESS_TOKEN"
+curl --request GET "http://localhost:8084/ds-datahandler/v1/oai/import/delta?oaiTarget=stage_preservica_dr_arkiv" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
 #### Solr indexing (we only have one collection (read and write in one))
@@ -59,13 +66,15 @@ curl -X 'GET' 'http://localhost:8084/ds-datahandler/v1/oai/import/delta?oaiTarge
 tv
 
 ```shell
-curl -X 'GET' 'http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds.tv&type=full' -H "Authorization: Bearer $ACCESS_TOKEN"
+curl --request GET "http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds.tv&type=full" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
 radio
 
 ```shell
-curl -X 'GET' 'http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds.radio&type=full' -H "Authorization: Bearer $ACCESS_TOKEN"
+curl --request GET "http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds.radio&type=full" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
 When you have used the following commands you can see the data in Solr here: `http://localhost:8089`.
@@ -73,7 +82,8 @@ When you have used the following commands you can see the data in Solr here: `ht
 #### Kaltura upload so a record in the frontend can be seen
 
 ```shell
-curl -X 'POST' 'http://localhost:8084/ds-datahandler/v1/kaltura/deltaupload' -H "Authorization: Bearer $ACCESS_TOKEN" -H 'accept: */*' -d ''
+curl --request POST "http://localhost:8084/ds-datahandler/v1/kaltura/deltaupload" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
 #### Solr reindex so kaltura_id can be found in Solr
@@ -81,13 +91,15 @@ curl -X 'POST' 'http://localhost:8084/ds-datahandler/v1/kaltura/deltaupload' -H 
 tv
 
 ```shell
-curl -X 'GET' 'http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds.tv&type=full' -H "Authorization: Bearer $ACCESS_TOKEN"
+curl --request GET "http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds.tv&type=full" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
 radio
 
 ```shell
-curl -X 'GET' 'http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds.radio&type=full' -H "Authorization: Bearer $ACCESS_TOKEN"
+curl --request GET "http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds.radio&type=full" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
 #### Find records with uploaded files to Kaltura

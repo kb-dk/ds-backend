@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Formatted `openapi` file.
+- Added hyphen between `human-readable` in `pom.xml`.
+- Formatted `pom.xml`.
+
 ### Fixed
 
 - Kaltura thumbnail API was changed. Seek parameter overrules thumbnail number id. Only set seek parameter if they are
