@@ -54,7 +54,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
-                <version>2.4</version> <!-- Downgrading for stability with Maven 4 -->
+                <version>3.2.2</version>
                 <configuration>
                     <tags>
                         <tag>TODO</tag>
