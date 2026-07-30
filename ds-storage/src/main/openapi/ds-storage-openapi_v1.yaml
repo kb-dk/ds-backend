@@ -73,16 +73,14 @@ servers:
     description: 'Version 1'
 
 paths:
-  
   /origin/config:
     get:
       tags:
         - '${project.name}'
       summary: 'Retrieve a list of configured origins with their respective update strategy'
-      security: 
+      security:
         - KBOAuth:
-          - any   
-      
+            - any
       description: >
         This endpoint delivers a list of all configured origins. An origin defines which collection data comes from.
         This could for instance be the Radio & TV collection at The Royal Danish Library, which has the origin defined
@@ -97,16 +95,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/OriginList'
 
-
   /origin/stats:
     get:
       tags:
         - '${project.name}'
       summary: 'Show amount of records in each origin'
-      security: 
+      security:
         - KBOAuth:
-          - any   
-      operationId: getOriginStatistics    
+            - any
+      operationId: getOriginStatistics
       responses:
         '200':
           description: 'Show how many records exists for each origin'
@@ -120,9 +117,9 @@ paths:
       tags:
         - '${project.name}'
       summary: Delete all records for an origin that has deleted flag set.
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       description: >
         Notice that applications retrieving records from the deleted origin never will know that the records were deleted
         unless the application retrieves the records after they have been marked with the delete flag.
@@ -134,7 +131,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["${config:origins[*].name}"]
+            enum: [ "${config:origins[*].name}" ]
       responses:
         '200':
           description: OK
@@ -142,17 +139,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecordsCount'
-          
-
 
   /origin/records:
     delete:
       tags:
         - '${project.name}'
       summary: Delete records from the storage for the origin within the timeframe.
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       description: >
         Delete records from the storage for the origin within the timeframe. Records will be deleted and not just marked as deleted. mTimeFrom and mTimeTo will be included in the deletion range.
       operationId: deleteRecordsForOrigin
@@ -163,22 +158,21 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["${config:origins[*].name}"]
+            enum: [ "${config:origins[*].name}" ]
         - name: mTimeFrom
           in: query
           description: 'Format is milliseconds since Epoch with 3 added digits. Value is included in the deletion'
           required: true
           schema:
             type: integer
-            format: int64            
+            format: int64
         - name: mTimeTo
           in: query
           description: 'Format is milliseconds since Epoch with 3 added digits. Value is included in the deletion'
           required: true
           schema:
             type: integer
-            format: int64   
-                        
+            format: int64
       responses:
         '200':
           description: OK
@@ -192,9 +186,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Read a specific record by ID.'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       description: >
         Extract a specific record by ID. Parent and children recordIds will also be include.
         If setting includeLocalTree=true the local recordTree with parent record and children records will also be loaded as objects.  
@@ -217,7 +211,6 @@ paths:
             type: boolean
             example: true
             default: false
-      
       responses:
         '200':
           description: 'The DsRecord'
@@ -228,15 +221,13 @@ paths:
               examples:
                 DSRecord:
                   $ref: '#/components/examples/GetDSRecord'
-
-  
     delete:
       tags:
         - '${project.name}'
       summary: 'Mark a record with delete flag.'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       description: >
         This will not delete the record in the database but only mark it as deleted.
       operationId: markRecordForDelete
@@ -254,47 +245,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecordsCount'
-                       
- 
 
   #  This method can not be exposed by openAPI due to reference cycle
-#  /recordTree/{id}:
-#    get:
-#      tags:
-#        - '${project.name}'
-#      summary: 'Return the record with the full record tree loaded as parent/child object. Will return throw exception if no record with the given ID exists. A record marked with delete flag will also be returned.'
-#      operationId: getRecordTree
-#      parameters:
-#        - name: id
-#          in: path
-#          description: 'Record ID'
-#          required: true
-#          schema:
-#            type: string
-#      responses:
-#        '200':
-#          description: 'The DsRecord'
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/DsRecord'                       
-  
+  #  /recordTree/{id}:
+  #    get:
+  #      tags:
+  #        - '${project.name}'
+  #      summary: 'Return the record with the full record tree loaded as parent/child object. Will return throw exception if no record with the given ID exists. A record marked with delete flag will also be returned.'
+  #      operationId: getRecordTree
+  #      parameters:
+  #        - name: id
+  #          in: path
+  #          description: 'Record ID'
+  #          required: true
+  #          schema:
+  #            type: string
+  #      responses:
+  #        '200':
+  #          description: 'The DsRecord'
+  #          content:
+  #            application/json:
+  #              schema:
+  #                $ref: '#/components/schemas/DsRecord'
   # TODO: Add childrenId to example.
-  
+
   /record:
     post:
       tags:
-        - '${project.name}'    
+        - '${project.name}'
       summary: 'Create a new record or update an existing record.'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       description: 'A record can have a single optional parent and may have multiple children'
       operationId: createOrUpdateRecord
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/DsRecord'  # Reference to an object
             examples:
               DSRecord:
@@ -306,12 +294,12 @@ paths:
   /record/updateKalturaId:
     post:
       tags:
-        - '${project.name}'    
+        - '${project.name}'
       summary: 'Update a record with the Kaltura id. '
 
-      security: 
+      security:
         - KBOAuth:
-          - any         
+            - any
       description: 'Update a record with the Kaltura id. The record was uploaded to Kaltura with the referenceId as metadata. Knowing the kalturaId is important to find the record(stream) in Kaltura later for update or deletion etc.'
       operationId: updateKalturaIdForRecord
       parameters:
@@ -325,7 +313,6 @@ paths:
           required: true
           schema:
             type: string
-          
       responses:
         '204':
           description: No Content - The request has been executed correct and the server did not deliver any content.
@@ -333,12 +320,12 @@ paths:
   /record/updateReferenceId:
     post:
       tags:
-        - '${project.name}'    
+        - '${project.name}'
       summary: 'Update a record with referenceId '
-      security: 
+      security:
         - KBOAuth:
-          - any   
-      description: 'Update a record with the referenceId. The referenceId is a value in the external system. For preservica origin it is the stream file name ' 
+            - any
+      description: 'Update a record with the referenceId. The referenceId is a value in the external system. For preservica origin it is the stream file name '
       operationId: updateReferenceIdForRecord
       parameters:
         - name: recordId
@@ -351,7 +338,6 @@ paths:
           required: true
           schema:
             type: string
-          
       responses:
         '204':
           description: No Content - The request has been executed correct and the server did not deliver any content.
@@ -380,15 +366,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecordsCount'
-  
+
   /records:
     get:
       tags:
         - '${project.name}'
       summary: 'Extract X records from a origin.'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       description: >
         Extract X records from a specified origin after a given mTime and up to a defined maximum mTime. 
         The records are returned in sorted order by mTime increasing. Records marked for delete will also be returned.
@@ -402,13 +388,13 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["${config:origins[*].name}"]
+            enum: [ "${config:origins[*].name}" ]
         - name: recordType
           in: query
           description: 'Only extract records with this recordtype. This will also load local tree for record. If null all recordstypes will be loaded.'
           required: false
           schema:
-            $ref: '#/components/schemas/RecordType'                      
+            $ref: '#/components/schemas/RecordType'
         - name: mTime
           in: query
           description: >
@@ -416,7 +402,7 @@ paths:
           required: false
           schema:
             type: integer
-            format: int64  
+            format: int64
             example: 0
             # Default values for longs does not work with the current version of OpenAPI generator
             #default: 0
@@ -430,8 +416,6 @@ paths:
             example: 1000
             # Default values for longs does not work with the current version of OpenAPI generator
             #default: 1000
-         
- 
       responses:
         '200':
           description: 'List of DsRecords'
@@ -445,9 +429,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Get a stream of minimal records having a referenceId after a given lastModified time'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       description: >
         Extract a list of records with a given batch size by origin and mTime larger than input.        
          The records will only have the id, mTime, referenceId and kalturaId fields. This means that no actual data can be retrieved through this endpoint. It can however be used
@@ -479,7 +463,6 @@ paths:
             type: integer
             example: 500
             default: 500
-
       responses:
         '200':
           description: 'List of DsRecordReferenceId'
@@ -488,15 +471,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/DsRecordMinimalList'
 
-  
   /transcription:
     get:
       tags:
         - '${project.name}'
       summary: 'Get full transcription by fileId, this is the filename for the stream.'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       operationId: getTranscription
       description: 'Get entry from the mapping table for the referenceId. Will return empty transcriptionDto if transcription is not found.'
       parameters:
@@ -512,20 +494,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transcription'
-  
     post:
       tags:
-        - '${project.name}'    
+        - '${project.name}'
       summary: 'Create a new transcription or update an existing. Primary key is fileId.'
-      security: 
+      security:
         - KBOAuth:
-          - any 
-      operationId: createOrUpdateTranscription  
+            - any
+      operationId: createOrUpdateTranscription
       description: 'Create or update an existring transcription. Primary key is fileId.  Will touch the record if there is one with this fileId'
       requestBody:
         content:
-          application/json:    # Media type
-            schema:            # Request body contents
+          application/json: # Media type
+            schema: # Request body contents
               $ref: '#/components/schemas/Transcription'  # Reference to an object
             examples:
               DSRecord:
@@ -533,9 +514,6 @@ paths:
       responses:
         '204':
           description: No Content - The request has been executed correct and the server did not deliver any content.
-
-
-
 
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -560,8 +538,6 @@ paths:
             text/plain:
               schema:
                 type: string
-
-
 
   # The status service should be in all projects and should provide a list of running jobs,
   # the overall health of the service and similar. While the endpoint should be kept at
@@ -600,7 +576,7 @@ paths:
       operationId: probeWhoami
       security:
         - KBOAuth:
-          - public
+            - public
       responses:
         '200':
           description: 'OK'
@@ -611,7 +587,6 @@ paths:
 
 components:
   schemas:
-
     Origin:
       type: object
       properties:
@@ -619,7 +594,7 @@ components:
           type: string
           description: 'Name of the origin. IDs are prefixed with origin'
           example: ${config:origins[0].name}
-        updateStrategy:  
+        updateStrategy:
           $ref: '#/components/schemas/UpdateStrategy'
 
     DsRecord:
@@ -673,20 +648,20 @@ components:
           type: array
           items:
             type: string
-            description: 'Array of all child IDs'             
+            description: 'Array of all child IDs'
         parent:
           $ref: '#/components/schemas/DsRecord'
           description: 'Parent record as object.  '
         children:
           $ref: '#/components/schemas/DsRecordList'
-          description: 'All child records'  
+          description: 'All child records'
         referenceId:
           type: string
           description: 'The referenceId given when uploading the record to Kaltura. This field is only used for records that has a file associated intended streaming.'
         kalturaId:
           type: string
           description: 'The Kaltura  ID for the record. It can be null even if the record is Kaltura but the mapping has not been updated yet.  '
-                                                        
+
     DsRecordMinimal:
       type: object
       required:
@@ -708,15 +683,13 @@ components:
           type: string
           description: 'The Kaltura  ID for the record. It can be null even if the record is Kaltura but the mapping has not been updated yet.  '
 
-
     RecordsCount:
-      type: object                   
-      properties:           
-         count:
+      type: object
+      properties:
+        count:
           type: integer
           format: int32
           description: 'Number of records updated'
-
 
     Transcription:
       type: object
@@ -731,7 +704,7 @@ components:
           description: 'Filedd that should match preservica.'
         fileName:
           type: string
-          description: 'Filename on the filesystem. Sometimes files have extension, sometimes not.'     
+          description: 'Filename on the filesystem. Sometimes files have extension, sometimes not.'
         mTime:
           type: integer
           format: int64
@@ -745,24 +718,22 @@ components:
 
     DsRecordList:
       type: array
-      items: 
+      items:
         $ref: '#/components/schemas/DsRecord'
 
     DsRecordMinimalList:
       type: array
-      items: 
+      items:
         $ref: '#/components/schemas/DsRecordMinimal'
-
-
 
     OriginList:
       type: array
-      items: 
+      items:
         $ref: '#/components/schemas/Origin'
 
     OriginCountList:
       type: array
-      items: 
+      items:
         $ref: '#/components/schemas/OriginCount'
 
     OriginCount:
@@ -792,7 +763,6 @@ components:
       type: string
       nullable: false
       description: |
-        
         **Explanation of the 4 different updatestrategies.**
         
         | Enum             |  Description                                                                                 | 
@@ -805,8 +775,8 @@ components:
         - NONE
         - ALL
         - CHILD
-        - PARENT  
-  
+        - PARENT
+
     Whoami:
       type: object
       description: 'OAuth2 information derived from the request'
@@ -832,8 +802,7 @@ components:
               items:
                 type: string
               description: 'The roles stated in the OAuth2 accessToken'
-              example: [read, write, admin]
-
+              example: [ read, write, admin ]
 
     Error:
       type: object
@@ -851,7 +820,6 @@ components:
       type: string
       nullable: false
       description: |
-        
         **Explanation of the 3 different record types.**
         
         | Enum             |  Description                                                                                  | 
@@ -859,7 +827,6 @@ components:
         | COLLECTION       |  Metadata records can be in a collection. This is the root of the tree                        |         
         | DELIVERABLEUNIT  |  Parent object for manifestation         
         | MANIFESTATION    |  All records in the transitive graphs originating in this object should be marked as updated.|
-        
       enum:
         - COLLECTION
         - DELIVERABLEUNIT
@@ -870,23 +837,18 @@ components:
       type: string
       nullable: false
       description: |
-        
         **Errors detected for stream/file the record represent. Errors must start with ERROR_ so they are not confused with the external ID.**
-                
+        
         | Enum                 |  Description                                                                                  | 
         | -------------------- | --------------------------------------------------------------------------------------------- |  
         | ERROR_API            |  External system gave error when uploading stream. No futher information is known             |         
         | ERROR_FILE_MISSING   |  Stream file does not exist, path is calculated from metadata                                 |
         | ERROR_FILE_TOO_SHORT |  Byte length for file too small to be valid                                                   |
-        
-        
       enum:
-        - ERROR_API 
+        - ERROR_API
         - ERROR_FILE_MISSING
         - ERROR_FILE_TOO_SHORT
       example: ERROR_FILE_MISSING
-
-
 
     # Basic status response component.
     # TODO: Extend this to provide application specific status, such as a list of running jobs or free disk space
@@ -962,7 +924,7 @@ components:
         fileName: "a3332323-3323233-333333.mp3"
         transcription: "This is linie1. This is linie2"
         transcriptionLines: "00:00 - 10:00 This is line1.\n10:00 - 20:00 This is line2"
-      
+
     GetDSRecordWithChildren:
       value:
         id: "ds.radio:oai:du:c124a602-7fe6-470e-a484-c771db44aee1"
@@ -993,7 +955,6 @@ components:
             mTimeHuman: "2023-11-29 13:55:48+0100"
             parentId: "ds.radio:oai:du:c124a602-7fe6-470e-a484-c771db44aee1"
 
-
     GetDSRecord:
       value:
         id: "ds.radio:oai:du:c124a602-7fe6-470e-a484-c771db44aee1"
@@ -1012,28 +973,24 @@ components:
         childrenIds: "null"
         parent: "null"
         children: "null"
-                      
-  securitySchemes:
 
+  securitySchemes:
     KBOAuth:
       type: oauth2
       description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
       flows:
-        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+        implicit: # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           #authorizationUrl is not used. Instead, it uses keycloak url from yaml property file aegis-devel.
           #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
-          authorizationUrl: https://api.example.com/oauth2/authorize 
+          authorizationUrl: https://api.example.com/oauth2/authorize
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles
             read: 'read data'
             write: 'modify or delete data'
-
             # General roles at the Royal Danish Library
             devel: 'broad read access'
             admin: 'all rights'
-
             # Meta role controlling authorization behaviour
             public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
             any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'        
-        

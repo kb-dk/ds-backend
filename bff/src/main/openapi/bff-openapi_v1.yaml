@@ -24,7 +24,6 @@ servers:
     description: 'Version 1'
 
 paths:
-
   /authenticate:
     get:
       tags:
@@ -55,9 +54,6 @@ paths:
             text/plain:
               schema:
                 type: string
-
-
-
 
   /messages:
     get:
@@ -127,11 +123,8 @@ paths:
               schema:
                 type: string
 
-
 components:
   schemas:
-
-
     # Basic status response component.
     # TODO: Extend this to provide application specific status, such as a list of running jobs or free disk space
     Status:

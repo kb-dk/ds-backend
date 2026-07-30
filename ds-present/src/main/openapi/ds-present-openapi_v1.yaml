@@ -35,16 +35,15 @@ servers:
     description: 'Version 1'
 
 paths:
-
   # This definition uses path: http://example.com/api/article/article-123A-v2
   /record/{id}:
     get:
       tags:
         - '${project.name}'
-      summary: 'Retrieve metadata for the record with the given ID and in the given format.'      
-      security: 
+      summary: 'Retrieve metadata for the record with the given ID and in the given format.'
+      security:
         - KBOAuth:
-          - any      
+            - any
       operationId: getRecord
       parameters:
         - name: id
@@ -100,9 +99,9 @@ paths:
       tags:
         - '${project.name}'
       summary: 'Extract records from an origin after a given mTime.'
-      security: 
+      security:
         - KBOAuth:
-          - any      
+            - any
       description: |
         The extracted records are returned in sorted order by mTime increasing. By changing the parameter `maxRecords`, 
         the size of the result can be defined. Records marked with a delete flag will also be returned.
@@ -115,7 +114,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["${config:origins[*].*.origin}"]
+            enum: [ "${config:origins[*].*.origin}" ]
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
@@ -149,7 +148,6 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/Format'
-
       responses:
         '200':
           description: 'List of records in the requested format.'
@@ -189,7 +187,7 @@ paths:
       summary: 'Extract raw records from a collection after a given mTime.'
       security:
         - KBOAuth:
-          - any
+            - any
       description: |
         The raw records are returned wrapped in JSON. The records are extracted in sorted order by mTime increasing. 
         By changing the parameter `maxRecords`, the size of the result can be defined. 
@@ -207,7 +205,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["${config:origins[*].*.origin}"]
+            enum: [ "${config:origins[*].*.origin}" ]
         - name: mTime
           in: query
           description: 'Epoch milliseconds with 3 added digits. It is up to the caller to keep track of mTime when batching the extracting for retrieval between separate calls.'
@@ -256,7 +254,7 @@ paths:
       summary: 'Retrieve a formal description of a single origin.'
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: getOrigin
       parameters:
         - name: id
@@ -266,7 +264,7 @@ paths:
           schema:
             type: string
             minLength: 1
-            enum: ["${config:origins[*].*.origin}"]
+            enum: [ "${config:origins[*].*.origin}" ]
       responses:
         '200':
           description: 'OK: The origin was known and a description is returned.'
@@ -288,7 +286,7 @@ paths:
       summary: 'Retrieve a formal description of all available origins.'
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: getOrigins
       responses:
         '200':
@@ -301,42 +299,41 @@ paths:
                   $ref: '#/components/schemas/Origin'
 
   /transformsolrschema:
-     post:
-       tags:
-         - '${project.name}'
-       summary: 'Transform solr schema to a different format'
-       operationId: transformSolrSchema
-       parameters:
-         - name: format
-           in: query
-           description: 'the requested output format'
-           required: true
-           schema:
-             type: string
-             enum: [ 'html', 'markdown']
-             default: 'html'
-             example: 'html'
-       requestBody:
-         required: true
-         content:
-           application/xml:
-             schema:
-               type: string
-               description: the raw schema.xml
-       responses:
-         '200':
-           description: Successfully transformed the solr schema.
-           content:
-             application/xml:
-               schema:
-                 description: |
-                   Transformed schema
-                 type: string
-         '500':
-           description: Internal server error.
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'Transform solr schema to a different format'
+      operationId: transformSolrSchema
+      parameters:
+        - name: format
+          in: query
+          description: 'the requested output format'
+          required: true
+          schema:
+            type: string
+            enum: [ 'html', 'markdown' ]
+            default: 'html'
+            example: 'html'
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              type: string
+              description: the raw schema.xml
+      responses:
+        '200':
+          description: Successfully transformed the solr schema.
+          content:
+            application/xml:
+              schema:
+                description: |
+                  Transformed schema
+                type: string
+        '500':
+          description: Internal server error.
 
-
-# IIIF Presentation endpoints
+  # IIIF Presentation endpoints
   /IIIF/collection/{name}:
     get:
       tags:
@@ -344,18 +341,17 @@ paths:
       summary: "IIIF Presentation Collection"
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: getPresentationCollection
       description: "Collections are used to list the Manifests available for viewing. Collections may include both other Collections and Manifests, in order to form a tree-structured hierarchy."
       parameters:
-      - name: name
-        in: path
-        description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
-        required: true
-        schema:
-          type: string
-          default: "normal"
-      
+        - name: name
+          in: path
+          description: "The {name} parameter in the URI structure must distinguish it from any other sequences that may be available for the physical object. Typical default names for sequences are “normal” or “basic”."
+          required: true
+          schema:
+            type: string
+            default: "normal"
       responses:
         '200':
           description: 'Succes!'
@@ -372,17 +368,16 @@ paths:
       summary: "IIIF Presentation manifest"
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: getPresentationManifest
       description: "The manifest resource represents a single object and any intellectual work or works embodied within that object. In particular it includes the descriptive, rights and linking information for the object."
       parameters:
-      - name: identifier
-        in: path
-        description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
-        required: true
-        schema:
-          type: string
-      
+        - name: identifier
+          in: path
+          description: "The identifier of the requested image. This may be an ARK, URN, filename, or other identifier. Special characters must be URI encoded."
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: 'OK'
@@ -443,7 +438,7 @@ paths:
             text/plain:
               schema:
                 type: string
- 
+
   /monitor/whoami:
     get:
       tags:
@@ -457,15 +452,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Whoami'
- 
 
 components:
   schemas:
     # IIIF Presentation collection response
-    collection: 
+    collection:
       type: object
       properties:
-        '@context': 
+        '@context':
           type: string
           example: "http://iiif.io/api/presentation/3/context.json"
         id:
@@ -474,7 +468,7 @@ components:
         type:
           type: string
           example: "Collection"
-        label: 
+        label:
           type: object
           properties:
             en:
@@ -482,27 +476,27 @@ components:
               items:
                 type: string
           example:
-           - en: "Collection for Example Organization"
-        summary: 
+            - en: "Collection for Example Organization"
+        summary:
           type: object
           properties:
             en:
               type: array
               items:
                 type: string
-              example: 
-              - "Short summary of the Collection"
+              example:
+                - "Short summary of the Collection"
         requiredStatement:
           type: object
           properties:
-            label: 
+            label:
               type: object
               properties:
                 en:
                   type: array
                   items:
                     type: string
-            value: 
+            value:
               type: object
               properties:
                 en:
@@ -521,7 +515,7 @@ components:
                 type: string
               type:
                 type: string
-              label: 
+              label:
                 type: object
                 properties:
                   en:
@@ -540,20 +534,21 @@ components:
                     format:
                       type: string
             example:
-            - id: "https://example.org/iiif/1/manifest" 
-              type: "Manifest" 
-              label: 
-                en: "Example Manifest 1"
-              thumbnail:
-                id: "https://example.org/manifest1/thumbnail.jpg"
-                type: "Image"
-                format: "image/jpeg"
+              - id: "https://example.org/iiif/1/manifest"
+                type: "Manifest"
+                label:
+                  en: "Example Manifest 1"
+                thumbnail:
+                  id: "https://example.org/manifest1/thumbnail.jpg"
+                  type: "Image"
+                  format: "image/jpeg"
+
     # IIIF Presentation manifest response
     manifest:
       type: object
       properties:
         # Metadata about the manifest file
-        '@context': 
+        '@context':
           type: string
           example: "http://iiif.io/api/presentation/2/context.json"
         '@id':
@@ -563,7 +558,7 @@ components:
           type: string
           example: "sc:Manifest"
         # Descriptive metadata about the object/work
-        label: 
+        label:
           type: object
           properties:
             en:
@@ -571,7 +566,7 @@ components:
               items:
                 type: string
           example:
-          - en: "Book 1"
+            - en: "Book 1"
         metadata:
           type: array
           items:
@@ -582,15 +577,15 @@ components:
               value:
                 type: string
           example:
-          - label:
-              en: "Author"
-            value:
-              none: "Anne Author"
-          - label:
-              en: "Published"
-            value:
-              en: "Paris, circa 1400"
-              fr: "Paris, environ 1400"
+            - label:
+                en: "Author"
+              value:
+                none: "Anne Author"
+            - label:
+                en: "Published"
+              value:
+                en: "Paris, circa 1400"
+                fr: "Paris, environ 1400"
         summary:
           type: string
           example: "Book 1, written by Anne Author, published in Paris around 1400."
@@ -617,13 +612,13 @@ components:
                     profile:
                       type: string
           example:
-          - id: "http://example.org/images/book1-page1/full/80,100/0/default.jpg"
-            type: "Image"
-            format: "image/jpeg"
-            service: 
-              id: "http://example.org/images/book1-page1"
-              type: "ImageService3"
-              example: "level1"
+            - id: "http://example.org/images/book1-page1/full/80,100/0/default.jpg"
+              type: "Image"
+              format: "image/jpeg"
+              service:
+                id: "http://example.org/images/book1-page1"
+                type: "ImageService3"
+                example: "level1"
         # Presentation information
         viewingDirection:
           type: string
@@ -647,8 +642,8 @@ components:
             value:
               type: string
           example:
-          - label: "Attribution"
-            value: "Provided by Example Organization"
+            - label: "Attribution"
+              value: "Provided by Example Organization"
         provider:
           type: array
           items:
@@ -665,13 +660,13 @@ components:
                 items:
                   type: object
                   properties:
-                    id: 
+                    id:
                       type: string
                     type:
                       type: string
                     label:
                       type: string
-                    format: 
+                    format:
                       type: string
               logo:
                 type: array
@@ -691,7 +686,7 @@ components:
                         properties:
                           id:
                             type: string
-                          type: 
+                          type:
                             type: string
                           profile:
                             type: string
@@ -700,45 +695,45 @@ components:
                 items:
                   type: object
                   properties:
-                    id: 
+                    id:
                       type: string
                     type:
                       type: string
                     format:
                       type: string
-                    profile: 
+                    profile:
                       type: string
             example:
-            - id: "https://example.org/about"
-              type: "Agent"
-              label: 
-                en: "Example organisation"
-              homepage: 
-                id: "https://example.org/"
-                text: "Text"
+              - id: "https://example.org/about"
+                type: "Agent"
                 label:
-                  en: "Example Organization Homepage"
-                format: "text/html"
-              logo:
-                id: "https://example.org/service/inst1/full/max/0/default.png"
-                type: "Image"
-                format: "image/png"
-                service:
-                  id: "https://example.org/service/inst1"
-                  type: "ImageService3"
-                  profile: "level2"
-              seeAlso:
-                id: "https://data.example.org/about/us.jsonld"
-                type: "Dataset"
-                format: "application/ld+json"
-                profile: "https://schema.org/"    
+                  en: "Example organisation"
+                homepage:
+                  id: "https://example.org/"
+                  text: "Text"
+                  label:
+                    en: "Example Organization Homepage"
+                  format: "text/html"
+                logo:
+                  id: "https://example.org/service/inst1/full/max/0/default.png"
+                  type: "Image"
+                  format: "image/png"
+                  service:
+                    id: "https://example.org/service/inst1"
+                    type: "ImageService3"
+                    profile: "level2"
+                seeAlso:
+                  id: "https://data.example.org/about/us.jsonld"
+                  type: "Dataset"
+                  format: "application/ld+json"
+                  profile: "https://schema.org/"
         # Links
         homepage:
           type: array
           items:
             type: object
             properties:
-              id: 
+              id:
                 type: string
               type:
                 type: string
@@ -747,25 +742,25 @@ components:
               format:
                 type: string
           example:
-          - id: "https://example.org/info/book1/"
-            type: "Text"
-            label: "Home page for Book 1"
-            format: "text/html"
+            - id: "https://example.org/info/book1/"
+              type: "Text"
+              label: "Home page for Book 1"
+              format: "text/html"
         service:
           type: array
           items:
             type: object
             properties:
-              id: 
+              id:
                 type: string
               type:
                 type: string
               profile:
                 type: string
           example:
-          - id: "https://example.org/service/example"
-            type: "ExampleExtensionService"
-            profile: "https://example.org/docs/example-service.html"
+            - id: "https://example.org/service/example"
+              type: "ExampleExtensionService"
+              profile: "https://example.org/docs/example-service.html"
         seeAlso:
           type: array
           items:
@@ -773,17 +768,17 @@ components:
             properties:
               id:
                 type: string
-              type: 
+              type:
                 type: string
-              format: 
+              format:
                 type: string
               profile:
                 type: string
           example:
-          - id: "https://example.org/library/catalog/book1.xml"
-            type: "Dataset"
-            format: "text/xml"
-            profile: "https://example.org/profiles/bibliographic"
+            - id: "https://example.org/library/catalog/book1.xml"
+              type: "Dataset"
+              format: "text/xml"
+              profile: "https://example.org/profiles/bibliographic"
         rendering:
           type: array
           items:
@@ -791,39 +786,39 @@ components:
             properties:
               id:
                 type: string
-              type: 
+              type:
                 type: string
               label:
                 type: string
-              format: 
+              format:
                 type: string
             example:
-            - id: "https://example.org/iiif/book1.pdf"
-              type: "Text"
-              label: "Download as PDF"
-              format: "application/pdf"
+              - id: "https://example.org/iiif/book1.pdf"
+                type: "Text"
+                label: "Download as PDF"
+                format: "application/pdf"
         partOf:
           type: array
           items:
             type: object
             properties:
               id:
-                  type: string
-              type: 
+                type: string
+              type:
                 type: string
           example:
-          - id: "https://example.org/collections/books/"
-            type: "Collection"
+            - id: "https://example.org/collections/books/"
+              type: "Collection"
         start:
           type: object
           properties:
             id:
-                type: string
-            type: 
+              type: string
+            type:
               type: string
           example:
-          - id: "https://example.org/iiif/book1/canvas/p2"
-            type: "Canvas"
+            - id: "https://example.org/iiif/book1/canvas/p2"
+              type: "Canvas"
         # List of Services, referenced from within items, structures or annotations
         services:
           type: array
@@ -848,16 +843,16 @@ components:
                   profile:
                     type: string
           example:
-          - '@id': "https://example.org/iiif/auth/login"
-            '@type': "AuthCookieService1"
-            profile: "http://iiif.io/api/auth/1/login"
-            label: "Login to Example Institution"
-            service:
-              '@id': "https://example.org/iiif/auth/login"
+            - '@id': "https://example.org/iiif/auth/login"
               '@type': "AuthCookieService1"
               profile: "http://iiif.io/api/auth/1/login"
+              label: "Login to Example Institution"
+              service:
+                '@id': "https://example.org/iiif/auth/login"
+                '@type': "AuthCookieService1"
+                profile: "http://iiif.io/api/auth/1/login"
         # List of Canvases
-        items: 
+        items:
           type: array
           items:
             $ref: '#/components/schemas/canvas'
@@ -871,19 +866,19 @@ components:
         annotations:
           $ref: '#/components/schemas/annotations'
         # TODO: Figure out if all of presentation API can be contained in one schema
-        
+
     # IIIF Presentation canvas response
-    canvas: 
+    canvas:
       type: object
       properties:
         #  Metadata about this canvas
-        id: 
+        id:
           type: string
           example: "https://example.org/iiif/book1/canvas/p1"
         type:
           type: string
           example: "Canvas"
-        label: 
+        label:
           type: object
           properties:
             none:
@@ -897,12 +892,12 @@ components:
         width:
           type: integer
           example: 750
-        items: 
+        items:
           type: array
-          items: 
+          items:
             type: object
             properties:
-              id: 
+              id:
                 type: string
               type:
                 type: string
@@ -911,16 +906,16 @@ components:
                 items:
                   type: string
           example:
-          - id: "https://example.org/iiif/book1/content/p1/1"
-            type: "AnnotationPage"
-            items: 
-              - "Painting Annotations on the Canvas"
-        annotations: 
+            - id: "https://example.org/iiif/book1/content/p1/1"
+              type: "AnnotationPage"
+              items:
+                - "Painting Annotations on the Canvas"
+        annotations:
           type: array
-          items: 
+          items:
             type: object
             properties:
-              id: 
+              id:
                 type: string
               type:
                 type: string
@@ -928,11 +923,11 @@ components:
                 type: array
                 items:
                   type: string
-          example: 
-          - id: "https://example.org/iiif/book1/comments/p1/1"
-            type: "AnnotationPage"
-            items: 
-              - "Non-Painting Annotations on the Canvas"
+          example:
+            - id: "https://example.org/iiif/book1/comments/p1/1"
+              type: "AnnotationPage"
+              items:
+                - "Non-Painting Annotations on the Canvas"
     
     # IIIF Presentation range response - used with structures in manifest
     range:
@@ -990,30 +985,30 @@ components:
                             value:
                               type: string
               example:
-              - id: "https://example.org/iiif/book1/canvas/cover"
-                type: "Canvas"
-              - id: "https://example.org/iiif/book1/range/r1"
-                type: "Range"
-                label:
-                  en: "Introduction"
-                supplementary:
-                  id: "https://example.org/iiif/book1/annocoll/introTexts"
-                  type: "AnnotationCollection"
-              - items:
-                  id: "https://example.org/iiif/book1/canvas/p1"
+                - id: "https://example.org/iiif/book1/canvas/cover"
                   type: "Canvas"
-              - items:
-                  id: "https://example.org/iiif/book1/canvas/p2"
-                  type: "Canvas"
-              - items:
-                  type: "SpecificResource"
-                  source: "https://example.org/iiif/book1/canvas/p3"
-                  selector:
-                    type: "FragmentSelector"
-                    value: "xywh=0,0,750,300"
-              - items:
-                  id: "https://example.org/iiif/book1/canvas/backCover"
-                  type: "Canvas"
+                - id: "https://example.org/iiif/book1/range/r1"
+                  type: "Range"
+                  label:
+                    en: "Introduction"
+                  supplementary:
+                    id: "https://example.org/iiif/book1/annocoll/introTexts"
+                    type: "AnnotationCollection"
+                - items:
+                    id: "https://example.org/iiif/book1/canvas/p1"
+                    type: "Canvas"
+                - items:
+                    id: "https://example.org/iiif/book1/canvas/p2"
+                    type: "Canvas"
+                - items:
+                    type: "SpecificResource"
+                    source: "https://example.org/iiif/book1/canvas/p3"
+                    selector:
+                      type: "FragmentSelector"
+                      value: "xywh=0,0,750,300"
+                - items:
+                    id: "https://example.org/iiif/book1/canvas/backCover"
+                    type: "Canvas"
 
     # IIIF Presentation annotations response
     annotations:
@@ -1032,9 +1027,9 @@ components:
                 type: string
               type:
                 type: string
-              motivation: 
+              motivation:
                 type: string
-              body: 
+              body:
                 type: object
                 properties:
                   type:
@@ -1046,17 +1041,18 @@ components:
               target:
                 type: string
       example:
-      - id: "https://example.org/iiif/book1/page/manifest/1"
-        type: "AnnotationPage"
-        items:
-          id: "https://example.org/iiif/book1/page/manifest/a1"
-          type: "Annotation"
-          motivation: "commenting"
-          body: 
-            type: "TextualBody"
-            language: "en"
-            value: "I love this manifest!"
-          target: "https://example.org/iiif/book1/manifest"
+        - id: "https://example.org/iiif/book1/page/manifest/1"
+          type: "AnnotationPage"
+          items:
+            id: "https://example.org/iiif/book1/page/manifest/a1"
+            type: "Annotation"
+            motivation: "commenting"
+            body:
+              type: "TextualBody"
+              language: "en"
+              value: "I love this manifest!"
+            target: "https://example.org/iiif/book1/manifest"
+
     Error:
       type: object
       required:
@@ -1176,7 +1172,6 @@ components:
           type: string
           description: 'Assorted performance statistics'
 
-
     Whoami:
       type: object
       description: 'OAuth2 information derived from the request'
@@ -1202,30 +1197,25 @@ components:
               items:
                 type: string
               description: 'The roles stated in the OAuth2 accessToken'
-              example: [read, write, admin]
+              example: [ read, write, admin ]
 
   securitySchemes:
-
     KBOAuth:
       type: oauth2
       description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
       flows:
-        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+        implicit: # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
           #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
-          authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth' 
+          authorizationUrl: 'https://keycloak-devel-01.kb.dk/realms/ds-poc/protocol/openid-connect/auth'
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles
             read: 'read data'
             write: 'modify or delete data'
-
             # General roles at the Royal Danish Library
             devel: 'broad read access'
             admin: 'all rights'
-
             # Meta role controlling authorization behaviour
             public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
             any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
-
-
