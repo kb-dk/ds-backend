@@ -1,81 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
-
+    <!-- Human-readable name, uppercase and spaces welcome -->
+    <name>ds-storage</name>
     <groupId>dk.kb.storage</groupId>
     <artifactId>ds-storage</artifactId>
     <version>100.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <description>
-    # Ds-storage(Digitale Samlinger) by the Royal Danish Library. 
-    
-      
-    ## A metadata storage.
-    Ds-storage is a storage for metadata to describe objects in collections.  
-    The metadata format is UTF-8 encoded but format can be anything from text,XML,JSON etc. depending on the metadata format for that collection.
-    The basic idea behind ds-storage is a single access point to metadata describing objects belonging to many different collections. Having a simple API to 
-    store and retrieve the records. Instead of integrating to wide range of different APIs located on different servers, the ds-storage offers
-    a unified API for all of them and is optimized for retrieving a specific record very fast.
-    
-    ## Records
-    Objects in ds-storage are called records. A record has a metadata field that is UTF-8 encoded. The value of the metadata will typical be same as
-    in the originating collection if harvested with OAI-PMH etc. 
-        
-    ## cTime and mTime format
-    The format of cTime and mTime is milliseconds since Epoch (1970) with 3 added digits and is guaranteed to be unique values. The additional 
-    3 digits is used to ensure uniqueness. If multiple records are created/updated within same millis the last 3 digits will be consecutive.
-        
-    ## Creating and updating records    
-    A record must has a origin that is prefined in the ds-storage configuration. This is the name of the collection in ds-storage.
-    The recordId must also have the origin as prefix so it is easy from a recordid to see where it belongs.
-    When a record is created it will be given a creation time (cTime) that will never be changed and a modification time (mTime). If a
-    record is later update only the mTime will be updated. 
-    
-    ## Naming convention for origin and id
-    The origin must only contain lowercase letters and dot (.) as separator.     
-    The id must start with the origin followed by colon (:). The part after origin must only contain of upper of lower case letters, digits and
-    the following characters:  : . _ -
-        
-    Regexp for origin: ([a-z0-9.]+)
-    
-    
-    Regexp for id: ([a-z0-9.]+):([a-zA-Z0-9:._-]+)
-    
-    ## ID normalisation                     
-    If a record contains a invalid character after the origin part, it will be normalised and the invalid characters will be replaced.
-    The original (invalid) id will be stored in the 'orgid' field and flagged for invalid id. Having the original id will make it possible
-    to track it back to the collection it came from. The record can still be retrieved and updated using the invalid id, but also by the normalised id.                      
-                                          
-    ## Record hierarchy                 
-    The datamodel is a tree structure with a single parent but no limit on number of children. The tree can be several levels deep (tree depth).
-    Due to the tree structre, there can not exist a cycle in the graph.    
-    Every origin is configured with a transitive  update strategy that makes sense for the origin. When a record is created or update it can update the mTime of parent and all children
-    if defined for the origin. The possible updatestrategies are: NONE, ALL, PARENT, CHILDREN.  (see #updatestrategy schema)
-        
-    ## Record type
-    Records must have one of the 3 enum types define in RecordTypeDto. The recordtype is an easy way to determine depth in the hierachy and can be collection specific.
-    COLLECTION This is top parent (root) with information about the collection. 
-    DELIVERABLEUNIT Parent for a manifestation.
-    MANIFESTATION A record that has metadata that relates to single digital preservation unit (image, video, audio etc.).          
-        
-    ## API   
-    Records can be extracted by recordId or as a list by specified origin and last modification time (mTime). The uniqueness of mTime
-    will ensure batching through the records using mTime will not return same record twice.  
-    
-     </description>
-
+    <description>ds-storage by the Royal Danish Library</description>
     <scm>
-        <url>https://github.com/kb-dk/ds-storage</url>
-        <connection>scm:git:git@github.com:kb-dk/ds-storage.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/ds-storage.git</developerConnection>
+        <url>https://github.com/kb-dk/ds_backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
     <licenses>
         <!--SBForge stuff should have a license-->
         <license>
@@ -83,7 +29,6 @@
             <url>${license.url}</url>
         </license>
     </licenses>
-
     <properties>
         <!-- Enable forbiddenapis plugin, do disable set to none -->
         <api.check.phase>process-test-classes</api.check.phase>
@@ -91,10 +36,8 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
-
         <project.package>dk.kb.storage</project.package>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
@@ -109,8 +52,6 @@
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
-
-
         <!-- Apache CXF and servlet stuff -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
@@ -176,7 +117,7 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>openapi-generator</artifactId>
-             <exclusions>
+            <exclusions>
                 <exclusion>
                     <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
                     <artifactId>slf4j-simple</artifactId>
@@ -184,40 +125,31 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
         </dependency>
-
         <!-- openapitools dependency -->
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
         </dependency>
-
-       <!-- Database dependencies-->
-
+        <!-- Database dependencies-->
         <!-- database -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-
-
-       <!--For the standard unit test-->
+        <!--For the standard unit test-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
-
-
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -239,36 +171,27 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-
         <!-- Unit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
-
-<!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
-
-
-
+        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
         <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-junit-jupiter</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-         </dependency>
-
+        </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>
@@ -292,7 +215,10 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
                         <!--This ensures that the openapi_*.yaml have been filtered and copied to target/classes
@@ -322,7 +248,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -332,7 +257,8 @@
                      which seems to be an unresolved issue: https://github.com/OpenAPITools/openapi-generator/issues/9008 -->
                 <configuration>
                     <generatorName>jaxrs-cxf-extended</generatorName>
-                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec><!-- Will always be overridden -->
+                    <!-- Will always be overridden -->
+                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec>
                     <modelNameSuffix>Dto</modelNameSuffix>
                     <generateSupportingFiles>false</generateSupportingFiles>
                     <generateApiTests>false</generateApiTests>
@@ -340,7 +266,6 @@
                     <generateApis>true</generateApis>
                     <output>${project.basedir}</output>
                     <templateDirectory>src/main/templates/</templateDirectory>
-
                     <configOptions>
                         <!--https://openapi-generator.tech/docs/generators/jaxrs-cxf-extended/-->
                         <!-- https://openapi-generator.tech/docs/generators/java/ -->
@@ -357,7 +282,6 @@
                     <packageName>${project.package}</packageName>
                 </configuration>
                 <executions>
-
                     <!-- Version 1 -->
                     <!-- When a new version is needed, make a copy of two v1-related executions below, then change
                          v1 to v2 in the copy.
@@ -370,7 +294,6 @@
                          * Update src/main/webapp/WEB-INF/web.xml
                          * Update src/main/webapp/api/index.html
                     -->
-
                     <execution>
                         <!-- Generate API and Model-files from the OpenAPI specification (positioned under the target/generated-sources/ folder).
                              These files are overwritten on all builds, so they should never be edited manually. -->
@@ -383,7 +306,6 @@
                             <ignoreFileOverride>
                                 ${project.basedir}/.openapi-codegen-ignore-api
                             </ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -407,19 +329,17 @@
                             <ignoreFileOverride>
                                 ${project.basedir}/.openapi-codegen-ignore-impl
                             </ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
-                                <generateOperationBody>false</generateOperationBody><!-- To avoid stack overflow for DsRecord -->
+                                <!-- To avoid stack overflow for DsRecord -->
+                                <generateOperationBody>false</generateOperationBody>
                             </configOptions>
                             <skipOverwrite>true</skipOverwrite>
                         </configuration>
                     </execution>
-
                 </executions>
             </plugin>
-
             <!-- The generated classes for the OpenAPI client are problematic. Disable checking of those for now -->
             <plugin>
                 <groupId>de.thetaphi</groupId>
@@ -432,7 +352,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -443,14 +362,13 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-
-                   <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->                    
-                   <!-- <attachClasses>true</attachClasses> --> 
-
+                    <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->
+                    <!-- <attachClasses>true</attachClasses> -->
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
-                        <webResource> <!-- Store application name, version and build time -->
+                        <!-- Store application name, version and build time -->
+                        <webResource>
                             <directory>${basedir}/src/main/resources/</directory>
                             <includes>
                                 <include>ds-storage.build.properties</include>
@@ -469,28 +387,26 @@
                     </webResources>
                 </configuration>
             </plugin>
-
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>            
-               <executions>
-                   <execution>
-                   <id>build-specific-jar</id>
-                   <phase>package</phase>
-                   <goals>
-                       <goal>jar</goal>
-                   </goals>
-                  <configuration>                
-                      <classifier>api</classifier>
-                      <includes>                       
-                          <include>dk/kb/storage/model/**</include>
-                          <include>dk/kb/storage/util/DsStorageClient*</include>                                            
-                      </includes>
-                 </configuration>
-                 </execution>
-              </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-specific-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>api</classifier>
+                            <includes>
+                                <include>dk/kb/storage/model/**</include>
+                                <include>dk/kb/storage/util/DsStorageClient*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
             <!-- Used only for mvn jetty:run jetty:run-war -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
@@ -555,5 +471,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

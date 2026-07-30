@@ -1,0 +1,96 @@
+#
+# This config contains environment-data: Servers, usernames, passwords etc.
+# If will be automatically merged with the core config when accesses through the application config system.
+#
+# The environment config is normally controlled by operations and is not part of the code repository.
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  serverurl: "${license_url}"
+
+# Solr is used for access filtering by combining filter queries from ds-license with a search for
+# a given record- or resource-ID.
+solr:
+  # Backing Solr servers must be "true" Solr servers (as opposed to ds-discover services) to avoid endless looping
+  # It is possible to specify multiple servers: They will all be queried
+  servers:
+    - "${solr_url}/solr/${solr_read_collection}"
+  # The field used to verify access based on the ID of a record/document
+  # Typically used to determine whether a user is allowed to see search or see metadata for a record
+  idField: "id"
+  # The field used to verify access based on the resource ID of a TV-stream, bitmap or similar
+  # Typically used for callback from an image server or similar where the record ID is not known
+  resourceField: "resource_id"
+
+db:
+  url: "jdbc:postgresql://postgres:5432/${license_database}"
+  driver: org.postgresql.Driver
+  username: "${license_database_username}"
+  password: "${license_database_password}"
+
+# Will disable all access to admin GUI jsp pages and instead show a info page that it has been disabled.
+gui:
+  adminGuiEnabled: true
+
+# Configuration of rights module
+rights:
+  platforms:
+    # Platform specific configuration for the different platforms supported by the righgs module
+    # Note that names of the platform should correspond to the names in the Platform enum, and
+    # the id types should correspond to the id Types enum defined in the openapi definition
+    - name: "DRARKIV"
+      idTypes:
+        - DS_ID
+        - DR_PRODUCTION_ID
+        - OWNPRODUCTION_CODE
+        - STRICT_TITLE
+      # An amount of days used to specify, when the holdback logic changes from being calculated from the start date of the record to the following January 1st
+      holdbackLogicChangeDays: 365
+      holdbackYearsForRadio: 3
+
+# KeyCloakClientSecret can be seen in the KeyCloak server admin page for the AD realm configuration
+# redirectUrl must be added to the whitelist in KeyCloak administration configuration
+keycloak:
+  realmTokenUrl: "${keycloak_url}/realms/DS/protocol/openid-connect/token"
+  redirectUrl: "http://localhost:8082/ds-license/loginCallbackServlet"
+  loginUrl: "${keycloak_url}/realms/DS/protocol/openid-connect/auth?response_type=code&client_id=kb-ad&redirect_uri=http://localhost:8082/ds-license/loginCallbackServlet&scope=openid"
+  rsaPublicKey: "${keycloak_rsa_public_key}"
+  clientSecret: "${keycloak_client_secret}"
+
+# The license cache reload time. The replica database application needs to refresh cache since it will not be notified upon changes in configuration.
+# 300 seconds=5 minutes is a good value.
+cache:
+  reloadInSeconds: 300
+
+# Storage client is used for touching DS-records in DS-storage, when an ID is updated in the restricted_ids table
+storageClient:
+  url: "${storage_url}"
+
+# OAuth2 support
+security:
+  # The security mode. Valid values are
+  # OFFLINE: No validation of security tokens: All requests are accepted.
+  # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
+  mode: "${security_mode}"
+  # The OAUth2 server base url, typically ending in "realms"
+  # Sample: https://keycloak-keycloak.example.org/auth/realms
+  baseurl: "${keycloak_url}/realms"
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  # The authentification url with the correct realm value. Does not seem the used active by code but is required when building. (TODO?)
+  auth_url: "${keycloak_url}/oauth2/authorize"
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  realms:
+    - DS
+  public_keys:
+    # The number of seconds that public keys from the realms are cached
+    # Optional, -1 means forever.
+    # Default is 600 (10 minutes)
+    ttl_seconds: 86400
+  # Client settings are used if the webapp needs to request tokens from the OAuth2 server
+  client:
+    # Matches OAuth2 server Client ID
+    id: "${keycloak_client_id}"
+    # Secret is used if the service needs to request a token from the OAuth2 server.
+    # This typically used for calls between services, where there is a need for elevated access.
+    secret: "${keycloak_client_secret}"

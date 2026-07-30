@@ -1,0 +1,293 @@
+#
+# This contains behaviour data: Thread allocation, allowed fields for lookup, limits for arguments etc.
+#
+# The behaviour config is normally controlled by developers and is part of the code repository.
+# Sensitive information such as machine names and user/passwords should not be part of this config.
+#
+# It will be automatically merged with the environment config when accessed through the
+# application config system.
+
+# Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
+# These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
+openapi:
+  serverurl: "${present_url}"
+
+# Image server URLs are injected into transformations.
+# These should be overridden in environment specific config files for all environments, meaning local test,
+# shared devel, stage and production
+# Note: The server marked with "default: true" is used in the base configuration ds-present-kb-collections.yaml
+imageservers:
+  # Note: The servers are in a list to ensure the full list of servers can be fully overwritten in subsequent configs
+  - example:
+      url: "${image_url}/IIIF"
+      default: true
+  - invalid:
+      url: "invalid://url"
+      # The default is commented out here to force defining a default for a real imageserver in the local, devel or prod config
+      #default: true
+
+# The oldimageserver is special as that is used for imageIdentifier rather that bitmap delivery
+oldimageserver:
+  url: "http://kb-images.kb.dk"
+
+# Used for verifying access to metadata https://github.com/kb-dk/ds-license
+# If allowall is set to true (default is false), all access is granted. Use only for devel + stage
+licensemodule:
+  url: "${license_url}"
+  # Bypass ds-license check by setting the following HTTP header on calls to the service:
+  # Simulated-OAuth2-Group: internal_service
+  allowall: true
+
+# List of backing storages. This information should be overridden in ds-present-environment.yaml
+
+# The storages defined in this file are
+# * ds-storage, expecting https://github.com/kb-dk/ds-storage/ to be running locally with the default port
+# * folder, serving sample files
+storages:
+  # There can be multiple defined storages. The outer YAML key is used as the ID for the storage.
+  - main:
+      # If default is true, this will be the default storage for collections.
+      # The default storage choice can be overridden in a collection with the "storage" property
+      default: true
+      # Backends contains a list of one or more implementations and their configuration, with the primary key being
+      # the implementation (aka type) of the backend
+      #
+      # Available backends are
+      # ds-storage: A local instance of https://github.com/kb-dk/ds-storage/
+      # folder:     Local files under the stated folder. Use only for test as the implementation in unsecure
+      backends:
+        # The ds-storage backend connects to a running https://github.com/kb-dk/ds-storage/ instance
+        - ds-storage:
+            # The URL for the DS storage service, complete with version. Mandatory
+            # Sample: http://ds-storage:8080/ds-storage/v1
+            url: "${storage_url}"
+
+  - test:
+      # If there is more that one backend implementation, the property "order" controls how they are queried:
+      # * parallel:   All backends are queried in parallel. Whoever answers with a record first wins.
+      # * sequential: All backends are queried one at a time in the order in this configuration.
+      #               When a backend responds with a record, itertaion is stopped and the record is returned
+      # Optional, default value is "sequential"
+      order: sequential
+      backends:
+        # The folder backend expects content to be stored in a local folder. The ID is used as the file name.
+        # WARNING: Insecure implementation (files outside of the folder can be read). Do not use for production!
+        # The src/test/resources/xml/corpus contains a small sample corpus. this is only likely to work when
+        # running with `mvn jetty:run` and even the we're unsure of the current folder, so we se up alternatives.
+        - folder:
+            root: "src/test/resources/xml/corpus" # Expected
+            # Whether or not remove ID-prefix (the part from the beginning to the first `:` (inclusive) of the ID)
+            # from the ID when perforaing the lookup. Optional, default is true.
+            prefix:
+              strip: true
+        - folder:
+            root: "../src/test/resources/xml/corpus" # Maybe PWD is target/
+        - folder:
+            root: "ds-present/src/test/resources/xml/corpus" # Maybe PWD is outsid eof the checkout (unlikely)
+
+# Settings for handling export of multiple records
+records:
+  errorHandling:
+    # If true, export is stopped if a transformation fails for any record
+    # If false, failed records are logged and skipped
+    # Default: true
+    stop: false
+
+# Settings for handling at the record level
+record:
+  id:
+    # Pattern for acceptable record IDs. Must contain exactly 2 capturing group, the first being the origin prefix
+    # and the second being the origin specific par of the ID
+    # Mandatory. Suggested value: "([a-z0-9.]+):([a-zA-Z0-9:._-]+)", e.g. "images.dsfl:Image1234:2_3-b"
+    pattern: "([a-z0-9.]+):([a-zA-Z0-9:._-]+)"
+origin:
+  prefix:
+    # Pattern for acceptable origin prefixes. This will practically always be a mirror of the first capturing
+    # group for record.id.pattern.
+    # Primarily used for verifying configuration.
+    # Mandatory. Suggested value: "[a-z0-9.]+", e.g. "images.dsfl"
+    pattern: "[a-z0-9.]+"
+
+# Limit the number of concurrent executions of xslt transformations
+transformations:
+  threads: 3
+
+index:
+  useTransriptions: false
+
+# OAuth2 support
+security:
+  # OFFLINE: No validation of security tokens: All requests are accepted.
+  # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
+  mode: "${security_mode}"
+  # The OAUth2 server base url, typically ending in "realms"
+  # Sample: https://keycloak-keycloak.example.org/auth/realms
+  baseurl: "${keycloak_url}/realms"
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  # The authentification url with the correct realm value. Does not seem the used active by code but is required when building. (TODO?)
+  auth_url: "${keycloak_url}/oauth2/authorize"
+  # Accepted realms for requests. These must be present at the OAuth2 server
+  realms:
+    - DS
+  public_keys:
+    # The number of seconds that public keys from the realms are cached
+    # Optional, -1 means forever.
+    # Default is 600 (10 minutes)
+    ttl_seconds: 86400
+
+  # Client settings are used if the webapp needs to request tokens from the OAuth2 server
+  client:
+    # Matches OAuth2 server Client ID
+    id: "${keycloak_client_id}"
+    # Secret is used if the service needs to request a token from the OAuth2 server.
+    # This typically used for calls between services, where there is a need for elevated access.
+    secret: "${keycloak_client_secret}"
+
+# This config contains definitions for image collections at the Royal Danish Library.
+# Views for material harvested from preservica.
+pvicaviews: &PRESERVICA_VIEWS
+  - raw:
+      mime: "text/plain"
+      strategy: "NONE"
+      transformers:
+        - identity:
+  - JSON-LD:
+      mime: "application/json"
+      strategy: "DR"
+      transformers:
+        - xslt:
+            stylesheet: "xslt/preservica2schemaorg.xsl"
+            injections:
+              #- imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
+  - SolrJSON:
+      mime: "application/json"
+      strategy: "DR"
+      transformers:
+        - xslt:
+            stylesheet: "xslt/preservica2schemaorg.xsl"
+            injections:
+              #- imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
+        - xsltsolr:
+            stylesheet: "xslt/schemaorg2solr.xsl"
+# Generic views for images represented as MODS, used for multiple origins
+baseviews: &MODS_IMAGE_VIEWS
+  # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
+  - raw:
+      mime: "text/plain"
+      strategy: "NONE"
+      transformers:
+        - identity:
+  - MODS:
+      mime: "application/xml"
+      strategy: "NONE"
+      transformers:
+        - identity: # No transformation steps as mods is the core format for images-dsfl
+  - JSON-LD:
+      mime: "application/json"
+      strategy: "NONE"
+      transformers:
+        - imagerights: # KB specific rules for image rights stated in MODS
+        - xslt:
+            stylesheet: "xslt/mods2schemaorg.xsl"
+            injections:
+              - imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
+  - SolrJSON:
+      mime: "application/json"
+      strategy: "NONE"
+      transformers:
+        - imagerights: # KB specific rules for image rights stated in MODS
+        - xslt:
+            stylesheet: "xslt/mods2solr.xsl"
+            injections:
+              - imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
+
+# The origins available for this instance of ds-present. The first origin in the list is used as the example value in the OpenAPI interface.
+origins:
+  # General note: All origins are expected to support at least the views raw, mods, jsonld and solrjson.
+  # If any of those are not supported, the transformer "fail" should be used with a telling message.
+  # Royal Danish Library image collection with the core format being MODS
+  # Uses the default storage, which connects to a running ds-storage instance
+  - "ds.radio":
+      description: "Radio records from the Preservica system at the Royal Danish Library"
+      prefix: "ds.radio"
+      origin: "ds.radio"
+      recordRequestType: "DELIVERABLEUNIT"
+      views: *PRESERVICA_VIEWS
+  - "ds.tv":
+      description: "TV records from the Preservica system at the Royal Danish Library"
+      prefix: "ds.tv"
+      origin: "ds.tv"
+      recordRequestType: "DELIVERABLEUNIT"
+      views: *PRESERVICA_VIEWS
+  - "ds.samlingsbilleder":
+      description: "Diverse images from image collections at the Royal Danish Library"
+      prefix: "ds.samlingsbilleder"
+      origin: "ds.samlingsbilleder"
+      recordRequestType: "DELIVERABLEUNIT"
+      views: *MODS_IMAGE_VIEWS
+  - "ds.radiotv":
+      description: "Radio and television records from the Preservica system at the Royal Danish Library"
+      prefix: "ds.radiotv"
+      origin: "ds.radiotv"
+      recordRequestType: "DELIVERABLEUNIT"
+      views: *PRESERVICA_VIEWS
+  - imageshca:
+      description: "Hans Christian Andersen images from the collections at the Royal Danish Library"
+      prefix: "kb.images.billed.hca" # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
+      origin: "kb.images.billed.hca" # Overrides the default origin for the storage
+      recordRequestType: "DELIVERABLEUNIT"
+      views: *MODS_IMAGE_VIEWS
+  - imagesjsmss:
+      description: "Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library"
+      prefix: "kb.image.judsam.jsmss"
+      origin: "kb.image.judsam.jsmss"
+      recordRequestType: "DELIVERABLEUNIT"
+      views: *MODS_IMAGE_VIEWS
+  - imagesluftfoto:
+      description: "Luftfoto (arial photographs) images from the collections at the Royal Danish Library"
+      prefix: "kb.image.luftfo.luftfoto"
+      origin: "kb.images.luftfo.luftfoto"
+      recordRequestType: "DELIVERABLEUNIT"
+      views: *MODS_IMAGE_VIEWS
+  - imagessmaatryk:
+      description: "Småtryk images from the collections at the Royal Danish Library"
+      prefix: "kb.pamphlets.dasmaa.smaatryk"
+      origin: "kb.pamphlets.dasmaa.smaatryk"
+      recordRequestType: "DELIVERABLEUNIT"
+      views: *MODS_IMAGE_VIEWS
+
+  # Straight forward origin with the core format being MODS
+  # Uses the default storage, which connects to a running ds-storage instance
+  - remote: # ds-present internal
+      prefix: "doms.radio" # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
+      origin: "old.doms.radio"
+      description: "Images from the collections at the Royal Danish Library"
+      recordRequestType: "DELIVERABLEUNIT"
+      # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
+      views:
+        - raw:
+            mime: "text/plain"
+            transformers:
+              - identity:
+        - MODS:
+            mime: "application/xml"
+            transformers:
+              - identity: # No transformation steps as mods is the core format for images-dsfl
+        - JSONLD:
+            mime: "application/json"
+            transformers:
+              - xslt:
+                  stylesheet: "xslt/mods2schemaorg.xsl"
+                  injections:
+                    - imageserver: ${path:imageservers[default=true].url}
+        - SolrJSON:
+            mime: "application/json"
+            transformers:
+              - xslt:
+                  stylesheet: "xslt/mods2solr.xsl"
+                  injections:
+                    - imageserver: ${path:imageservers[default=true].url}

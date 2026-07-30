@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.kaltura.KalturaUtil;
-import dk.kb.datahandler.transcriptions.TranscriptionIndexer;
-import dk.kb.storage.model.v1.TranscriptionDto;
 
 @Tag("integration")
 public class KalturaFilePathUtilTest {
@@ -28,23 +26,19 @@ public class KalturaFilePathUtilTest {
         }
     }
 
-    
-    @Test   
+    @Test
     void streamPathResolvingTest() throws Exception {
-            
-        //Test all 4 different combinations.        
+        //Test all 4 different combinations.
         String domsVideoPath= KalturaUtil.generateStreamPath("1/6/b/6/16b6a4bc-ea57-47c1-b535-efacfb85ea3a.mp4","DOMS","VideoObject");
         assertEquals("/radio-tv/1/6/b/6/16b6a4bc-ea57-47c1-b535-efacfb85ea3a.mp4", domsVideoPath);
-        
+
         String domsAudioPath= KalturaUtil.generateStreamPath("0/a/d/f/0adfb324-d090-42a9-b11c-0d72973aa486.mp3","DOMS","AudioObject");
-        assertEquals("/radio-tv/0/a/d/f/0adfb324-d090-42a9-b11c-0d72973aa486.mp3",domsAudioPath);        
-        
+        assertEquals("/radio-tv/0/a/d/f/0adfb324-d090-42a9-b11c-0d72973aa486.mp3",domsAudioPath);
+
         String preservicaVideoPath= KalturaUtil.generateStreamPath("97/7a/47/977a470d-bd0b-4e74-85f9-33ff8767f570","Preservica","VideoObject");
         assertEquals("/kuana-store/bart-access-copies-tv/97/7a/47/977a470d-bd0b-4e74-85f9-33ff8767f570",preservicaVideoPath);
-        
-        String preservicaAudioPath= KalturaUtil.generateStreamPath("18/0a/fe/180afe12-f0c2-498e-8d7a-5a0f5fb92cb7","Preservica","AudioObject");
-        assertEquals("/kuana-store/bart-access-copies-radio/18/0a/fe/180afe12-f0c2-498e-8d7a-5a0f5fb92cb7",preservicaAudioPath);                        
-    }
-    
-}
 
+        String preservicaAudioPath= KalturaUtil.generateStreamPath("18/0a/fe/180afe12-f0c2-498e-8d7a-5a0f5fb92cb7","Preservica","AudioObject");
+        assertEquals("/kuana-store/bart-access-copies-radio/18/0a/fe/180afe12-f0c2-498e-8d7a-5a0f5fb92cb7",preservicaAudioPath);
+    }
+}

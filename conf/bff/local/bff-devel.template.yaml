@@ -1,0 +1,207 @@
+#
+# This config contains developer specific overrides, such as read-only account credentials and test server locations.
+#
+# If will be automatically merged with the bff-base.yaml upon application start.
+# Values in the bff-local.yaml files takes precedence over the behaviour file as the files are sorted
+# alphanumerically by name and applied in order.
+#
+# This config is controlled by the individual developer and is not part of the code repository.
+
+keycloak:
+  url: "${keycloak_url}"
+  realm: "${keycloak_realm}"
+  clientID: "${keycloak_client_id}"
+  secret: "${keycloak_client_secret}"
+
+# Available APIs
+# baseURLs will be combined with the service ID: 'ds-image' + '${image_url}' = 'http://${image_url}/ds-image'
+apis:
+  ds-image:
+    baseURL: "${image_url}"
+  ds-present:
+    baseURL: "${present_url}"
+  ds-licence:
+    baseURL: "${license_url}"
+  ds-discover:
+    baseURL: "${discover_url}"
+  search:
+    baseURL: "${discover_url}/solr/ds/select"
+  record:
+    baseURL: "${present_url}/record"
+  mlt:
+    baseURL: "${discover_url}/solr/ds/mlt"
+  suggest:
+    baseURL: "${discover_url}/solr/ds/suggest"
+  thumbnail:
+    baseURL: "${image_url}/kaltura/thumbnails"
+  kbdrupal-da:
+    baseURL: "${kb_url}/jsonapi/node/site/e065d5e7-a348-4384-9859-c17841d03019"
+  kbdrupal-en:
+    baseURL: "${kb_url}/en/jsonapi/node/site/e065d5e7-a348-4384-9859-c17841d03019"
+
+# Default: false
+redirectAfterAuthentication: false
+
+# Cookie settings
+cookies:
+  # Boolean, default: true
+  secure: true
+  # Boolean, default: true
+  httponly: true
+  # Valid values: none, lax, strict
+  # Enum, default: Strict
+  # See https://owasp.org/www-community/SameSite
+  samesite: "None"
+  # String, optional
+  #domain: example.com
+  # String, optional
+  path: "/"
+
+secretSalt: "${secret_salt}"
+
+#Enable auto refresh to enable refresh of encryption salt
+config:
+  autoupdate:
+    enabled: true
+    intervalms: 60000
+
+messages:
+  partnerId: "${kaltura_partner_id}"
+  videoUiConfId: "${kaltura_video_ui_conf_id}"
+  audioUiConfId: "${kaltura_audio_ui_conf_id}"
+  coverage: 38
+  streamingBaseUrlVideo: "${kaltura_api_url}/p/${path:messages.partnerId}/embedPlaykitJs/uiconf_id/${path:messages.videoUiConfId}"
+  streamingBaseUrlAudio: "${kaltura_api_url}/p/${path:messages.partnerId}/embedPlaykitJs/uiconf_id/${path:messages.audioUiConfId}"
+  curatedItems:
+    Januar:
+      - ds.radio:oai:io:f3d56005-39e6-4fc3-90a5-830efded34a0
+      - ds.tv:oai:io:6f9017fb-810a-4386-98cc-debd1f19b48d
+      - ds.tv:oai:io:8e3ea0ed-1426-49af-a922-dbe607de7401
+      - ds.tv:oai:io:0b90d1b1-202a-4d64-835d-75af39bf6444
+      - ds.tv:oai:io:bf5e4b0a-6712-4951-b85b-9be8f4e5a57d
+      - ds.tv:oai:io:0eec77ec-42f6-4a59-af04-615b7bb09107
+      - ds.radio:oai:io:2ad7bbfd-7909-4979-8116-398e411af35b
+      - ds.tv:oai:io:80597001-44b1-4dcb-8909-7191888223b5
+      - ds.tv:oai:io:626fc3ce-e28f-44cc-ae81-9419bb8120a2
+      - ds.tv:oai:io:8de4ccdb-c8aa-4867-a2b7-4938117b7603
+    Februar:
+      - ds.tv:oai:io:8d010389-c0c8-4a40-a949-6e2bb577a2b5
+      - ds.tv:oai:io:d6bb63f4-8d49-4991-9f64-d3773e549505
+      - ds.tv:oai:io:f281de00-99c3-423a-850a-c21d29cc3e9a
+      - ds.tv:oai:io:3b99692a-ba88-4f4e-8d6f-29d7013c94c0
+      - ds.tv:oai:io:55e31e5d-eefc-4110-9add-234a25a21f90
+      - ds.tv:oai:io:bac915f2-7a13-4c63-947f-76e190b45fd8
+      - ds.tv:oai:io:ede2fabd-516d-4ab7-81e3-fa4fef0e1ee8
+      - ds.tv:oai:io:037d41d5-b6ef-4ff9-8887-3002c3d036e3
+      - ds.tv:oai:io:adf4e64d-96d1-4104-9a5c-73e4f4c0fa90
+      - ds.radio:oai:io:fb89a537-e637-40c1-8211-25d20b335b4e
+    Marts:
+      - ds.tv:oai:io:6dc76b66-4322-478c-8d6a-ff21a1d7a082
+      - ds.tv:oai:io:0e8e854b-c2ca-48c7-86f6-ad2ba477e00e
+      - ds.tv:oai:io:8c0782f2-43ec-4f32-a035-2263a83007ff
+      - ds.radio:oai:io:6c2b944d-3491-4508-9180-69cb49cdce22
+      - ds.tv:oai:io:8ab87895-48d0-4f1c-a859-12ea248fdfc9
+      - ds.tv:oai:io:c46c7ea6-adbb-45b1-8b89-f41bbdeeae65
+      - ds.tv:oai:io:0d8b4faf-0815-42a2-a48a-672cbfd9ff92
+      - ds.radio:oai:io:6ec0f61c-b93c-4522-a6d6-9390d16f41bd
+      - ds.tv:oai:io:f109ef06-0cd3-4e04-a7a0-80f874bc1d38
+      - ds.tv:oai:io:91c9048e-329d-4e0d-b48c-7d4176e19454
+    April:
+      - ds.tv:oai:io:4f28953e-2315-44c8-836a-1efef4c931f5
+      - ds.tv:oai:io:770fd412-cc9f-4fcd-8db2-96b0fe111d92
+      - ds.tv:oai:io:b265f49c-5922-4241-9f8c-e3c6c28b0caf
+      - ds.tv:oai:io:8a4174f7-934d-4ba0-b0ab-f0d5b95fd9f4
+      - ds.radio:oai:io:036b4e24-30b5-45dc-8173-3c33293e2023
+      - ds.tv:oai:io:f77755db-aa02-448c-a821-dbd521d823b9
+      - ds.tv:oai:io:2551eb1e-d2b1-448a-b5b8-e0f51b6d2057
+      - ds.tv:oai:io:b9e8f9a0-fc00-4aa6-88f0-8e98da9b6eac
+      - ds.tv:oai:io:c7e9b792-15b4-4a0d-b10a-1ca98a648dd9
+      - ds.radio:oai:io:ba8a3388-466c-4728-8ff5-bbe8390a0f78
+    Maj:
+      - ds.tv:oai:io:cc5fb753-ab87-4aeb-ab9a-d9ce30039349
+      - ds.tv:oai:io:dcd1d7d7-6733-40d5-9176-0ee2e5377edd
+      - ds.tv:oai:io:ac030c03-f1f2-44ca-8590-77a6b5092281
+      - ds.tv:oai:io:16db9efc-b970-4f93-92eb-32c675d3d0cd
+      - ds.tv:oai:io:35e68d2c-fc98-40f9-b7f9-dfc5ffbb3228
+      - ds.tv:oai:io:c7a4d650-6f07-4976-9bbb-61ff7dd8bc0f
+      - ds.tv:oai:io:93e2059a-6ec5-4cf2-aaa1-62b9b08d9a5f
+      - ds.tv:oai:io:c304bb69-ffe7-41f8-b48c-21f4fe29ec33
+      - ds.radio:oai:io:ead5ec69-d589-4b45-abf7-d367c33c3e52
+      - ds.tv:oai:io:a86ecdbd-6021-48dc-b20a-75d8a4ef2a5a
+    Juni:
+      - ds.tv:oai:io:c510c7eb-f295-466a-ab7d-4fe702113cc5
+      - ds.tv:oai:io:ad5a9740-9236-499e-851f-b19b7a658ed8
+      - ds.tv:oai:io:e2dbb1ed-2662-4001-a3e5-e69849ddb332
+      - ds.radio:oai:io:0443e90d-133e-404d-9a10-cbfd020d7e2d
+      - ds.tv:oai:io:76b2cfd5-382c-4134-9e1d-c68833547544
+      - ds.tv:oai:io:b611248f-b02f-4d88-a860-74b8070fcc2d
+      - ds.radio:oai:io:42de3b98-d782-4e72-a990-3b6e279b9778
+      - ds.radio:oai:io:83fd9ce3-5b7b-44fd-b135-208c78166ed2
+      - ds.tv:oai:io:9733be00-a24e-4949-8de9-360d8ea96702
+      - ds.tv:oai:io:547b03dd-e7f5-49dd-a1f6-d315308adbe3
+    Juli:
+      - ds.tv:oai:io:d1c025aa-1003-40b6-8324-dfcd0eff1406
+      - ds.radio:oai:io:cff3e216-c168-4fa3-9787-03b5a0cb8660
+      - ds.tv:oai:io:5e195447-421e-4016-b8f7-6c530a89354f
+      - ds.tv:oai:io:f2497b81-374b-4efd-aa57-4d35918210c9
+      - ds.radio:oai:io:5387b122-05db-4125-a5c3-780d36a0dc43
+      - ds.tv:oai:io:bbd5ceda-ddaa-4fec-b663-3a978f036833
+      - ds.tv:oai:io:174e9bb1-e4b8-4f9b-991c-7490c3657afa
+      - ds.tv:oai:io:941282f2-adb7-4c74-9504-7a7be5fbf53d
+      - ds.radio:oai:io:fad3ea51-0e2e-4e87-a0eb-cbff6bdf23cc
+      - ds.tv:oai:io:cc9de204-8052-4fbd-9a07-b95b4acc72ec
+    August:
+      - ds.tv:oai:io:a2209638-c9a7-41de-bd20-912a7bdb707b
+      - ds.tv:oai:io:b5383c74-b3ba-421c-bf71-77951e2f39fb
+      - ds.tv:oai:io:17b3989f-74bb-4b9f-9122-1d624d5973bb
+      - ds.tv:oai:io:a87e193e-6576-43d3-a4be-1a72fc07f95e
+      - ds.tv:oai:io:22504f17-03ff-462b-b984-cca091af1e52
+      - ds.tv:oai:io:4e0b056d-3d82-481c-aeb7-bb430673b586
+      - ds.tv:oai:io:35459d3a-88fa-4b20-a5c3-18d46ae3c97a
+      - ds.radio:oai:io:1895824b-62a4-412f-a370-0159855c1748
+      - ds.tv:oai:io:62cedf8e-1768-4781-b4e4-d9cbd1a96df2
+      - ds.radio:oai:io:d18e04cf-2fa0-4f3f-8372-ac6620fbe16e
+    September:
+      - ds.tv:oai:io:5c0b3267-d0fc-41f8-bfef-f6de2d6453e8
+      - ds.tv:oai:io:7e63856a-4cca-4c46-a356-a450168df368
+      - ds.tv:oai:io:4e4ce9b3-c148-44e9-aedf-fffbb379554c
+      - ds.tv:oai:io:a0136fd1-09d0-47ec-8799-579d49014b74
+      - ds.radio:oai:io:e4734433-cef9-4540-a2c7-a37e0d7407fd
+      - ds.tv:oai:io:206a8438-4a05-4b7c-aec5-486c5cd00a5f
+      - ds.tv:oai:io:8ed9b1c3-408e-4231-9a5b-16c534f1d069
+      - ds.tv:oai:io:2080e970-234a-462a-b8e8-1746d34857d6
+      - ds.radio:oai:io:5ecc9e70-561e-44db-a721-fe855257628e
+      - ds.tv:oai:io:2cb0ec60-3c9e-48f1-a39a-e3fc67541e08
+    Oktober:
+      - ds.tv:oai:io:08bdd297-c377-4168-b525-5dc5905c7014
+      - ds.tv:oai:io:7eccd1a9-47b4-41f2-8f46-6fddf037df39
+      - ds.tv:oai:io:90554e43-e723-42b7-8e50-687c2b634346
+      - ds.radio:oai:io:177032f7-4cc3-4edc-93c3-1c0e79f2a855
+      - ds.tv:oai:io:6948feab-4cc8-412e-ac6c-50436cd5eec8
+      - ds.tv:oai:io:ddcb6c33-bd28-4b3e-9dfa-133ffcb624b7
+      - ds.tv:oai:io:ca15bbac-808a-4ef8-a9ac-d71cf77eb229
+      - ds.tv:oai:io:ca98d05e-13d8-4f88-a827-b82dfccb2ebf
+      - ds.tv:oai:io:3c688abc-d0b1-4696-8312-94e621447838
+      - ds.tv:oai:io:4f679a86-b9e1-4b99-93b8-34ad729c8b39
+    November:
+      - ds.tv:oai:io:47578244-da4a-48ca-8ab0-cceef12f23aa
+      - ds.tv:oai:io:4b252da6-7a71-4cdb-a7d8-9c6e9318e565
+      - ds.radio:oai:io:6f93280b-86ad-4000-9065-fe0c1448195a
+      - ds.tv:oai:io:3a6b1a5e-5453-48b0-b907-cf3258d5bbf3
+      - ds.tv:oai:io:36c3c0e0-883e-4755-a180-67338e5c3886
+      - ds.tv:oai:io:8e72304b-8486-425f-805e-f02cda89736e
+      - ds.tv:oai:io:190a030e-894d-450c-b5a5-c7de7706b824
+      - ds.radio:oai:io:5cd51b8c-944c-401b-a80d-0105ffaaede7
+      - ds.tv:oai:io:99ab2820-9d2a-4007-8bb8-873e1911ab61
+      - ds.tv:oai:io:248a7e6a-0834-4928-8099-d562f53a36ff
+    December:
+      - ds.radio:oai:io:e51bd7a9-bc2f-4426-bc82-114c48d4a016
+      - ds.tv:oai:io:f46c2819-304e-4ab7-8bfc-feb4f5f15e8e
+      - ds.tv:oai:io:8cbe67f3-1b0c-4fb1-8111-535f78a66410
+      - ds.radio:oai:io:3359431a-06c6-4dfe-8cf9-63a55c0c037f
+      - ds.tv:oai:io:2a569efd-1ea8-49f7-8a07-4d5433498822
+      - ds.radio:oai:io:05ee827c-8469-4961-907c-979ae7d97768
+      - ds.tv:oai:io:eb669a5f-b937-4f2a-8e23-ecb7cae298bf
+      - ds.tv:oai:io:d683b49f-63bd-4b77-9fcd-cdcebac834a7
+      - ds.tv:oai:io:13b78277-241d-421e-b944-ae26fd6d2ed8
+      - ds.tv:oai:io:ac21f093-9aad-4f46-a939-6d8511c21950
