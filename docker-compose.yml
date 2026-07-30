@@ -142,12 +142,12 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.0-1
-    command: start-dev --import-realm --http-port=8087
+    command: [ "start-dev", "--import-realm", "--http-port=8087" ]
     environment:
       TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: user
       KC_BOOTSTRAP_ADMIN_PASSWORD: changeit
-      KC_HTTP_ENABLED: "true"
+      KC_HTTP_ENABLED: true
       # Sets the uniform identity for token issuance across your entire environment
       KC_HOSTNAME: http://keycloak.local:8087
     ports:
@@ -199,8 +199,8 @@ services:
       - "8089:8983"
       - "9983:9983"
     env_file:
-    command: ["solr-foreground", "-c"]
       - ./aegis/docker/.env
+    command: [ "solr-foreground", "-c" ]
     volumes:
       - solr_data:/opt/solr/server/solr/writable
     networks:
