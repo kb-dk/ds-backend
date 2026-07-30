@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
-
-    <name>bff</name> <!-- Human readable name, uppercase and spaces welcome -->
+    <!-- Human-readable name, uppercase and spaces welcome -->
+    <name>bff</name>
     <groupId>dk.kb.oauth</groupId>
     <artifactId>bff</artifactId>
     <version>100.0.0-SNAPSHOT</version>
-
     <packaging>war</packaging>
     <description>bff by the Royal Danish Library</description>
-
     <scm>
-        <url>https://github.com/kb-dk/bff</url>
-        <connection>scm:git:git@github.com:kb-dk/bff.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/bff.git</developerConnection>
+        <url>https://github.com/kb-dk/ds_backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
     <licenses>
         <!--SBForge stuff should have a license-->
         <license>
@@ -29,10 +29,9 @@
             <url>${license.url}</url>
         </license>
     </licenses>
-
     <properties>
         <!-- Specify java version here, to support forbiddenapis plugin -->
-        <!-- If the version is changed from 17 to something else, Jenkinsfile must also be updated -->
+        <!-- If the version is changed from 17 to something else -->
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <!-- Enable forbiddenapis plugin, do disable set to none -->
@@ -41,10 +40,8 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
-
         <project.package>dk.kb.oauth</project.package>
     </properties>
-
     <profiles>
         <profile>
             <id>unitTestsOnly</id>
@@ -68,13 +65,11 @@
             </properties>
         </profile>
     </profiles>
-
     <dependencies>
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http</artifactId>
@@ -82,20 +77,20 @@
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.xml.ws/jaxws-api -->
         <dependency>
-          <groupId>javax.xml.ws</groupId>
-          <artifactId>jaxws-api</artifactId>
-          <exclusions>
-            <!-- Project has jakarta.xml.bind-api v. 2.3.3 from cxf-rt-transports-http-->
-            <exclusion>
-              <groupId>javax.xml.bind</groupId>
-              <artifactId>jaxb-api</artifactId>
-            </exclusion>
-            <!-- Project has jakarta.annotation-api v.1.3.5 through KB-util dependency.-->
-            <exclusion>
-              <groupId>javax.annotation</groupId>
-              <artifactId>javax.annotation-api</artifactId>
-            </exclusion>
-          </exclusions>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+            <exclusions>
+                <!-- Project has jakarta.xml.bind-api v. 2.3.3 from cxf-rt-transports-http-->
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+                <!-- Project has jakarta.annotation-api v.1.3.5 through KB-util dependency.-->
+                <exclusion>
+                    <groupId>javax.annotation</groupId>
+                    <artifactId>javax.annotation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -125,7 +120,6 @@
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
@@ -142,35 +136,30 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-
         <!-- Unit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
         <dependency>
-          <groupId>org.mock-server</groupId>
-          <artifactId>mockserver-junit-jupiter</artifactId>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-junit-jupiter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-authz-client</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>
@@ -192,18 +181,20 @@
             </resource>
         </resources>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
                         <!--This ensures that the bff-openapi_*.yaml have been filtered and copied to target/classes
-                        BEFORE being used by the openapi generator above-->
+            BEFORE being used by the openapi generator above-->
                         <phase>generate-sources</phase>
                         <!--as both the openapi codegen and this execution happens at phase generate-sources, ensure
-                        this happens first by having this placed above codegen in the pom-->
+            this happens first by having this placed above codegen in the pom-->
                         <goals>
                             <goal>resources</goal>
                         </goals>
@@ -226,19 +217,18 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>4.3.1</version>
                 <!-- Running this gives
-                     [WARNING] The value (generator's option) must be either boolean or string. Default to `false`.
-                     which seems to be an unresolved issue: https://github.com/OpenAPITools/openapi-generator/issues/9008 -->
+             [WARNING] The value (generator's option) must be either boolean or string. Default to `false`.
+             which seems to be an unresolved issue: https://github.com/OpenAPITools/openapi-generator/issues/9008 -->
                 <configuration>
                     <!-- https://openapi-generator.tech/docs/generators/java/ -->
-
                     <generatorName>jaxrs-cxf-extended</generatorName>
-                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec><!-- Will always be overridden -->
+                    <!-- Will always be overridden -->
+                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec>
                     <modelNameSuffix>Dto</modelNameSuffix>
                     <generateSupportingFiles>false</generateSupportingFiles>
                     <generateApiTests>false</generateApiTests>
@@ -247,7 +237,8 @@
                     <output>${project.basedir}</output>
                     <templateDirectory>src/main/templates/</templateDirectory>
                     <configOptions>
-                        <withXml>true</withXml>  <!-- Needed for XML serialization support in the Model -->
+                        <withXml>true</withXml>
+                        <!-- Needed for XML serialization support in the Model -->
                         <!--https://openapi-generator.tech/docs/generators/jaxrs-cxf-extended/-->
                         <sourceFolder>target/generated-sources</sourceFolder>
                         <useSwaggerFeature>true</useSwaggerFeature>
@@ -262,23 +253,21 @@
                     <packageName>${project.package}</packageName>
                 </configuration>
                 <executions>
-
                     <!-- Version 1 -->
                     <!-- When a new version is needed, make a copy of three v1-related executions below, then change
-                         v1 to v2 in the copy.
-                         Go to plugin.configuration.webResources.resource.includes in this pom.xml and extend the list
-                         with v2 versions of the JSON & YAML files.
+               v1 to v2 in the copy.
+               Go to plugin.configuration.webResources.resource.includes in this pom.xml and extend the list
+               with v2 versions of the JSON & YAML files.
 
-                         Also remember to:
-                         * Create dk.kb.oauth.webservice.Application_v2
-                         * Create src/main/openapi/bff-openapi_v2.yaml
-                         * Update src/main/webapp/WEB-INF/web.xml
-                         * Update src/main/webapp/api/index.html
-                    -->
-
+               Also remember to:
+               * Create dk.kb.oauth.webservice.Application_v2
+               * Create src/main/openapi/bff-openapi_v2.yaml
+               * Update src/main/webapp/WEB-INF/web.xml
+               * Update src/main/webapp/api/index.html
+          -->
                     <execution>
                         <!-- Generate API file from the OpenAPI specification (positioned under the target/generated-sources/ folder).
-                             These files are overwritten on all builds, so they should never be edited manually. -->
+                 These files are overwritten on all builds, so they should never be edited manually. -->
                         <id>v1: Generate model and api classes</id>
                         <goals>
                             <goal>generate</goal>
@@ -286,12 +275,11 @@
                         <configuration>
                             <inputSpec>${project.build.outputDirectory}/bff-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-api</ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
                                 <!-- Setting this to true overwrites existing implementations.
-                                     Only set it temporarily when creating a new project -->
+                     Only set it temporarily when creating a new project -->
                                 <generateOperationBody>false</generateOperationBody>
                                 <sourceFolder>target/generated-sources</sourceFolder>
                             </configOptions>
@@ -299,8 +287,8 @@
                     </execution>
                     <execution>
                         <!-- The purpose is to generate skeleton implementation classes, if such classes are not already existing.
-                         Since we always want to overwrite existing api & model-files when the OpenAPI specification is changed,
-                         but never want to overwrite existing implementation-files, we need to do the generation in 2 steps. -->
+             Since we always want to overwrite existing api & model-files when the OpenAPI specification is changed,
+             but never want to overwrite existing implementation-files, we need to do the generation in 2 steps. -->
                         <id>v1: Generate skeleton impl</id>
                         <goals>
                             <goal>generate</goal>
@@ -308,7 +296,6 @@
                         <configuration>
                             <inputSpec>${project.build.outputDirectory}/bff-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-impl</ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -317,7 +304,6 @@
                             <skipOverwrite>true</skipOverwrite>
                         </configuration>
                     </execution>
-
                     <!-- Client for the backend -->
                     <execution>
                         <id>Generate client for JAR package and use by other services</id>
@@ -329,7 +315,6 @@
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-api</ignoreFileOverride>
                             <generatorName>java</generatorName>
                             <library>native</library>
-
                             <!-- Do not generate doc or tests for this client, we will handle this ourselves-->
                             <generateApis>true</generateApis>
                             <generateApiTests>false</generateApiTests>
@@ -337,15 +322,13 @@
                             <generateModels>false</generateModels>
                             <generateModelTests>false</generateModelTests>
                             <generateModelDocumentation>false</generateModelDocumentation>
-
                             <!-- Ensure ONLY the ApiClient and supporting classes are created, not the gradle mess-->
                             <generateSupportingFiles>true</generateSupportingFiles>
-                            <supportingFilesToGenerate>ApiClient.java,ApiException.java,Configuration.java,Pair.java</supportingFilesToGenerate>
-
+                            <supportingFilesToGenerate>ApiClient.java,ApiException.java,Configuration.java,Pair.java
+                            </supportingFilesToGenerate>
                             <!-- Do NOT use the customised templates as they are only for the webservice part, not the client-->
                             <!-- Hacked by Asger by setting to an existing folder without templates -->
                             <templateDirectory>src/main/</templateDirectory>
-
                             <configOptions>
                                 <apiPackage>${project.package}.client.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -355,10 +338,8 @@
                             </configOptions>
                         </configuration>
                     </execution>
-
                 </executions>
             </plugin>
-
             <!-- The generated classes for the OpenAPI client are problematic. Disable checking of those for now -->
             <plugin>
                 <groupId>de.thetaphi</groupId>
@@ -371,7 +352,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -382,14 +362,13 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-
                     <!-- Generate a JAR with client classes and openapi-YAML for easy use by other services -->
                     <attachClasses>true</attachClasses>
-
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
-                        <webResource> <!-- Store application name, version and build time -->
+                        <!-- Store application name, version and build time -->
+                        <webResource>
                             <directory>${basedir}/src/main/resources/</directory>
                             <includes>
                                 <include>bff.build.properties</include>
@@ -408,17 +387,15 @@
                     </webResources>
                 </configuration>
             </plugin>
-
-
             <!-- Used only for mvn jetty:run jetty:run-war -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>10.0.12</version>
                 <configuration>
-                  <deployMode>FORK</deployMode>
-                  <jvmArgs>-Xmx256m -Djetty.port=9062</jvmArgs>
-                  <jettyXmls>${project.basedir}/target/jetty-res/jetty-env.xml</jettyXmls>
+                    <deployMode>FORK</deployMode>
+                    <jvmArgs>-Xmx256m -Djetty.port=9062</jvmArgs>
+                    <jettyXmls>${project.basedir}/target/jetty-res/jetty-env.xml</jettyXmls>
                     <useTestScope>true</useTestScope>
                     <!-- https://www.eclipse.org/jetty/documentation/jetty-10/programming-guide/index.html#jetty-run-goal -->
                     <!-- https://stackoverflow.com/questions/12493798/jetty-maven-plugin-using-scan -->
@@ -449,31 +426,30 @@
                     </execution>
                 </executions>
             </plugin>
-          <!-- Plugin used to extract information on the current git setup.
-    See: https://github.com/git-commit-id/git-commit-id-maven-plugin -->
-          <plugin>
-            <groupId>io.github.git-commit-id</groupId>
-            <artifactId>git-commit-id-maven-plugin</artifactId>
-            <version>7.0.0</version>
-            <executions>
-              <execution>
-                <id>get-the-git-infos</id>
-                <goals>
-                  <goal>revision</goal>
-                </goals>
-                <phase>initialize</phase>
-              </execution>
-            </executions>
-            <configuration>
-              <includeOnlyProperties>
-                <includeOnlyProperty>git.commit.id</includeOnlyProperty>
-                <includeOnlyProperty>git.branch</includeOnlyProperty>
-                <includeOnlyProperty>git.closest.tag.name</includeOnlyProperty>
-                <includeOnlyProperty>git.commit.author.time</includeOnlyProperty>
-              </includeOnlyProperties>
-            </configuration>
-          </plugin>
+            <!-- Plugin used to extract information on the current git setup.
+See: https://github.com/git-commit-id/git-commit-id-maven-plugin -->
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>7.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>git.commit.id</includeOnlyProperty>
+                        <includeOnlyProperty>git.branch</includeOnlyProperty>
+                        <includeOnlyProperty>git.closest.tag.name</includeOnlyProperty>
+                        <includeOnlyProperty>git.commit.author.time</includeOnlyProperty>
+                    </includeOnlyProperties>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 </project>

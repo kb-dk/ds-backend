@@ -2,28 +2,29 @@
 
 All notable changes to ds-datahandler will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
 
 ## [5.0.0](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-5.0.0) - 2026-06-10
 
 ### Changed
-- Clear up unittest so it can build without aegis. Added properties to default-behaviour and marked one unittest as integration since it require aegis.
+
+- Clear up unittest so it can build without aegis. Added properties to default-behaviour and marked one unittest as
+  integration since it require aegis.
 - Removed API method that called ds-storage to enrich kaltura id from mapping table. (Mappe table has been deleted)
-- Changed processUpload to return number of streams uploaded (1 or 0) and removed the numberStreamsUploaded arg. uploadStreamsToKaltura now keeps track of the count of streams uploaded instead of trying to pass the var to processUpload to be updated.
-- Changed hasStreamFileError to return StreamErrorDto instead of String as stated in javadoc. 
-
+- Changed processUpload to return number of streams uploaded (1 or 0) and removed the numberStreamsUploaded arg.
+  uploadStreamsToKaltura now keeps track of the count of streams uploaded instead of trying to pass the var to
+  processUpload to be updated.
+- Changed hasStreamFileError to return StreamErrorDto instead of String as stated in javadoc.
 - Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
+- Transcription parsing changed since data format was changed. To create a transcription 3 different files must be
+  present in the dropfolder. First path of the name is the same (file_id) and suffixes are: *.ner.json *.ner.json and *
+  .info.fw.json. For every transcription parsed all 3 files will be moved to the completed folder. The will all have an
+  additional suffixed add depending on success or failure: .completed or .failed. The transcription v1 delivery files
+  for the drop folder can on devel-release server.
 
-- Transcription parsing changed since data format was changed. To create a transcription 3 different files must be present
-  in the dropfolder. First path of the name is the same (file_id) and suffixes are: *.ner.json *.ner.json and *.info.fw.json.
-  For every transcription parsed all 3 files will be moved to the completed folder. The will all have an additional 
-  suffixed add depending on success or failure: .completed or .failed.
-  The transcription v1 delivery files for the drop folder can on devel-release server
-  
-  
-  
- 
 ## [4.0.2](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-4.0.2) - 2026-25-03
 
 ### Changed
@@ -32,36 +33,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- NULL is a special value in SQL, so `GET_JOBS_BY_CATEGORY_AND_SOURCE_AND_STATUS` SQL now handle case when source is NULL.
+- NULL is a special value in SQL, so `GET_JOBS_BY_CATEGORY_AND_SOURCE_AND_STATUS` SQL now handle case when source is
+  NULL.
 
 ## [4.0.0](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-4.0.0) - 2026-01-29
 
 ### Added
-- New job to load transcriptions into storage. Two new yaml-properties added: transcriptions.dropFolder and transcriptions.completedFolder
+
+- New job to load transcriptions into storage. Two new yaml-properties added: transcriptions.dropFolder and
+  transcriptions.completedFolder
 - Added conversionProfileIdAudio and conversionProfileIdVideo Kaltura upload, serviceConfig and conf.
 - Added conversionQueueThreshold and conversionQueueDelaySeconds to KalturaClient, serviceConfig and conf.
 
 ### Changed
+
 - Removed flavorParamId from KalturaClient.
 
 - Moved JobCache from memory to database (*Remember: OPS need to create jobs table in database, the ddl is found in
   /src/test/resources/ddl/create_ds_datahandler_db.ddl*)
 - KalturaDeltaUploadJob will now use kaltura.adminSecret if present.
-- Removed mTimeFrom from service method /kaltura/deltaupload. Method will automatic only load records that are missing kaltura-id.
+- Removed mTimeFrom from service method /kaltura/deltaupload. Method will automatic only load records that are missing
+  kaltura-id.
 - Use CustomJacksonJsonProvider.class from `ds-shared`
 
 ## [3.0.6](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-3.0.6) - 2025-12-08
+
 ### Changed
+
 - Changed upload to align with new upload method in ds-kaltura where fileExtension is required.
 
 ## [3.0.5](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-3.0.5) - 2025-12-03
+
 ### Fixed
-- Fixed delta upload for records with no title(s). New DR-DAT data does not have title always.
+
+- Fixed delta upload for records with no title (s). New DR-DAT data does not have title always.
 
 ## [3.0.4](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-3.0.4) - 2025-11-20
+
 ### Fixed
--  XML-dom parsing of OAI response into records fixed after a <record> had a nested <record>-tag as new xml fragment format for fuzzy match.
--  Delete record from OAI response fixed. Was blocking harvesting. The delete record has no metadata, so have to delete from both ds.radio or ds.tv. Only 1 will match.
+
+- XML-dom parsing of OAI response into records fixed after a <record> had a nested <record>-tag as new xml fragment
+  format for fuzzy match.
+- Delete record from OAI response fixed. Was blocking harvesting. The delete record has no metadata, so have to delete
+  from both ds.radio or ds.tv. Only 1 will match.
 
 ## [3.0.3](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-3.0.3) - 2025-09-01
 
@@ -127,9 +141,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.10.3](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-1.10.3) - 2024-10-28
 
-- All 4 jobs types (OAI,Manifestation,Kaltura entry id, solr index) now registers as a job in the job cache.
-  Only one job can be running at the same time for the type and origin. The job status method will
-  return all running and completed jobs since restart.
+- All 4 jobs types (OAI,Manifestation,Kaltura entry id, solr index) now registers as a job in the job cache. Only one
+  job can be running at the same time for the type and origin. The job status method will return all running and
+  completed jobs since restart.
 - Fixed solr indexing job start failure.
 
 ## [1.10.2](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-1.10.2) - 2024-10-28
@@ -166,7 +180,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- OAI jobs will also be marked as stopped if getting APIException  (dk.kb class)
+- OAI jobs will also be marked as stopped if getting APIException (dk.kb class)
 
 ## [1.9.6](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-1.9.6) - 2024-09-23
 
@@ -211,8 +225,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Enabled OAuth2 on module. Much is copy-paste from ds-image to see it working in two different modules. Plans are to
-  refactor common functionality out into kb-util/template projects.
-  No methods are defined to require OAuth yet!
+  refactor common functionality out into kb-util/template projects. No methods are defined to require OAuth yet!
 - After finished solr indexing the `/solr/index`-endpoint now updates the index for the suggest component as well.
 - Added the ability to enrich metadata with extra fragments from a seperate webservice when harvesting records from
   preservica
@@ -273,7 +286,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.7.3](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-1.7.3) - 2024-05-28
 
-###  
+###   
 
 - Changed how to enrich preservica 7 records with manifestations. [DRA-685](https://kb-dk.atlassian.net/browse/DRA-685)
 
@@ -290,7 +303,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added support for dynamically updating the OpenAPI specification with config values.
 - Added individual OaiResponseFilters for preservica 5 and preservica
-  7. [DRA-400](https://kb-dk.atlassian.net/browse/DRA-400)
+    7. [DRA-400](https://kb-dk.atlassian.net/browse/DRA-400)
 - Added sample config files and documentation to distribution tar
   archive. [DRA-422](https://kb-dk.atlassian.net/browse/DRA-422)
 
@@ -351,8 +364,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Jetty port set explicitly to 9071 instead of default 8080 to avoid collisions
-  with projects using default tomcat/jetty setup.
+- Jetty port set explicitly to 9071 instead of default 8080 to avoid collisions with projects using default tomcat/jetty
+  setup.
 - Client generation
 - Upgrade to ds-storage API v 1.3
 

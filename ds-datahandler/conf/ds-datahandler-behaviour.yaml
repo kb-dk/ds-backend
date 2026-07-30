@@ -38,7 +38,6 @@ oaiSettings:
   # If response is not HTTP 200, retry after x times after sleeping for x seconds
   retryTimes: 10
   retrySeconds: 10
- 
 
 # Save timestamps of last OAI harvest for each target in this folder. This is used for incremental delta-imports.                
 timestamps:
@@ -56,17 +55,6 @@ solr:
     requestHandler: /update
   queryUrl: http://localhost:10011/solr/ds
   batchSize: 500
-
-# Configuration of preservica endpoints. These are used to fetch IDs/filenames for presentation manifestations. All settings here are related to accessing the Preservica APIs
-preservica:
-  baseUrl: preservicaUrl/
-  user: user
-  password: password
-  keepAliveSeconds: 600 # The access token is valid for 15 minuts. If this value is not set, 14 minuts is used as the default
-  retryTimes: 5
-  retrySeconds: 900 # Please keep retrySeconds bugger than keepAliveSeconds
-  threads: 5
-
 
 # The ds-present server used for xslt
 present:
@@ -88,7 +76,6 @@ present:
     # This is used for establishing token flows using HTTP headers un preparation of OAuth2 support
     # Set this to internal_service to bypass the ds-license based access server
     - Simulated-OAuth2-Group: anonymous
-
 
 # Kaltura properties. Use token+tokenId as credentials instead of admin-secret. 
 # The two flavour params depend on the kaltura partnerId. The values 3 and 359 match stage and prod kaltura.
@@ -112,12 +99,12 @@ streams:
   preservicaTvPath: '/kuana-store/bart-access-copies-tv/'
   preservicaRadioPath: '/kuana-store/bart-access-copies-radio/'
 
-# Transcription files (json) dropped the dropFolder will be processed by ds-datahandler when the transcription job is started
+# Transcription files (json) dropped the drop folder will be processed by ds-datahandler when the transcription job is started
 # When processing the transcriptions job will call ds-storage that will save the transcriptions. So they can be used when indexing etc.
 # The files will be moved to the completedFolder and addition extension .completed or .failed will be added to the filename.
 
 transcriptions:
-  dropFolder: '/home/xxx/transcriptions/completed' 
+  dropFolder: '/home/xxx/transcriptions/dropfolder'
   completedFolder: '/home/xxx/transcriptions/completed'
 
 security:
@@ -130,7 +117,7 @@ security:
   baseurl: 'https://keycloak.example.com/realms'
   # Accepted realms for requests. These must be present at the OAuth2 server
   # The authentification url with the correct realm value. Does not seem the used active by code but is required when building. (TODO?)
-  auth_url: ' https://api.example.com/oauth2/authorize'
+  auth_url: 'https://api.example.com/oauth2/authorize'
   # Accepted realms for requests. These must be present at the OAuth2 server
   realms:
     - foo-bar

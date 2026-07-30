@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Environment name="bff-logback-config"
+                 value="/usr/local/tomcat/conf/bff-configs/bff.logback.xml"
+                 type="java.lang.String"
+                 override="false"/>
+
+    <Environment name="application-config"
+                 value="/usr/local/tomcat/conf/bff-configs/bff-devel.yaml"
+                 type="java.lang.String"
+                 override="false"/>
+</Context>

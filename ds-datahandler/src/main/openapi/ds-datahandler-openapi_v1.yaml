@@ -2,8 +2,97 @@ openapi: 3.0.2
 info:
   version: 'v1'
   title: '${project.name}'
-  description: | 
-    ${project.description}
+  description: |
+    # Ds-datahandler(Digitale Samlinger) by the Royal Danish Library.
+
+    ## Notice
+    OAI-PMH harvest is just the first implementation feature in ds-datahandler. More features will implemented
+    later.
+
+    ## OAI harvest
+    Ds-datahandler can harvest OAI from different OAI-PMH targets and ingest the metadata for the records into
+    ds-storage.
+    Having the metadata in ds-storage makes access much easier and faster for other applications. The metadata for
+    each record will be UTF-8 encoded before ingested into ds-storage. Invalid XML encoding characters will be
+    replaced or removed.
+
+    ## OAI targets configuration
+    The project yaml-file contains the configuration for each OAI-PMH target.
+
+    **The below table describes the parameters to configure a OAI-PMH target**
+
+    | Property         | Description                                                                                               |
+    | ---------------- | ----------------------------------------------------------------------------------------------------------|
+    | name             | The name used to specify when starting a new import                                                       |
+    | url              | The base url to OAI-PMH service                                                                           |
+    | set              | Parameter to the OAI-server if the server has multiple collections (optional)                             |
+    | metadataPrefix   | Parameter to the OAI-server to specify the format for the metadata. Options depend on the OAI target.     |
+    | user             | User if the OAI-server require basic authentication (optional)                                            |
+    | password         | Password if the OAI-server require basic authentication (optional)                                        |
+    | origin           | The origin when sending records from this OAI target to ds-storage.                                       |
+    |                  | The origin must be configured in DS-storage. ID will be {origin}:{id in OAI record}                       |
+    | description      | Human text to give further description if needed                                                          |
+
+    ## Full import and delta import
+    For each OAI target configured you can request a full import or a delta import from the OAI collection. A full
+    import will harvest all records from to OAI target. A delta import will only import records with a datestamp
+    later than the last record recieved in either an earlier full import or delta import.
+
+    ## Storing last harvest datestamp
+    The yaml property file specificed a folder on the filesystem to store the last datestamps for each OAI target.
+    The file will only contain a single with an UTC timestamp identical to the last record successfully send
+    ds-storage from that OAI target.
+
+    ## Configure the yaml property file
+    Besides all the OAI targets it must also definere the property for the folder to store the datestamps. Also the
+    properties host, port, baseurl to the ds-storage server to submit the records to.
+
+    ## More about the OAI-PMH protocol
+    See: http://www.openarchives.org/OAI/openarchivesprotocol.html
+    # Ds-datahandler(Digitale Samlinger) by the Royal Danish Library.
+
+    ## Notice
+    OAI-PMH harvest is just the first implementation feature in ds-datahandler. More features will implemented later.
+
+    ## OAI harvest
+    Ds-datahandler can harvest OAI from different OAI-PMH targets and ingest the metadata for the records into 
+    ds-storage. Having the metadata in ds-storage makes access much easier and faster for other applications.
+    The metadata for each record will be UTF-8 encoded before ingested into ds-storage.
+    Invalid XML encoding characters will be replaced or removed.
+
+    ## OAI targets configuration
+    The project yaml-file contains the configuration for each OAI-PMH target.
+
+    **The below table describes the parameters to configure a OAI-PMH target**
+
+    | Property         | Description                                                                                               |
+    | ---------------- | ----------------------------------------------------------------------------------------------------------|
+    | name             | The name used to specify when starting a new import                                                       |
+    | url              | The base url to OAI-PMH service                                                                           |
+    | set              | Parameter to the OAI-server if the server has multiple collections (optional)                             |
+    | metadataPrefix   | Parameter to the OAI-server to specify the format for the metadata. Options depend on the OAI target.     |
+    | user             | User if the OAI-server require basic authentication (optional)                                            |
+    | password         | Password if the OAI-server require basic authentication (optional)                                        |
+    | origin           | The origin when sending records from this OAI target to ds-storage.                                       |
+    |                  | The origin must be configured in DS-storage. ID will be {origin}:{id in OAI record}                       |
+    | description      | Human text to give further description if needed                                                          |
+
+    ## Full import and delta import
+    For each OAI target configured you can request a full import or a delta import from the OAI collection. 
+    A full import will harvest all records from to OAI target. A delta import will only import records with a datestamp 
+    later than the last record recieved in either an earlier full import or delta import.
+
+    ## Storing last harvest datestamp
+    The yaml property file specificed a folder on the filesystem to store the last datestamps for each OAI target.
+    The file will only contain a single with an UTC timestamp identical to the last record successfully send ds-storage 
+    from that OAI target.
+
+    ## Configure the yaml property file
+    Besides all the OAI targets it must also definere the property for the folder to store the datestamps. Also the
+    properties host, port, baseurl to the ds-storage server to submit the records to.
+
+    ## More about the OAI-PMH protocol
+    See: http://www.openarchives.org/OAI/openarchivesprotocol.html
   contact:
     email: '${user.name}@kb.dk'
   license:
@@ -14,38 +103,35 @@ servers:
     description: 'Version 1'
 
 paths:
-
   /import/zip:
     post:
-       tags:
+      tags:
         - '${project.name}'
-       summary: 'Import records from ZIP file with records. Each file in the zip-file is a xml-document for single records. Record format METS with mods. Record  ID from the record is <mods:identifier>. Record ID in storage will be origin:uuid-extracted-from<mods:identifier>'      
-       security: 
+      summary: 'Import records from ZIP file with records. Each file in the zip-file is a xml-document for single records. Record format METS with mods. Record  ID from the record is <mods:identifier>. Record ID in storage will be origin:uuid-extracted-from<mods:identifier>'
+      security:
         - KBOAuth:
-          - any           
-       operationId: importFromZip
-       requestBody:
-         content:
-           multipart/form-data:
-             schema:
+            - any
+      operationId: importFromZip
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
               type: object
-              properties:               
+              properties:
                 datasource:
                   type: string
                 fileName:
                   type: string
                   format: binary
-       
-       responses:
+      responses:
         '200':
           description: Returns a list of filenames of records that failed.
           content:
             application/json:
-              schema:           
+              schema:
                 type: array
                 items:
-                 type: string      
-
+                  type: string
 
   /oai/config:
     get:
@@ -61,15 +147,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/OaiTargetList'
 
-
   /oai/import/full:
     get:
       tags:
         - '${project.name}'
       summary: 'Start full ingest of a OAI target into DS-storage. From time will be 1900-01-01. When called the job will finished if no errors are encountered even if the socket is closed from the client triggering the call. After full ingest ds-storage will be called again and all older recorders from before the ingest fill be deleted.'
-      security: 
+      security:
         - KBOAuth:
-          - any    
+            - any
       operationId: oaiIngestFull
       parameters:
         - name: oaiTarget
@@ -78,33 +163,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["${config:oaiTargets[*].name}"]
-      responses:
-        '200':
-          description: OK. Returns total number of records ingested.
-          content:
-            application/json:
-              schema:
-                type: integer
-                format: int32      
-
-  /oai/import/delta:
-    get:
-      tags:
-        - '${project.name}'
-      summary: 'Start delta import of a OAI-target. From time will be the datestamp of the last record imported for that OAI target. When the import has finished it will update the datestamp. When called the job will finished if no errors are encountered even if the socket is closed from the client triggering the call.'
-      security: 
-        - KBOAuth:
-          - any   
-      operationId: oaiIngestDelta
-      parameters:
-        - name: oaiTarget
-          in: query
-          description: 'Name of the oai target to start delta import'
-          required: true
-          schema:            
-            type: string
-            enum: ["${config:oaiTargets[*].name}"]
+            enum: [ "${config:oaiTargets[*].name}" ]
       responses:
         '200':
           description: OK. Returns total number of records ingested.
@@ -113,17 +172,41 @@ paths:
               schema:
                 type: integer
                 format: int32
-                
-               
-                
+
+  /oai/import/delta:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Start delta import of a OAI-target. From time will be the datestamp of the last record imported for that OAI target. When the import has finished it will update the datestamp. When called the job will finished if no errors are encountered even if the socket is closed from the client triggering the call.'
+      security:
+        - KBOAuth:
+            - any
+      operationId: oaiIngestDelta
+      parameters:
+        - name: oaiTarget
+          in: query
+          description: 'Name of the oai target to start delta import'
+          required: true
+          schema:
+            type: string
+            enum: [ "${config:oaiTargets[*].name}" ]
+      responses:
+        '200':
+          description: OK. Returns total number of records ingested.
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+
   /solr/index:
     get:
       tags:
         - '${project.name}'
       summary: 'Will start indexing workflow that will read records from ds-storage, xslt transform them in ds-present and post the documents to solr.'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       operationId: indexSolr
       parameters:
         - name: origin
@@ -132,18 +215,16 @@ paths:
           required: true
           schema:
             type: string
-            enum: ["${config:present.origins[*]}"]        
+            enum: [ "${config:present.origins[*]}" ]
         - name: type
           in: query
           description: |
-                        The type of index. If value is "FULL" then all records from storage will be transformed to solr 
-                        documents and indexed. If value is "DELTA" then only records from ds-storage with an mTime newer
-                        than the last date_modified in the solr index will be fetched, transformed and indexed.
+            The type of index. If value is "FULL" then all records from storage will be transformed to solr 
+            documents and indexed. If value is "DELTA" then only records from ds-storage with an mTime newer
+            than the last date_modified in the solr index will be fetched, transformed and indexed.
           required: true
           schema:
             $ref: '#/components/schemas/Type'
-
-
       responses:
         '200':
           description: OK.
@@ -158,8 +239,7 @@ paths:
                     rf: 1
                     status: 0
                     QTime: 1200
-                
-                                              
+
   /kaltura/deltaupload:
     post:
       tags:
@@ -167,32 +247,29 @@ paths:
       summary: 'Start job that uploading streams to kaltura that does not have an kaltura_id already and are not marked with access_malfunction.
        Will only extract records from solr with access_malfuction:false and production_code_allowed:true
        Storage records will be updated with the kalturaid. An solr delta index will be started after the job finishes. Also if it finishes unexpected'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       operationId: kalturaDeltaUpload
       responses:
         '204':
           description: No Content - The job finished and the server did not deliver any content.
 
-
   /transcriptions/load:
     post:
       tags:
         - '${project.name}'
-      summary: 'Will process transcription json-files in the configured drop-folder. Each transcription will be created or update existing in the database
-      The transcription files will be moved to the configured completed-folder on success or failure. Each will be have appended .fail or .completed as last extension
+      summary: 'Will process transcription json-files in the configured drop folder. Each transcription will be created or if already existing, delete the row, and insert again in the database.
+      The transcription files will be moved to the configured completed folder on success or failure. Each will be have appended .fail or .completed as last extension
       Each transcription is split into 3 files having suffix extension <file_id>.ner.json , <file_id>.segments.fw.json and <file_id>.info.fw.json.       
       All 3 files are parsed to extract data and all 3 are moved to the completed folder.'
-      security: 
+      security:
         - KBOAuth:
-          - any   
+            - any
       operationId: transcriptionsLoad
       responses:
         '204':
           description: No Content - The job finished and the server did not deliver any content.
-                
-                
 
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -239,7 +316,6 @@ paths:
               schema:
                 type: string
 
-
   /monitor/jobs:
     get:
       tags:
@@ -281,7 +357,7 @@ paths:
       operationId: probeWhoami
       security:
         - KBOAuth:
-          - public
+            - public
       responses:
         '200':
           description: 'OK'
@@ -292,7 +368,6 @@ paths:
 
 components:
   schemas:
-
     # Basic status response component.
     Status:
       type: object
@@ -346,9 +421,8 @@ components:
 
     OaiTargetList:
       type: array
-      items: 
+      items:
         $ref: '#/components/schemas/OaiTarget'
-
 
     OaiTarget:
       type: object
@@ -365,22 +439,22 @@ components:
           example: 'kb.images.billed.hca'
         url:
           type: string
-          description: 'Base URL to the OAI server.'                
+          description: 'Base URL to the OAI server.'
           example: 'http://www5.kb.dk/cop/oai/'
         set:
           type: string
-          description: 'Optional OAI parameter to specify which collection to harvest.'                
+          description: 'Optional OAI parameter to specify which collection to harvest.'
           example: 'oai:kb.dk:images:billed:2014:jun:hca'
         metadataprefix:
           type: string
-          description: 'Specify for the dataformat. Some OAI servers can return data in different formats.'                
+          description: 'Specify for the dataformat. Some OAI servers can return data in different formats.'
           example: 'mods'
         username:
           type: string
-          description: 'User name if the OAI server require basic authentication'                
+          description: 'User name if the OAI server require basic authentication'
         password:
           type: string
-          description: 'Password if the OAI server require basic authentication'                
+          description: 'Password if the OAI server require basic authentication'
         datasource:
           type: string
           description: |
@@ -396,7 +470,7 @@ components:
           example: 'H.C. Andersen'
         filter:
           type: string
-          enum:  ['direct', 'dr', 'preservica']
+          enum: [ 'direct', 'dr', 'preservica' ]
           description: |
             Records from different OAI-PMH targets contain different kinds of metadata. Therefore some special handling
             of records are required. Possible value are:
@@ -411,7 +485,7 @@ components:
           default: 'direct'
         dateStampFormat:
           type: string
-          enum:  ['date', 'datetime']
+          enum: [ 'date', 'datetime' ]
           description: |
             Special handling of record. Possible value are
             * `date`:     Only use format yyyy-MM-dd as from/until parameters
@@ -550,7 +624,7 @@ components:
               items:
                 type: string
               description: 'The roles stated in the OAuth2 accessToken'
-              example: [read, write, admin]
+              example: [ read, write, admin ]
 
     Error:
       type: object
@@ -564,27 +638,23 @@ components:
         message:
           type: string
 
-                    
   securitySchemes:
-
     KBOAuth:
       type: oauth2
       description: 'This API uses OAuth 2 with the implicit grant flow. [More info](https://api.example.com/docs/auth)'
       flows:
-        implicit:   # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
+        implicit: # <---- OAuth flow(authorizationCode, implicit, password or clientCredentials)
           #authorizationUrl is not used. Instead it uses keycloak url from yaml property file aegis-devel.
           #If we figure out what this is supposed to be used for, inject the value from yaml file  ${config.yaml.path}           
-          authorizationUrl: https://api.example.com/oauth2/authorize 
+          authorizationUrl: https://api.example.com/oauth2/authorize
           scopes:
             generic_ds: 'Scope used for all Digitale Samlinger services'
             # Project specific roles
             read: 'read data'
             write: 'modify or delete data'
-
             # General roles at the Royal Danish Library
             devel: 'broad read access'
             admin: 'all rights'
-
             # Meta role controlling authorization behaviour
             public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
             any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'

@@ -2,28 +2,36 @@
 
 All notable changes to ds-storage will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
 
 ## [5.0.0](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-5.0.0) - 2026-06-10
 
 ### Changed
+
 - Removed all logic using intermediate Kaltura Mapping table. Not used any longer.
 - Table can be deleted with: DROP TABLE DS_MAPPING;
 - Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
 
 ### Fixed
+
 - Fixed keeping kalturaID in table when updating a record, if referenceID is the same for new and old record.
 
 ## [4.0.0](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-4.0.0) - 2026-01-29
 
 ### Added
+
 - New table in database (ds_transcriptions). DDL to create the table must be run for new release.
-- New service method transcription(POST) to add or update a transcription. Also added to DsStorageClient.(It was not, but is now)
+- New service method transcription (POST) to add or update a transcription. Also added to DsStorageClient. (It was not,
+  but is now)
 - New service method to load a transcription. Key is the external fileId (filename).
 
 ## [3.0.3](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-3.0.3) - 2025-12-03
+
 ### Fixed
+
 - Fix multiple records have same stream defined.This should not happen but it does due to data errors.
 
 ## [3.0.1](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-3.0.1) 2025-09-01
@@ -91,8 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Enabled OAuth2 on /select (solrSearch) endpoint. Much is copy-paste from ds-image to see it working in two different
-  modules.
-  Plans are to refactor common functionality out into kb-util/template projects.
+  modules. Plans are to refactor common functionality out into kb-util/template projects.
 
 ### Removed
 
@@ -148,7 +155,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   archive. [DRA-417](https://kb-dk.atlassian.net/browse/DRA-417)
 - new table Mappings with fields (referenceId,kalturaId) and methods to create/update/read entries
 - new service method that will enrich records in the records table with kalturaid from the mapping table
-- New service method  (record/updateKalturaId) to update the kalturaId for a record. Both create new record and update
+- New service method (record/updateKalturaId) to update the kalturaId for a record. Both create new record and update
   record will set the kalturareferenceid. [DRA-314](https://kb-dk.atlassian.net/browse/DRA-314)
 - new service method (records/updateKalturaId) that updates kalturaId for all records that have referenceId and no
   Kaltura, given the mapping reference<-> KalturaId is found in mapping table.
@@ -158,8 +165,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Switch from Jersey to Apache URI Builder to handle parameters
-  containing '{' [DRA-338](https://kb-dk.atlassian.net/browse/DRA-338)
+- Switch from Jersey to Apache URI Builder to handle parameters containing
+  '{' [DRA-338](https://kb-dk.atlassian.net/browse/DRA-338)
 - Correct resolving of maven build time in project properties. [DRA-417](https://kb-dk.atlassian.net/browse/DRA-417)
 - Wrongly defined URIs in the client.
 
@@ -249,12 +256,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ID normalisation:
   If a record contains a invalid character after the recordbase part, it will be normalised and the invalid characters
-  will be replaced.
-  The original (invalid) id will be stored in the 'orgid' field and flagged for invalid id. Having the original id will
-  make it possible
-  to track it back to the collection it came from. The record can still be retrieved and updated using the invalid id,
-  but also by the normalised id.
-  Regexp for recordbase: ([a-z0-9.]+)       
+  will be replaced. The original (invalid) id will be stored in the 'orgid' field and flagged for invalid id. Having the
+  original id will make it possible to track it back to the collection it came from. The record can still be retrieved
+  and updated using the invalid id, but also by the normalised id. Regexp for recordbase: ([a-z0-9.]+)       
   Regexp for id: ([a-z0-9.]+):([a-zA-Z0-9:._-]+)
 
 - Jetty port set explicitly to 9072 instead of default 8080 to avoid collisions with projects using default tomcat/jetty

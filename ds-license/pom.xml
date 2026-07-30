@@ -1,208 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
-
+    <!-- Human-readable name, uppercase and spaces welcome -->
+    <name>ds-license</name>
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
     <version>100.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <description>
-    # Ds-license(Digitale Samlinger) by the Royal Danish Library.
-
-    ## Ds-license restricts access to items in collections based on the user credential information.
-    The primary method in Ds-license is to filter a list of IDs (recordIds) and only return the subset
-    ID's that the user has access to based in the user information. Access can be restricted
-    to a presentationtype value. (Download, Search etc.) The filtering is done against a Solr server with all
-    information about the records.
-    The application has a GUI interface to define all access rules based on user attributes.
-
-
-    ## User attributes
-    The User attributes is key-value pairs, where the values can be a list and a user can have multiple key-value
-    pairs. All values and keys are strings.
-    The key-values pairs can be WAYF attributes (https://www.wayf.dk/) which is a standard for describing users
-    at educational institutions and will have some guarateed values always. But the GUI administration
-    can define arbitarity key-value rules and not just WAYF attributes. All user atttribute keys must be define in
-    the GUI and they will be available for use when defining a license attribute-group.
-
-    ### Examples of UserAttributes (WAYF)
-
-    | key                         | values                     | Remark                                          |
-    | ----------------------------| ---------------------------|-------------------------------------------------|
-    | SBIPRolemapper              | inhouse,kb                 | inhouse(local computer), kb (organisation)      |
-    | mail                        | teg@kb.dk                  | Can be used to give individual access           |
-    | shachHomeOrganisation       | ku.dk                      | Educational institution                         |
-    | eduPersonPrimaryAffiliation | stud                       | Student. (staff, employee,faculty also values)  |
-
-
-    ## Packages (pakker) and restrictions (klausulering)
-    The packages and restrictions are the building blocks that gives access to materials.
-    In the UML they are both groups, but on the GUI they will be seen as two seperate entities.
-    Packages gives access to materials (positive Solr filter) while restrictions
-    forbid access (negative Solr filter). The more packages groups a user validates will give more materials and
-    more validated restrictions will also give more materials since this will remove the negative filter.
-    The restrictions negative filters are always applied unless the user validates access to them and that
-    restriction will be removed. Some materials can be locked under several different restrictions and all must
-    validate before the user can access it. Giving a user access to a restriction will not mean the user can see all
-    the restricted material. He can still only see what the packages give access too and the restricted material
-    within those packages.
-    Whenever a new restriction is added to the configuration it will take immediate effect and block all access for
-    all users.
-    To give access to the new restriction a licence needed to be edited and configure access to that restriction.
-
-
-    ### Example of access with two groups
-    Group 1 (package): lma_long:"radio"
-
-    Group 2 (restriction): klausuleret:"ja"
-
-    If the user has acesss to both groups, the final filter query will be: **lma_long:"radio"**
-
-    If the user has only access to the first group, the final filter query will be: **lma_long:"radio"
-    -klausuleret:"ja"**
-
-    ### Example of access with four groups
-    The normal groups filter queries will be OR'ed.
-
-    Group 1 (package): lma_long:"tv"
-
-    Group 2 (package): lma_long:"radio"
-
-    Group 3 (restriction): klausuleret:"ja"
-
-    Group 4 (restiction): individuelt_forbud:"ja"
-
-    If the user has access to group 1,2 and 3 the filter query will be: **(lma_long:"radio" OR lma_long"tv")
-    -individuelt_forbud:"ja"**
-
-    ## Licences
-    Licenses are the mapping from UserAttributes to groups/packages. One license can give access to several groups.
-    For each group a license gives access to, the license must also specify a presentation type (or several) for
-    that group. Presentation types are also defined in the GUI and examples of presentation types are:
-    Stream, Search.Download, Thumbnails, Headlines.
-
-    ### Licenses structure
-    A license must define a valid from date and valid to date and is only valid in the date interval.
-    The format is dd-mm-yyyy. A license has to defines one or more attribute-groups.
-    An attribute-group is mapping from UserAttributes keys to values. An attribute-group can define several mappings
-    and every single mapping in the attribute group has to validate for the attribute-group to validate, which will
-    then validate the whole license. So a license can have several attribute groups and just one of them has to
-    validate for the whole license to validate. The reason you can define several attribute-groups in one license is
-    to avoid defining many identical licences that gives access to same material but by different conditions.
-
-    ### License validation algoritm
-    First the validation check will limit to licenses that are valid for the date of the requests. Then for each
-    license every attributed group will be checked. If just one of the attribute groups validates then the
-    license validates. The license will give access to the groups (pakker) defined for the license, but restricted
-    to the presentationtype (Download etc.). Every license that validate will give access to more material. All the
-    allow groups will each expand the positive filter query used for filtering Ids. All restriction-group validated
-    will remove the negative filter blocked by that restriction-group.
-    See 'uml/License_validation_logic.png' for a visualisation of the validation logic for a license.
-
-
-    ## UML model
-    The UML diagram can be found in the /uml/licensemodule_uml.png folder. The database persistence model and object
-    layer is a direct implementation of the UML model, except for some naming.
-    The UML model is created using DIA and the project file is also in the folder.
-
-    ### UML model explained
-    There are 3 general type classes that can be maintained and the values are configured are used when defining a
-    license. It is not possible to delete a configuration value if it is used in a license.
-
-    ## Configuration of the Ds-license
-
-    ### Property: solr.servers
-    The configuration requires at least one Solr server for the property 'solr.servers'.
-    When filtering IDs all Solr servers will be called for filtering and each will be called with all IDs.
-
-    ### Property: solr.idField
-    The Solr field used for filtering. Multivalued fields allowed.
-    This field must exist in the schema for the Solr servers.
-    Example:
-    If the filter field is 'id' and the filter query generated by from the package is 'subject:danmark'
-    Then the query will be (id:id1 OR id:id2 OR id:id3..) AND (subject:Denmark). Solr will return documents that is
-    a subset of the ID's asked for. And this is what happens in the id-filtering.
-
-
-    ### Properties: url, driver, username, password
-    The 4 database properties (JDBC) must be defined: url, driver, username, password
-
-    A PostGreSql database is recommended when not running locally. The database tables must be created before use
-    with DDL file: test/resources/ddl/licensemodule_create_db.ddl
-
-
-    ## API
-    While there are many methods exposed through the API only the following two are necessary for integrating
-    License module into the software stack.
-
-    #### checkAccessForIds
-    This is the method that takes the UserAttributes and a list of IDs. The return value will be the IDs that was
-    not removed in the filtering and those that the user has access to.
-    The method is called every time a user tries to access or search materials.
-
-    #### getUserLicenses
-    Method only takes the userattributes and returns a list of licences that the userattributes give access to. For
-    each license the name, validFrom,ValidTo and a description will be returned.
-    This information can be shown to the user.
-
-    ## Rights API
-    The methods exposed in the Rights API enables the add and editing data for rights calculations.
-
-    There are to types of rights calculations.
-    - restricted IDs (klausuleringer)
-    - holdback expire date
-
-    ### restricted IDs (klausuleringer)
-    The restricted IDs API enables blacklisting (and whitelisting) of records based on an ID in the metadata.
-    Whenever a restricted ID is added or deleted, the corresponding records are reindexed.
-
-    There are 4 different types of Ids supported.
-    #### DS_ID
-    Restrict (blacklist) a record based on the local id in ds.
-
-    #### DR_PRODUCTION_ID
-    Restrict (blacklist) records based on the DR production ID. Only relevant for 'DR Arkivet'. Note that multiple
-    records in ds can have the same DR production ID.
-
-    #### STRICT_TITLE
-    Restrict (blacklist) records based on their title. Note that the title of the record has to match the restricted
-    title exactly.
-
-    #### OWNPRODUCTION_CODE
-    The Rightsmodule also contains a list of production codes, used for identifying if a radio or tv record is
-    ownproduction and thus can be shown in the DR archive.
-
-    ### Holdback calculations
-    The rights API exposes methods to update two types of data for calculating when the holdback of a record
-    expires. The holdback calculations are only relevant for the DR Arkiv records.
-
-    #### Holdback Categories
-    A set of categories (formål) specifying the number of holdback days. The categories are identified by their name
-    and id. If the number of days is less than 365, the holdback days are added directly to the publication date. If the
-    holdback days are equal to or greater 365, the holdback days are added to the first January 1. following the
-    publication date.
-
-    #### Holdback ranges
-    Each record is mapped to a holdback category by looking at the values for their form and content (indhold).
-    The ranges are used to map a record to a holdback category.
-
-
-    Developed and maintained by the Royal Danish Library.
-    </description>
-
+    <description>ds-license by the Royal Danish Library</description>
     <scm>
-        <url>https://github.com/kb-dk/ds-license</url>
-        <connection>scm:git:git@github.com:kb-dk/ds-license.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/ds-license.git</developerConnection>
+        <url>https://github.com/kb-dk/ds_backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
     <licenses>
         <!--SBForge stuff should have a license-->
         <license>
@@ -210,7 +29,6 @@
             <url>${license.url}</url>
         </license>
     </licenses>
-
     <properties>
         <!-- Specify java version here, to support forbiddenapis plugin -->
         <maven.compiler.source>11</maven.compiler.source>
@@ -221,10 +39,8 @@
         <license.name>Apache License, Version 2.0</license.name>
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
-
         <project.package>dk.kb.license</project.package>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
@@ -234,7 +50,7 @@
         <dependency>
             <groupId>dk.kb.util</groupId>
             <artifactId>kb-util</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
@@ -247,7 +63,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-       </dependency>
+        </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -259,7 +75,6 @@
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
         </dependency>
-
         <!-- Apache CXF and servlet stuff -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
@@ -279,7 +94,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider -->
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -293,50 +107,42 @@
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
-
         <!-- database -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
-
         <dependency>
             <groupId>dk.statsbiblioteket.sbutil</groupId>
             <artifactId>sbutil-common</artifactId>
             <version>0.5.56</version>
         </dependency>
-
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>4.4.0</version>
         </dependency>
-
         <!--For the standard unit test-->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
             <version>9.10.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-client</artifactId>
@@ -355,12 +161,10 @@
             <groupId>org.webjars</groupId>
             <artifactId>swagger-ui</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
         </dependency>
-
         <!-- openapitools dependency -->
         <dependency>
             <groupId>io.swagger</groupId>
@@ -379,7 +183,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -401,7 +204,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-
         <!-- Unit test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -416,7 +218,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
         <dependency>
             <groupId>org.mock-server</groupId>
@@ -426,13 +227,11 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>
@@ -456,7 +255,10 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.5.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
                 <executions>
                     <execution>
                         <!--This ensures that the openapi_*.yaml have been filtered and copied to target/classes
@@ -486,7 +288,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -496,9 +297,9 @@
                      which seems to be an unresolved issue: https://github.com/OpenAPITools/openapi-generator/issues/9008 -->
                 <configuration>
                     <!-- https://openapi-generator.tech/docs/generators/java/ -->
-
                     <generatorName>jaxrs-cxf-extended</generatorName>
-                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec> <!-- Will always be overridden -->
+                    <!-- Will always be overridden -->
+                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec>
                     <modelNameSuffix>Dto</modelNameSuffix>
                     <generateSupportingFiles>false</generateSupportingFiles>
                     <generateApiTests>false</generateApiTests>
@@ -508,7 +309,8 @@
                     <output>${project.basedir}</output>
                     <templateDirectory>src/main/templates/</templateDirectory>
                     <configOptions>
-                        <withXml>true</withXml> <!-- Needed for XML serialization support in the Model -->
+                        <!-- Needed for XML serialization support in the Model -->
+                        <withXml>true</withXml>
                         <!--https://openapi-generator.tech/docs/generators/jaxrs-cxf-extended/-->
                         <sourceFolder>target/generated-sources</sourceFolder>
                         <useSwaggerFeature>true</useSwaggerFeature>
@@ -523,7 +325,6 @@
                     <packageName>${project.package}</packageName>
                 </configuration>
                 <executions>
-
                     <!-- Version 1 -->
                     <!-- When a new version is needed, make a copy of three v1-related executions below, then change
                          v1 to v2 in the copy.
@@ -548,7 +349,6 @@
                             <ignoreFileOverride>
                                 ${project.basedir}/.openapi-codegen-ignore-api
                             </ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -570,7 +370,6 @@
                         <configuration>
                             <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-impl</ignoreFileOverride>
-
                             <configOptions>
                                 <apiPackage>${project.package}.api.v1</apiPackage>
                                 <modelPackage>${project.package}.model.v1</modelPackage>
@@ -592,7 +391,6 @@
                             <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
                             <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-model</ignoreFileOverride>
                             <generatorName>java</generatorName>
-
                             <configOptions>
                                 <generateOperationBody>false</generateOperationBody>
                             </configOptions>
@@ -601,7 +399,6 @@
                     <!-- Client for the backend -->
                 </executions>
             </plugin>
-
             <!-- The generated classes for the OpenAPI client are problematic. Disable checking of those for now -->
             <plugin>
                 <groupId>de.thetaphi</groupId>
@@ -616,11 +413,9 @@
                     </excludes>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-
                 <!-- Shared configuration -->
                 <configuration>
                     <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
@@ -629,14 +424,13 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-                 
-                   <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->                    
-                   <!-- <attachClasses>true</attachClasses> --> 
-
+                    <!-- Generation of API jar is done seperate plugin and only contains DTOs and client class -->
+                    <!-- <attachClasses>true</attachClasses> -->
                     <!--Enable maven filtering for the web.xml-->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
                     <webResources>
-                        <webResource> <!-- Store application name, version and build time -->
+                        <!-- Store application name, version and build time -->
+                        <webResource>
                             <directory>${basedir}/src/main/resources/</directory>
                             <includes>
                                 <include>ds-license.build.properties</include>
@@ -655,28 +449,26 @@
                     </webResources>
                 </configuration>
             </plugin>
-
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>            
-               <executions>
-                   <execution>
-                   <id>build-specific-jar</id>
-                   <phase>package</phase>
-                   <goals>
-                       <goal>jar</goal>
-                   </goals>
-                  <configuration>                
-                      <classifier>api</classifier>
-                      <includes>                       
-                          <include>dk/kb/license/model/**</include>
-                          <include>dk/kb/license/util/DsLicenseClient*</include>                                            
-                      </includes>
-                 </configuration>
-                 </execution>
-              </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build-specific-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>api</classifier>
+                            <includes>
+                                <include>dk/kb/license/model/**</include>
+                                <include>dk/kb/license/util/DsLicenseClient*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
             <!-- Used only for mvn jetty:run jetty:run-war -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>

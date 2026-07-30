@@ -1,19 +1,43 @@
-.idea/
-bff/
+# We use pom.xml as the source of truth and don't rely on a specific IDE
+.idea
 aegis/
-ds-datahandler/
-ds-discover/
-ds-image/
-ds-license/
-ds-present/
-ds-storage/
-kb-util/
-ds-web/
-ds-kaltura/
-ds-config/
-ds-statistics/
-ds-shared/
-ds-stream-resolver/
-ds-test-automation/
+.env
+.git
 
+## Contains KB-internal information for testing
+# These config files should NEVER be in git, as they can contain passwords or information that must not be public
+**oai_harvest.conf
+**kb-internal-test.yaml
+**internal-test-setup.yaml
+**environment.yaml
+**local.yaml
+**security-salt.yaml
+**unittest.yaml
+**integration-test.yaml
+**NoisyPillars.mp3
+**/src/test/resources/xml/*.xml
+**/src/test/resources/rightsModuleMigratedData/*
+**/internal_test_files/
+
+# compiled files
+*.class
+
+# Package Files
+*.jar
+*.iws
+*.war
+*.ear
 *.iml
+*.ipr
+
+# build files
+**/target/
+target/
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+.project
+.settings/
+.openapi-generator/
+.classpath
+.openapi-generator-ignore
