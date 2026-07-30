@@ -6,7 +6,7 @@ OpenShift deployment.
 # bff-base.yaml
 
 This contains the structure and keys for all core properties of the application. Where possible, it will also contains
-values, but sensitive information such as machine names and user/passwords MUST NOT be stated directly in this config. 
+values, but sensitive information such as machine names and user/passwords MUST NOT be stated directly in this config.
 
 The behaviour config is normally controlled by developers and is part of the code repository.
 It will be automatically merged with the 'environment' or 'local' configs when accessed through the

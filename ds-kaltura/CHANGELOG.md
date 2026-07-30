@@ -2,14 +2,13 @@
 
 All notable changes to ds-kaltura will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
+to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
 ### Changed
 
-- Removed all scripts, jobs and alot of obsolete methods and tests.
 - Removed all scripts, jobs and a lot of obsolete methods and tests.
 - Use null safe `StringUtils.isBlank` instead of `String.isEmpty`.
 - Start on unittest for `DsKalturaAnalytics`.
@@ -20,9 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added DsKalturaAnalytics that extends DsKalturaClientBase. This class serves to extract meta data from Kaltura,
-  like TopContent rapport and baseEntry list data. A lot of the design decisions in this class is made to accommodate
-  Kaltura API where queries on larger datasets have shown to give inconsistent results.
+- Added DsKalturaAnalytics that extends DsKalturaClientBase. This class serves to extract meta data from Kaltura, like
+  TopContent rapport and baseEntry list data. A lot of the design decisions in this class is made to accommodate Kaltura
+  API where queries on larger datasets have shown to give inconsistent results.
 
 ## [4.0.0](https://github.com/kb-dk/ds-kaltura/releases/tag/ds-kaltura-4.0.0) - 2026-01-29
 
@@ -43,27 +42,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upload now requires file extension to be set separately. This insures that file always have a file extension when
   uploaded.
 
-
 ## [3.0.2](https://github.com/kb-dk/ds-kaltura/releases/tag/ds-kaltura-3.0.2) - 2025-09-01
 
 ### Changed
 
-- DsKalturaClient is now split into two classes. An abstract class called DsKalturaClientBase and DsKalturaClient
-  that extends DsKalturaClientBase. DsKalturaClientBase maintains kaltura sessions, generically builds and sends API
-  requests to kaltura and unpacks API responses. This serves to reduce the responsibilities and complexity of each
-  method residing in child classes.
+- DsKalturaClient is now split into two classes. An abstract class called DsKalturaClientBase and DsKalturaClient that
+  extends DsKalturaClientBase. DsKalturaClientBase maintains kaltura sessions, generically builds and sends API requests
+  to kaltura and unpacks API responses. This serves to reduce the responsibilities and complexity of each method
+  residing in child classes.
 - Changed getKalturaInternalId to detect entries that are rejected.
 
 ## [3.0.1](https://github.com/kb-dk/ds-kaltura/releases/tag/ds-kaltura-3.0.1) - 2025-07-07
 
 ### Changed
 
-- Config to use sessionDurationSeconds and sessionRefreshThreshold instead of keepAliveSeconds.
-  KeepAliveSeconds is now calculated from these two parameters and sessionDurationSeconds is used when starting a
-  session.
+- Config to use sessionDurationSeconds and sessionRefreshThreshold instead of keepAliveSeconds. KeepAliveSeconds is now
+  calculated from these two parameters and sessionDurationSeconds is used when starting a session.
 - Changed KeepAliveSession from long to int.
-- Changed startWidgetSession to take a nullable Integer to set specific Expiry. This should not be lower than 600
-  due to Kaltura caching of responses.
+- Changed startWidgetSession to take a nullable Integer to set specific Expiry. This should not be lower than 600 due to
+  Kaltura caching of responses.
 
 ### Added
 
@@ -77,8 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   changed.
 - Kaltura upload will validate stream was connected to meta-data and throw IOException if last call (#4 out of 4) is not
   a success
-- Extracted methods from uploadMedia to make individual steps/api calls in the uploadprocess more visible and easier
-  to maintain.
+- Extracted methods from uploadMedia to make individual steps/api calls in the uploadprocess more visible and easier to
+  maintain.
 - startClientSession have been refactored and now only starts a widget session appTokens is used.
 - computeHash method no longer set attributes in the kaltura client and only computes the hash value.
 - Added API exceptions to upload and other methods using API calls.
@@ -86,9 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Method to reject a stream in Kaltura. The stream can not be played with rejected status. A KMC moderator can
-  see all rejected videos in the KMC and change status again if needed.
-  bumped kb-util to v1.6.8 for consistency.
+- Method to reject a stream in Kaltura. The stream can not be played with rejected status. A KMC moderator can see all
+  rejected videos in the KMC and change status again if needed. bumped kb-util to v1.6.8 for consistency.
 
 ### Changed
 
@@ -96,8 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Method to reject a stream in Kaltura. The stream can not be played with rejected status. A KMC moderator can
-  see all rejected videos in the KMC and change status again if needed.
+- Method to reject a stream in Kaltura. The stream can not be played with rejected status. A KMC moderator can see all
+  rejected videos in the KMC and change status again if needed.
 
 ## [1.2.5](https://github.com/kb-dk/ds-kaltura/releases/tag/ds-kaltura-1.2.5) - 2024-10-15
 

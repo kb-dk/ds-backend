@@ -206,9 +206,9 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     }
 
     @Override
-    public void recordPost(DsRecordDto dsRecordDto) {
+    public void createOrUpdateRecord(DsRecordDto dsRecordDto) {
         try {
-            log.debug("recordPost(Origin='{}', record.id='{}', ...) called with call details: {}",
+            log.debug("createOrUpdateRecord(Origin='{}', record.id='{}', ...) called with call details: {}",
                       dsRecordDto.getOrigin(), dsRecordDto.getId(), getCallDetails());
             DsStorageFacade.createOrUpdateRecord(dsRecordDto);
         } catch (Exception e) {

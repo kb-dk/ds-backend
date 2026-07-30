@@ -17,14 +17,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import dk.kb.datahandler.model.v1.OaiTargetDto;
-import dk.kb.datahandler.model.v1.OaiTargetDto.DateStampFormatEnum;
-import dk.kb.util.yaml.YAML;
-
 /**
  * Sample configuration class using the Singleton pattern.
  * This should work well for most projects with non-dynamic properties.
@@ -48,14 +40,7 @@ public class ServiceConfig {
     private static String solrQueryUrl = null;
     private static String dsPresentUrl = null;
     private static int solrBatchSize=100;
-    private static String preservicaUrl = null;
-    private static String preservicaUser = null;
-    private static String preservicaPassword = null;
-    private static int preservicaRetryTimes = 5;
-    private static int preservicaRetrySeconds = 600;
-    private static int preservicaThreads = 5;
 
-    private static int preservicaKeepAliveSeconds = 600;
     private static int oaiRetryTimes = 5;
     private static int oaiRetrySeconds = 600;
 
@@ -71,7 +56,6 @@ public class ServiceConfig {
     private static int conversionProfileIdAudio = 0;
     private static int conversionQueueThreshold = 0;
     private static int conversionQueueDelaySeconds = 0;
-
 
     private static String streamPathDomsRadioTv = null;
     private static String streamPathPreservicaTv = null;
@@ -105,14 +89,6 @@ public class ServiceConfig {
         solrBatchSize=  serviceConfig.getInteger("solr.batchSize");
         dsPresentUrl = serviceConfig.getString("present.url");
 
-        preservicaUrl = serviceConfig.getString("preservica.baseUrl");
-        preservicaUser = serviceConfig.getString("preservica.user");
-        preservicaPassword = serviceConfig.getString("preservica.password");
-        preservicaKeepAliveSeconds = serviceConfig.getInteger("preservica.keepAliveSeconds", 600); // Defaulting to 10 minuts. Has to be smaller than retrySeconds.
-        preservicaRetrySeconds = serviceConfig.getInteger("preservica.retrySeconds", 900); //Defaulting to 15 minuts.
-        preservicaRetryTimes = serviceConfig.getInteger("preservica.retryTimes", 5); // Defaulting to 5 tries.
-        preservicaThreads = serviceConfig.getInteger("preservica.threads", 5); // Defaulting to five threads.
-
         kalturaUrl = ServiceConfig.getConfig().getString("kaltura.url");
         kalturaPartnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");
         kalturaUserId = ServiceConfig.getConfig().getString("kaltura.userId");
@@ -121,7 +97,6 @@ public class ServiceConfig {
         //Do not use kaltura adminsecret, use token and tokenId instead.
         //Must not be shared or exposed. Use token,tokenId.
         kalturaAdminSecret = ServiceConfig.getConfig().getString("kaltura.adminSecret", "");
-
 
         kalturaSessionDurationSeconds = ServiceConfig.getConfig().getInteger("kaltura.sessionDurationSeconds", 86400);
         kalturaSessionRefreshThreshold = ServiceConfig.getConfig().getInteger("kaltura.sessionRefreshThreshold", 3600);
@@ -153,12 +128,6 @@ public class ServiceConfig {
             log.info("Oai timestamp folder not found:"+oaiTimestampFolder +" .Creating new folder:"+oaiTimestampFolder);
             Files.createDirectories(Paths.get(oaiTimestampFolder));
         }
-
-        if (preservicaRetrySeconds < preservicaKeepAliveSeconds){
-            log.error("The preservica client might be kept alive with invalid access token as preservicaRetrySeconds is less than preservicaKeepAliveSeconds");
-        }
-        
-        
     }
 
     /**
@@ -175,7 +144,6 @@ public class ServiceConfig {
             throw new RuntimeException(e);
         }
     }
-
 
     /**
      * Direct access to the backing YAML-class is used for configurations with more flexible content
@@ -229,40 +197,12 @@ public class ServiceConfig {
         return oaiTargets;
     }
 
-    public static String getPreservicaUrl() {
-        return preservicaUrl;
-    }
-
-    public static String getPreservicaUser() {
-        return preservicaUser;
-    }
-
-    public static String getPreservicaPassword() {
-        return preservicaPassword;
-    }
-
-    public static int getPreservicaKeepAliveSeconds() {
-        return preservicaKeepAliveSeconds;
-    }
-
     public static int getOaiRetryTimes() {
         return oaiRetryTimes;
     }
 
     public static int getOaiRetrySeconds() {
         return oaiRetrySeconds;
-    }
-
-    public static int getPreservicaRetryTimes() {
-        return preservicaRetryTimes;
-    }
-
-    public static int getPreservicaRetrySeconds() {
-        return preservicaRetrySeconds;
-    }
-
-    public static int getPreservicaThreads() {
-        return preservicaThreads;
     }
 
     public static String getKalturaUrl() {
@@ -317,7 +257,6 @@ public class ServiceConfig {
         return kalturaAdminSecret;
     }
     
-    
     public static Logger getLog() {
         return log;
     }
@@ -333,7 +272,6 @@ public class ServiceConfig {
     public static String getTranscriptionsCompletedFolder() {
         return transcriptionsCompletedFolder;
     }
-    
 
     private static void loadOaiTargets() {
         List<YAML> targets = serviceConfig.getYAMLList("oaiTargets");
@@ -421,5 +359,4 @@ public class ServiceConfig {
         int connectionPoolSize= serviceConfig.getInteger("db.connectionPoolSize",10); //Default 10
         return connectionPoolSize;
     }
-    
 }

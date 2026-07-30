@@ -1,0 +1,3 @@
+<settingsSecurity>
+  <relocation>/run/secrets/maven_settings_security</relocation>
+</settingsSecurity>
