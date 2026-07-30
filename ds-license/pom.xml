@@ -9,6 +9,8 @@
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
+    <!-- Human-readable name, uppercase and spaces welcome -->
+    <name>ds-license</name>
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
     <version>100.0.0-SNAPSHOT</version>

@@ -9,6 +9,8 @@
         <artifactId>ds-parent</artifactId>
         <version>100.0.0-SNAPSHOT</version>
     </parent>
+    <!-- Human-readable name, uppercase and spaces welcome -->
+    <name>ds-present</name>
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
     <version>100.0.0-SNAPSHOT</version>
