@@ -8,9 +8,37 @@ Jenkinsfile
 Jenkinsfile.release
 README.md
 CHANGELOG.md
-**/target/
 
-# These config files should NEVER be in git, as they can contain passwords
-*-environment.yaml
-*-local.yaml
-*-unittest.yaml
+# Maven build files
+target/
+
+## Contains KB-internal information for testing
+# These config files should NEVER be in git, as they can contain passwords or information that must not be public
+**oai_harvest.conf
+**kb-internal-test.yaml
+**internal-test-setup.yaml
+**environment.yaml
+**local.yaml
+**unittest.yaml
+**integration-test.yaml
+**NoisyPillars.mp3
+**/src/test/resources/rightsModuleMigratedData/*
+**/internal_test_files/
+
+# compiled files
+*.class
+
+# Package Files
+*.jar
+*.iws
+*.war
+*.ear
+*.ipr
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+.project
+.settings/
+.openapi-generator/
+.classpath
+.openapi-generator-ignore
