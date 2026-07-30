@@ -45,7 +45,7 @@ info:
 
     ## Configure the yaml property file
     Besides all the OAI targets it must also definere the property for the folder to store the datestamps. Also the
-    properties host,port,baseurl to the ds-storage server to submit the records to.
+    properties host, port, baseurl to the ds-storage server to submit the records to.
 
     ## More about the OAI-PMH protocol
     See: http://www.openarchives.org/OAI/openarchivesprotocol.html
@@ -89,7 +89,7 @@ info:
 
     ## Configure the yaml property file
     Besides all the OAI targets it must also definere the property for the folder to store the datestamps. Also the
-    properties host,port,baseurl to the ds-storage server to submit the records to.
+    properties host, port, baseurl to the ds-storage server to submit the records to.
 
     ## More about the OAI-PMH protocol
     See: http://www.openarchives.org/OAI/openarchivesprotocol.html
