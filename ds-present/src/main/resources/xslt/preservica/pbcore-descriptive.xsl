@@ -99,8 +99,9 @@
                 </xsl:otherwise>
               </xsl:choose>
             </f:string>
-            <xsl:if test="(f:exists($publisherGeneral) and not(f:empty($publisherGeneral)) and $publisherGeneral != '') or
-                          ($publisherSpecific = 'DR1' or $publisherSpecific = 'DR2')">
+            <!-- $publisherGeneral is a result-tree variable so it always exists/is non-empty; only its
+                 string value matters. -->
+            <xsl:if test="$publisherGeneral != '' or $publisherSpecific = 'DR1' or $publisherSpecific = 'DR2'">
             <f:string key="alternateName">
               <xsl:choose>
                 <!-- Do clean up of DR channel names -->
@@ -430,37 +431,32 @@
           <f:string key="description">Kaltura ID of the access copy. Created internally by Kaltura.</f:string>
         </f:map>
       </xsl:if>
-      <xsl:if test="//pbcoreIdentifier">
-        <xsl:for-each select="./pbcoreIdentifier">
-          <xsl:choose>
-            <!-- Do nothing when identifierSource or identifier is empty. -->
-            <xsl:when test="identifierSource = ''">
-            </xsl:when>
-            <xsl:when test="identifier = ''">
-            </xsl:when>
-            <xsl:when test="identifierSource = 'Det Kongelige Bibliotek; Radio/TV-samlingen; De hvide programmer'">
-              <f:map>
-                <f:string key="@type">PropertyValue</f:string>
-                <f:string key="PropertyID">WhiteProgramID</f:string>
-                <f:string key="value">
-                  <xsl:value-of select="normalize-space(substring-after(identifier, 'ID:'))"/>
-                </f:string>
-              </f:map>
-            </xsl:when>
-            <xsl:otherwise>
-              <f:map>
-                <f:string key="@type">PropertyValue</f:string>
-                <f:string key="PropertyID">
-                  <xsl:value-of select="./identifierSource"/>
-                </f:string>
-                <f:string key="value">
-                  <xsl:value-of select="./identifier"/>
-                </f:string>
-              </f:map>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:for-each>
-      </xsl:if>
+      <!-- Skip identifiers with an empty source or value (the [not(...)] predicate); the rest map to a
+           PropertyValue, with a special PropertyID for the 'De hvide programmer' source. -->
+      <xsl:for-each select="./pbcoreIdentifier[not(identifierSource = '') and not(identifier = '')]">
+        <xsl:choose>
+          <xsl:when test="identifierSource = 'Det Kongelige Bibliotek; Radio/TV-samlingen; De hvide programmer'">
+            <f:map>
+              <f:string key="@type">PropertyValue</f:string>
+              <f:string key="PropertyID">WhiteProgramID</f:string>
+              <f:string key="value">
+                <xsl:value-of select="normalize-space(substring-after(identifier, 'ID:'))"/>
+              </f:string>
+            </f:map>
+          </xsl:when>
+          <xsl:otherwise>
+            <f:map>
+              <f:string key="@type">PropertyValue</f:string>
+              <f:string key="PropertyID">
+                <xsl:value-of select="./identifierSource"/>
+              </f:string>
+              <f:string key="value">
+                <xsl:value-of select="./identifier"/>
+              </f:string>
+            </f:map>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each>
       <!-- Extracts PID as identifier if present.-->
       <xsl:if test="$pidHandles != ''">
         <f:map>

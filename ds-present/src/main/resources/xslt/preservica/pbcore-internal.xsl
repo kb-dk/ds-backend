@@ -67,9 +67,7 @@
     <!-- If record originates from DOMS, we have to check if an access copy has been created by DOMS. That's whats happening inside this if-statement.
           This is done in the same way as mediestream did it.-->
     <xsl:if test="normalize-space($migrationSource) = 'Radio/tv DOMS - prod'">
-      <xsl:variable name="maxMissingSeconds">
-        <xsl:value-of select="90"/>
-      </xsl:variable>
+      <xsl:variable name="maxMissingSeconds" select="90"/>
 
       <f:string key="kb:has_doms_access_copy">
         <xsl:choose>
