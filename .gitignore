@@ -30,6 +30,9 @@ aegis/
 *.iml
 *.ipr
 
+# We want the opentelemetry-javaagent.jar file
+!opentelemetry-javaagent.jar
+
 # Maven build files
 target/
 

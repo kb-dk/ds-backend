@@ -8,12 +8,30 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
+      OTEL_SERVICE_NAME: ds-storage
+      JAVA_OPTS: -javaagent:/opentelemetry-javaagent.jar
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_INSECURE: true
+      OTEL_EXPORTER_OTLP_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
     ports:
       - "8081:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
+    volumes:
+      - ./opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+    depends_on:
+      - jaeger
     networks:
       - default
+      - jaeger_network
     restart: always
 
   ds-license:
@@ -25,12 +43,30 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
+      OTEL_SERVICE_NAME: ds-license
+      JAVA_OPTS: -javaagent:/opentelemetry-javaagent.jar
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_INSECURE: true
+      OTEL_EXPORTER_OTLP_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
     ports:
       - "8082:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
+    volumes:
+      - ./opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+    depends_on:
+      - jaeger
     networks:
       - default
+      - jaeger_network
     restart: always
 
   ds-present:
@@ -42,12 +78,30 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
+      OTEL_SERVICE_NAME: ds-present
+      JAVA_OPTS: -javaagent:/opentelemetry-javaagent.jar
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_INSECURE: true
+      OTEL_EXPORTER_OTLP_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
     ports:
       - "8083:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
+    volumes:
+      - ./opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+    depends_on:
+      - jaeger
     networks:
       - default
+      - jaeger_network
     restart: always
 
   ds-datahandler:
@@ -59,12 +113,30 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
+      OTEL_SERVICE_NAME: ds-datahandler
+      JAVA_OPTS: -javaagent:/opentelemetry-javaagent.jar
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_INSECURE: true
+      OTEL_EXPORTER_OTLP_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
     ports:
       - "8084:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
+    volumes:
+      - ./opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+    depends_on:
+      - jaeger
     networks:
       - default
+      - jaeger_network
     restart: always
 
   ds-discover:
@@ -76,12 +148,30 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
+      OTEL_SERVICE_NAME: ds-discover
+      JAVA_OPTS: -javaagent:/opentelemetry-javaagent.jar
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_INSECURE: true
+      OTEL_EXPORTER_OTLP_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
     ports:
       - "8085:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
+    volumes:
+      - ./opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+    depends_on:
+      - jaeger
     networks:
       - default
+      - jaeger_network
     restart: always
 
   ds-image:
@@ -93,22 +183,87 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    environment:
+      TZ: UTC
+      OTEL_SERVICE_NAME: ds-image
+      JAVA_OPTS: -javaagent:/opentelemetry-javaagent.jar
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_INSECURE: true
+      OTEL_EXPORTER_OTLP_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
     ports:
       - "8086:8080"
     env_file:
-      - aegis/docker/.env
+      - ./aegis/docker/.env
+    volumes:
+      - ./opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+    depends_on:
+      - jaeger
+    networks:
+      - default
+      - jaeger_network
+    restart: always
+
+  bff:
+    image: bff/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bff
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    environment:
+      TZ: UTC
+      OTEL_SERVICE_NAME: bff
+      JAVA_OPTS: -javaagent:/opentelemetry-javaagent.jar
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_LOGS_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_INSECURE: true
+      OTEL_EXPORTER_OTLP_COMPRESSION: gzip
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
+      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
+      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    ports:
+      - "8091:8080"
+    env_file:
+      - ./aegis/docker/.env
+    volumes:
+      - ./opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
+    depends_on:
+      - jaeger
+    networks:
+      - default
+      - jaeger_network
+    restart: always
+
+  ds-web:
+    image: ds-web/local:latest
+    environment:
+      TZ: UTC
+    ports:
+      - "8090:3000"
+    env_file:
+      - ./aegis/docker/.env
     networks:
       - default
     restart: always
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.0-1
-    container_name: keycloak
-    command: start-dev --import-realm --http-port=8087
+    command: [ "start-dev", "--import-realm", "--http-port=8087" ]
     environment:
+      TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: user
       KC_BOOTSTRAP_ADMIN_PASSWORD: changeit
-      KC_HTTP_ENABLED: "true"
+      KC_HTTP_ENABLED: true
       # Sets the uniform identity for token issuance across your entire environment
       KC_HOSTNAME: http://keycloak.local:8087
     ports:
@@ -123,7 +278,6 @@ services:
 
   postgres:
     image: postgres:13.23-alpine3.21
-    container_name: digisam_postgres
     environment:
       POSTGRES_DB: digisam
       POSTGRES_USER: digisam
@@ -146,6 +300,11 @@ services:
       - ./ds-license/src/test/resources/ddl/licensemodule_create_devel_license.sql:/init-scripts/licensemodule_create_devel_license.sql:ro
     networks:
       - default
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   solr:
     image: solr-image/master:latest
@@ -153,56 +312,114 @@ services:
       context: .
       dockerfile: Dockerfile
       target: solr
-    container_name: ds-solr
     environment:
+      TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
     ports:
       - "8089:8983"
       - "9983:9983"
     env_file:
-      - aegis/docker/.env
-    command: ["solr-foreground", "-c"]
+      - ./aegis/docker/.env
+    command: [ "solr-foreground", "-c" ]
     volumes:
       - solr_data:/opt/solr/server/solr/writable
     networks:
       - default
-    restart: always
+    restart: unless-stopped
 
-  bff:
-    image: bff/master:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: bff
-      secrets:
-        - maven_settings
-        - maven_settings_security
+  jaeger:
+    image: jaegertracing/jaeger:2.20.0
+    environment:
+      TZ: UTC
+      LOG_LEVEL: debug
+      COLLECTOR_OTLP_ENABLED: true
+      COLLECTOR_ZIPKIN_HOST_PORT: :9411
     ports:
-      - "8091:8080"
-    env_file:
-      - aegis/docker/.env
+      - "16686:16686"
+      - "16687:16687"
+      - "4317:4317"
+      - "4318:4318"
     networks:
-      - default
-    restart: always
+      - jaeger_network
 
-  ds-web:
-    image: ds-web/local:latest
-    container_name: web
+  victoria:
+    image: victoriametrics/victoria-logs:v1.52.0
+    environment:
+      TZ: UTC
     ports:
-      - "8090:3000"
-    env_file:
-      - aegis/docker/.env
+      - "9428:9428"
+    volumes:
+      - victoria_logs_data:/victoria_logs_data
     networks:
-      - default
+      - jaeger_network
+
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:v1.148.0
+    environment:
+      TZ: UTC
+    ports:
+      - "8428:8428"
+    volumes:
+      - victoria_metrics_data:/victoria_metrics_data
+    networks:
+      - jaeger_network
+
+  umami:
+    image: umamisoftware/umami:3.2.0
+    environment:
+      TZ: UTC
+      DATABASE_URL: postgresql://umami:p0stgr3s@postgres-umami:5432/umami
+      APP_SECRET: replace-me-with-a-random-string
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres-umami:
+        condition: service_healthy
+    init: true
+    networks:
+      - umami_network
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl http://localhost:3000/api/heartbeat" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-umami:
+    image: postgres:18-alpine3.24
+    environment:
+      TZ: UTC
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: p0stgr3s
+    ports:
+      - "3001:5432"
+    volumes:
+      - umami_db_data:/var/lib/postgresql
+    networks:
+      - umami_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   solr_data:
   keycloak_data:
   postgres_data:
+  victoria_logs_data:
+  victoria_metrics_data:
+  umami_db_data:
 
 secrets:
-   maven_settings:
-     file: ~/.m2/settings.xml
-   maven_settings_security:
-     file: ~/.m2/settings-security.xml
+  maven_settings:
+    file: ~/.m2/settings.xml
+  maven_settings_security:
+    file: ~/.m2/settings-security.xml
+
+networks:
+  default:
+    name: ds_archive_network
+  jaeger_network:
+  umami_network:
