@@ -61,7 +61,6 @@ storages:
             # The URL for the DS storage service, complete with version. Mandatory
             # Sample: http://ds-storage:8080/ds-storage/v1
             url: "${storage_url}"
-
   - test:
       # If there is more that one backend implementation, the property "order" controls how they are queried:
       # * parallel:   All backends are queried in parallel. Whoever answers with a record first wins.
@@ -134,7 +133,6 @@ security:
     # Optional, -1 means forever.
     # Default is 600 (10 minutes)
     ttl_seconds: 86400
-
   # Client settings are used if the webapp needs to request tokens from the OAuth2 server
   client:
     # Matches OAuth2 server Client ID
