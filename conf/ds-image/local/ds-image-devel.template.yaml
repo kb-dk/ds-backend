@@ -23,19 +23,15 @@ licensemodule:
 imageservers:
   iip:
     # https://imagenes.rjb.csic.es/fcgi-bin/iipsrv.fcgi?FIF=/Catalogo/Fanerogamia/IMGS_web/IMGS_jp2/MA-03-00736771.jp2&WID=2200&QLT=40&CVT=jpeg
-
     # https://collectionimages.npg.org.uk/matbzooms?FIF=static/matb/zooms/2094.tif&WID=1000&CVT=jpg
-
     # Current 2022-11-28
     # Full request URL sample: ${image_url}/IIP/?FIF=%2FDAMJP2%2Fonline_master_arkiv_3%2Fnon-archival%2FImages%2FBILLED%2FPOSTKORT_VESTINDIEN%2FPOSTKORT_KASSE_3%2FDPK001466&ROT=0&CVT=jpeg
     server: "${kb_iip_stage_url}"
-
   # Full request URL sample: http://example.com:1234/non-archival/Images/noerrealle_portraetter/nap_2654/full/!166,/0/native.jpg
   iiif:
     #server: "http://kb-images.kb.dk/"
     # Current 2022-11-28
     server: "${kb_iip_stage_url}"
-
   # Deepzoom can be used with different imageservers. Some servers requires DeepZoom as param, others require DeepZoom in path.
   # This has to be defined below. If you are using a parameter based server you out comment the path argument and vice-versa
   deepzoom:
@@ -43,16 +39,13 @@ imageservers:
     # path: "http://example.com:1234/"
     # Full request URL sample: "http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
     #param: "http://example.com:1234/iipsrv/iipsrv.fcgi"
-
     # Examples:
     # path: https://labs.statsbiblioteket.dk/anskuelse/adams_history/18068.dzi
     # param: https://imagenes.rjb.csic.es/fcgi-bin/iipsrv.fcgi?DeepZoom=/Catalogo/Fanerogamia/IMGS_web/IMGS_jp2/MA-02-00564160.jp2.dzi
     #path: "https://labs.statsbiblioteket.dk/anskuelse/adams_history/"
-
     # duomo.dzi
     #path: "https://openseadragon.github.io/example-images/duomo/"
     # param: "https://imagenes.rjb.csic.es/fcgi-bin/iipsrv.fcgi"
-
     # KB stage
     param: "${kb_iip_stage_url}"
 

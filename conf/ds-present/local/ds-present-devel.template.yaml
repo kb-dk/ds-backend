@@ -61,7 +61,6 @@ storages:
             # The URL for the DS storage service, complete with version. Mandatory
             # Sample: http://ds-storage:8080/ds-storage/v1
             url: "${storage_url}"
-
   - test:
       # If there is more that one backend implementation, the property "order" controls how they are queried:
       # * parallel:   All backends are queried in parallel. Whoever answers with a record first wins.
@@ -134,7 +133,6 @@ security:
     # Optional, -1 means forever.
     # Default is 600 (10 minutes)
     ttl_seconds: 86400
-
   # Client settings are used if the webapp needs to request tokens from the OAuth2 server
   client:
     # Matches OAuth2 server Client ID
@@ -223,43 +221,6 @@ origins:
       origin: "ds.tv"
       recordRequestType: "DELIVERABLEUNIT"
       views: *PRESERVICA_VIEWS
-  - "ds.samlingsbilleder":
-      description: "Diverse images from image collections at the Royal Danish Library"
-      prefix: "ds.samlingsbilleder"
-      origin: "ds.samlingsbilleder"
-      recordRequestType: "DELIVERABLEUNIT"
-      views: *MODS_IMAGE_VIEWS
-  - "ds.radiotv":
-      description: "Radio and television records from the Preservica system at the Royal Danish Library"
-      prefix: "ds.radiotv"
-      origin: "ds.radiotv"
-      recordRequestType: "DELIVERABLEUNIT"
-      views: *PRESERVICA_VIEWS
-  - imageshca:
-      description: "Hans Christian Andersen images from the collections at the Royal Danish Library"
-      prefix: "kb.images.billed.hca" # The prefix to match on incoming IDs. Selected to use ds-storage without any tweaks
-      origin: "kb.images.billed.hca" # Overrides the default origin for the storage
-      recordRequestType: "DELIVERABLEUNIT"
-      views: *MODS_IMAGE_VIEWS
-  - imagesjsmss:
-      description: "Judaistisk Samling: Håndskrifter images from the collections at the Royal Danish Library"
-      prefix: "kb.image.judsam.jsmss"
-      origin: "kb.image.judsam.jsmss"
-      recordRequestType: "DELIVERABLEUNIT"
-      views: *MODS_IMAGE_VIEWS
-  - imagesluftfoto:
-      description: "Luftfoto (arial photographs) images from the collections at the Royal Danish Library"
-      prefix: "kb.image.luftfo.luftfoto"
-      origin: "kb.images.luftfo.luftfoto"
-      recordRequestType: "DELIVERABLEUNIT"
-      views: *MODS_IMAGE_VIEWS
-  - imagessmaatryk:
-      description: "Småtryk images from the collections at the Royal Danish Library"
-      prefix: "kb.pamphlets.dasmaa.smaatryk"
-      origin: "kb.pamphlets.dasmaa.smaatryk"
-      recordRequestType: "DELIVERABLEUNIT"
-      views: *MODS_IMAGE_VIEWS
-
   # Straight forward origin with the core format being MODS
   # Uses the default storage, which connects to a running ds-storage instance
   - remote: # ds-present internal
