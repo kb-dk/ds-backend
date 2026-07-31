@@ -6,9 +6,6 @@
 #
 # It will be automatically merged with the environment config when accessed through the
 # application config system.
-#
-#
-
 
 # Image server URLs are injected into transformations.
 # These should be overridden in environment specific config files for all environments, meaning local test,
@@ -41,7 +38,6 @@ openapi:
 oldimageserver:
   url: "http://kb-images.kb.dk"
 
-
 # Used for verifying access to metadata https://github.com/kb-dk/ds-license
 # If allowall is set to true (default is false), all access is granted. Use only for devel + stage
 licensemodule:
@@ -71,7 +67,6 @@ storages:
             # The URL for the DS storage service, complete with version. Mandatory
             # Sample: http://localhost:9072/ds-storage/v1/
             url: 'http://localhost:9072/ds-storage/v1/'
-
 # Settings for handling export of multiple records
 records:
   errorHandling:
