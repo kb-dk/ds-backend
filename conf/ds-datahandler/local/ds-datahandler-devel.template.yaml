@@ -63,12 +63,6 @@ present:
   origins:
     - ds.tv
     - ds.radio
-    - ds.samlingsbilleder
-    - ds.radiotv
-    - kb.images.billed.hca
-    - kb.image.judsam.jsmss
-    - kb.images.luftfo.luftfoto
-    - kb.pamphlets.dasmaa.smaatryk
   headers:
     # This is not security!
     # This is used for establishing token flows using HTTP headers un preparation of OAuth2 support

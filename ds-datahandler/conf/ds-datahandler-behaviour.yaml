@@ -14,15 +14,6 @@ openapi:
 
 # List of oai targets
 oaiTargets:
-
-  - name: kb.pamphlets.dasmaa.smaatryk
-    datasource: kb.pamphlets.dasmaa.smaatryk
-    url: http://www5.kb.dk/cop/oai/
-    set: oai:kb.dk:pamphlets:dasmaa:2012:jul:smaatryk
-    metadataPrefix: mods
-    description: Småtryk
-    filter: direct
-
   - name: ds.radiotv
     # Internal information for pvica.devel is provided by internal config files
     datasource: ds.radiotv
@@ -64,13 +55,7 @@ present:
   # endpoint as well.
   origins:
     - ds.tv
-    - ds.radio    
-    - ds.samlingsbilleder
-    - ds.radiotv
-    - kb.images.billed.hca
-    - kb.image.judsam.jsmss
-    - kb.images.luftfo.luftfoto
-    - kb.pamphlets.dasmaa.smaatryk
+    - ds.radio
   headers:
     # This is not security!
     # This is used for establishing token flows using HTTP headers un preparation of OAuth2 support
