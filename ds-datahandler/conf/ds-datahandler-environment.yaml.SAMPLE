@@ -6,8 +6,7 @@
 #
 # It will be automatically merged with the environment config when accessed through the
 # application config system.
-#
-#
+
 
 # Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
 # These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
@@ -27,8 +26,6 @@ oaiTargets:
     metadataPrefix: XIP_full_schema
     description: Radio- og TV-udsendelser
     filter: preservica
-
-
 
 # Save timestamps of last OAI harvest for each target in this folder.
 #This is used for incremental delta-imports and an important directory for the service.

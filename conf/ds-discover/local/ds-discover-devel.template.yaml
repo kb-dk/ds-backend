@@ -34,14 +34,12 @@ solr:
     # The param 'fq' is special as it appends to any existing 'fq' while all other
     # params are overwritten
     forcedParams:
-
   # /mlt specific config
   mlt:
     # Unless there are special reasons not to, default params should be specified
     # in solrconfig.xml. See solr.select for description of default- and forced-params
     defaultParams:
     forcedParams:
-
   shield:
     # Whether SolrShield is enabled.
     # If false, SolrShield evaluation is still performed but the response is only logged.
@@ -50,14 +48,12 @@ solr:
     # Current max weight is very likely to be too low for practical use.
     # More experimenting with SolrShield is needed in order to determine a proper max weight
     defaultMaxWeight: 2000
-
   # Allow all Solr parameters (only set to true if local / devel)
   # If permissive is false, only vetted Solr parameters are accepted
   # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
   # Intended for development purposes.
   # WARNING: This should never be true in production.
   permissive: false
-
   # Test purpose only in ds-discover-behaviour.yaml. Override in environment configuration.
   collections:
     # Keys are collection names

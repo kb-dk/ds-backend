@@ -132,7 +132,7 @@ services:
     ports:
       - "8090:3000"
     env_file:
-      - ./aegis/docker/.env
+      - aegis/docker/ds_web/.env
     networks:
       - default
 
