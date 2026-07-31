@@ -12,30 +12,7 @@ origins:
   - name: ds.tv
     updateStrategy: NONE
   - name: ds.radio
-    updateStrategy: NONE  
-  - name: ds.mediestream2.tv
     updateStrategy: NONE
-  - name: ds.mediestream2.radio
-    updateStrategy: NONE
-  - name: doms.radio
-    updateStrategy: CHILD
-  - name: doms.aviser
-    updateStrategy: PARENT
-  - name: origin.strategy.none
-    updateStrategy: NONE
-  - name: origin.strategy.all
-    updateStrategy: ALL
-  - name: origin.strategy.child
-    updateStrategy: CHILD
-  - name: origin.strategy.parent
-    updateStrategy: PARENT
-  - name : ds.samlingsbilleder
-    updateStrategy: NONE
-  - name : ds.maps
-    updateStrategy: NONE
-  - name : kb.manus.vmanus.ha
-    updateStrategy: NONE
-
 
 db:
   # In production this will always be PostgreSQL
@@ -57,8 +34,6 @@ db:
 # These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
 openapi:
   serverurl: http://localhost:9072/ds-storage/v1
-  
-  
 
 security:
   # The security mode. Valid values are
@@ -79,7 +54,6 @@ security:
     # Optional, -1 means forever.
     # Default is 600 (10 minutes)
     ttl_seconds: 86400
-
   # Client settings are used if the webapp needs to request tokens from the OAuth2 server
   client:
     # Matches OAuth2 server Client ID
@@ -87,7 +61,3 @@ security:
     # Secret is used if the service needs to request a token from the OAuth2 server.
     # This typically used for calls between services, where there is a need for elevated access.
     secret: '01234567-89ab-cdef-0123-456789abcdef'
-
-  
-
-

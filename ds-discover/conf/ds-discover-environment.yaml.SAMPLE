@@ -11,21 +11,17 @@ solr:
     # Whether SolrShield is enabled.
     # If false, SolrShield evaluation is still performed but the response is only logged.
     #enabled: false
-
     # Current max weight is very likely to be too low for practical use.
     # More experimenting with SolrShield is needed in order to determine a proper max weight
     #default_max_weight: 2000
-
   # If permissive is false, only vetted Solr parameters are accepted
   # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
   # Intended for development purposes.
   # WARNING: This should never be true in production.
   #permissive: false
-
   # Solr collections which this instance of ds-discover is connected with.
   collections:
     # Keys are collection names
-
     # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost and needs to be configured with production values.
     - ds: # http://localhost:10007/solr/ds/select?q=foo
         # The Solr server, including port

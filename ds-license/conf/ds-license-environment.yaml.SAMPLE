@@ -23,7 +23,6 @@ solr:
   # Typically used for callback from an image server or similar where the record ID is not known
   resourceField: 'resource_id'
 
-
 # Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
 # These values are used to populate the OpenAPI specification without redeploying the service. They can be served by using the syntax ${config:yaml.path}.
 openapi:  
@@ -40,13 +39,12 @@ db:
   #driver: org.postgresql.Driver
   #username: username
   #password: password  
-  
 
 #Will disable all access to admin GUI jsp pages and instead show a info page that it has been disabled.
 #If GUI is enabled they keycloak properties below must be defined. 
 gui:
   adminGuiEnabled: true
-  
+
 #KeyCloakClientSecret can be seen in the KeyCloak server admin page for the AD realm configuration
 #The rsaPublic key can also be seen at the KeyCloak server admin page
 #redirectUrl must be added to the whitelist in KeyCloak administration configuration
@@ -61,6 +59,3 @@ keycloak:
 #300 seconds=5 minutes is a good value.
 cache:
   reloadInSeconds: 300  
-  
-
-
