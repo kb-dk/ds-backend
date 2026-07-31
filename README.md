@@ -33,7 +33,7 @@ directory, but be beside it.
 ```text
 {your_repositories}
     ds_backend
-    aegis
+        aegis
 {your_repositories}
     ds-web
 ```
