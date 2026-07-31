@@ -26,5 +26,3 @@ db:
 openapi:
   # This is the URL where this service is deployed appended with /v1
   serverurl: http://localhost:9072/ds-storage/v1
-
-

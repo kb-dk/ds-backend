@@ -15,8 +15,8 @@ git clone git@github.com:kb-dk/ds_backend.git
 
 ## Local development
 
-If you want to use Docker to have all the services up and running locally you also need to clone `aegis` where you find
-the .env file.
+If you want to use Docker to have all the services up and running locally you need to clone `aegis` where you find the
+.env file.
 
 ```shell
 cd ds_backend
@@ -26,6 +26,30 @@ git clone git@github.com:kb-dk/aegis.git
 Keycloak in some use cases needs to have the same name on the host as in the container, so you need to add
 `127.0.0.1 keycloak.local` in your `/etc/hosts` file. You can always check `docker-compose.yml` for what port different
 services uses.
+
+You also need to clone the `ds-web` so the frontend can spin up. `ds-web` should not be cloned into the `ds_backend`
+directory, but be beside it.
+
+```text
+{your_repositories}
+    ds_backend
+        aegis
+{your_repositories}
+    ds-web
+```
+
+```shell
+cd ..
+git clone git@github.com:kb-dk/ds-web.git
+cd ds-web
+git checkout maltand
+```
+
+Then build the `ds-web` `Docker image`.
+
+```shell
+docker build --tag ds-web/local .
+```
 
 You can now start the platform up with these Docker commands:
 

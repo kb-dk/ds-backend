@@ -16,7 +16,6 @@ openapi:
   suggester: radiotv_title_suggest
 
 solr:
-
   # /select specific config
   select:
     # Parameters that are default for all queries, but can be overridden by the request.
@@ -36,34 +35,28 @@ solr:
     # The param 'fq' is special as it appends to any existing 'fq' while all other
     # params are overwritten
     forcedParams:
-
   # /mlt specific config
   mlt:
     # Unless there are special reasons not to, default params should be specified
     # in solrconfig.xml. See solr.select for description of default- and forced-params
     defaultParams:
     forcedParams:
-
   shield:
     # Whether SolrShield is enabled.
     # If false, SolrShield evaluation is still performed but the response is only logged.
     # IS only set to false because of: https://kb-dk.atlassian.net/browse/DRA-1788
     enabled: true
-
     # Current max weight is very likely to be too low for practical use.
     # More experimenting with SolrShield is needed in order to determine a proper max weight
     defaultMaxWeight: 2000
-
   # If permissive is false, only vetted Solr parameters are accepted
   # If permissive is true, all Solr parameters are passed on and non-vetted parameters are logged
   # Intended for development purposes.
   # WARNING: This should never be true in production.
   permissive: false
-
   # Test purpose only in ds-discover-behaviour.yaml. Override in environment configuration.
   collections:
     # Keys are collection names
-
     # The ds-sample below uses the default setup for https://github.com/kb-dk/ds-solr/ on localhost
     - ds: # http://localhost:10007/solr/ds/select?q=foo
         # The Solr server, including port
@@ -79,19 +72,13 @@ solr:
         # Path can be absolute or relative to the ds-discover-*.yaml files
         # Optional. If not set, no shield will be usd for this colllection
         shield: 'solrshield-ds.yaml'
-        #
-        #
-        #
-
   #Minimum number of characters required for suggest
   suggestMinimumLength: 3
-
 
 #License module is called to generate a filter query that is used when calling Solr
 licensemodule:
   url: http://localhost:9076/ds-license/v1
-  
-  
+
 security:
   # The security mode. Valid values are
   # OFFLINE: No validation of security tokens: All requests are accepted.
@@ -110,7 +97,6 @@ security:
     # Optional, -1 means forever.
     # Default is 600 (10 minutes)
     ttl_seconds: 86400
-
   # Client settings are used if the webapp needs to request tokens from the OAuth2 server
   client:
     # Matches OAuth2 server Client ID
@@ -118,6 +104,6 @@ security:
     # Secret is used if the service needs to request a token from the OAuth2 server.
     # This typically used for calls between services, where there is a need for elevated access.
     secret: '01234567-89ab-cdef-0123-456789abcdef'
-   
+
 present:
   url: http://localhost:9073/ds-present/v1

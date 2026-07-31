@@ -6,23 +6,12 @@
 #
 # It will be automatically merged with the environment config when accessed through the
 # application config system.
-#
-#
 
 openapi:
   serverurl: http://localhost:9071/ds-datahandler/v1
 
 # List of oai targets
 oaiTargets:
-
-  - name: kb.pamphlets.dasmaa.smaatryk
-    datasource: kb.pamphlets.dasmaa.smaatryk
-    url: http://www5.kb.dk/cop/oai/
-    set: oai:kb.dk:pamphlets:dasmaa:2012:jul:smaatryk
-    metadataPrefix: mods
-    description: Småtryk
-    filter: direct
-
   - name: ds.radiotv
     # Internal information for pvica.devel is provided by internal config files
     datasource: ds.radiotv
@@ -64,13 +53,7 @@ present:
   # endpoint as well.
   origins:
     - ds.tv
-    - ds.radio    
-    - ds.samlingsbilleder
-    - ds.radiotv
-    - kb.images.billed.hca
-    - kb.image.judsam.jsmss
-    - kb.images.luftfo.luftfoto
-    - kb.pamphlets.dasmaa.smaatryk
+    - ds.radio
   headers:
     # This is not security!
     # This is used for establishing token flows using HTTP headers un preparation of OAuth2 support
@@ -126,7 +109,6 @@ security:
     # Optional, -1 means forever.
     # Default is 600 (10 minutes)
     ttl_seconds: 86400
-
   # Client settings are used if the webapp needs to request tokens from the OAuth2 server
   client:
     # Matches OAuth2 server Client ID
