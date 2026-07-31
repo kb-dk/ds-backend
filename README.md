@@ -1,69 +1,84 @@
 # Developer documentation
 
-This project is a repository found at [github](https://github.com/kb-dk/ds_backend)
-from the Royal Danish Library.
+This project is a repository found at [github](https://github.com/kb-dk/ds_backend) from the Royal Danish Library.
 
-The information in this document is aimed at developers who are going to work at the Digitale Samlinger project
+The information in this document is aimed at developers who are going to work at the Digitale Samlinger project.
 
-This project is a parent project for the ds-xxx modules. It contains a pom.xml which is the parent pom for all
-submodules (ds-xxx). The submodules can be found in pom.xml. The repository has all the modules inside so you only need
-to download this repository.
+The repository is the "parent" project with several ds-xxx modules in subdirectories. The parent pom.xml serves two
+purposes:
+
+- Defines the shared configuration for all the ds-xxx modules
+- Lists which modules belong to the project
+
+# Local development
 
 ```shell
 git clone git@github.com:kb-dk/ds_backend.git
 ```
 
-## Local development
-
-If you want to use Docker to have all the services up and running locally you need to clone `aegis` where you find the
-.env file.
+If you want to use Docker to have all services up and running locally you need to clone `aegis` which contains the .env
+file.
 
 ```shell
 cd ds_backend
 git clone git@github.com:kb-dk/aegis.git
 ```
 
-Keycloak in some use cases needs to have the same name on the host as in the container, so you need to add
-`127.0.0.1 keycloak.local` in your `/etc/hosts` file. You can always check `docker-compose.yml` for what port different
-services uses.
-
-You also need to clone the `ds-web` so the frontend can spin up. `ds-web` should not be cloned into the `ds_backend`
-directory, but be beside it.
-
-```text
-{your_repositories}
-    ds_backend
-        aegis
-{your_repositories}
-    ds-web
-```
+You also need to clone the frontend `ds-web` repository. `ds-web` should not be cloned into the `ds_backend`
+directory, but be beside it. Then build the `ds-web` `Docker image`.
 
 ```shell
 cd ..
 git clone git@github.com:kb-dk/ds-web.git
 cd ds-web
 git checkout maltand
-```
-
-Then build the `ds-web` `Docker image`.
-
-```shell
 docker build --tag ds-web/local .
 ```
 
-You can now start the platform up with these Docker commands:
+Your folder structure should now look like this:
+
+```text
+{folder_where_you_have_your_repositories}
+├── {some_random_repository}
+├── ds-web
+└── ds_backend
+    ├── aegis
+    ├── ds-{xxx}
+    └── ...
+```
+
+In some situations, Keycloak needs to use the same hostname both on your computer and inside the container. To set this
+up, add the following line to your `/etc/hosts` file:
+
+```text
+127.0.0.1 keycloak.local
+```
+
+This tells your computer that the address `keycloak.local` points to your local machine `(127.0.0.1)`.
+
+## Start the Docker services
+
+**You can always check `docker-compose.yml` for what port different services uses.**
 
 ```shell
 docker compose up --detach --build
+```
+
+### Service logs
+
+Shows all containers logs:
+
+```shell
 docker compose logs --follow
 ```
 
-If you need to see the logs of the containers either run `docker compose logs` that shows all the containers logs in one
-go, or example `docker compose logs ds-discover` to only see logs from one container.
+To view logs from one container, run:
+example:
+`docker compose logs ds-discover`
 
-### To get data into the platform use the following commands from commandline
+## Load data
 
-#### Retrieve keycloak token from local keycloak (it is valid for an hour)
+### Get a Keycloak token (valid for 1 hour)
 
 ```shell
 export ACCESS_TOKEN=$(curl --request POST "http://keycloak.local:8087/realms/DS/protocol/openid-connect/token" \
@@ -75,17 +90,18 @@ export ACCESS_TOKEN=$(curl --request POST "http://keycloak.local:8087/realms/DS/
 | jq --raw-output .access_token)
 ```
 
-OBS: The Keycloak container is sometimes a little while to start, so if you get the following error
-`curl: (56) Recv failure: Connection reset by peer`, just wait a second or two and run the command again.
+**Note**
+The Keycloak container may take a moment to start. If you get a connection error like the following
+`curl: (56) Recv failure: Connection reset by peer`, wait a few seconds and try again.
 
-#### Fetch records from Preservica and save it in ds_records table:
+### Fetch records from Preservica and save it in `ds_records` table:
 
 ```shell
 curl --request GET "http://localhost:8084/ds-datahandler/v1/oai/import/delta?oaiTarget=stage_preservica_dr_arkiv" \
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
-#### Solr indexing (we only have one collection (read and write in one))
+### Index records in Solr (we only have one collection (read and write in one))
 
 tv
 
@@ -103,14 +119,16 @@ curl --request GET "http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds
 
 When you have used the following commands you can see the data in Solr here: `http://localhost:8089`.
 
-#### Kaltura upload so a record in the frontend can be seen
+### Kaltura upload
 
 ```shell
 curl --request POST "http://localhost:8084/ds-datahandler/v1/kaltura/deltaupload" \
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
-#### Solr reindex so kaltura_id can be found in Solr
+### Reindex Solr
+
+So kaltura_id can be found in Solr
 
 tv
 
@@ -126,17 +144,17 @@ curl --request GET "http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
-#### Find records with uploaded files to Kaltura
+### View the Frontend
 
-In your browser hit `http://localhost:8090` to see the frontend. Search after `has_kaltura_id:true` in the search bar,
-and click on a record and click play on the video.
+Open your browser and go to `http://localhost:8090`. Search for `has_kaltura_id:true` and click on a record to play the
+video.
 
-## Deploy of services
+# Deploy services
 
 If you need to deploy the services, first run `mvn clean package` or `mvn clean install` in the root of "ds_backend"
 folder. Look in aegis README.md for a guide.
 
-## Purpose
+# Purpose
 
 The purpose of a maven-multi-project is to consolidate all versions in the parent pom so that the submodules only depend
 on dependencies noted in the parent pom file. If a version changes in the parent pom all submodules are updated at once.
