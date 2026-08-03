@@ -8,6 +8,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
     ports:
@@ -26,6 +28,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
     ports:
@@ -44,6 +48,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
     ports:
@@ -62,6 +68,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
     ports:
@@ -80,6 +88,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
     ports:
@@ -98,6 +108,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
     ports:
@@ -116,6 +128,8 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
     ports:
@@ -127,6 +141,8 @@ services:
 
   ds-web:
     image: ds-web/local:latest
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
     ports:
@@ -139,6 +155,8 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.0-1
     command: [ "start-dev", "--import-realm", "--http-port=8087" ]
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: user
@@ -158,6 +176,14 @@ services:
 
   postgres:
     image: postgres:13.23-alpine3.21
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
     environment:
       TZ: UTC
       POSTGRES_DB: digisam
@@ -188,6 +214,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: solr
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
