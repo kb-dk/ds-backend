@@ -106,6 +106,8 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
+      solr:
+        condition: service_healthy
     environment:
       TZ: UTC
     healthcheck:
@@ -137,14 +139,16 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
+      solr:
+        condition: service_healthy
+    environment:
+      TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://ds-discover:8080/ds-discover/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
       start_period: 25s
-    environment:
-      TZ: UTC
     ports:
       - "8085:8080"
     env_file:
@@ -199,14 +203,14 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
+    environment:
+      TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://bff:8080/bff/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
       start_period: 25s
-    environment:
-      TZ: UTC
     ports:
       - "8091:8080"
     env_file:
@@ -228,7 +232,7 @@ services:
     ports:
       - "8090:3000"
     env_file:
-      - aegis/docker/ds_web/.env
+      - aegis/docker/ds-web/.env
     networks:
       - default
     security_opt:
@@ -247,14 +251,14 @@ services:
       # Sets the uniform identity for token issuance across your entire environment
       KC_HOSTNAME: http://keycloak.local:8087
       KC_HEALTH_ENABLED: true
-    ports:
-      - "8087:8087"
     healthcheck:
       test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 5s
+    ports:
+      - "8087:8087"
     networks:
       default:
         aliases:
@@ -318,6 +322,12 @@ services:
     environment:
       TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://solr:8983/solr/ds-collection_shard1_replica_n1/admin/ping?wt=json" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     ports:
       - "8089:8983"
       - "9983:9983"

@@ -153,7 +153,7 @@ public class KalturaDeltaUploadJob {
                 updateKalturaIdForRecord(storageClient, fileId, kalturaInternalId);
                 return 0;
             }
-            
+
             StreamErrorTypeDto fileError = hasStreamFileError(filePath, minimumFileSizeInBytes);
             if (fileError != null) {
                 log.warn("File does not exist='{}' or size in bytes less than '{}'. Error='{}'. Id='{}'. Skipping upload", filePath, minimumFileSizeInBytes, fileError.getValue(), id);
