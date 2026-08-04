@@ -17,9 +17,9 @@
     <packaging>war</packaging>
     <description>ds-image by the Royal Danish Library</description>
     <scm>
-        <url>https://github.com/kb-dk/ds_backend</url>
-        <connection>scm:git:git@github.com:kb-dk/ds_backend.git</connection>
-        <developerConnection>scm:git:git@github.com:kb-dk/ds_backend.git</developerConnection>
+        <url>https://github.com/kb-dk/ds-backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds-backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds-backend.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <licenses>
