@@ -8,6 +8,13 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
+    depends_on:
+      jaeger:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     environment:
       TZ: UTC
       OTEL_SERVICE_NAME: ds-storage
@@ -21,17 +28,23 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
       OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-storage:8080/ds-storage/v1/monitor/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
     ports:
       - "8081:8080"
     env_file:
       - aegis/docker/.env
-    volumes:
-      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-    depends_on:
-      - jaeger
     networks:
       - default
       - jaeger_network
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
 
   ds-license:
     image: ds-license/master:latest
@@ -42,6 +55,13 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
+    depends_on:
+      jaeger:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     environment:
       TZ: UTC
       OTEL_SERVICE_NAME: ds-license
@@ -55,17 +75,23 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
       OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-license:8080/ds-license/v1/monitor/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
     ports:
       - "8082:8080"
     env_file:
       - aegis/docker/.env
-    volumes:
-      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-    depends_on:
-      - jaeger
     networks:
       - default
       - jaeger_network
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
 
   ds-present:
     image: ds-present/master:latest
@@ -76,6 +102,13 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
+    depends_on:
+      jaeger:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     environment:
       TZ: UTC
       OTEL_SERVICE_NAME: ds-present
@@ -89,17 +122,23 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
       OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-present:8080/ds-present/v1/monitor/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
     ports:
       - "8083:8080"
     env_file:
       - aegis/docker/.env
-    volumes:
-      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-    depends_on:
-      - jaeger
     networks:
       - default
       - jaeger_network
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
 
   ds-datahandler:
     image: ds-datahandler/master:latest
@@ -110,6 +149,15 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
+    depends_on:
+      jaeger:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      solr:
+        condition: service_healthy
     environment:
       TZ: UTC
       OTEL_SERVICE_NAME: ds-datahandler
@@ -123,17 +171,23 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
       OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-datahandler:8080/ds-datahandler/v1/monitor/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
     ports:
       - "8084:8080"
     env_file:
       - aegis/docker/.env
-    volumes:
-      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-    depends_on:
-      - jaeger
     networks:
       - default
       - jaeger_network
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
 
   ds-discover:
     image: ds-discover/master:latest
@@ -144,6 +198,15 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
+    depends_on:
+      jaeger:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+      solr:
+        condition: service_healthy
     environment:
       TZ: UTC
       OTEL_SERVICE_NAME: ds-discover
@@ -157,17 +220,23 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
       OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-discover:8080/ds-discover/v1/monitor/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
     ports:
       - "8085:8080"
     env_file:
       - aegis/docker/.env
-    volumes:
-      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-    depends_on:
-      - jaeger
     networks:
       - default
       - jaeger_network
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
 
   ds-image:
     image: ds-image/master:latest
@@ -178,6 +247,13 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
+    depends_on:
+      jaeger:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     environment:
       TZ: UTC
       OTEL_SERVICE_NAME: ds-image
@@ -191,17 +267,23 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
       OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-image:8080/ds-image/v1/monitor/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
     ports:
       - "8086:8080"
     env_file:
       - aegis/docker/.env
-    volumes:
-      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-    depends_on:
-      - jaeger
     networks:
       - default
       - jaeger_network
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
 
   bff:
     image: bff/master:latest
@@ -212,6 +294,13 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
+    cap_drop:
+      - ALL
+    depends_on:
+      jaeger:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     environment:
       TZ: UTC
       OTEL_SERVICE_NAME: bff
@@ -225,32 +314,47 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://jaeger:4318
       OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: http://victoria:9428/insert/opentelemetry/v1/logs
       OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: http://victoria-metrics:8428/opentelemetry/v1/metrics
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://bff:8080/bff/v1/monitor/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
     ports:
       - "8091:8080"
     env_file:
       - aegis/docker/.env
-    volumes:
-      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
-    depends_on:
-      - jaeger
     networks:
       - default
       - jaeger_network
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - opentelemetry-javaagent.jar:/opentelemetry-javaagent.jar
 
   ds-web:
     image: ds-web/local:latest
+    cap_drop:
+      - ALL
+    depends_on:
+      keycloak:
+        condition: service_healthy
     environment:
       TZ: UTC
     ports:
       - "8090:3000"
     env_file:
-      - aegis/docker/ds_web/.env
+      - aegis/docker/ds-web/.env
     networks:
       - default
+    security_opt:
+      - no-new-privileges:true
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.0-1
     command: [ "start-dev", "--import-realm", "--http-port=8087" ]
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: user
@@ -258,6 +362,13 @@ services:
       KC_HTTP_ENABLED: true
       # Sets the uniform identity for token issuance across your entire environment
       KC_HOSTNAME: http://keycloak.local:8087
+      KC_HEALTH_ENABLED: true
+    healthcheck:
+      test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     ports:
       - "8087:8087"
     networks:
@@ -267,14 +378,30 @@ services:
     volumes:
       - ./conf/keycloak:/opt/keycloak/data/import
       - keycloak_data:/opt/keycloak/data
+    security_opt:
+      - no-new-privileges:true
 
   postgres:
     image: postgres:13.23-alpine3.21
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
     environment:
       TZ: UTC
       POSTGRES_DB: digisam
       POSTGRES_USER: digisam
       POSTGRES_PASSWORD: p0stgr3s
+    healthcheck:
+      test: [ "CMD", "pg_isready", "--username=digisam" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     ports:
       - "8088:5432"
     volumes:
@@ -293,11 +420,8 @@ services:
       - ./ds-license/src/test/resources/ddl/licensemodule_create_devel_license.sql:/init-scripts/licensemodule_create_devel_license.sql:ro
     networks:
       - default
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    security_opt:
+      - no-new-privileges:true
 
   solr:
     image: solr-image/master:latest
@@ -305,9 +429,17 @@ services:
       context: .
       dockerfile: Dockerfile
       target: solr
+    cap_drop:
+      - ALL
     environment:
       TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://solr:8983/solr/ds-collection_shard1_replica_n1/admin/ping?wt=json" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     ports:
       - "8089:8983"
       - "9983:9983"
@@ -318,6 +450,8 @@ services:
       - solr_data:/opt/solr/server/solr/writable
     networks:
       - default
+    security_opt:
+      - no-new-privileges:true
 
   jaeger:
     image: jaegertracing/jaeger:2.20.0
