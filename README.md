@@ -25,14 +25,15 @@ git clone git@github.com:kb-dk/aegis.git
 ```
 
 You also need to clone the frontend `ds-web` repository. `ds-web` should not be cloned into the `ds-backend`
-directory, but be beside it. Then build the `ds-web` `Docker image`.
+directory, but be beside it. Then clone `aegis` inside `ds-web`.
 
 ```shell
 cd ..
 git clone git@github.com:kb-dk/ds-web.git
 cd ds-web
 git checkout maltand
-docker build --tag ds-web/local .
+git clone git@github.com:kb-dk/aegis.git
+docker compose up --detach --build
 ```
 
 Your folder structure should now look like this:
@@ -41,6 +42,7 @@ Your folder structure should now look like this:
 {folder_where_you_have_your_repositories}
 ├── {some_random_repository}
 ├── ds-web
+│   └── aegis
 └── ds-backend
     ├── aegis
     ├── ds-{xxx}
@@ -146,7 +148,7 @@ curl --request GET "http://localhost:8084/ds-datahandler/v1/solr/index?origin=ds
 
 ### View the Frontend
 
-Open your browser and go to `http://localhost:8090`. Search for `has_kaltura_id:true` and click on a record to play the
+Open your browser and go to `http://localhost:3000`. Search for `has_kaltura_id:true` and click on a record to play the
 video.
 
 # Deploy services

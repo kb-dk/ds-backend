@@ -26,7 +26,7 @@ services:
     env_file:
       - aegis/docker/.env
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -57,7 +57,7 @@ services:
     env_file:
       - aegis/docker/.env
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -88,7 +88,7 @@ services:
     env_file:
       - aegis/docker/.env
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -121,7 +121,7 @@ services:
     env_file:
       - aegis/docker/.env
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -154,7 +154,7 @@ services:
     env_file:
       - aegis/docker/.env
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -185,7 +185,7 @@ services:
     env_file:
       - aegis/docker/.env
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -216,25 +216,7 @@ services:
     env_file:
       - ./aegis/docker/.env
     networks:
-      - default
-    security_opt:
-      - no-new-privileges:true
-
-  ds-web:
-    image: ds-web/local:latest
-    cap_drop:
-      - ALL
-    depends_on:
-      keycloak:
-        condition: service_healthy
-    environment:
-      TZ: UTC
-    ports:
-      - "8090:3000"
-    env_file:
-      - aegis/docker/ds-web/.env
-    networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -260,7 +242,7 @@ services:
     ports:
       - "8087:8087"
     networks:
-      default:
+      ds_archive_network:
         aliases:
           - keycloak.local
     volumes:
@@ -307,7 +289,7 @@ services:
       - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_ranges_data.sql:/init-scripts/rightsmodule_default_dr_holdback_ranges_data.sql:ro
       - ./ds-license/src/test/resources/ddl/licensemodule_create_devel_license.sql:/init-scripts/licensemodule_create_devel_license.sql:ro
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -337,7 +319,7 @@ services:
     volumes:
       - solr_data:/opt/solr/server/solr/writable
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -353,5 +335,6 @@ secrets:
     file: ~/.m2/settings-security.xml
 
 networks:
-  default:
+  ds_archive_network:
     name: ds_archive_network
+    driver: bridge
