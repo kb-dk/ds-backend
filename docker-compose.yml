@@ -10,6 +10,8 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    depends_on:
+      - keycloak
     environment:
       TZ: UTC
     ports:
@@ -32,6 +34,8 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    depends_on:
+      - keycloak
     environment:
       TZ: UTC
     ports:
@@ -54,6 +58,8 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    depends_on:
+      - keycloak
     environment:
       TZ: UTC
     ports:
@@ -76,6 +82,8 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    depends_on:
+      - keycloak
     environment:
       TZ: UTC
     ports:
@@ -98,6 +106,8 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    depends_on:
+      - keycloak
     environment:
       TZ: UTC
     ports:
@@ -120,6 +130,8 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    depends_on:
+      - keycloak
     environment:
       TZ: UTC
     ports:
@@ -142,6 +154,8 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    depends_on:
+      - keycloak
     environment:
       TZ: UTC
     ports:
@@ -157,6 +171,8 @@ services:
     image: ds-web/local:latest
     cap_drop:
       - ALL
+    depends_on:
+      - keycloak
     environment:
       TZ: UTC
     ports:
@@ -180,8 +196,10 @@ services:
       KC_HTTP_ENABLED: true
       # Sets the uniform identity for token issuance across your entire environment
       KC_HOSTNAME: http://keycloak.local:8087
+      KC_HEALTH_ENABLED: true
     ports:
       - "8087:8087"
+      - "9000:9000"
     networks:
       default:
         aliases:
