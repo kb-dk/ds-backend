@@ -145,7 +145,6 @@ public class KalturaDeltaUploadJob {
             MediaType mediaType = KalturaUtil.getMediaType(resourceDescription);
             int conversionProfileId = KalturaUtil.getGetConversionProfileId(mediaType);
             log.info("validating stream='{}' with title='{}'", filePath, title);
-            StreamErrorTypeDto fileError = hasStreamFileError(filePath, minimumFileSizeInBytes);
 
             // Check file not already in kaltura.
             String kalturaInternalId = getInternalIdKaltura(fileId);
@@ -154,7 +153,8 @@ public class KalturaDeltaUploadJob {
                 updateKalturaIdForRecord(storageClient, fileId, kalturaInternalId);
                 return 0;
             }
-
+            
+            StreamErrorTypeDto fileError = hasStreamFileError(filePath, minimumFileSizeInBytes);
             if (fileError != null) {
                 log.warn("File does not exist='{}' or size in bytes less than '{}'. Error='{}'. Id='{}'. Skipping upload", filePath, minimumFileSizeInBytes, fileError.getValue(), id);
                 updateKalturaIdForRecord(storageClient, fileId, fileError.getValue());
