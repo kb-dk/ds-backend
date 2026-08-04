@@ -1,6 +1,6 @@
 # Developer documentation
 
-This project is a repository found at [github](https://github.com/kb-dk/ds_backend) from the Royal Danish Library.
+This project is a repository found at [github](https://github.com/kb-dk/ds-backend) from the Royal Danish Library.
 
 The information in this document is aimed at developers who are going to work at the Digitale Samlinger project.
 
@@ -13,18 +13,18 @@ purposes:
 # Local development
 
 ```shell
-git clone git@github.com:kb-dk/ds_backend.git
+git clone git@github.com:kb-dk/ds-backend.git
 ```
 
 If you want to use Docker to have all services up and running locally you need to clone `aegis` which contains the .env
 file.
 
 ```shell
-cd ds_backend
+cd ds-backend
 git clone git@github.com:kb-dk/aegis.git
 ```
 
-You also need to clone the frontend `ds-web` repository. `ds-web` should not be cloned into the `ds_backend`
+You also need to clone the frontend `ds-web` repository. `ds-web` should not be cloned into the `ds-backend`
 directory, but be beside it. Then build the `ds-web` `Docker image`.
 
 ```shell
@@ -41,7 +41,7 @@ Your folder structure should now look like this:
 {folder_where_you_have_your_repositories}
 ├── {some_random_repository}
 ├── ds-web
-└── ds_backend
+└── ds-backend
     ├── aegis
     ├── ds-{xxx}
     └── ...
@@ -151,7 +151,7 @@ video.
 
 # Deploy services
 
-If you need to deploy the services, first run `mvn clean package` or `mvn clean install` in the root of "ds_backend"
+If you need to deploy the services, first run `mvn clean package` or `mvn clean install` in the root of "ds-backend"
 folder. Look in aegis README.md for a guide.
 
 # Purpose
