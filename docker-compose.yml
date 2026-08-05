@@ -242,11 +242,11 @@ services:
       KC_HOSTNAME: http://keycloak.local:8087
       KC_HEALTH_ENABLED: true
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
+      test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(new java.net.URI(args[0])).build(), java.net.http.HttpResponse.BodyHandlers.discarding()).statusCode() == 200 ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
       interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 5s
+      start_period: 15s
     ports:
       - "8087:8087"
     networks:
