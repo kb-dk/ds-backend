@@ -17,7 +17,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-storage:8080/ds-storage/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-storage/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -49,7 +49,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-license:8080/ds-license/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-license/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -81,7 +81,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-present:8080/ds-present/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-present/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -115,7 +115,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-datahandler:8080/ds-datahandler/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-datahandler/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -149,7 +149,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-discover:8080/ds-discover/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-discover/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -181,7 +181,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-image:8080/ds-image/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-image/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -213,7 +213,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://bff:8080/bff/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/bff/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -315,7 +315,7 @@ services:
       TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://solr:8983/solr/ds-collection_shard1_replica_n1/admin/ping?wt=json" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8983/solr/ds-collection_shard1_replica_n1/admin/ping?wt=json" ]
       interval: 5s
       timeout: 5s
       retries: 5
