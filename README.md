@@ -31,8 +31,8 @@ directory, but be beside it. Then clone `aegis` inside `ds-web`.
 cd ..
 git clone git@github.com:kb-dk/ds-web.git
 cd ds-web
-git checkout maltand
 git clone git@github.com:kb-dk/aegis.git
+cd ..
 docker compose up --detach --build
 ```
 
