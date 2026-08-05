@@ -25,7 +25,7 @@ services:
     ports:
       - "8081:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
     security_opt:
@@ -57,7 +57,7 @@ services:
     ports:
       - "8082:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
     security_opt:
@@ -89,7 +89,7 @@ services:
     ports:
       - "8083:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
     security_opt:
@@ -123,7 +123,7 @@ services:
     ports:
       - "8084:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
     security_opt:
@@ -157,7 +157,7 @@ services:
     ports:
       - "8085:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
     security_opt:
@@ -189,7 +189,7 @@ services:
     ports:
       - "8086:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
     security_opt:
@@ -221,7 +221,7 @@ services:
     ports:
       - "8091:8080"
     env_file:
-      - ./aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
     security_opt:
@@ -324,7 +324,7 @@ services:
       - "8089:8983"
       - "9983:9983"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     command: [ "solr-foreground", "-c" ]
     volumes:
       - solr_data:/opt/solr/server/solr/writable
