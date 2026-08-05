@@ -10,6 +10,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-storage
     depends_on:
       keycloak:
         condition: service_healthy
@@ -41,6 +42,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-license
     depends_on:
       keycloak:
         condition: service_healthy
@@ -72,6 +74,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-present
     depends_on:
       keycloak:
         condition: service_healthy
@@ -103,6 +106,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-datahandler
     depends_on:
       keycloak:
         condition: service_healthy
@@ -136,6 +140,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-discover
     depends_on:
       keycloak:
         condition: service_healthy
@@ -169,6 +174,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-image
     depends_on:
       keycloak:
         condition: service_healthy
@@ -200,6 +206,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-bff
     depends_on:
       keycloak:
         condition: service_healthy
@@ -225,6 +232,7 @@ services:
     command: [ "start-dev", "--import-realm", "--http-port=8087" ]
     cap_drop:
       - ALL
+    container_name: ds-keycloak
     environment:
       TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: user
@@ -261,6 +269,7 @@ services:
       - FOWNER
       - SETGID
       - SETUID
+    container_name: ds-postgres
     environment:
       TZ: UTC
       POSTGRES_DB: digisam
@@ -301,6 +310,7 @@ services:
       target: solr
     cap_drop:
       - ALL
+    container_name: ds-solr
     environment:
       TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
