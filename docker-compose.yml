@@ -10,13 +10,14 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-storage
     depends_on:
       keycloak:
         condition: service_healthy
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-storage:8080/ds-storage/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-storage/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -24,9 +25,10 @@ services:
     ports:
       - "8081:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
-      - default
+      - ds_archive_network
+      - postgres_network
     security_opt:
       - no-new-privileges:true
 
@@ -41,13 +43,14 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-license
     depends_on:
       keycloak:
         condition: service_healthy
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-license:8080/ds-license/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-license/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -55,9 +58,11 @@ services:
     ports:
       - "8082:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
-      - default
+      - ds_archive_network
+      - postgres_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -72,13 +77,14 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-present
     depends_on:
       keycloak:
         condition: service_healthy
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-present:8080/ds-present/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-present/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -86,9 +92,9 @@ services:
     ports:
       - "8083:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -103,6 +109,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-datahandler
     depends_on:
       keycloak:
         condition: service_healthy
@@ -111,7 +118,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-datahandler:8080/ds-datahandler/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-datahandler/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -119,9 +126,11 @@ services:
     ports:
       - "8084:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
-      - default
+      - ds_archive_network
+      - postgres_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -136,6 +145,7 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-discover
     depends_on:
       keycloak:
         condition: service_healthy
@@ -144,7 +154,7 @@ services:
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-discover:8080/ds-discover/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-discover/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -152,9 +162,10 @@ services:
     ports:
       - "8085:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
-      - default
+      - ds_archive_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -169,13 +180,14 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-image
     depends_on:
       keycloak:
         condition: service_healthy
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://ds-image:8080/ds-image/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-image/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -183,9 +195,9 @@ services:
     ports:
       - "8086:8080"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
-      - default
+      - ds_archive_network
     security_opt:
       - no-new-privileges:true
 
@@ -200,13 +212,14 @@ services:
         - maven_settings_security
     cap_drop:
       - ALL
+    container_name: ds-bff
     depends_on:
       keycloak:
         condition: service_healthy
     environment:
       TZ: UTC
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://bff:8080/bff/v1/monitor/status" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/bff/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
       retries: 3
@@ -214,27 +227,10 @@ services:
     ports:
       - "8091:8080"
     env_file:
-      - ./aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     networks:
-      - default
-    security_opt:
-      - no-new-privileges:true
-
-  ds-web:
-    image: ds-web/local:latest
-    cap_drop:
-      - ALL
-    depends_on:
-      keycloak:
-        condition: service_healthy
-    environment:
-      TZ: UTC
-    ports:
-      - "8090:3000"
-    env_file:
-      - aegis/docker/ds-web/.env
-    networks:
-      - default
+      - ds_archive_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -243,6 +239,7 @@ services:
     command: [ "start-dev", "--import-realm", "--http-port=8087" ]
     cap_drop:
       - ALL
+    container_name: ds-keycloak
     environment:
       TZ: UTC
       KC_BOOTSTRAP_ADMIN_USERNAME: user
@@ -252,15 +249,15 @@ services:
       KC_HOSTNAME: http://keycloak.local:8087
       KC_HEALTH_ENABLED: true
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
+      test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(new java.net.URI(args[0])).build(), java.net.http.HttpResponse.BodyHandlers.discarding()).statusCode() == 200 ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
       interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 5s
+      start_period: 15s
     ports:
       - "8087:8087"
     networks:
-      default:
+      ds_archive_network:
         aliases:
           - keycloak.local
     volumes:
@@ -279,6 +276,7 @@ services:
       - FOWNER
       - SETGID
       - SETUID
+    container_name: ds-postgres
     environment:
       TZ: UTC
       POSTGRES_DB: digisam
@@ -307,7 +305,7 @@ services:
       - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_ranges_data.sql:/init-scripts/rightsmodule_default_dr_holdback_ranges_data.sql:ro
       - ./ds-license/src/test/resources/ddl/licensemodule_create_devel_license.sql:/init-scripts/licensemodule_create_devel_license.sql:ro
     networks:
-      - default
+      - postgres_network
     security_opt:
       - no-new-privileges:true
 
@@ -319,11 +317,12 @@ services:
       target: solr
     cap_drop:
       - ALL
+    container_name: ds-solr
     environment:
       TZ: UTC
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
     healthcheck:
-      test: [ "CMD", "curl", "--silent", "--fail", "http://solr:8983/solr/ds-collection_shard1_replica_n1/admin/ping?wt=json" ]
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8983/solr/ds-collection_shard1_replica_n1/admin/ping?wt=json" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -332,12 +331,12 @@ services:
       - "8089:8983"
       - "9983:9983"
     env_file:
-      - aegis/docker/.env
+      - aegis/docker/ds-backend/.env
     command: [ "solr-foreground", "-c" ]
     volumes:
       - solr_data:/opt/solr/server/solr/writable
     networks:
-      - default
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -353,5 +352,12 @@ secrets:
     file: ~/.m2/settings-security.xml
 
 networks:
-  default:
+  ds_archive_network:
     name: ds_archive_network
+    driver: bridge
+  postgres_network:
+    name: postgres_network
+    driver: bridge
+  solr_network:
+    name: solr_network
+    driver: bridge
