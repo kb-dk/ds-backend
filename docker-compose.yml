@@ -28,6 +28,7 @@ services:
       - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
+      - postgres_network
     security_opt:
       - no-new-privileges:true
 
@@ -60,6 +61,8 @@ services:
       - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
+      - postgres_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -126,6 +129,8 @@ services:
       - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
+      - postgres_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -160,6 +165,7 @@ services:
       - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -224,6 +230,7 @@ services:
       - aegis/docker/ds-backend/.env
     networks:
       - ds_archive_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -298,7 +305,7 @@ services:
       - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_ranges_data.sql:/init-scripts/rightsmodule_default_dr_holdback_ranges_data.sql:ro
       - ./ds-license/src/test/resources/ddl/licensemodule_create_devel_license.sql:/init-scripts/licensemodule_create_devel_license.sql:ro
     networks:
-      - ds_archive_network
+      - postgres_network
     security_opt:
       - no-new-privileges:true
 
@@ -329,7 +336,7 @@ services:
     volumes:
       - solr_data:/opt/solr/server/solr/writable
     networks:
-      - ds_archive_network
+      - solr_network
     security_opt:
       - no-new-privileges:true
 
@@ -347,4 +354,10 @@ secrets:
 networks:
   ds_archive_network:
     name: ds_archive_network
+    driver: bridge
+  postgres_network:
+    name: postgres_network
+    driver: bridge
+  solr_network:
+    name: solr_network
     driver: bridge
