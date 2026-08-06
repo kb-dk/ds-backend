@@ -283,7 +283,7 @@ services:
       POSTGRES_USER: digisam
       POSTGRES_PASSWORD: p0stgr3s
     healthcheck:
-      test: [ "CMD", "pg_isready", "--username=digisam" ]
+      test: [ "CMD-SHELL", "pg_isready", "--username=$${POSTGRES_USER}", "--database=$${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 5
