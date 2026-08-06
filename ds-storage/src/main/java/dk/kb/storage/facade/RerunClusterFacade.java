@@ -1,5 +1,6 @@
 package dk.kb.storage.facade;
 
+import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
 import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.storage.storage.BaseModuleStorage;
@@ -12,38 +13,56 @@ import java.util.UUID;
 
 public class RerunClusterFacade {
 
-    private static final Logger log = LoggerFactory.getLogger(RerunClusterFacade.class);
+  private static final Logger log = LoggerFactory.getLogger(RerunClusterFacade.class);
 
-    /**
-     * Fetch new rows from remote p3rerun database in table clusters table, save it to our rerun_clusters table,
-     * update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table.
-     *
-     * @return RecordsCountDto number of rows inserted or updated
-     */
-    public static RecordsCountDto updateRerunClustersTable() {
-        return BaseModuleStorage.performStorageAction("updateRerunClustersTable()", RerunClusterStorage.class, storage -> {
-            RecordsCountDto recordsCountDto = ((RerunClusterStorage) storage).updateRerunClustersTable();
-            return recordsCountDto;
+  /**
+   * Return new rows from remote p3rerun database in table clusters table, save it to our
+   * rerun_clusters table, update mtime in ds_records table and return number of rows inserted or
+   * updated in rerun_clusters table.
+   *
+   * @return RecordsCountDto number of rows inserted or updated
+   */
+  public static RecordsCountDto updateRerunClustersTable() {
+    return BaseModuleStorage.performStorageAction("updateRerunClustersTable()",
+        RerunClusterStorage.class, storage -> {
+          RecordsCountDto recordsCountDto =
+              ((RerunClusterStorage) storage).updateRerunClustersTable();
+          return recordsCountDto;
         });
-    }
+  }
 
-    /**
-     * Return rerunCluster from fileId
-     *
-     * @param fileId UUID of fileId.
-     * @return RerunClusterDto
-     */
-    public static RerunClusterDto getRerunClusterByFileId(UUID fileId) {
-        return BaseModuleStorage.performStorageAction("getRerunClusterByFileId(" + fileId + ")", RerunClusterStorage.class, storage -> {
-            RerunClusterDto rerunClusterDto = ((RerunClusterStorage) storage).getRerunClusterByFileId(fileId);
+  /**
+   * Return a rerun cluster by fileId
+   *
+   * @param fileId UUID of fileId.
+   * @return RerunClusterDto
+   */
+  public static RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+    return BaseModuleStorage.performStorageAction("getRerunClusterByFileId(" + fileId + ")",
+        RerunClusterStorage.class, storage -> {
+          RerunClusterDto rerunClusterDto =
+              ((RerunClusterStorage) storage).getRerunClusterByFileId(fileId);
 
-            if (rerunClusterDto == null) {
-                final String errorMessage = "rerunCluster fileId='" + fileId + "' not found";
-                log.error(errorMessage);
-                throw new NotFoundException(errorMessage);
-            }
+          if (rerunClusterDto == null) {
+            final String errorMessage = "rerunCluster fileId='" + fileId + "' not found";
+            log.error(errorMessage);
+            throw new NotFoundException(errorMessage);
+          }
 
-            return rerunClusterDto;
+          return rerunClusterDto;
         });
-    }
+  }
+
+  /**
+   * Return latest created datetime from rerun_clusters table. Can be null.
+   *
+   * @return CreatedDto with latest created datetime
+   */
+  public static CreatedDto latestCreated() {
+    return BaseModuleStorage.performStorageAction("latestCreated()",
+        RerunClusterStorage.class, storage -> {
+          CreatedDto createdDto = ((RerunClusterStorage) storage).latestCreated();
+          return createdDto;
+        });
+  }
 }

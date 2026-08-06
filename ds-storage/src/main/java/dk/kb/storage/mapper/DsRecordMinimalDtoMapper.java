@@ -10,7 +10,7 @@ public class DsRecordMinimalDtoMapper {
     /**
      * Create a {@link DsRecordMinimalDto} from a ResultSet
      *
-     * @param resultSet containing values from rerun_clusteresultSet table
+     * @param resultSet containing values from ds_records table
      * @return DsRecordMinimalDto populated with data
      * @throws SQLException
      */

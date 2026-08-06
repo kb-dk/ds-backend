@@ -1,7 +1,9 @@
 package dk.kb.storage.storage;
 
+import dk.kb.storage.mapper.CreatedDtoMapper;
 import dk.kb.storage.mapper.RecordsCountDtoMapper;
 import dk.kb.storage.mapper.RerunClusterDtoMapper;
+import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
 import dk.kb.storage.model.v1.RerunClusterDto;
 import org.slf4j.Logger;
@@ -15,17 +17,12 @@ import java.util.UUID;
 public class RerunClusterStorage extends BaseModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(RerunClusterStorage.class);
 
+    private final static CreatedDtoMapper createdDtoMapper = new CreatedDtoMapper();
     private final static RecordsCountDtoMapper recordsCountDtoMapper = new RecordsCountDtoMapper();
     private final static RerunClusterDtoMapper rerunClusterDtoMapper = new RerunClusterDtoMapper();
 
     private static String updateRerunClustersTableStatement = """
-            WITH newest_created_rerun_clusters AS (
-            	SELECT
-            		max(rc.created) AS newest_created -- find the newest created date
-            	FROM
-            		rerun_clusters rc
-            ),
-            insert_update_rerun_clusters AS (
+            WITH insert_update_rerun_clusters AS (
             	INSERT INTO rerun_clusters (
             		id,
             		file_id,
@@ -113,15 +110,23 @@ public class RerunClusterStorage extends BaseModuleStorage {
                 file_id = ?
             """;
 
+    private static String latestCreatedStatement = """
+            SELECT
+                max(rc.created) AS latest_created -- find the latest created datetime
+            FROM
+                rerun_clusters rc
+        """;
+
     public RerunClusterStorage() throws SQLException {
         super();
     }
 
     /**
-     * Fetch new rows from remote p3rerun database in table clusters table, save it to our rerun_clusters table,
+     * return new rows from remote p3rerun database in table clusters table, save it to our rerun_clusters table,
      * update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table.
      *
      * @return RecordsCountDto number of rows inserted or updated
+     * @return RecordsCountDto
      * @throws Exception
      */
     public RecordsCountDto updateRerunClustersTable() throws Exception {
@@ -142,10 +147,10 @@ public class RerunClusterStorage extends BaseModuleStorage {
     }
 
     /**
-     * Get a rerun cluster by fileId
+     * Return a rerun cluster by fileId
      *
      * @param fileId
-     * @return
+     * @return RerunClusterDto
      * @throws Exception
      */
     public RerunClusterDto getRerunClusterByFileId(UUID fileId) throws Exception {
@@ -160,6 +165,28 @@ public class RerunClusterStorage extends BaseModuleStorage {
             return null;
         } catch (SQLException e) {
             String message = "SQL Exception in getRerunClusterByFileId with fileId:'" + fileId + "' error: " + e.getMessage();
+            log.error(message);
+            throw new SQLException(message, e);
+        }
+    }
+
+    /**
+     * Return latest created datetime from rerun_clusters table. Can be null.
+     *
+     * @return CreatedDto with latest created datetime
+     * @throws Exception
+     */
+    public CreatedDto latestCreated() throws Exception {
+        try (PreparedStatement stmt = connection.prepareStatement(latestCreatedStatement)) {
+            ResultSet resultSet = stmt.executeQuery();
+
+            while (resultSet.next()) {
+                return createdDtoMapper.map(resultSet);
+            }
+
+            return null;
+        } catch (SQLException e) {
+            String message = "SQL Exception in latestCreated. Error: " + e.getMessage();
             log.error(message);
             throw new SQLException(message, e);
         }

@@ -275,7 +275,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'Calls ds-storage via DsStorageClient that fetch new rows from remote p3rerun database in table clusters table, save it to our rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table in a `RecordsCountDto` object'
+      summary: 'Calls ds-storage via DsStorageClient that returns new rows from remote p3rerun database in table clusters table, save it to our rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table in a `RecordsCountDto` object'
       security:
         - KBOAuth:
             - any
@@ -287,6 +287,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecordsCount'
+
+  /rerun-cluster/created/latest:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Calls ds-storage via DsStorageClient that returns latest created datetime from rerun_clusters table. Can be null.'
+      security:
+        - KBOAuth:
+            - any
+      operationId: latestCreated
+      responses:
+        '200':
+          description: 'Latest created datetime from rerun_clusters table. Can be null.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Created'
 
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -385,6 +402,17 @@ paths:
 
 components:
   schemas:
+    Created:
+      type: object
+      required:
+        - created
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: 'Latest created datetime from rerun_clusters table. Can be null.'
+          example: '2021-01-30T08:30:00Z'
+
     # Basic status response component.
     Status:
       type: object

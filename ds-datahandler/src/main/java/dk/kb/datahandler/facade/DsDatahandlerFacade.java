@@ -340,29 +340,62 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * Calls ds-storage via DsStorageClient that fetch new rows from remote p3rerun database in table clusters table,
-     * save it to our rerun_clusters table, update mtime in ds_records table and
-     * return number of rows inserted or updated in rerun_clusters table in a `RecordsCountDto` object.
+     * Calls ds-storage via DsStorageClient that return new rows from remote p3rerun database in
+     * table clusters table, save it to our rerun_clusters table, update mtime in ds_records table
+     * and return number of rows inserted or updated in rerun_clusters table in a `RecordsCountDto`
+     * object.
      *
-     * @param user the
+     * @param user
      * @return RecordsCountDto number of rows inserted or updated
      */
     public static RecordsCountDto updateRerunClustersTable(String user) {
         JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, null, user);
         try {
             DsStorageClient dsStorageApiClient = getDsStorageApiClient();
-            dk.kb.storage.model.v1.RecordsCountDto returnedRrecordsCountDto = dsStorageApiClient.updateRerunClustersTable();
+            dk.kb.storage.model.v1.RecordsCountDto returnedRrecordsCountDto =
+                dsStorageApiClient.updateRerunClustersTable();
 
             RecordsCountDto recordsCountDto = new RecordsCountDto();
             recordsCountDto.setCount(returnedRrecordsCountDto.getCount());
 
-            updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC), recordsCountDto.getCount(), null);
-            log.info("Inserted/updated rows in rerun_clusters table:'{}'", recordsCountDto.getCount());
+            updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
+                recordsCountDto.getCount(), null);
+            log.info("Inserted/updated rows in rerun_clusters table:'{}'",
+                recordsCountDto.getCount());
 
             return recordsCountDto;
         } catch (Exception exception) {
-            log.error("Updating rerun clusters failed with jobId='{}'. Exception: ", jobDto.getId(), exception);
-            updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(), OffsetDateTime.now(ZoneOffset.UTC), null, null);
+            log.error("Updating rerun clusters failed with jobId='{}'. Exception: ", jobDto.getId(),
+                exception);
+            updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(),
+                OffsetDateTime.now(ZoneOffset.UTC), null, null);
+            throw exception;
+        }
+    }
+
+    /**
+     * Calls ds-storage via DsStorageClient that return latest created datetime from rerun_clusters
+     * table. Can be null.
+     *
+     * @return CreatedDto latest created datetime
+     */
+    public static CreatedDto latestCreated() {
+        try {
+            DsStorageClient dsStorageApiClient = getDsStorageApiClient();
+            dk.kb.storage.model.v1.CreatedDto returnedCreatedDto =
+                dsStorageApiClient.latestCreated();
+
+            CreatedDto createdDto = new CreatedDto();
+            createdDto.setCreated(returnedCreatedDto.getCreated());
+
+            log.info("Latest created datetime from ds-storage rerun_clusters table:'{}'",
+                createdDto.getCreated());
+
+            return createdDto;
+        } catch (Exception exception) {
+            log.error(
+                "Failed fetching latest created datetime from ds-storage rerun_clusters table. Exception: ",
+                exception);
             throw exception;
         }
     }

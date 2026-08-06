@@ -14,6 +14,7 @@
  */
 package dk.kb.storage.util;
 
+import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
@@ -470,18 +471,40 @@ public class DsStorageClient {
     }
 
     /**
-     * Fetch new rows from remote p3rerun database in table clusters table, save it to our rerun_clusters table, update mtime in ds_records
-     * table and return number of rows inserted or updated in rerun_clusters table.
+     * Return new rows from remote p3rerun database in table clusters table, save it to our
+     * rerun_clusters table, update mtime in ds_records table and return number of rows inserted or
+     * updated in rerun_clusters table.
      *
      * @throws ServiceException if fails to make API call
      */
     public RecordsCountDto updateRerunClustersTable() throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
-                    .appendPathSegments("rerun-cluster")
-                    .build();
+                .appendPathSegments("rerun-cluster")
+                .build();
 
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST", new RecordsCountDto(), null);
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST", new RecordsCountDto(),
+                null);
+
+        } catch (URISyntaxException uriSyntaxException) {
+            log.error("Invalid url: " + uriSyntaxException.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Return latest created datetime from rerun_clusters table. Can be null.
+     *
+     * @throws ServiceException if fails to make API call
+     */
+    public CreatedDto latestCreated() throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                .appendPathSegments("rerun-cluster/created/latest")
+                .build();
+
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET", new CreatedDto(),
+                null);
 
         } catch (URISyntaxException uriSyntaxException) {
             log.error("Invalid url: " + uriSyntaxException.getMessage());

@@ -519,10 +519,10 @@ paths:
     post:
       tags:
         - 'RerunCluster'
-      summary: 'Fetch new rows from remote p3rerun database in table clusters table, save it to our rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table'
+      summary: 'Rerun new rows from remote p3rerun database in table clusters table, save it to our rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table'
       security:
         - KBOAuth:
-          - any
+            - any
       operationId: updateRerunClustersTable
       responses:
         '201':
@@ -536,7 +536,7 @@ paths:
     get:
       tags:
         - 'RerunCluster'
-      summary: 'Get a Rerun Cluster from fileId.'
+      summary: 'Return a rerun cluster from fileId.'
       security:
         - KBOAuth:
             - any
@@ -557,6 +557,23 @@ paths:
                 $ref: '#/components/schemas/RerunCluster'
         '404':
           description: "Rerun Cluster fileId not found."
+
+  /rerun-cluster/created/latest:
+    get:
+      tags:
+        - 'RerunCluster'
+      summary: 'Return latest created datetime from rerun_clusters table. Can be null.'
+      security:
+        - KBOAuth:
+            - any
+      operationId: latestCreated
+      responses:
+        '200':
+          description: 'Latest created datetime from rerun_clusters table. Can be null.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Created'
 
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -630,6 +647,17 @@ paths:
 
 components:
   schemas:
+    Created:
+      type: object
+      required:
+        - created
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: 'Latest created datetime from rerun_clusters table. Can be null.'
+          example: '2021-01-30T08:30:00Z'
+
     Origin:
       type: object
       properties:
