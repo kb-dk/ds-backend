@@ -48,5 +48,4 @@ public class IdentityTransformer implements DSTransformer {
     public String toString() {
         return "IdentityTransformer()";
     }
-
 }

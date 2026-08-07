@@ -46,12 +46,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Client for the service. Intended for use by other projects that calls this service.
  * See the {@code README.md} for details on usage.
- * </p>
  * This class is not used internally.
- * </p>
  * The client is Thread safe and handles parallel requests independently.
  * It is recommended to persist the client and to re-use it between calls.
- * <p>
  * The client supports caching for {@link #checkAccessForIds} and {@link #checkAccessForResourceIds}.
  * See the {@link DsLicenseApi(YAML)} constructor for details.
  */
@@ -104,8 +101,8 @@ public class DsLicenseClient{
 
     /**
      * Adjust caching if {@link #checkAccessForIds} and {@link #checkAccessForResourceIds}.
-     * <p>
      * Calling this method resets the cache.
+     *
      * @param cacheIDCount the maximum number of {@link CheckAccessForIdsInputDto} to cache.
      * @param cacheIDms the maximum amount of milliseconds for any object in the cache.
      * @return this object with caching adjusted
@@ -122,6 +119,7 @@ public class DsLicenseClient{
 
     /**
      * Creates a client for the service.
+     *
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-license/v1}.
      * @deprecated use {@link DsLicenseApi(YAML)} or {@link DsLicenseApi(YAML, int, long)} instead.
      */
@@ -130,7 +128,6 @@ public class DsLicenseClient{
         this(serviceURI, CACHE_ID_COUNT_DEFAULT, CACHE_ID_MS_DEFAULT);
     }
 
- 
     /**
      * Bypass the cache and always perform a remote check for access. 
      * Use the Cached method for performance instead: {@link DsLicenseClient#checkAccessForIdsGeneral}
@@ -171,12 +168,10 @@ public class DsLicenseClient{
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
          }                   
     }
-    
 
     /**
      * Bypass the cache and always perform a remote check for access.
      * Use the Cached method for performance instead: {@link  DsLicenseClient#checkAccessForIdsGeneral}
-     * 
      *   
      * @param idInputDto request for access information.
      * @return direct result from {@link DsLicenseApi#checkAccessForIds} 
@@ -204,7 +199,6 @@ public class DsLicenseClient{
      * @throws ServiceException if fails to make API call
      */
     public GetUserGroupsOutputDto getUserGroups (GetUserGroupsInputDto getUserGroupsInputDto) throws ServiceException {
-
         try {
             URI uri = new URIBuilder(serviceURI)
                     .appendPath("getUserGroups")                                                                
@@ -236,8 +230,7 @@ public class DsLicenseClient{
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
          }                          
     }
-      
-    
+
     /**
      * Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search
      * 
@@ -257,8 +250,7 @@ public class DsLicenseClient{
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
          }        
     }
-      
-    
+
     /**
      * Get a list of all licences that validates from user attributes.
      * 
@@ -275,12 +267,10 @@ public class DsLicenseClient{
         }
         catch (URISyntaxException e) {                
             log.error("Invalid url:"+e.getMessage());
-            throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
-         }    
-        
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
     }
-    
-    
+
     /**
      * Helper for {@link #checkAccessForIds} and {@link #checkAccessForResourceIds} that takes care of wrapping and
      * unwrapping the use of {@link #idcache}.
@@ -306,7 +296,6 @@ public class DsLicenseClient{
 
     /**
      * Calculates the rights based on the provided input data.
-     * <br/>
      * This method sends a POST request to the rights calculation endpoint.
      * It expects an input DTO containing the necessary information for rights calculation
      * and returns the corresponding output DTO with the results.
@@ -326,7 +315,5 @@ public class DsLicenseClient{
             log.error("Invalid url: '{}'", e.getMessage());
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);
         }
-
     }
-
 }

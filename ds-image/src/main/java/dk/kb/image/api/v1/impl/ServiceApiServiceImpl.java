@@ -41,6 +41,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
 
     /**
      * Extract info from OAUth2 accessTokens.
+     *
      * @return OAUth2 roles from the caller's accessToken, if present.
      */
     @SuppressWarnings("unchecked")
@@ -66,7 +67,6 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
 
     /**
      * Detailed status / health check for the service.
-     * <p>
      * The default implementation presents status information available to all web applications.
      * This should be extended with application specific information, such as number of running jobs or
      * current load.
@@ -98,6 +98,4 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
             throw handleException(e);
         }
     }
-
-    
 }

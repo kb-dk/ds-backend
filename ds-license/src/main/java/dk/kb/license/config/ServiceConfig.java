@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
  * This should work well for most projects with non-dynamic properties.
  */
 public class ServiceConfig {
-
     private static final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
 
     public static String SOLR_FILTER_ID_FIELD = null;

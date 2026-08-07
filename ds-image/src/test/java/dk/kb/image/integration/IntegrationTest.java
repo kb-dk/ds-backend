@@ -17,13 +17,11 @@ import dk.kb.image.util.DsImageClient;
 import dk.kb.util.oauth2.KeycloakUtil;
 import dk.kb.util.webservice.OAuthConstants;
 
-
 /**
  * Abstract IntegrationTest class that will add Oauth2 token to service calls.
  * Configuration for the external server urls are defined in the aegis file: 'ds-image-integration-test.yaml'  
  */
 public abstract class IntegrationTest {
-
     private static final Logger log = LoggerFactory.getLogger(IntegrationTest.class);
 
     static DsImageClient remote = null;
@@ -55,12 +53,10 @@ public abstract class IntegrationTest {
                MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);           
                mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
             }
-
         }
         catch(Exception e) {
             log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");            
             e.printStackTrace();
         }                        
     }
-    
 }

@@ -25,21 +25,15 @@ import java.util.Set;
  * Originally all information for copyright logic was supposed to be in the AccessCondition tags of the record. 
  * But this has shown not to be sufficient information and too hard to make sufficient. So now this class
  * also reads other XML fields required to deduce the various copyright statuses of the records.
- * 
  * The output of this class in used to enrich the solr-documents with additional fields about copyright statuses.
- *  
  * This document is the bible for what is going on:
  * https://kbintern.sharepoint.com/:w:/r/sites/Proj-KULA-186-Digitale-samlinger-Amanda-Britta/_layouts/15/Doc.aspx?action=edit&sourcedoc=%7B915b7ba6-eeae-4636-b04c-472b83aa81f6%7D&wdOrigin=TEAMS-ELECTRON.teamsSdk.openFilePreview&wdExp=TEAMS-CONTROL&web=1&cid=5b8502b8-d6cc-4d97-8191-7f3abe6e3c5b
  * This should be the newest version and is stil not finished. (materiel type logic missing)
  * The version used to implement this class can be found in the /doc folder in the project
- * 
  */
 public class CopyrightAccessExtractor {
-
 	private static final Logger log = LoggerFactory.getLogger(CopyrightAccessExtractor.class);
 
-
-	
 	//Lowercase important    
     private static final Set<String> FOTOGRAFI_AFTALE = Set.of("dia", "digital optagelse", "fotografi", "fotogravure", "negativ");
  
@@ -47,15 +41,11 @@ public class CopyrightAccessExtractor {
 	private static final Set<String> BILLEDE_AFTALE = Set.of("akvarel", "grafik", "postkort", "plakats","tegning","tryk","silhuet",
                                               "arkitekturfotografi","arkitekturtegning","anskuelsesbillede","genstand",
                                               "bladtegning","kort","atlas","prospekt");
-                                              
 
-	
 	public static CopyrightAccessDto buildCopyrightFields(String xml) throws Exception {
-
 		if (xml == null) {
 			throw new Exception("XML is null");
 		}
-
 
 		CopyrightAccessDto copyrightDto= new CopyrightAccessDto();
 
@@ -63,15 +53,13 @@ public class CopyrightAccessExtractor {
 
 		String fileName = getFileName(document); //used as parameter to methods for log statement        
         copyrightDto.setFilNavn(fileName);
-		
-        
-        String materialeType=getMaterialType(document);
+
+		String materialeType=getMaterialType(document);
 		copyrightDto.setMaterialeType(getMaterialType(document));
 		
 		copyrightDto.setBilledeAftale(isBilledeAftale(materialeType));
 		copyrightDto.setFotoAftale(isFotoAftale(materialeType));
-		
-		
+
 		//TEMORARY SOLUTION TO SET IMAGE LINK!
 		copyrightDto.setImageUrl(getImageLink(document));
 
@@ -93,34 +81,28 @@ public class CopyrightAccessExtractor {
 		ArrayList<AccessCondition> accessConditionList = buildAccessConditions(accessConditions);
 		copyrightDto.setAccessConditionsList(accessConditionList);        
 
-
 		Integer lastDeathYearForPerson = getLastDeathYearForPerson(accessConditionList,fileName);
 		if (lastDeathYearForPerson !=  null) {
 			copyrightDto.setOphavsPersonDoedsAar(lastDeathYearForPerson);;
 		}
-		
-					
+
 		Integer skabelsesAar = getSkabelsesAar(document,fileName);
 		if (skabelsesAar != null) {
 			 copyrightDto.setSkabelsesAar(skabelsesAar);
 		}
-		 
-		
+
 		return  copyrightDto;
 	}
-
 
 	/**
 	 * Maps the accessConditions tags (there can be multiple) to a java DTO.
 	 * There is much cross-logic involved and having them as a java DTO makes code easier.
 	 * It also makes unittests easier so you can construct them an test the business logic,
-	 * instead of your XML-writing skills.   
-	 *   
+	 * instead of your XML-writing skills.
 	 */
 	public static ArrayList<AccessCondition> buildAccessConditions(  NodeList accessCondititions){       
 		ArrayList<AccessCondition> accessConditionList = new  ArrayList<AccessCondition>();
 		for (int i =0;i<accessCondititions.getLength();i++) {
-
 			AccessCondition accessCondition = new CopyrightAccessDto().new AccessCondition();
 			Element accessConditionElement = (Element) accessCondititions.item(i);
 
@@ -135,7 +117,6 @@ public class CopyrightAccessExtractor {
 			}
 
 			NodeList copyrightList = accessConditionElement.getElementsByTagName("cdl:copyright");  
-
 
 			if (copyrightList.getLength()==0) { //Text!               
 				String accessContentText= accessConditionElement.getTextContent();
@@ -153,7 +134,6 @@ public class CopyrightAccessExtractor {
 			else if (copyrightList.getLength() >1) { //TODO deleted later. Just sanity check for new
 				throw new InvalidArgumentServiceException("UPS... Need to handle multiple elements for 'cdl:copyright'");
 			}
-
 
 			//Can be empty list
 			ArrayList<CreatorPerson> creatorPersons = buildPersons(accessConditionElement);
@@ -197,8 +177,7 @@ public class CopyrightAccessExtractor {
 
 			if (creatorElement.getElementsByTagName("cdl:year.birth").getLength() >0) {
 				String personYearBirth= creatorElement.getElementsByTagName("cdl:year.birth").item(0).getTextContent();
-				person.setYearBirth(personYearBirth);                    
-
+				person.setYearBirth(personYearBirth);
 			}
 
 			if (creatorElement.getElementsByTagName("cdl:year.death").getLength() >0) {
@@ -206,7 +185,6 @@ public class CopyrightAccessExtractor {
 				person.setYearDeath(personYearDeath);
 			}
 			personList.add(person);
-
 		}
 		return personList;
 	}
@@ -254,7 +232,6 @@ public class CopyrightAccessExtractor {
 	}
 
 	public static  Document createDocFromXml(String xml) throws Exception{
-
 		//System.out.println(response);
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
@@ -269,14 +246,11 @@ public class CopyrightAccessExtractor {
 		}
 		catch(Exception e) {                       
 			log.error("Invalid XML",e);                                                
-			throw new Exception("invalid xml",e);            
-
+			throw new Exception("invalid xml",e);
 		}
 
 		return document;
 	}
-
-	
 
     private static boolean isFotoAftale(String materialeType) {
         return FOTOGRAFI_AFTALE.contains(materialeType.toLowerCase(Locale.getDefault()));      
@@ -291,14 +265,11 @@ public class CopyrightAccessExtractor {
 	 *  It is not even sure this is the right way to extract the image link.
 	 *  The long term solution would be to have the XSLT do this, though it is not a simple mapping.
 	 *  Even better have the meds/mod have a field that makes it easy to get the image link (presentation copy of link)
-	 * 
-	 * 
-	 */    
+	 */
 	private static String getImageLink(Document doc) {
 		NodeList identifiers = doc.getElementsByTagName("mods:identifier");
 		for (int i =0;i<identifiers.getLength();i++) {
-
-			Element e = (Element) identifiers.item(i);        
+			Element e = (Element) identifiers.item(i);
 			String type= e.getAttribute("type");
 
 			if ("Asset Reference".equals(type)) {
@@ -318,20 +289,16 @@ public class CopyrightAccessExtractor {
 		return null;
 	}
 
-
 	// See documentation. Can be these different fields, one MUST always be there IF person.death was not found	
 	
 	//<mods:dateCreated>1868</mods:dateCreated>  (notice no point attibute)
 	//<mods:dateCreated point="end">1900</mods:dateCreated> 
 	//<mods:dateCaptured>2014-04-04T11:52:16.000+02:00</mods:dateCaptured> 
-
 	private static Integer getSkabelsesAar(Document doc,String fileName) throws Exception{
-
 		NodeList dateCreated= doc.getElementsByTagName("mods:dateCreated");
 
 		for (int i =0;i<dateCreated.getLength();i++) {
-
-			Element e = (Element) dateCreated.item(i);        
+			Element e = (Element) dateCreated.item(i);
 			String point= e.getAttribute("point");
 			if (point == null || "".equals(point)){
 				String unknownDateFormat=e.getTextContent();
@@ -345,7 +312,6 @@ public class CopyrightAccessExtractor {
 					catch(Exception ex) {
 						log.error("Error pasing dateCreated:"+unknownDateFormat +" for fileName:"+fileName);
 					}
-
 				}
 			}
 			else if ("end".equals(point)) {
@@ -357,9 +323,7 @@ public class CopyrightAccessExtractor {
 			        log.debug("Error parsing year from dateCreated:"+e.getTextContent() +" for record:"+fileName);
 			        return 9999;
 			    }
-				
-			}                                        
-
+			}
 		}
 
 		NodeList dateCaptured = doc.getElementsByTagName("mods:dateCaptured");                                
@@ -371,15 +335,14 @@ public class CopyrightAccessExtractor {
 		return Integer.parseInt(e.getTextContent().substring(0,4));                                               
 	}
 
-	/* Find person with most recent death year. Return null if just one person  is not dead.   
+	/**
+	 * Find person with most recent death year. Return null if just one person  is not dead.
 	 * Also return null if no persons is found
 	 * Notice last name logic is no longer in use!
 	 */       
 	private static Integer getLastDeathYearForPerson(ArrayList<AccessCondition> accessConditionList, String fileName) {
-
 		Integer highestYear = null;
 		for (AccessCondition ac: accessConditionList) {
-
 			for (CreatorPerson p : ac.getCreatorPersonList()) {
 				Integer year= extractYear(p.getYearDeath(),fileName);
 				//System.out.println("parsed year:"+year);
@@ -395,13 +358,10 @@ public class CopyrightAccessExtractor {
 		return highestYear;
 	}
 
-
-	/*
+	/**
 	 * Always assume first 4 letters are year.
-	 *       
 	 * Format can me 
 	 * YYYY or YYYY-M-DD or  YYYY-MM-DD or...
-	 * 
 	 */
 	private static  Integer extractYear(String yearString, String fileName) {
 		if (yearString==null || yearString.length() <4) {            
@@ -418,12 +378,10 @@ public class CopyrightAccessExtractor {
 		}                        
 	}
 
-
 	private static String getMaterialType(Document doc) {
 		NodeList types = doc.getElementsByTagName("mods:typeOfResource");
 		for (int i =0;i<types.getLength();i++) {
-
-			Element e = (Element) types.item(i);        
+			Element e = (Element) types.item(i);
 			String type= e.getAttribute("displayLabel");    
 			if ("Resource Description".equals(type)) { 
 				String ref = e.getTextContent();                
@@ -432,19 +390,15 @@ public class CopyrightAccessExtractor {
 		}		
 		
 	   String fileName = getFileName(doc);
-	   log.warn("No material type found for file:"+fileName);			
-		
-		
-		return "Ukendt";         
+	   log.warn("No material type found for file:"+fileName);
+	   return "Ukendt";
 	}    
 
 	//           <mods:identifier type="local">DT006526.tif</mods:identifier>
 	private static String getFileName(Document doc) {
-
 		NodeList identifiers = doc.getElementsByTagName("mods:identifier");
 		for (int i =0;i<identifiers.getLength();i++) {
-
-			Element e = (Element) identifiers.item(i);        
+			Element e = (Element) identifiers.item(i);
 			String type= e.getAttribute("type");
 
 			if ("local".equals(type)) {
@@ -455,6 +409,4 @@ public class CopyrightAccessExtractor {
 		log.error("No identificer with attribute type='local' found");            	
 		return null;
 	}
-
-	
 }

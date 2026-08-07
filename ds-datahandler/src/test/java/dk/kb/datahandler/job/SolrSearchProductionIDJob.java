@@ -14,13 +14,11 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.request.QueryingApi.QueryResponse;
 
 public class SolrSearchProductionIDJob {
-
     public static void main(String [] args) throws Exception {
     
         //This is a file where each line just is production id.
         Path path = Paths.get("/home/teg/Desktop/dr_production_id.txt");
-        
-        
+
         //http://devel11:10007/solr/#/ds/
         //http://localhost:50006/solr/ds.1.prod/"
         String prodUrl="http://localhost:50006/solr/ds.1.prod/";
@@ -35,8 +33,7 @@ public class SolrSearchProductionIDJob {
             
             org.apache.solr.client.solrj.response.QueryResponse res = client.query(query, METHOD.POST);
             System.out.println("#docs:"+res.getResults().getNumFound());
-            
-            
+
         List<String> lines = Files.readAllLines(path);
         System.out.print("#production ids in file:"+lines.size());    
         int total=0;
@@ -80,5 +77,4 @@ public class SolrSearchProductionIDJob {
         
         return productionId;
     }
-    
 }

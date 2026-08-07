@@ -1,6 +1,5 @@
 package dk.kb.datahandler.storage;
 
-
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -20,7 +19,6 @@ public abstract class BasicStorage implements AutoCloseable {
     private static BasicDataSource dataSource;
 
     public static void initialize(String driverName, String driverUrl, String userName, String password) {
-
         int connectionPoolSize = ServiceConfig.getConnectionPoolSize();
 
         dataSource = new BasicDataSource();

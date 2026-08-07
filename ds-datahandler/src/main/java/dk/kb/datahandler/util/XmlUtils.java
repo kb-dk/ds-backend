@@ -44,6 +44,4 @@ public class XmlUtils {
 
         return previous;
     }
-
-    
 }

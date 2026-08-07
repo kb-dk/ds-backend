@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * </pre>
  */
 public class Fragment {
-
     @JsonProperty("metadata_fragment")
     private String metadataFragment;
 

@@ -26,7 +26,6 @@ public class OaiRecordHandlerTest {
         handler = new PreservicaOaiRecordHandler();
         saxParser.parse(Resolver.resolveStream("xml/updatedprofileswithrecord.xml"), handler);
         assertEquals(PreservicaOaiRecordHandler.TranscodingStatus.SUCCESS, handler.lastTranscodingStatus);
-
     }
 
     @Test
@@ -102,5 +101,4 @@ public class OaiRecordHandlerTest {
         saxParser.parse(Resolver.resolveStream("xml/dc885d8e-2d11-4067-a2d6-d7df9add8331.xml"),handler);
         assertEquals(PreservicaOaiRecordHandler.RecordType.UNKNOWN, handler.getRecordType());
     }
-
 }

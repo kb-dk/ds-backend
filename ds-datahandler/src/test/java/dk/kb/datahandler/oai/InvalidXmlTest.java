@@ -1,7 +1,5 @@
 package dk.kb.datahandler.oai;
 
-
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -19,7 +17,6 @@ import org.xml.sax.InputSource;
 import dk.kb.util.Resolver;
 import dk.kb.util.xml.XMLEscapeSanitiser;
 public class InvalidXmlTest {
-
     private static final Logger log = LoggerFactory.getLogger(InvalidXmlTest.class);
 
     @Test
@@ -74,5 +71,4 @@ public class InvalidXmlTest {
         Element textElement=  (Element) metadataElement.getElementsByTagName("text").item(0);
         return textElement.getTextContent();
     }
-  
 }

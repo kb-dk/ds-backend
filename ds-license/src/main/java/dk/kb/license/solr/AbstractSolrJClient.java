@@ -32,23 +32,20 @@ public abstract class AbstractSolrJClient {
         java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.OFF);   
     }
 
-    
-    
     /**
      * Filter ID for a given ID field. Both id and resource_id are used as id's.
      * This method is used for record resources such as images.
      * Will only return ID's that is part of the query request.
      * Due to multi fields, Solr can return values that was not in the request
-     * <p>
      * The Solr requests are issued using POST and in batches, ensuring that an arbitrary amount and size of IDs
      * (within Solr's limits for ID size) can be handled.
+     * 
      * @param ids List of id's that will be matched agaist the solrIdField param.
      * @param queryPartAccess A filter query used to filter the ID's. If null then no filter is used.
      * @param solrIdField So far only options are 'id' or 'resource_id' fields in Solr.
      */
     public List<String> filterIds(List<String> ids, String queryPartAccess, String solrIdField)
             throws SolrServerException, IOException {
-
         if (ids == null || ids.isEmpty()){
             return Collections.emptyList();
         }
@@ -76,7 +73,7 @@ public abstract class AbstractSolrJClient {
    
     /** 
      * Will remove " from id's to remove query-injection (Little Bobby Tables). Each id will be a phrase search with '""' added.
-     * Example: give the ids (id1,id2,id3)  and the filter i field 'resource_id' the query string return will be:<br>
+     * Example: give the ids (id1,id2,id3)  and the filter i field 'resource_id' the query string return will be:
      * resource_id:("id1" OR "id2" OR "id3")
      * 
      * @param ids List of ID's to filter
@@ -113,10 +110,7 @@ public abstract class AbstractSolrJClient {
         return ids;
     }
 
-
     public SolrClient getSolrServer() {
         return solrServer;
     }
-
-   
 }

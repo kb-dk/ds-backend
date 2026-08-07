@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.helpers.DefaultHandler;
 
-
 /**
  * Filtering and delivery of OAI records. public implementation generates {@code datasource} prefixed ID,
  * sets type to {@link RecordTypeDto#DELIVERABLEUNIT} and does not resolve {@code parent}.
@@ -93,8 +92,8 @@ public class OaiResponseFilter {
 
     /**
      * Resolve the {@code origin} for the given {@code oaiRecord} from the given {@code datasource}.
-     * <p>
      * public behaviour is to return the {@code datasource}.
+     *
      * @param oaiRecord     a record from an OAI-PMH response
      * @param datasource    where the harvested OAI-PMH record is extracted from.
      * @param recordHandler used to parse the data from the osiRecord if needed.
