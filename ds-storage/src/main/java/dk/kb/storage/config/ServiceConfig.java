@@ -17,15 +17,13 @@ import dk.kb.util.yaml.YAML;
  * This should work well for most projects with non-dynamic properties.
  */
 public class ServiceConfig {
-
 	  private static final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
 
 	  public static final int DB_BATCH_SIZE_DEFAULT = 100;
 
 	//key is origin
 	private static final HashMap<String,OriginDto> allowedOrigins = new HashMap<>();
-    
-	
+
 	/**
 	 * Besides parsing of YAML files using SnakeYAML, the YAML helper class provides convenience
 	 * methods like {@code getInteger("someKey", defaultValue)} and {@code getSubMap("config.sub1.sub2")}.
@@ -36,6 +34,7 @@ public class ServiceConfig {
 	 * Initialized the configuration from the provided configFile.
 	 * This should normally be called from {@link dk.kb.storage.webservice.ContextListener} as
 	 * part of web server initialization of the container.
+	 *
 	 * @param configFiles the YAML files which the configuration is loaded from.
 	 * @throws IOException if the configuration could not be loaded or parsed.
 	 */
@@ -46,7 +45,6 @@ public class ServiceConfig {
 	}
 
 	private static void loadAllowedOrigins() throws IOException{
-
 		List<YAML> origins = serviceConfig.getYAMLList("origins");
 		//Load updateStrategy for each
 		for (YAML origin: origins) {
@@ -64,9 +62,7 @@ public class ServiceConfig {
 		}
 
 		log.info("Allowed origin loaded from config. Number of origins: '{}'", allowedOrigins.size());
-		
 	}
-
 
 	public static  String getDBDriver() {
 		String dbDriver= serviceConfig.getString("db.driver");
@@ -101,11 +97,11 @@ public class ServiceConfig {
 		return allowedOrigins;
 	}
 
-	
 	/**
 	 * Direct access to the backing YAML-class is used for configurations with more flexible content
 	 * and/or if the service developer prefers key-based property access.
 	 * @see #getHelloLines() for alternative.
+	 *
 	 * @return the backing YAML-handler for the configuration.
 	 */
 	public static YAML getConfig() {
@@ -114,5 +110,4 @@ public class ServiceConfig {
 		}
 		return serviceConfig;
 	}
-
 }
