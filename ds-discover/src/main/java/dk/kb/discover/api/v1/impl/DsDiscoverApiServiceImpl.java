@@ -29,7 +29,6 @@ import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import dk.kb.discover.SolrManager;
 import dk.kb.discover.SolrService;
 import dk.kb.discover.api.v1.DsDiscoverApi;
@@ -51,7 +50,6 @@ import dk.kb.util.webservice.exception.ServiceException;
 public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi {
     private static final Logger log = LoggerFactory.getLogger(DsDiscoverApiServiceImpl.class);
 
-
     /**
      * Signals that a filter should be cached in Solr (default is already to cache).
      * This prefix has two purposes:
@@ -63,8 +61,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
      */
     public static final String FILTER_CACHE_PREFIX = "{!cache=true}";
 
-    /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
-
+    // How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
     @Context
     private transient UriInfo uriInfo;
 
@@ -99,7 +96,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     @Context
     private transient MessageContext messageContext;
 
-
     private static DsLicenseClient licenseClient;  
     
     /**
@@ -128,7 +124,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         } catch (Exception e){
             throw handleException(e);
         }
-    
     }
 
     /**
@@ -148,8 +143,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     @Override
     public String configAction(String action, String name) throws ServiceException {
         // TODO: Implement...
-    
-        
         try { 
             log.debug("configAction() called with call details: {}", getCallDetails());
             String response = "BQBHQ5M0";
@@ -157,14 +150,11 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         } catch (Exception e){
             throw handleException(e);
         }
-    
     }
-
 
     @Override
     public String solrMLT(String collection, String q, String mltFl, Integer mltMintf, Integer mltMindf, Integer mltMaxdf, Integer mltMaxdfpct, Integer mltMinwl, Integer mltMaxwl, Integer mltMaxqt, Boolean mltBoost, String mltInterestingTerms, List<String> fq, Integer rows, Integer start, String fl, String qOp, String wt) {
         try {
-
             log.debug("solrMLT(collection='{}', q='{}', ...) called with call details: {}",
                       collection, q, getCallDetails());
             Map<String, String[]> extra = getExtraParams();
@@ -210,7 +200,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         }
     }
 
-
     /**
      * Return the documented solr schema. This endpoint retrieves the raw solr schema and then transforms it to the
      * specified format using an XSLT. This transformation retrieves processing instructions and includes these in the
@@ -230,7 +219,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
             httpServletResponse.setHeader("Content-Disposition", "inline; swaggerDownload=\"attachment\"; filename=\"" + filename + "\"");
 
             return DocumentationExtractor.transformSchema(collection, format);
-
         } catch (Exception e){
             throw handleException(e);
         }
@@ -277,11 +265,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     		                 String indent,
     		                 String debug,
     		                 String debugExplainStructured) {
-    
-    	
-    
         try {
-                      
             log.debug("solrSearch(collection='{}', q='{}', ...) called with call details: {}",
                     collection, q, getCallDetails());
             Map<String, String[]> extra = getExtraParams();
@@ -309,7 +293,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
         }
     }
 
-    
     /**
      * Perform a Solr-suggest search in the stated collection
      * 
@@ -328,7 +311,6 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
      */
     @Override   
     public String solrSuggest(String collection, String suggestDictionary, String suggestQuery, Integer suggestCount, String wt) {
-
         log.debug("solrsuggest(collection='{}', q='{}', ...) called with call details: {}", collection, suggestQuery, getCallDetails());
         
         SolrService solr = SolrManager.getSolrService(collection);
@@ -338,9 +320,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
                        
         return rawResponse;
     }
-    
-    
-    
+
     /**
      * Evaluate the request against the SolrShield for the given collection.
      * If the shield blocks the request, a {@link ServiceException} with status 403 is thrown.
@@ -397,8 +377,7 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
     private static DsLicenseClient getDsLicenseApiClient() {
         return LicenseUtil.getDsLicenseApiClient();
     }
-    
-    
+
     /**
      * Subtracts parameters defined for the called endpoint from the total set of parameters in the called URI,
      * resulting in a map of unhandled parameters. These parameters has to be removed since all are set again in the solr call method.
@@ -419,6 +398,4 @@ public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi 
      
         return extras;
     }
-
-
 }

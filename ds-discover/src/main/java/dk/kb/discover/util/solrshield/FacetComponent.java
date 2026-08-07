@@ -26,7 +26,6 @@ import java.util.stream.StreamSupport;
  * Representation of a Solr Facet component.
  */
 public class FacetComponent extends Component<FacetComponent> {
-
     protected StringParam facetQuery;
     protected FieldsParam facetField; // Multiple values, but the Solr param name is singular 'facet.field'
     protected IntegerParam facetLimit;
@@ -84,5 +83,4 @@ public class FacetComponent extends Component<FacetComponent> {
                         facetMincount.getWeight() +
                         facetExists.getWeight();
     }
-
 }

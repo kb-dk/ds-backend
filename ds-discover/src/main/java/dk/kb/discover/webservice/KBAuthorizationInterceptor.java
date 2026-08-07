@@ -98,16 +98,13 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         log.info("Created " + this);
     }
 
-    
     /**
      * Logic: <br>
      * 1. Validate Token present if required for method. 
      * 2. Validate access control for role allowed to call the method.
-     * 
      */
     @Override
     public void handleMessage(Message message) throws Fault {
-
         //message.getExchange().get(OperationResourceInfo.class);
         final String endpoint = getEndpointName(message);
         log.debug("handleMessage({}) called", endpoint);
@@ -293,9 +290,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         return authorizationString.split(" ", 2)[1];
     }
 
-
     public String toString() {
         return String.format(Locale.ROOT, "KBInterceptor(handler=%s)", handler);
     }
-
 }

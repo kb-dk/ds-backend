@@ -46,7 +46,6 @@ public class SelectResponse {
         this.facetCounts = facetCounts;
     }
 
-
     @Override
     public String toString() {
         return "SelectResponse{" +

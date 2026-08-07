@@ -110,5 +110,4 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
             throw handleException(e);
         }
     }
-
 }

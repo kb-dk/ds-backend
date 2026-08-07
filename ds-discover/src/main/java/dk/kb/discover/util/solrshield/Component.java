@@ -30,7 +30,6 @@ import java.util.stream.StreamSupport;
  * Representation of a Solr component, i.e. {@code search}, {@code facet}, {@code highlight}...
  */
 public abstract class Component<T extends Component<T>> extends ProfileElement<T> {
-
     public boolean defaultEnabled = false;
     public boolean allowed = false;
     public double weightConstant = 0.0;

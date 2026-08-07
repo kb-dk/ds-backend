@@ -82,7 +82,6 @@ public class Response {
         return new Response(request, maxWeight, allowed, newReasons, weight);
     }
 
-
     /**
      * @param weight the weight of the {@link #request}.
      * @return a copy of this Response adjusted with the given value.
@@ -127,5 +126,4 @@ public class Response {
                 .map(e -> e.getKey() + "=" + Arrays.toString(e.getValue()))
                 .collect(Collectors.joining(", ", "[", "]"));
     }
-
 }

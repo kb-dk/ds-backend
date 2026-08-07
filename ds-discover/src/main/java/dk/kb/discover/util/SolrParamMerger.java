@@ -414,7 +414,6 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
         }
-
     }
 
     /**

@@ -554,7 +554,6 @@ public class SolrService {
         return WT_SCHEMA_ENUM.safeParse(wt).getMIME();
     }
 
-
     /**
      * Disables function calls and catch-all regexp.
      * @param q Solr query.
@@ -730,5 +729,4 @@ public class SolrService {
                ", solrCollection='" + solrCollection + '\'' +
                ')';
     }
-
 }

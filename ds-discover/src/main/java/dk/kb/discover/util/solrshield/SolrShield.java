@@ -138,5 +138,4 @@ public class SolrShield {
 
         return new Response(request, defaultMaxWeight, allowed, reasons, applied.getWeight());
     }
-
 }

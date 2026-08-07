@@ -39,6 +39,4 @@ public class DsDiscoverClient  {
     public DsDiscoverClient(String serviceURI) {
         log.info("Created OpenAPI client for '" + serviceURI + "'");
     }
-        
-     
 }

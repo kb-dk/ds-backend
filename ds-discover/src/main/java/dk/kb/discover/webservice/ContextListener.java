@@ -33,13 +33,11 @@ import ch.qos.logback.core.util.StatusPrinter;
  * Listener to handle the various setups and configuration sanity checks that can be carried out at when the
  * context is deployed/initalized.
  */
-
 public class ContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public static final String LOGBACK_ENV = "java:/comp/env/ds-discover-logback-config";
     public static final String CONFIG_ENV = "java:/comp/env/application-config";
-
 
     /**
      * On context initialisation this
@@ -54,7 +52,6 @@ public class ContextListener implements ServletContextListener {
         initLogging();
         BuildInfoManager.loadBuildInfo("ds-discover.build.properties");
 
-    	
     	try {
             RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
             if (mxBean.getInputArguments().stream().noneMatch(arg -> arg.startsWith("-Xmx"))) {
@@ -111,7 +108,6 @@ public class ContextListener implements ServletContextListener {
                 log.info("Logback config 'logback-test.xml' found. Running in test mode");
                 return;
             }
-
         } catch (Exception e) {
             // We might want to skip this logging as it will log to the unconfigured logback at this point
             log.debug("Logback config 'logback-test.xml' not found. Attempting explicit logback configuration");
@@ -177,6 +173,4 @@ public class ContextListener implements ServletContextListener {
 
         return redirectFile;
     }
-
-
 }
