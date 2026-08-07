@@ -20,7 +20,6 @@ import dk.kb.image.config.ConfigAdjuster;
 import dk.kb.image.util.ImageAccessValidation;
 import dk.kb.util.Resolver;
 
-
 /**
  * Integration test that will call the licensemodule for id access filtering to determine access to tumbnails.  
  */
@@ -49,8 +48,6 @@ public class ImagesAccessIntegrationTest extends IntegrationTest{
         }
     }
 
-
-
     private static ByteArrayOutputStream getImageAsByteArrayOS(String imgName) throws IOException {
         String imgPath = Resolver.getPathFromClasspath(imgName).toString();
 
@@ -62,6 +59,4 @@ public class ImagesAccessIntegrationTest extends IntegrationTest{
         trueImageByteArray.flush();
         return trueImageByteArray;
     }
-
-
 }

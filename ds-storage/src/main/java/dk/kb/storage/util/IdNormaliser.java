@@ -9,20 +9,19 @@ import org.slf4j.LoggerFactory;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 public class IdNormaliser {
-
-    private static final Logger log = LoggerFactory.getLogger(IdNormaliser.class);    
+    private static final Logger log = LoggerFactory.getLogger(IdNormaliser.class);
     
     private static final String regexpIdPattern="([a-z0-9.]+):([a-zA-Z0-9:._-]+)";
     private static final Pattern idPattern = Pattern.compile(regexpIdPattern);
     
     private static final String regexpOrigin="([a-z0-9.]+)";
     private static final Pattern originPattern = Pattern.compile(regexpOrigin);
-    
-    
+
     private static final Pattern NO_GO = Pattern.compile("[^a-zA-Z0-9:._-]");
     
     /**
      * Normalise the ID. Invalid characters will be replaced.
+     *
      * @param id to normalise.
      */
     public static String normaliseId(String id) {
@@ -43,7 +42,6 @@ public class IdNormaliser {
             {"/", "-"},
             {"~", "-"}
             };
-    
 
         // Note: Not a proper id as the collection is not added        
         for (String[] subst: replaces) {
@@ -58,8 +56,7 @@ public class IdNormaliser {
                 
         return id;         
     }
-    
-    
+
     public static boolean validateID(String recordId) {
         Matcher m = idPattern.matcher(recordId);      
         return m.matches();
@@ -69,6 +66,4 @@ public class IdNormaliser {
         Matcher m = originPattern.matcher(origin);      
         return m.matches();
     }
-    
-    
 }

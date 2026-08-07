@@ -20,7 +20,6 @@ import java.util.List;
  * to the metadata of the OaiRacord.
  */
 public class DataEnricher {
-
     private static final Logger log = LoggerFactory.getLogger(DataEnricher.class);
 
     /**
@@ -48,7 +47,8 @@ public class DataEnricher {
              log.error("Unable to fetch fragments for {}",record.getId(),e);
              throw new InternalServiceException("Unable to fetch fragments for "+record.getId());
          }
-        if (fragments.isEmpty()) {
+
+         if (fragments.isEmpty()) {
              log.debug("No fragments found for {}", record.getId());
          }
 
@@ -87,7 +87,6 @@ public class DataEnricher {
                 metadataNode.appendChild(child);
             }
             xipNode.appendChild(metadataNode);
-
         }
     }
 
@@ -98,6 +97,4 @@ public class DataEnricher {
 
         return recordId.substring(endOfPrefix + lengthOfPrefix);
     }
-
-
 }

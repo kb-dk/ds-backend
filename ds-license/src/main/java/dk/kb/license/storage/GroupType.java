@@ -2,14 +2,11 @@ package dk.kb.license.storage;
 
 /**
  * This is a persistent DTO.
- * See the documentation and UML model:<br>
- * licensemodule_uml.png<br>
- * License_validation_logic.png <br>
- * 
+ * See the documentation and UML model:
+ * licensemodule_uml.png
+ * License_validation_logic.png
  */
 public class GroupType extends Persistent {
-
-
 	private String key;
 	private String value_dk;
 	private String value_en;
@@ -38,7 +35,6 @@ public class GroupType extends Persistent {
 		this.description_dk = description_dk;
 	}
 
-	
 	public String getKey() {
 		return key;
 	}
@@ -54,7 +50,6 @@ public class GroupType extends Persistent {
 	public void setValue_dk(String value_dk) {
 		this.value_dk = value_dk;
 	}
-
 
 	public String getValue_dk() {
 		return value_dk;
@@ -75,7 +70,6 @@ public class GroupType extends Persistent {
 	public String toString(){
 		return key;
 	}
-
 
     public String toPresentationtString() {
         return "GroupType [key=" + key + ", value_dk=" + value_dk + ", value_en=" + value_en + ", description_dk="

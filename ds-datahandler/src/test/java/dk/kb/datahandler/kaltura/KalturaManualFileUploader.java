@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,19 +23,14 @@ import dk.kb.kaltura.client.DsKalturaClient;
 public class KalturaManualFileUploader {
 
     /**
-     * <p>
      * Manual started job to upload the devel or stage collection of audio/video files to Kaltura. 
      * The job takes a folder of audio or video files as input. 
      * For each file title and description are fetched from Solr and used as meta-data in Kaltura
      * The files will be uploaded with the metadata: tag=DS-KALTURA
-     * </p>
-     * 
-     *  This is a temporary solution for devel/stage to get data into Kaltura for the frontend.
-     *  
+     * This is a temporary solution for devel/stage to get data into Kaltura for the frontend.
      */
     public static void main(String[] args)  {
-
-        String kalturaUrl= "https://kmc.kaltura.nordu.net";        
+        String kalturaUrl= "https://kmc.kaltura.nordu.net";
         String adminSecret = null;// Use token,tokenId  instead
         Integer partnerId = 398; // 398=stage, 397=prod. 
         String userId = "XXX@kb.dk"; //User must exist in kaltura.                 
@@ -80,7 +74,6 @@ public class KalturaManualFileUploader {
     }
 
     private static SolrDocument getRecordByFileId(String fileId) throws Exception {
-
         String solrUrl = "http://devel11:10007/solr/ds";
         Http2SolrClient client = new Http2SolrClient.Builder(solrUrl).build();
 

@@ -31,11 +31,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.regex.Matcher;
 
-
-
 public class ImageAccessValidationTest {
 	private static final Logger log = LoggerFactory.getLogger(ImageAccessValidationTest.class);
-
 
 	private HttpServletResponse response;
 
@@ -85,8 +82,5 @@ public class ImageAccessValidationTest {
 		  matcher = ImageAccessValidation.IIIF_SIZE_PATTERN.matcher(notValidSize);
 		  matchFound = matcher.find();
 		  assertFalse(matchFound);
-		  
-		  
 	}
-
 }

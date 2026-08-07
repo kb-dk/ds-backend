@@ -90,7 +90,6 @@ public class IIPParamValidation {
         // TODO: Perform validation of all parameters
     }
 
-
     /**
      * Validate that FIF is set  and isn't empty as it is required in IIP
      */

@@ -4,20 +4,17 @@ import java.util.ArrayList;
 
 /**
  * This is a persistent DTO.
- * See the documentation and UML model:<br>
- * licensemodule_uml.png<br>
- * License_validation_logic.png <br>
- * 
+ * See the documentation and UML model:
+ * licensemodule_uml.png
+ * License_validation_logic.png
  */
 public class AttributeGroup extends Persistent{
-
-	private int number;	
+	private int number;
 
 	private ArrayList<Attribute> attributes = new  ArrayList<Attribute>();
 
 	public AttributeGroup(int number){
 		this.number=number;
-
 	}
 
 	public ArrayList<Attribute> getAttributes() {
@@ -35,5 +32,4 @@ public class AttributeGroup extends Persistent{
 	public void setNumber(int number) {
 		this.number = number;
 	}
-
 }

@@ -24,6 +24,7 @@ public class ServiceConfig {
      * Initialized the configuration from the provided configFiles.
      * This should normally be called from {@link dk.kb.present.webservice.ContextListener} as
      * part of web server initialization of the container.
+     *
      * @param configFiles globs for the configurations to load.
      * @throws IOException if the configurations could not be loaded or parsed.
      */
@@ -32,10 +33,10 @@ public class ServiceConfig {
         serviceConfig.setExtrapolate(true);
     }
 
-
     /**
      * Demonstration of a first-class property, meaning that an explicit method has been provided.
      * @see #getConfig() for alternative.
+     *
      * @return the "Hello World" lines defined in the config file.
      */
     public static List<String> getHelloLines() {
@@ -47,6 +48,7 @@ public class ServiceConfig {
      * Direct access to the backing YAML-class is used for configurations with more flexible content
      * and/or if the service developer prefers key-based property access.
      * @see #getHelloLines() for alternative.
+     *
      * @return the backing YAML-handler for the configuration.
      */
     public static YAML getConfig() {

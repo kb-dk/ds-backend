@@ -8,7 +8,6 @@ package dk.kb.present.util;
  * @param <Value> represents the value present at given path.
  */
 public class PathPair<Path, Value> {
-
     private Path path;
     private Value value;
 

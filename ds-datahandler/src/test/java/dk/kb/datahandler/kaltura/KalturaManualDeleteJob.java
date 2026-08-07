@@ -13,21 +13,15 @@ import dk.kb.kaltura.client.DsKalturaClient;
 public class KalturaManualDeleteJob {
 
     /**
-     * <p>
      * Manual started job to that will delete streams+metadata on Kaltura for an
      * input list of Kaltura entryId's.
-     * </p>
-     * 
      * This job is intended to be run in the 'great takedown' before going live.
      * Input is a text file where each line is a Kaltura entryIds 
      * Output is a text file of entryIds that failed deletion.
      * If delete is most likely because the entryId was not found in Kaltura.
-     * 
-     * Notice. Out of 300K deletions about 20 failed and had to be tried again
-     * 
+     * Notice. Out of 300K deletions about 20 failed and had to be tried again.
      */
     public static void main(String[] args) {
-        
         String kalturaUrl = "https://kmc.kaltura.nordu.net";
         String adminSecret = "";// Use token,tokenId  instead
         Integer partnerId = 397; // 398=stage, 397=prod. 
@@ -39,6 +33,7 @@ public class KalturaManualDeleteJob {
 
         String input_entry_ids = "/home/teg/delete_kaltura/delete_kaltura_entry_id.csv"; // File with entryIds til be delete. One oneeach line
         String output_entry_ids = "/home/teg/delete_kaltura/delete_kaltura_entry_id_failed.csv"; // EntryIds that failed during deletion will be added in this file.
+
         try {
             createNewFileIfNotExists(output_entry_ids); // Will create new if not exists;
 
@@ -59,7 +54,6 @@ public class KalturaManualDeleteJob {
                         System.out.println("Failed deleting entryId: " + entryId);
                         addLineToFile(output_entry_ids, entryId);
                     }
-
                 } catch (Throwable e) {
                     e.printStackTrace();
                     System.out.println("API error for entryId: " + entryId);
@@ -72,7 +66,6 @@ public class KalturaManualDeleteJob {
             if (numberDeleteFailed > 0) {
                 System.out.println("See the output file for entries that failed: " + output_entry_ids);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

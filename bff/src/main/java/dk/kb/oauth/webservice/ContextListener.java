@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  * Listener to handle the various setups and configuration sanity checks that can be carried out at when the
  * context is deployed/initalized.
  */
-
 public class ContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -150,10 +149,8 @@ public class ContextListener implements ServletContextListener {
      * &lt;/configuration&gt;
      * </pre>
      * as the JNDI injection is performed <strong>after</strong> the {@code include}.
-     * <p>
      * The workaround is to programatically perform the same environment lookup and reconfigure logback to use
      * the right logback setup file.
-     * <p>
      * To complicate matters further, logback require included files to encapsulate the concrete setup in
      * {@code <included>} instead of {@code <configuration>} so in order to stay backwards compatible (and forward
      * compatible as the JNDI-problem is probably solved at some point in the future), a tiny configuration is
@@ -166,7 +163,6 @@ public class ContextListener implements ServletContextListener {
                 log.info("Logback config 'logback-test.xml' found. Running in test mode");
                 return;
             }
-
         } catch (Exception e) {
             // We might want to skip this logging as it will log to the unconfigured logback at this point
             log.debug("Logback config 'logback-test.xml' not found. Attempting explicit logback configuration");
@@ -260,5 +256,4 @@ public class ContextListener implements ServletContextListener {
         ServiceConfig.getInstance().shutdown();
         log.info("Service destroyed");
     }
-
 }

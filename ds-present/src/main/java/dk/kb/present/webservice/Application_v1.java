@@ -13,7 +13,6 @@ import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.webservice.OpenApiResource;
 import dk.kb.util.webservice.exception.ServiceExceptionMapper;
 
-
 public class Application_v1 extends javax.ws.rs.core.Application {
 
     @Override
@@ -30,6 +29,4 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 OpenApiResource.class
         ));
     }
-
-
 }

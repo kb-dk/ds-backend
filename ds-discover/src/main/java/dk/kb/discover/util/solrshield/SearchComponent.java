@@ -21,7 +21,6 @@ import dk.kb.util.yaml.YAML;
  * Representation of a Solr Search component.
  */
 public class SearchComponent extends Component<SearchComponent> {
-
     protected StringParam q;
     protected StringParam fq;
     protected IntegerParam rows;
@@ -84,7 +83,5 @@ public class SearchComponent extends Component<SearchComponent> {
                         indent.getWeight() +
                         debug.getWeight() +
                         (debug.enabled ? debugExplainStructured.getWeight() : 0.0);
-
-
     }
 }

@@ -10,7 +10,6 @@ import dk.kb.license.model.v1.ObjectTypeEnumDto;
  * The service generated AuditLogEntryOutputDto object is used when extracting information from the auditlog
  */
 public class AuditLogEntry {
-
     private long objectId;
     private String userName;
     private ChangeTypeEnumDto changeType;

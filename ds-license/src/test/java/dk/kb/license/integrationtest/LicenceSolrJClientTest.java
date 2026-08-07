@@ -18,18 +18,14 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  *  Integration test, will not be run by automatic build flow.
  *  Notice data in Solr may change over time. For this unittest two ID's
  */
 public class LicenceSolrJClientTest {
+    private static String dsSolrUrl=null;
+    private static final Logger log = LoggerFactory.getLogger( LicenceSolrJClientTest.class);
 
-    
- private static String dsSolrUrl=null;
- private static final Logger log = LoggerFactory.getLogger( LicenceSolrJClientTest.class);  
- 
- 
     @BeforeAll
     static void setup() {
         try {
@@ -40,8 +36,7 @@ public class LicenceSolrJClientTest {
             fail();
         }
     }
-    
-    
+
     @Tag("integration")   
     @Test
     public void testIdFiltering() throws  IOException, SolrServerException{        

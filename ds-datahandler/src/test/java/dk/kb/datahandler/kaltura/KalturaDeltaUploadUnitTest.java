@@ -150,7 +150,6 @@ class KalturaDeltaUploadUnitTest {
 
     @Test
     void testUploadStreamsToKaltura_whenMultipleDocuments_thenAccumulatesCount() {
-
         // Arrange
         SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument("id-1"), buildSolrDocument("id-2"));
         SolrDocumentList emptySolrDocumentList = new SolrDocumentList();

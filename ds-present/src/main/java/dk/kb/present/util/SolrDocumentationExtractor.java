@@ -8,12 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SolrDocumentationExtractor {
-
     private static final String SCHEMA2MARKDOWN = "xslt/schema2markdown.xsl";
     private static final String SCHEMA2HTML = "xslt/schema2html.xsl";
 
     /**
      * Converts a raw solr schema to a human-readable version.
+     *
      * @param rawSchema the schema to convert.
      * @param format the format which it gets converted to.
      * @return the transformed solr schema in the specified format.
@@ -33,6 +33,7 @@ public class SolrDocumentationExtractor {
 
     /**
      * Transform an XML resource by the specified XSLT.
+     *
      * @param xsltResource used for transformation.
      * @param xmlResource used for transformation.
      * @return the transformed document

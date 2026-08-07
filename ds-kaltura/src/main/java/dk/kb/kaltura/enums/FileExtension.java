@@ -33,11 +33,9 @@ public enum FileExtension {
             default:
                 throw new IllegalArgumentException("MediaFileExtension '" + mediaFileExtension + "' is invalid");
         }
-
     }
 
     public static boolean checkExtension(String filePath, FileExtension expectedExtension) {
-
                 // Check if file path extension matches other valid extension other than expected
                 // Like filePath=video.mp4, expectedExtension=MP3
                 boolean filePathMatchedUnexpected = Arrays.stream(FileExtension.values())

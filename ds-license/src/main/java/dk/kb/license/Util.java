@@ -22,20 +22,15 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.license.storage.LicenseContent;
 
-
 /**
  * Util class for various small methods used in ds-license. A bit messy and lots of different use-cases.
  * Some of the methods here are also called from the JSP page.
  */
-
 public class Util {
-
 	private static final Logger log = LoggerFactory.getLogger(Util.class);
 
-
 	/**
-	 * Defines a DateFormatter that is thread-safe 
-	 * 
+	 * Defines a DateFormatter that is thread-safe
 	 */
 	private static final ThreadLocal<SimpleDateFormat> formatter = new ThreadLocal<SimpleDateFormat>() {
 		@Override
@@ -63,11 +58,9 @@ public class Util {
 		return false;
 	}
 
- 
 	/**
 	 * Validate if a list of {@link LicenseContent}s has a specific group
 	 * and {@link dk.kb.license.storage.PresentationType} allowed
-	 * <p>
 	 * Method also used from JSP application.
 	 * 
 	 * @param groups The list of licenseContent that will be tested against.
@@ -108,12 +101,11 @@ public class Util {
 			log.info("Invalid dateformat entered:" + dateFormat);
 			return false;
 		}
-
 	}
    
-	/**
+   /**
     * Format a date of form 'dd-MM-yyyy"' to milliseconds.
-    * <p>
+	*
     * @param dateFormat The date to format.
     * @return The date in millis.
     * @throws IllegalArgumentException If date is not of the format 'dd-MM-yyyy'
@@ -130,8 +122,6 @@ public class Util {
 		}
 	}
 
-
-	
 	/**
 	 * Called by JSP to color each new row differently (zebra).
 	 * @return String Color value that is defined in the CSS.
@@ -146,7 +136,6 @@ public class Util {
 
 	/**
 	 * Validates that the given object and all its fields are non-null.
-	 *<p>
 	 * This method checks if the provided object is null. If it is, the method throws an error.
 	 * It then iterates through all declared fields of the object's class, checking each field's value.
 	 * If any field's value is null, the method throws an error. If a field is an object (not a primitive),
@@ -171,7 +160,6 @@ public class Util {
 
 	/**
 	 * Checks if the specified object has no null fields.
-	 * <p>
 	 * This method serves as an entry point for validating that the given object
 	 * and all its fields (including nested objects and collections) are non-null.
 	 *
@@ -186,7 +174,6 @@ public class Util {
 
 	/**
 	 * Recursively checks if the specified object and its fields have no null values.
-	 * <p>
 	 * This private method performs a deep validation of the given object, checking
 	 * each field for null values. It handles collections and maps, ensuring that
 	 * all elements and entries are also validated. The method avoids cycles by
