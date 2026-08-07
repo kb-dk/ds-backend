@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 public class FacetCounts {
-
     @JsonProperty("facet_queries")
     Object facetQueries;
 

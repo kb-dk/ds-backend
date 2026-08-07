@@ -37,7 +37,6 @@ import static org.mockito.Mockito.mockStatic;
  *
  */
 class SolrServiceTest {
-
     private static final Logger log = LoggerFactory.getLogger(SolrServiceTest.class);
         
     //@Test
@@ -136,7 +135,4 @@ class SolrServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> SolrService.removePrefixedFilters(response, prefix,"xml"));
     }
-
-  
-
 }

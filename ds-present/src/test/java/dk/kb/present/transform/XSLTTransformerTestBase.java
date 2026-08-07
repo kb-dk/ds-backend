@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Helper base for writing XSLT transformation tests.
  */
 public abstract class XSLTTransformerTestBase {
-
     private static final Logger log = LoggerFactory.getLogger(XSLTTransformerTestBase.class);
 
     @BeforeAll
@@ -52,6 +51,7 @@ public abstract class XSLTTransformerTestBase {
 
     /**
      * Optional injections for the transformation. Override to provide injections.
+     *
      * @return injections for the XSLT transformation.
      */
     public Map<String, String> getInjections() {
@@ -61,6 +61,7 @@ public abstract class XSLTTransformerTestBase {
     /**
      * Wrapper for {@link #assertMultiTests(String, Consumer[])} that verifies that the transformed record contains
      * the given {@code substring}.
+     *
      * @param recordFile the file to load, transform and test.
      * @param substring must be present in the transformed record.
      */
@@ -74,6 +75,7 @@ public abstract class XSLTTransformerTestBase {
     /**
      * Wrapper for {@link #assertMultiTests(String, Consumer[])} that verifies that the transformed record contains
      * the given {@code substring}.
+     *
      * @param recordFile the file to load, transform and test.
      * @param substring must be present in the transformed record.
      * @param message debug message for failed test.
@@ -87,6 +89,7 @@ public abstract class XSLTTransformerTestBase {
     /**
      * Wrapper for {@link #assertMultiTests(String, Consumer[])} that verifies that the transformed record does not
      * contain the given {@code substring}.
+     *
      * @param recordFile the file to load, transform and test.
      * @param substring must be present in the transformed record.
      */
@@ -100,6 +103,7 @@ public abstract class XSLTTransformerTestBase {
     /**
      * Wrapper for {@link #assertMultiTests(String, Consumer[])} that verifies that the transformed record does not
      * contain the given {@code substring}.
+     *
      * @param recordFile the file to load, transform and test.
      * @param substring must be present in the transformed record.
      * @param message debug message for failed test.
@@ -112,9 +116,9 @@ public abstract class XSLTTransformerTestBase {
 
     /**
      * Checks that internal test files are available and if not, logs a warning and returns.
-     * <p>
      * If the check passes, the content of the file {@code record} is transformed using XSLT {@link #getXSLT()}
      * and the given tests are performed on the result.
+     *
      * @param record file with a record that is to be transformed using {@link #getXSLT()}.
      * @param tests Zero or more tests to perform on the transformed record.
      */
@@ -141,5 +145,4 @@ public abstract class XSLTTransformerTestBase {
 
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
-
 }

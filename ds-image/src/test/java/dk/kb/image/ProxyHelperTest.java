@@ -41,7 +41,6 @@ import static org.mockito.Mockito.verify;
  * Hacked unit test as it expects www.kb.dk to be available.
  */
 class ProxyHelperTest {
-
     /**
      * Mocks {@link ProxyHelper#proxy} to collect all given URIs and write the byte 87 as the answer.
      * @param runnable action that triggers one or more calls to the proxy method.

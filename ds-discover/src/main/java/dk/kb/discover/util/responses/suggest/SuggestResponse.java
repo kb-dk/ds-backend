@@ -38,7 +38,6 @@ import dk.kb.discover.util.responses.header.ResponseHeader;
  */
 @JsonPropertyOrder({"responseHeader", "suggest"})
 public class SuggestResponse {
-
     @JsonProperty("responseHeader")
     ResponseHeader responseHeader;
 

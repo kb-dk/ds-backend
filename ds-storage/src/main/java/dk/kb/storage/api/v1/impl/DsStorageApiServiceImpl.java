@@ -33,21 +33,16 @@ import java.util.List;
 
 /**
  * ds-storage
- *
- * <p>
  * ds-storage by the Royal Danish Library
- *
  */
 @InInterceptors(interceptors = "dk.kb.storage.webservice.KBAuthorizationInterceptor")
 public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
-
     private static final Logger log = LoggerFactory.getLogger(DsStorageApiServiceImpl.class);
 
-    /*
+    /**
      * How to access the various web contexts. See
      * https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
      */
-
     @Context
     private transient UriInfo uriInfo;
 
@@ -98,16 +93,15 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         } catch (Exception e) {
             throw handleException(e);
         }
-
     }
+
     @Override
     public StreamingOutput getRecordsModifiedAfter(String origin,RecordTypeDto recordType, Long mTime, Long maxRecords) {
         if (recordType != null) {
             return getRecordsByRecordTypeModifiedAfterLocalTree(origin,recordType, mTime,  maxRecords);
         }
         else {
-            return getRecordsModifiedAfterNoLocalTree( origin, mTime, maxRecords);   
-            
+            return getRecordsModifiedAfterNoLocalTree( origin, mTime, maxRecords);
         }       
     }
     
@@ -136,7 +130,6 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         }
     }
 
-
     private StreamingOutput getRecordsByRecordTypeModifiedAfterLocalTree(String origin, RecordTypeDto recordType, Long mTime, Long maxRecords) {
         try {
             log.debug(" getRecordsByRecordTypeModifiedAfterLocalTree(origin='{}', recordtype='{}', mTime={}, maxRecords={}) with batchSize={} " +
@@ -159,12 +152,12 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         } catch (Exception e){
             throw handleException(e);
         }
-
     }
 
     /**
      * Set headers for the response delivered through the API endpoint. The method tries to set the following headers
      * explicitly: Content-Disposition, Paging-Continuation-Token, Paging-Has-More and Paging-Record-Count.
+     *
      * @param finalMTime is used to determine how to set the Content-Disposition header.
      * @param finalMaxRecords is used to determine how to set the Content-Disposition header.
      * @param continuationPair contains the values for the Paging-Continuation-Token and Paging-Has-More headers.
@@ -187,6 +180,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
 
     /**
      * Determines the value for the Content-Disposition header by looking at the value of finalMaxRecords.
+     *
      * @param finalMTime value used to construct the filename used on in header.
      * @param finalMaxRecords amount of records being requested. If this value is more than 2, then the response is
      *                        shown inline.
@@ -214,7 +208,6 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         } catch (Exception e) {
             throw handleException(e);
         }
-
     }
 
     @Override
@@ -236,8 +229,8 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         } catch (Exception e) {
             throw handleException(e);
         }
-
     }
+
     //@Override Not overwrite. Method removed from openAPI due to cyclic loop
     /*
     public DsRecordDto getRecordTree(String id) {
@@ -249,7 +242,6 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         } catch (Exception e) {
             throw handleException(e);
         }
-
     }
     */
      
@@ -315,15 +307,12 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     }
              
     /**
-    * <p>
     * Get a list of records after a given mTime. The records will only have fields
     * id, mTime, referenceid and kalturaid defined
-    * </p>
     *
     * @param origin The origin to fetch records from
     * @param maxRecords Number of maximum records to return
     * @param mTime only fetch records with mTime larger that this
-    *
     * @return List of records only have fields id, mTime, referenceid and kalturaid
     */
     @Override
@@ -345,14 +334,12 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
             }
         };
     }
-   
-    
+
     @Override
     public void createOrUpdateTranscription(@Valid TranscriptionDto transcriptionDto) {
        DsStorageFacade.createOrUpdateTranscription(transcriptionDto);        
     }
-        
-    
+
     /**
     *  Load full transcription for a stream 
     *  
@@ -364,6 +351,4 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         // TODO Auto-generated method stub
         return DsStorageFacade.getTranscription(fileId);
     }
-    
-
 }

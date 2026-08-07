@@ -27,7 +27,6 @@ import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +41,7 @@ import org.apache.hc.core5.net.URIBuilder;
 /**
  * Client for the service. Intended for use by other projects that calls this service.
  * See the {@code README.md} for details on usage.
- * </p>
  * This class is not used internally.
- * </p>
  * The client is Thread safe and handles parallel requests independently.
  * It is recommended to persist the client and to re-use it between calls.
  */
@@ -57,13 +54,13 @@ public class DsStorageClient {
 
     /**
      * Creates a client for the remote ds-storage service.
-     * <p>
      * When working with YAML configs, it is suggested to define the storage URI as the structure
      * <pre>
      * storage:
      *   url: 'http://localhost:9072/ds-storage/v1'
      * </pre>
      * Then use the path {@link #STORAGE_SERVER_URL_KEY} to extract the URL.
+     *
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-license/v1}.
      */
     @SuppressWarnings("JavadocLinkAsPlainText")
@@ -75,6 +72,7 @@ public class DsStorageClient {
     /**
      * Retrieve a list of configured origins with their respective update strategy
      * This endpoint delivers a list of all configured origins. An origin defines which collection data comes from. This could for instance be the Radio &amp; TV collection at The Royal Danish Library, which has the origin defined as &#39;ds.radiotv&#39;. The update strategy defines how data from the specific origin is updated, when a record is added, modified or deleted. 
+     *
      * @return List&lt;OriginDto&gt;
      * @throws ServiceException if fails to make API call
      */
@@ -88,8 +86,7 @@ public class DsStorageClient {
         catch (URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
-         }          
-
+         }
     }
 
     /**
@@ -111,12 +108,10 @@ public class DsStorageClient {
          }                        
     }
 
-  
-
-    
     /**
      * Read a specific record by ID.
      * Extract a specific record by ID. Parent and children recordIds will also be include. If setting includeLocalTree&#x3D;true the local recordTree with parent record and children records will also be loaded as objects.   A record marked with delete flag will also be returned. If a record is not found in ds-storage, the endpoint will throw an exception. 
+     *
      * @param id Record ID (required)
      * @param includeLocalTree Also load parent and direct children as objects (optional, default to false)
      * @return DsRecordDto
@@ -149,10 +144,10 @@ public class DsStorageClient {
         }
     }
 
-
     /**
      * Create a new record or update an existing record.
      * A record can have a single optional parent and may have multiple children
+     *
      * @param dsRecordDto  (optional)
      * @throws ServiceException if fails to make API call
      */
@@ -172,6 +167,7 @@ public class DsStorageClient {
     /**
      * Mark a record with delete flag.
      * This will not delete the record in the database but only mark it as deleted. 
+     *
      * @param id Record ID (required)
      * @return Integer
      * @throws ServiceException if fails to make API call
@@ -192,6 +188,7 @@ public class DsStorageClient {
     /**
      * Get mapping for a specific referenceId
      * Get entry from the mapping table for the referenceId. If the entry is not found null will be returned. It is not guarantees the entry if it exists, will have the kalturaId set yet.
+     *
      * @param referenceId  (required)
      * @return MappingDto
      * @throws ServiceException if fails to make API call
@@ -214,6 +211,7 @@ public class DsStorageClient {
      * Get a list of minimal records having a referenceId after a given lastModified time
      * Extract a list of records with a given batch size by origin and mTime larger than input. 
      * The records will only have the id, mTime, referenceId and kalturaId fields. This means that no actual data can be retrieved through this endpoint. It can however be used  for operations where the data from the record isn&#39;t needed. Such as updating Kaltura IDs for records, which is done with referenceId and kalturaId only. 
+     *
      * @param origin The origin to extract records for (required)
      * @param maxRecords Number of records to extract. (required)
      * @param mTime Only extract records after this mTime. (optional, default to 0l)
@@ -239,11 +237,10 @@ public class DsStorageClient {
     /**
      * Call the remote ds-storage {@link #getRecordsModifiedAfter} and return the response in the form of a Stream 
      * of records.
-     * <p>
      * The stream is unbounded by memory and gives access to the highest modification time (microseconds since
      * Epoch 1970) for any record that will be delivered by the stream.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin     the origin for the records.
      * @param mTime      Exclusive start time for records to deliver:
      *                   Epoch time in microseconds (milliseconds times 1000).
@@ -260,11 +257,10 @@ public class DsStorageClient {
     /**
      * Call the remote ds-storage {@link #getRecordsByRecordTypeModifiedAfterLocalTreeJSON} and return the response
      * in the form of a Stream of records.
-     * <p>
      * The stream is unbounded by memory and gives access to the highest modification time (microseconds since
      * Epoch 1970) for any record that will be delivered by the stream {@link ContinuationStream#getContinuationToken}.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin     the origin for the records.
      * @param recordType valid values {@code COLLECTION}, {@code DELIVERABLEUNIT}, {@code MANIFESTATION}.
      * @param mTime      Exclusive start time for records to deliver:
@@ -282,8 +278,8 @@ public class DsStorageClient {
     /**
      * Call the remote ds-storage {@link #getRecordsModifiedAfter} and return the JSON response unchanged as a wrapped
      * bytestream.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin     the origin for the records.
      * @param mTime      exclusive start time for records to deliver:
      *                   Epoch time in microseconds (milliseconds times 1000).
@@ -314,8 +310,8 @@ public class DsStorageClient {
     /**
      * Call the remote ds-storage {@link #getRecordsByRecordTypeModifiedAfterLocalTreeJSON} and return the JSON response
      * unchanged as a wrapped bytestream.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin     the origin for the records.
      * @param recordType valid values {@code COLLECTION}, {@code DELIVERABLEUNIT}, {@code MANIFESTATION}.
      * @param mTime      exclusive start time for records to deliver:
@@ -328,7 +324,6 @@ public class DsStorageClient {
             String origin, RecordTypeDto recordType, Long mTime, Long maxRecords) throws IOException {
         URI uri;
         try {
-
             uri = new URIBuilder(serviceURI)
                     .appendPathSegments("records")
                     .addParameter("origin", origin)
@@ -350,11 +345,10 @@ public class DsStorageClient {
      * Call the remote ds-storage {@link #getMinimalRecords(String, Integer, Long)} and return the response in the form of a Stream
      * of records. Get a stream of minimal records having a referenceId after a given lastModified time. The records will only have the id, mTime, referenceId and kalturaId fields
      * available.
-     * <p>
      * The stream is unbounded by memory and gives access to the highest modification time (microseconds since
      * Epoch 1970) for any record that will be delivered by the stream.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin     the origin for the records.
      * @param mTimeFrom      Exclusive start time for records to deliver:
      *                   Epoch time in microseconds (milliseconds times 1000).
@@ -369,8 +363,8 @@ public class DsStorageClient {
 
     /**
      * Call the remote ds-storage {@link #getMinimalRecords} and return the JSON response unchanged as a wrapped bytestream.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin     the origin for the records.
      * @param mTime      exclusive start time for records to deliver:
      *                   Epoch time in microseconds (milliseconds times 1000).
@@ -397,17 +391,14 @@ public class DsStorageClient {
         return ContinuationInputStream.from(uri, Long::valueOf);
     }
 
-
     /**
-     * Update the referenceId for a record <br>
-     * The referenceId is an id in the external system for the record. <br>
+     * Update the referenceId for a record,
+     * The referenceId is an id in the external system for the record.
      * For preservica records the referenceId is the name of the stream file.
      *  
-     *  @param recordId of the record to update referenceId for
-     *  @param referenceId The referenceId to set for the record
-     * 
-     * @throws ServiceException  
-     * 
+     * @param recordId of the record to update referenceId for
+     * @param referenceId The referenceId to set for the record
+     * @throws ServiceException
      */
     public void updateReferenceIdForRecord(String recordId,String referenceId) throws ServiceException{       
         try {
@@ -422,19 +413,18 @@ public class DsStorageClient {
         catch(URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);
-        }                        
-
+        }
     }
 
     /**
      * Update a record with the Kaltura id. 
      * Update a record with the Kaltura id. The record was uploaded to Kaltura with the referenceId as metadata. Knowing the kalturaId is important to find the record(stream) in Kaltura later for update or deletetion etc.
+     *
      * @param referenceId  (required)
      * @param kalturaId  (required)
      * @throws ServiceException if fails to make API call
      */
     public void updateKalturaIdForRecord (String referenceId, String kalturaId) throws ServiceException {
-
         try {
             URI uri = new URIBuilder(serviceURI)
                     .appendPathSegments("record","updateKalturaId")                                                                                 
@@ -450,7 +440,8 @@ public class DsStorageClient {
     }
     
     /**
-     * Create a new transcription·
+     * Create a new transcription.
+     *
      * @param TranscriptionDto  
      * @throws ServiceException if fails to make API call
      */
@@ -466,5 +457,4 @@ public class DsStorageClient {
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
         }                      
     }
-  
 }

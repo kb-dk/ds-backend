@@ -37,7 +37,6 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
            or encapsulating the JSON structure in XML tags.
            Link to StackOverfow discussion on this: https://stackoverflow.com/a/35383155/12400491 */
         // transformerFactory.setAttribute("http://saxon.sf.net/feature/initialTemplate", "initial-template");
-
     }
 
     /**

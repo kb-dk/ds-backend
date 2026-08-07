@@ -76,12 +76,10 @@ public abstract class ProfileElement<T> implements Cloneable {
 
     /**
      * Copies fields requiring deep copy from this to the given {@code clone}.
-     * <p>
      * Inheriting classes must override this (with call to {@code super()}) to deep copy attributes that are not atomic.
-     * <p>
      * This method is called from {@link #deepCopy(Profile)}.
-     * <p>
      * Note: If a {@link #profile} is needed for deep copying in the implementation, use {@code clone.profile}.
+     *
      * @param clone non-atomic attributes should be deep copied and assigned to the clone.
      */
     protected void deepCopyNonAtomicAttributes(T clone) { }
@@ -93,6 +91,7 @@ public abstract class ProfileElement<T> implements Cloneable {
 
     /**
      * Check whether the request is allowed, relative to the given position in the profile tree and downwards.
+     *
      * @param reasons if the request is not allowed, the reason(s) should be added to {@code reason}.
      * @return true if the request is allowed.
      */

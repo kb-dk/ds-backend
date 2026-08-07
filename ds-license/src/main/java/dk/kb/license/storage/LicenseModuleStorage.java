@@ -11,10 +11,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The DB consist of the following tables:
- * <p>
  * 3 tables for configuration: PRESENTATIONTYPES: configured presentationtypes.
  * GROUPTYPES: configured groups ATTRIBUTETYPES: configured attributes
- * <p>
  * The following tables to store created licenses: LICENSE (top parent)
  * ATTRIBUTEGROUP (parent=LICENSE) ATTRIBUTE (parent = ATTRIBUTEGROUP) VALUE
  * (parent = ATTRIBUTE) LICENSECONTENT (parent = LICENSE) PRESENTATION (parent =
@@ -111,7 +109,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     private final static String selectAttributeTypesByNameQuery = "SELECT * FROM " + ATTRIBUTETYPES_TABLE
             + " WHERE " + VALUE_COLUMN + " = ?";
 
-            
     private final static String deleteAttributeTypeByNameQuery = "DELETE FROM " + ATTRIBUTETYPES_TABLE
             + " WHERE " + VALUE_COLUMN + " = ?";
 
@@ -154,8 +151,7 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
 
     private final static String countGroupTypeByGroupNameQuery = "SELECT COUNT(*) FROM " + LICENSECONTENT_TABLE
             + " WHERE " + NAME_COLUMN + " = ?";
-   
-    
+
     private final static String countPresentationTypeByPresentationNameQuery = "SELECT COUNT(*) FROM "
             + PRESENTATION_TABLE + " WHERE " + NAME_COLUMN + " = ?";
 
@@ -199,11 +195,9 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public ArrayList<PresentationType> getLicensePresentationTypes() throws SQLException {
-
         ArrayList<PresentationType> list = new ArrayList<PresentationType>();
 
         try (PreparedStatement stmt = connection.prepareStatement(selectLicensePresentationTypesQuery)) {
-
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -234,7 +228,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
         }
 
         for (AttributeGroup currentAttributeGroup : license.getAttributeGroups()) {
-
             ArrayList<Attribute> attributes = currentAttributeGroup.getAttributes();
             for (Attribute currentAttribute : attributes) {
                 deleteById(deleteValuesByAttributeIdQuery, currentAttribute.getId());
@@ -258,7 +251,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     // query can be null or empty
     public long persistLicenseGroupType(String key, String value, String value_en, String description,
             String description_en, String query, boolean restriction) throws IllegalArgumentException, SQLException {
-
         if (!StringUtils.isNotEmpty(key)) {
             throw new IllegalArgumentException("Key can not be null when creating new Group");
         }
@@ -301,7 +293,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
 
     public void updateLicenseGroupType(long id, String value_dk, String value_en, String description,
             String description_en, String query, boolean restriction) throws SQLException {
-
         try (PreparedStatement stmt = connection.prepareStatement(updateLicenseGroupTypeQuery);) {
             log.info("Updating Group type with id: " + id);
 
@@ -321,7 +312,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             }
 
             connection.commit();
-
         } catch (SQLException e) {
             log.error("Exception in updateLicenseGroupType: " + e.getMessage());
             throw e;
@@ -330,7 +320,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public void updatePresentationType(long id, String value_dk, String value_en) throws SQLException {
-
         try (PreparedStatement stmt = connection.prepareStatement(updateLicensePresentationTypeQuery);) {
             log.info("Updating Presentation type with id: " + id);
 
@@ -345,7 +334,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             }
 
             connection.commit();
-
         } catch (SQLException e) {
             log.error("Exception in updatePresentationType: " + e.getMessage());
             throw e;
@@ -354,7 +342,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public long deleteLicenseGroupType(String groupName) throws IllegalArgumentException, SQLException {
-
         log.info("Deleting grouptype: " + groupName);
         // First check it is not used in any license, in that case throw exception.
 
@@ -369,13 +356,11 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
                             + " because it is used in at least 1 license");
                 }
             }
-
         } catch (SQLException e) {
             log.error("SQL Exception in deleteLicenseGroupType: " + e.getMessage());
             throw e;
         }
 
-   
         long id;
         try (PreparedStatement stmt = connection.prepareStatement(selectGroupTypeByKeyQuery);) {
             stmt.setString(1, groupName);
@@ -402,7 +387,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public void deletePresentationType(String presentationName) throws IllegalArgumentException, SQLException {
-
         log.info("Deleting presentation type: " + presentationName);
         // First check it is not used in any license, in that case throw exception.
 
@@ -418,7 +402,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
                             + " because it is used in at least 1 license");
                 }
             }
-
         } catch (SQLException e) {
             log.error("SQL Exception in deletePresentationType: " + e.getMessage());
             throw e;
@@ -428,7 +411,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             stmt.setString(1, presentationName);
             int updated = stmt.executeUpdate();
             log.info("deleted " + updated + " presentationtype with name: " + presentationName);
-
         } catch (SQLException e) {
             log.error("SQL Exception in deletePresentationType: " + e.getMessage());
             throw e;
@@ -438,7 +420,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public long persistLicense(License license) throws IllegalArgumentException, SQLException {
-
         log.info("Persisting new license: " + license.getLicenseName());
 
         // validate name, description, validTo,validFrom
@@ -458,12 +439,10 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             // Delete old license before updating (creating new)
             log.info("Deleting license before updating");
             deleteLicense(licenseId);
-
         } else {
             licenseId = generateUniqueID(); // new ID.
         }
         try (PreparedStatement stmt = connection.prepareStatement(persistLicenseQuery);) {
-
             stmt.setLong(1, licenseId);
             stmt.setString(2, license.getLicenseName());
             stmt.setString(3, license.getLicenseName_en());
@@ -486,10 +465,8 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public ArrayList<GroupType> getLicenseGroupTypes() throws SQLException {
-
         ArrayList<GroupType> list = new ArrayList<GroupType>();
         try (PreparedStatement stmt = connection.prepareStatement(selectLicenseGroupTypesQuery);) {
-
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -512,7 +489,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public long persistAttributeType(String value) throws SQLException {
-
         log.info("Persisting new  attribute type: " + value);
 
         validateValue(value);
@@ -522,7 +498,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             stmt.setLong(1, id);
             stmt.setString(2, value);
             stmt.execute();
-
         } catch (SQLException e) {
             log.error("SQL Exception in persistAttributeType: " + e.getMessage());
             throw e;
@@ -532,12 +507,10 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public long deleteAttributeType(String attributeTypeName) throws IllegalArgumentException, SQLException {
-
         log.info("Deleting attributetype: " + attributeTypeName);
         // First check it is not used in any license, in that case throw exception.
 
         try (PreparedStatement stmt = connection.prepareStatement(countAttributesByAttributeNameQuery);) {
-
             stmt.setString(1, attributeTypeName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -547,7 +520,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
                             + " because it is used in at least 1 license");
                 }
             }
-
         } catch (SQLException e) {
             log.error("SQL Exception in deleteAttributeType: " + e.getMessage());
             throw e;
@@ -582,7 +554,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     public ArrayList<AttributeType> getAttributeTypes() throws SQLException {
-
         ArrayList<AttributeType> list = new ArrayList<AttributeType>();
 
         try (PreparedStatement stmt = connection.prepareStatement(selectAttributeTypesQuery);) {
@@ -603,10 +574,8 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
 
     // this method only loads the name of the license and NOT all associations.
     public ArrayList<License> getAllLicenseNames() throws SQLException {
-
         ArrayList<License> list = new ArrayList<License>();
         try (PreparedStatement stmt = connection.prepareStatement(selectAllLicensesQuery);) {
-
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -635,7 +604,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     // this method a license from licenseId with all associations (complete
     // object-tree)
     public License getLicense(long licenseId) throws IllegalArgumentException, SQLException {
-
         License license = new License();
 
         try (PreparedStatement stmt = connection.prepareStatement(selectLicenseQuery);) {
@@ -664,7 +632,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
                 return license;
             }
             throw new IllegalArgumentException("License not found for licenseId: " + licenseId);
-
         } catch (SQLException e) {
             log.error("SQL Exception in getLicense: " + e.getMessage());
             throw e;
@@ -685,7 +652,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
                 return type;                                
             }
             throw new IllegalArgumentException("Presentationtype not found for id: " + id);
-
         } catch (SQLException e) {
             log.error("SQL Exception in getPresentationTypeById: " + e.getMessage());
             throw e;
@@ -709,7 +675,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             return group;
             }
             throw new IllegalArgumentException("Presentationtype not found for id: " + id);
-
         } catch (SQLException e) {
             log.error("SQL Exception in getPresentationTypeById: " + e.getMessage());
             throw e;
@@ -730,7 +695,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
                 return type;                                
             }
             throw new IllegalArgumentException("Presentationtype not found for key: " + key);
-
         } catch (SQLException e) {
             log.error("SQL Exception in getPresentationType: " + e.getMessage());
             throw e;
@@ -783,10 +747,8 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
      * 
      * }
      */
-
     protected void persistAttributeGroupsForLicense(Long licenseId, ArrayList<AttributeGroup> attributegroups)
             throws SQLException {
-
         if (attributegroups == null || attributegroups.size() == 0) {
             throw new IllegalArgumentException("No attributegroups defined for license");
         }
@@ -795,7 +757,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             long attributeGroupId = generateUniqueID();
 
             try (PreparedStatement stmt = connection.prepareStatement(persistAttributeGroupForLicenseQuery);) {
-
                 stmt.setLong(1, attributeGroupId);
                 stmt.setInt(2, current.getNumber());
                 stmt.setLong(3, licenseId);
@@ -811,11 +772,9 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
 
     // This method delete by ID from a given tabel defined in the query
     protected void deleteById(String query, Long id) throws SQLException {
-
         try (PreparedStatement stmt = connection.prepareStatement(query);) {
             stmt.setLong(1, id);
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             log.error("SQL Exception in deleteById for query: " + query + " Exception: " + e.getMessage());
             throw e;
@@ -823,7 +782,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     protected ArrayList<AttributeGroup> getAttributeGroupsForLicense(Long licenseId) throws SQLException {
-
         ArrayList<AttributeGroup> list = new ArrayList<AttributeGroup>();
         try (PreparedStatement stmt = connection.prepareStatement(selectAttributeGroupsForLicenseQuery);) {
             stmt.setLong(1, licenseId);
@@ -847,7 +805,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
 
     protected void persistAttributesForAttributeGroup(Long attributeGroupId, ArrayList<Attribute> attributes)
             throws SQLException {
-
         if (attributes == null || attributes.size() == 0) {
             throw new IllegalArgumentException("No attributes defined for attributegroup: " + attributeGroupId);
         }
@@ -871,7 +828,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     protected ArrayList<LicenseContent> getLicenseContentsForLicense(Long licenseId) throws SQLException {
         ArrayList<LicenseContent> list = new ArrayList<LicenseContent>();
         try (PreparedStatement stmt = connection.prepareStatement(selectLicenseContentForLicenseQuery);) {
-
             stmt.setLong(1, licenseId);
             ResultSet rs = stmt.executeQuery();
 
@@ -885,21 +841,17 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
 
                 ArrayList<Presentation> presentations = getPresentationsForLicenseContent(id);
                 item.setPresentations(presentations);
-
             }
             return list;
         } catch (SQLException e) {
             log.error("SQL Exception in getLicenseContentsForLicense: " + e.getMessage());
             throw e;
         }
-
     }
 
     protected void persistLicenseContentsForLicense(Long licenseId, ArrayList<LicenseContent> licenseContents)
             throws SQLException {
-
         for (LicenseContent current : licenseContents) {
-
             try (PreparedStatement stmt = connection.prepareStatement(persistLicenseContentForLicenseQuery);) {
                 long licenseContentId = generateUniqueID();
 
@@ -909,7 +861,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
                 stmt.execute();
 
                 persistPresentationsForLicenseContent(licenseContentId, current.getPresentations());
-
             } catch (SQLException e) {
                 log.error("SQL Exception in persistLicenseContentsForLicense: " + e.getMessage());
                 throw e;
@@ -919,14 +870,12 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
 
     protected void persistPresentationsForLicenseContent(Long licenseContentId, ArrayList<Presentation> presentations)
             throws SQLException {
-
         if (presentations == null || presentations.size() == 0) {
             throw new IllegalArgumentException("No presentationtypes defined.(licensecontentId: " + licenseContentId +")");
         }
 
         for (Presentation current : presentations) {
             try (PreparedStatement stmt = connection.prepareStatement(persistPresentationTypesForLicenseContentQuery);) {
-
                 stmt.setLong(1, generateUniqueID());
                 stmt.setString(2, current.getKey());
                 stmt.setLong(3, licenseContentId);
@@ -939,7 +888,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     protected ArrayList<Presentation> getPresentationsForLicenseContent(long licenseContentId) throws SQLException {
-        
         ArrayList<Presentation> list = new ArrayList<Presentation>();                
         try (PreparedStatement stmt = connection.prepareStatement(selectPresentationTypesForLicenseContentQuery);) {
         
@@ -958,11 +906,9 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
             log.error("SQL Exception in getPresentationsForLicenseContent: " + e.getMessage());
             throw e;
         }
-
     }
 
     protected ArrayList<Attribute> getAttributesForAttributeGroup(long attributeGroupId) throws SQLException {
-        
         ArrayList<Attribute> list = new ArrayList<Attribute>();
         
         try (PreparedStatement stmt = connection.prepareStatement(selectAttributesForAttributeGroupQuery);) {
@@ -980,7 +926,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
                 ArrayList<AttributeValue> attributeValues = getValuesForAttribute(id);
                 item.setValues(attributeValues);
                 list.add(item);
-
             }
             return list;
         } catch (SQLException e) {
@@ -990,13 +935,11 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     protected void persistValuesForAttribute(Long attributeId, ArrayList<AttributeValue> values) throws SQLException {
-
         if (values == null || values.size() == 0) {
             throw new IllegalArgumentException("No values defined for attribute: " + attributeId);
         }
 
         for (AttributeValue current : values) {
-
             try (PreparedStatement stmt = connection.prepareStatement(persistValueForAttributeQuery);) {
                 stmt.setLong(1, generateUniqueID());
                 stmt.setString(2, current.getValue());
@@ -1012,7 +955,6 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
     }
 
     protected ArrayList<AttributeValue> getValuesForAttribute(long attributeId) throws SQLException {
-        
         ArrayList<AttributeValue> list = new ArrayList<AttributeValue>();
         try (PreparedStatement stmt = connection.prepareStatement(selectValuesForAttributeQuery);) {      
         
@@ -1034,12 +976,10 @@ public class LicenseModuleStorage extends AuditLogModuleStorage {
         }
     }
 
-    /*
+    /**
      * FOR TEST JETTY RUN ONLY!
-     * 
      */
     public void createNewDatabase(String ddlFile) throws SQLException {
         connection.createStatement().execute("RUNSCRIPT FROM '" + ddlFile + "'");
     }
-
 }

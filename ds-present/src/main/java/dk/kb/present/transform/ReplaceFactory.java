@@ -20,7 +20,6 @@ import dk.kb.util.yaml.YAML;
  * Constructs {@link ReplaceFactory}s.
  */
 public class ReplaceFactory implements DSTransformerFactory {
-
     public static final String REGEXP_KEY = "regexp";
     public static final String REPLACEMENT_KEY = "replacement";
     public static final String REPLACEALL_KEY = "replaceall";

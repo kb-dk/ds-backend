@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PreservicaDataTest {
     static final SAXParserFactory factory = SAXParserFactory.newInstance();
 
-
     @Test
     public void testPvicaOriginRadioDU() throws Exception{
         String xmlFile = "xml/pvica_origin_radio.xml";
@@ -112,6 +111,4 @@ public class PreservicaDataTest {
         assertEquals(RecordTypeDto.DELIVERABLEUNIT, resolvedType);
         assertEquals("ds.test", dsRecord.getOrigin());
     }
-
-
 }

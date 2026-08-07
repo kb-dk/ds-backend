@@ -18,13 +18,10 @@ import dk.kb.present.copyright.CopyrightAccessDto2SolrFieldsMapper;
 
 /**
  * Manuelt kørt batch job for at udtrække "rettigheders" oversætter data til jura QA
- *  
  * Den kræver enkelt XML record filer i den mappe der læses fra. (579 records og senere 40K records) 
  */
 public class AccessCondtionExtractorTilQA {
-
     private static String testDataDir="/home/teg/testdata/";
-
     //private static String testDataDir="/home/teg/workspace/ds-present/src/test/resources/xml/copyright_extraction/";
   
     /**
@@ -33,19 +30,15 @@ public class AccessCondtionExtractorTilQA {
      * @param args custom folder
      */
     public static void main(String[] args) {
-
         if (args != null && args.length ==1) {
           testDataDir = args[0];            
         }
-        
-        
+
         Set<String> files = getFilesNamesInDir(testDataDir);
         System.out.println(files.size());
 
         for (String file: files) {
-
-
-            try {            
+            try {
                 String xml = new String(Files.readAllBytes(Paths.get(testDataDir+file)),"UTF-8");
                 CopyrightAccessDto extractCopyrightFields = CopyrightAccessExtractor.buildCopyrightFields(xml);
                 CopyrightAccessDto2SolrFieldsMapper mapper = new CopyrightAccessDto2SolrFieldsMapper(extractCopyrightFields); 
@@ -91,15 +84,9 @@ public class AccessCondtionExtractorTilQA {
             catch(Exception e) {
                 e.printStackTrace();
                 System.out.println("Failed parsing:"+file);
-
             }
-
-
-
-        }        
-
+        }
     }
-
 
     private static Set<String> getFilesNamesInDir(String dir) {
         return Stream.of(new File(dir).listFiles())
@@ -108,17 +95,13 @@ public class AccessCondtionExtractorTilQA {
                 .collect(Collectors.toSet());
     }
 
-
-
     private static String getId(String xml) throws Exception {
-
         Document document =CopyrightAccessExtractor.createDocFromXml(xml);
 
         NodeList identifiers = document.getElementsByTagName("mods:identifier");
 
         for (int i =0;i<identifiers.getLength();i++) {
-
-            Element e = (Element) identifiers.item(i);        
+            Element e = (Element) identifiers.item(i);
             String type= e.getAttribute("type");
 
             if ("local".equals(type)) {

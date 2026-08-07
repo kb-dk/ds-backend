@@ -11,9 +11,7 @@ import java.util.List;
 public class LicenseUtil {
     private static DsLicenseClient licenseClient;
 
-
     public static DsLicenseClient  getDsLicenseApiClient() {
-
         if (licenseClient!= null) {
             return licenseClient;
         }
@@ -40,9 +38,5 @@ public class LicenseUtil {
 
         getQueryDto.setAttributes(allAttributes);
         return getQueryDto;
-
-
     }
-
-
 }

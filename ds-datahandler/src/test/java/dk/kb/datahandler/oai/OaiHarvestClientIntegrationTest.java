@@ -19,10 +19,8 @@ import java.io.IOException;
 /**
  * This is an integration test that will call an external OAI service.
  * The unittest is marked with the integrationTest tag
- * 
  */
 public class OaiHarvestClientIntegrationTest {
-
     private static final Logger log = LoggerFactory.getLogger(OaiHarvestClientIntegrationTest.class);
 
     @BeforeAll
@@ -36,11 +34,9 @@ public class OaiHarvestClientIntegrationTest {
         }
     }
 
-
     @Tag("integration")
     @Test
     void testHarvest1000OaiRecords() throws Exception {
-
         //example: http://www5.kb.dk/cop/oai/?metadataPrefix=mods&set=oai:kb.dk:images:billed:2010:okt:billeder&verb=ListRecords
         //When using resumption token you must NOT include metadatPrefix+set again
         //http://www5.kb.dk/cop/oai/?verb=ListRecords&resumptionToken=KB!1000!mods!0001-01-01!9999-12-31!oai:kb.dk:images:billed:2010:okt:billeder
@@ -66,7 +62,6 @@ public class OaiHarvestClientIntegrationTest {
         String password="XXXX"; //find it yourself
         String from ="2021-01-01";
          */
-
         OaiHarvestClient client = new OaiHarvestClient(oaiTarget, from);
         OaiResponse r1 = client.next();
         assertEquals(1000, r1.getRecords().size());
@@ -77,11 +72,9 @@ public class OaiHarvestClientIntegrationTest {
         assertEquals(1000, r2.getRecords().size());
     }
 
-
     @Tag("integration")
     @Test
     void testPreservicaSevenAuth() throws Exception {
-
         YAML conf = ServiceConfig.getConfig();
 
         //pvica.devel2
@@ -95,7 +88,6 @@ public class OaiHarvestClientIntegrationTest {
         oaiTarget.setFilter(OaiTargetDto.FilterEnum.PRESERVICA);
         oaiTarget.setDateStampFormat(OaiTargetDto.DateStampFormatEnum.DATETIME);
 
-
         OaiHarvestClient client = new OaiHarvestClient(oaiTarget, null);
         OaiResponse r1 = client.next();
         assertEquals(200, r1.getRecords().size()); //there is over 200 now. 200 is batch size.
@@ -103,14 +95,11 @@ public class OaiHarvestClientIntegrationTest {
 
         //System.out.println(r1.getRecords().get(0).getMetadata());
 
-
         //Fetch next 200
         OaiResponse r2= client.next();
         assertEquals(200, r2.getRecords().size());
         // and next
         OaiResponse r3= client.next();
         assertEquals(200, r3.getRecords().size());
-        
     }
-
 }

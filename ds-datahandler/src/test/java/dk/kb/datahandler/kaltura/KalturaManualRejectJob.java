@@ -13,23 +13,17 @@ import dk.kb.kaltura.client.DsKalturaClient;
 public class KalturaManualRejectJob {
 
     /**
-     * <p>
      * Manual started job to that set streams to moderation status=REJECTED.
-     * When a stream is rejected it can not be see from outside the KMC and can not be streamed. 
-     * </p>
+     * When a stream is rejected it can not be see from outside the KMC and can not be streamed.
      *
-     * <p>
      * Input is a text file where each line is a Kaltura entryIds 
      * Output is a text file of entryIds that failed reject 
      * The most likely cause of failed entryIds is that they can does not exist in the KMC.
      *   
      * They are logged in the failed log-file. Notice many entries may already has
-     * been deleted in kaltura in delete job, so many will fail since they do not exist. 
-     * 
-     * </p>
+     * been deleted in kaltura in delete job, so many will fail since they do not exist.
      */
     public static void main(String[] args) {
-        
         String kalturaUrl = "https://kmc.kaltura.nordu.net";
         String adminSecret = "";// Use token,tokenId  instead
         Integer partnerId = 397; // 398=stage, 397=prod. 
@@ -61,7 +55,6 @@ public class KalturaManualRejectJob {
                         System.out.println("Failed rejecting entryId: " + entryId);
                         addLineToFile(output_entry_ids, entryId);
                     }
-
                 } catch (Throwable e) {
                     e.printStackTrace();
                     System.out.println("API error for entryId: " + entryId);
@@ -79,7 +72,7 @@ public class KalturaManualRejectJob {
         }
     }
     
-    /*
+    /**
      * Read all lines and save in a list. Yes, everything will be in memory but this
      * is not an issue for a few million strings.
      */
@@ -88,7 +81,7 @@ public class KalturaManualRejectJob {
         return allLines;
     }
 
-    /*
+    /**
      * Add a new line to a file. The file must already exist.
      */
     private static void addLineToFile(String fileName, String line) throws IOException {
@@ -96,7 +89,7 @@ public class KalturaManualRejectJob {
         Files.write(Paths.get(fileName), line.getBytes(Charset.forName("UTF-8")), StandardOpenOption.APPEND);
     }
 
-    /*
+    /**
      * Create a new file if it does not exist
      */
     private static void createNewFileIfNotExists(String fileName) throws IOException {

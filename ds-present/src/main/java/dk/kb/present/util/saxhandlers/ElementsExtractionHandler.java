@@ -8,6 +8,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.Map;
+
 /**
  * Extract multiple values from an XML stream to a {@link ExtractedPreservicaValues}-object.
  **/
@@ -51,7 +52,6 @@ public class ElementsExtractionHandler extends DefaultHandler {
     private static final String FUZZY_FORM_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/form";
     private static final String FUZZY_CONTENT_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/contentsitem";
     private static final String FUZZY_ORIGIN_COUNTRY_PATH = METADATA_PATH + "/Content/record/source/Tv_Internt_Digitaliseret_program_table_1973_2005/productioncountry";
-
 
     private static final Map<String,String> PBCORE_EXTRACT_PATHS = Map.of(
             START_TIME_PATH,ExtractedPreservicaValues.STARTTIME_KEY,
@@ -125,7 +125,6 @@ public class ElementsExtractionHandler extends DefaultHandler {
         return extractedPreservicaValues;
     }
 
-
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         String elementName = stripPrefix(qName);
@@ -145,7 +144,6 @@ public class ElementsExtractionHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-
         if (insideMetadata) {
             if ("http://www.pbcore.org/PBCore/PBCoreNamespace.html".equals(metadataType)) {
                 if (PBCORE_EXTRACT_PATHS.containsKey(currentPath)) {

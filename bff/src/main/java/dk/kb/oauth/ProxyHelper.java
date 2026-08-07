@@ -17,9 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.*;
 
-
 public class ProxyHelper {
-
     private static final Logger log = LoggerFactory.getLogger(ProxyHelper.class);
 
     public static HttpURLConnection openConnection(String method, URI uri, HttpHeaders requestHeaders, String accessToken) throws IOException {
@@ -41,7 +39,6 @@ public class ProxyHelper {
         }
     }
 
-
     /**
      * Get the URI for a backend api to proxy
      *
@@ -51,7 +48,6 @@ public class ProxyHelper {
      * @return the URI to the API call
      */
     public static URI getApiUri(String api, String path,String query) {
-
         YAML apiConfig;
         try {
             apiConfig = ServiceConfig.getConfig().getSubMap("apis." + api);

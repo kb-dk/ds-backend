@@ -18,7 +18,6 @@ import dk.kb.util.Resolver;
 
 @Tag("integration")
 public class KalturaDeltaUploadIntegrationTest {
-
     private static final Logger log = LoggerFactory.getLogger(KalturaDeltaUploadIntegrationTest.class);
 
     @BeforeAll
@@ -68,5 +67,4 @@ public class KalturaDeltaUploadIntegrationTest {
             fail("Upload failed");
         }
     }
-
 }
