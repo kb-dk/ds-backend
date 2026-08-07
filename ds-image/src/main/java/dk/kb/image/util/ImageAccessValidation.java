@@ -52,8 +52,7 @@ public class ImageAccessValidation {
 	 * 
 	 */				
 	public static final Pattern IIIF_SIZE_PATTERN = Pattern.compile("^\\^?!?([0-9]+),([0-9]+)$");
-	     			
-    
+
     /**     
      * Is request classified as a thumbnail or fullsize for IIP requests.
      * <p>
@@ -87,7 +86,6 @@ public class ImageAccessValidation {
         return true;
     }
 
-    
     /** Is request classified as a thumbnail or fullsize for IIIF requests.
      * <p>
      * This implementation is very conservative and will determine thumbnail also if most non size-parameters are defined.
@@ -135,11 +133,8 @@ public class ImageAccessValidation {
         return true;
     }
 
-    
-        
     @SuppressWarnings("DataFlowIssue") // licenseClient.checkAccessForResourceIds always sets all 3 lists
     public static ACCESS_TYPE accessTypeForImage(String resourceID, boolean thumbnail) {
-
         // Add filter query from license module.
         DsLicenseClient licenseClient = getDsLicenseApiClient();
         CheckAccessForIdsInputDto licenseQueryDto = getCheckAccessForIdsInputDto(resourceID, thumbnail);
@@ -196,7 +191,6 @@ public class ImageAccessValidation {
         ids.add(resource_id);
         idsDto.setAccessIds(ids);
         return idsDto;
-
     }
 
     /**
@@ -228,8 +222,7 @@ public class ImageAccessValidation {
             return null; //this is the contract if no image is returned                
         default :
             throw new UnsupportedOperationException("Unknown Access type '"+type + "'");
-        }            
-
+        }
     }
 
     private static DsLicenseClient getDsLicenseApiClient() {
@@ -244,7 +237,6 @@ public class ImageAccessValidation {
         String noAccessImageName = ServiceConfig.getConfig().getString("images.noAccess");
         return writeImgToStreamingOutput(noAccessImageName);
     }
-
 
     private static StreamingOutput getImageNotExist() throws IOException {
         String nonExistingImageName = ServiceConfig.getConfig().getString("images.nonExisting");

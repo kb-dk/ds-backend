@@ -11,10 +11,7 @@ import dk.kb.image.api.v1.impl.ServiceApiServiceImpl;
 import dk.kb.image.config.ServiceConfig;
 import dk.kb.util.webservice.OpenApiResource;
 
-
-
 public class Application_v1 extends javax.ws.rs.core.Application {
-
     @Override
     public Set<Class<?>> getClasses() {
         OpenApiResource.setConfig(ServiceConfig.getConfig());
@@ -28,5 +25,4 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 dk.kb.util.webservice.exception.ServiceExceptionMapper.class
         ));
     }
-
 }

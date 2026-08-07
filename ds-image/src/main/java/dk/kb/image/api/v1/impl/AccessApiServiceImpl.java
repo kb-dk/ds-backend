@@ -28,13 +28,11 @@ import java.util.List;
 /**
  * ds-image
  *
- * <p>This API implements the functionality of the IIPImage API into the OpenAPI framework used at KB.  The goal is to implement all four of the APIs from [IIPImage](https://iipimage.sourceforge.io/documentation/protocol/). These are as follows: - [Internet Imaging Protocol](https://iipimage.sourceforge.io/IIPv105.pdf) - [IIIF API](https://iiif.io/api/image/3.0/) - Deepzoom - Zoomify  Specification for OpenAPI can be found [here](https://swagger.io/docs/specification/about/).
- *
+ * This API implements the functionality of the IIPImage API into the OpenAPI framework used at KB.  The goal is to implement all four of the APIs from [IIPImage](https://iipimage.sourceforge.io/documentation/protocol/). These are as follows: - [Internet Imaging Protocol](https://iipimage.sourceforge.io/IIPv105.pdf) - [IIIF API](https://iiif.io/api/image/3.0/) - Deepzoom - Zoomify  Specification for OpenAPI can be found [here](https://swagger.io/docs/specification/about/).
  */
 @InInterceptors(interceptors = "dk.kb.image.webservice.KBAuthorizationInterceptor")
 public class AccessApiServiceImpl extends ImplBase implements AccessApi {
     private static final Logger log = LoggerFactory.getLogger(AccessApiServiceImpl.class);
-    
 
     /**
      * DeepZoom Image information
@@ -86,7 +84,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             return IIPFacade.getInstance().getDeepzoomDZI(
                     uriInfo.getRequestUri(), imageid,
                     httpServletResponse,httpHeaders);
-
         } catch (Exception e){
             throw handleException(e);
         }
@@ -149,7 +146,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         return rawGetDeepzoomTile(imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL);
     }
 
-
     /**
      * Concrete implementation of the endpoint. This must be in a non-annotated method in order to be callable from
      * {@link #getDeepzoomTile} {@link #getDeepzoomTileNonescaped}.
@@ -172,13 +168,10 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             return IIPFacade.getInstance().getDeepzoomTile(
                     uriInfo.getRequestUri(),
                     imageid, layer, tiles, format, CNT, GAM, CMP, CTW, INV, COL, httpHeaders);
-
         } catch (Exception e){
             throw handleException(e);
         }
-
     }
-
 
     /**
      * IIIF Image Information
@@ -266,7 +259,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         return rawIIIFImageRequest(identifier, region, size, rotation, quality, format);
     }
 
-    
     /*
      * Manually specified handler for IIIF IDs containing non-escaped slashes.
      * This will always preceed the OpenAPI-generated handler, but that should not be a problem.
@@ -303,7 +295,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             String[] elements = identifier.split("[/\\\\]");
             String filename = elements[elements.length - 1] + "." + format;
             // Show download link in Swagger UI, inline when opened directly in browser
-            
 
             setFilename(filename, false, false);
             httpServletResponse.setContentType(getMIME(format));
@@ -326,11 +317,8 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         } catch (Exception e) {
             throw handleException(e);
         }
-        
     }
 
-    
-    
     /**
      * Internet Imaging Protocol 
      * 
@@ -410,11 +398,7 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             throw handleException(e);
         }
     }
-     
-   
 
-    
-    
     /**
      * Derives the MIME type for replies. Only supports formats from IIIF Image and IIP protocols.
      * @param format simple form, e.g. {@code jpeg}, {@code pdf}...
@@ -449,7 +433,6 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
         }
     }
 
-    
     /**
      * Return is a list of links that will generate thumbnail for the give program.<br>
      * The first link in the list is the sprite containing all thumbnails.
@@ -475,5 +458,4 @@ public class AccessApiServiceImpl extends ImplBase implements AccessApi {
             throw handleException(e); //Expected that the ID is not found at Kaltura with our test data and then a 404 will be returned.                        
         }               
     }
-
 }

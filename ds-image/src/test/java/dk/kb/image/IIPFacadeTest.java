@@ -26,7 +26,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IIPFacadeTest {
-
     private final static URI SOURCE;
     static {
         try {
@@ -161,5 +160,4 @@ class IIPFacadeTest {
             assertEquals(Strings.join(EXPECTED, "\n"), Strings.join(requestedURIs, "\n"));
         }
     }
-
 }

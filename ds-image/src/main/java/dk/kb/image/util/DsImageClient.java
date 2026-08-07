@@ -47,6 +47,4 @@ public class DsImageClient {
     }
 
     //No methods enabled for java client calls yet
-    
-  
 }

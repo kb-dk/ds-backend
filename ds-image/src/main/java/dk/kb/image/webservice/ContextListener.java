@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * Listener to handle the various setups and configuration sanity checks that can be carried out at when the
  * context is deployed/initalized.
  */
-
 public class ContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -99,7 +98,6 @@ public class ContextListener implements ServletContextListener {
                 log.info("Logback config 'logback-test.xml' found. Running in test mode");
                 return;
             }
-
         } catch (Exception e) {
             // We might want to skip this logging as it will log to the unconfigured logback at this point
             log.debug("Logback config 'logback-test.xml' not found. Attempting explicit logback configuration");
@@ -166,11 +164,9 @@ public class ContextListener implements ServletContextListener {
         return redirectFile;
     }
 
-
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         ServiceConfig.getInstance().shutdown();
         log.debug("Service destroyed");
     }
-
 }

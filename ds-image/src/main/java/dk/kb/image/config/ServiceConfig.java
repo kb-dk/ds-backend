@@ -77,7 +77,6 @@ public class ServiceConfig extends AutoYAML {
      * @return the backing YAML-handler for the configuration.
      */
     public static YAML getConfig() {
-
         if (getInstance().getYAML() == null) {
             throw new IllegalStateException("The configuration should have been loaded, but was not");
         }
