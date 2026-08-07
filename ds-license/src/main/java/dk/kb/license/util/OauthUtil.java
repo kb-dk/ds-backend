@@ -34,19 +34,16 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 /**
  * This can maybe later be extended to a more general usable oath/keycloak util class.
- * 
  */
 public class OauthUtil {
     private static final Logger log = LoggerFactory.getLogger(OauthUtil.class);
         
     /**
-     * <p>
      * From a codeToken issued by the KeyCloak use the codeToken to get the accessToken.
      * The accessToken is verified to have been issued by the trusted KeyCloak server using the public rsa-key.
      * It will also validate the accessToken has not expired yet.
      * If the accessToken validates return username and email concatenated for the user.
-     * Throws Exception if the codeToken is not found or accessToken does not validate.  
-     * </p>
+     * Throws Exception if the codeToken is not found or accessToken does not validate.
      *  
      * @param code The code parameter in the redirect url
      * @param keyCloakClientSecret The KeyCloak client secret for the realm provider
@@ -56,10 +53,8 @@ public class OauthUtil {
      * @return Combined username and email returned by KeyCloak.
      * 
      * @throws Exception if code does not validate or unexpected error from KeyCloak.
-     * 
      */
     public static String getUserInformation(String code, String keyCloakClientSecret,String rsaPublicKey, String redirectUrl,String keyCloakRealmTokenUrl) throws Exception{
-
         String JWT=null;
         try {
             JWT = getKeyCloakAccessTokenJWT(code, keyCloakClientSecret, redirectUrl,keyCloakRealmTokenUrl);          
@@ -112,7 +107,6 @@ public class OauthUtil {
         return result.toString();
     }
 
-    
     /**
      * Return a String[] with 2 entries. First is header and second is payload.
      * 
@@ -130,7 +124,6 @@ public class OauthUtil {
         tokenDecoded[1]=payload;
         
         return tokenDecoded;
-        
     }
     
     /**
@@ -169,12 +162,9 @@ public class OauthUtil {
     }
     
     /**
-     * <p>
      * Validate the accessToken retrived from the KeyCloak server, using the codeToken, is valid.
      * Valid means both that it verified to have been signed by the trusted KeyCloak server using the public key
      * and also that the token has not expired. The token is only valid for 15 minutes after issued by KeyCloak.
-     * </p>
-     *
      * @see <a href="https://www.masterincoding.com/validate-jwt-token-with-public-key-rsa256/">Java Dcoumentation</a>
      *       
      * @param accessToken The accessToken part from the JWT base64 encoded
@@ -201,8 +191,7 @@ public class OauthUtil {
             return false;
         }
     }
-    
-    
+
     /**
      * @param access_payload The decoded payload from the access token. The payload is a JSON object
      * 
@@ -216,7 +205,7 @@ public class OauthUtil {
         return combinedUserName;        
     }
     
-    /*
+    /**
      * Generate the RSAPublicKey object from the publicKey that is base64 encoded
      */
     private static RSAPublicKey getRSAPublicKey(String publicKeyBase64) throws Exception{    
@@ -233,5 +222,4 @@ public class OauthUtil {
         var algo = Algorithm.RSA256(getRSAPublicKey(rsaPublicKeyBase64), null);
         return JWT.require(algo).build();
     }
-    
-  }
+}

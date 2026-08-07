@@ -18,8 +18,6 @@ import dk.kb.license.util.OauthUtil;
  * The username will be saved on the session object.     
  */
 public class LoginCallbackServlet extends HttpServlet {
-
-
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(CreateLicenseServlet.class);
     private static final String CODE_PARAMETER="code";
@@ -59,5 +57,4 @@ public class LoginCallbackServlet extends HttpServlet {
         request.getSession().setAttribute("oauth_user", combinedUserName); //Save on session           
         response.sendRedirect(request.getContextPath() + "/configuration.jsp"); //Default landing page     
     }
-
 }

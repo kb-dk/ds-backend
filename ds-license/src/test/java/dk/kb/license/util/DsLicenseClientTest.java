@@ -20,16 +20,12 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.license.config.ServiceConfig;
 
-
 /**
  * Integration test on class level, will not be run by automatic build flow.
  * Call 'kb init' to fetch YAML property file with server urls
- * 
  */
 @Tag("integration")
 public class DsLicenseClientTest {
-
-
     private static final Logger log =  LoggerFactory.getLogger(DsLicenseClientTest.class);
 
     private static DsLicenseClient remote = null;
@@ -49,7 +45,6 @@ public class DsLicenseClientTest {
             e.printStackTrace();
             log.error("Integration yaml 'ds-license-integration-test.yaml' file most be present. Call 'kb init'"); 
             fail();
-
         }
     }
 
@@ -72,14 +67,12 @@ public class DsLicenseClientTest {
 
     }
 
-    
     @Test
     public void testValidateAccess() throws Exception {       
         ValidateAccessInputDto input = getValidateAccessInputDto(new ArrayList<String>());      
         ValidateAccessOutputDto output = remote.validateAccess(input);
         assertNotNull(output); //We have a valid response;
     }
-
 
     @Test
     public void testUserGroups() throws Exception {      
@@ -108,7 +101,6 @@ public class DsLicenseClientTest {
         assertTrue(output.getFilterQuery().length() >0); //There will always be a query                  
     }
 
-    
     @Test
     public void testGetUserLicenses() throws Exception {      
         GetUsersLicensesInputDto input=new GetUsersLicensesInputDto();                                                             
@@ -146,9 +138,7 @@ public class DsLicenseClientTest {
 
         assertFalse(outputDto.getDr().getTitleRestricted());
     }
-        
-    
-    
+
     private ValidateAccessInputDto getValidateAccessInputDto(ArrayList<String> groups) {
         ValidateAccessInputDto input = new ValidateAccessInputDto();             
         input.setAttributes(getDefaultAttributes());                       
@@ -156,7 +146,6 @@ public class DsLicenseClientTest {
         input.setGroups(groups);
         return input;
     }
-
 
     /**
      * This is the default user with no additional information about the user.
@@ -176,7 +165,6 @@ public class DsLicenseClientTest {
         CheckAccessForIdsInputDto input = new CheckAccessForIdsInputDto();
         input.setPresentationType(presentationType);
 
-
         UserObjAttributeDto everybodyUserAttribute = new UserObjAttributeDto();
         everybodyUserAttribute.setAttribute("everybody");
         ArrayList<String> values = new ArrayList<>();
@@ -190,5 +178,4 @@ public class DsLicenseClientTest {
 
         return input;
     }
-
 }

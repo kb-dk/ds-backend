@@ -22,6 +22,7 @@ public class RightsCalculation {
 
     /**
      * Check if a given DS id is restricted.
+     *
      * @param id of DsRecord
      * @return true if restricted, otherwise false.
      */
@@ -35,6 +36,7 @@ public class RightsCalculation {
 
     /**
      * Check if a given DR production id is restricted.
+     *
      * @param id from DRs production ID metadata.
      * @return true if restricted, otherwise false.
      */
@@ -45,8 +47,10 @@ public class RightsCalculation {
             throw new InternalServiceException("An SQL exception happened while checking for ID restriction", e);
         }
     }
+
     /**
      * Check if a given record is restricted in the DR platform.
+     *
      * @param id from DRs production ID metadata.
      * @return true if restricted, otherwise false.
      */
@@ -60,6 +64,7 @@ public class RightsCalculation {
 
     /**
      * Check if a given productionCode from the metadata for a given record is allowed in the system.
+     *
      * @param productionCode from tvmeter/ritzau metadata
      * @return true if allowed, otherwise false
      */
@@ -70,6 +75,7 @@ public class RightsCalculation {
     /**
      * For a {@link RightsCalculationInputDto} do all calculations needed to return a {@link RightsCalculationOutputDto} containing all information needed
      * for a record in the DR Archive.
+     *
      * @param rightsCalculationInputDto object containing all values needed for RightsCalculation.
      * @return a {@link RightsCalculationOutputDto} containing all fields and values that are needed as part of a solr document to manage rights and restrictions in the
      * LicenseModule part of DS-License.
@@ -92,14 +98,12 @@ public class RightsCalculation {
         }
     }
 
-
     /**
      * Sets the restrictions for a record in the DR Archive based on the provided
      * rights calculation input. This method performs checks against the
      * restricted_ids table of the RightsModule to determine if specific
      * identifiers and codes are restricted.
-     *
-     * <p>This method processes the following checks:</p>
+     * This method processes the following checks:
      * <ul>
      *   <li>Checks if the DS (Digitale samlinger)  ID is restricted.</li>
      *   <li>Checks if the DR production ID is restricted.</li>
@@ -135,9 +139,8 @@ public class RightsCalculation {
 
     /**
      * Sets the DR holdback information for a TV record in the DR archive.
-     *
-     * <p>This method retrieves the DR holdback category based on the provided input DTO, calculates the holdback
-     * name and expiration date, and updates the output DTO accordingly.</p>
+     * This method retrieves the DR holdback category based on the provided input DTO, calculates the holdback
+     * name and expiration date, and updates the output DTO accordingly.
      *
      * @param rightsCalculationInputDto the input data transfer object containing the rights calculation details,
      *                                   including DR holdback input, record ID, and start time. This should not be null.
@@ -158,7 +161,6 @@ public class RightsCalculation {
                     rightsCalculationInputDto.getHoldbackInput().getForm() == null ||
                     rightsCalculationInputDto.getHoldbackInput().getIndhold() == null ||
                     rightsCalculationInputDto.getHoldbackInput().getProductionCountry() == null) {
-
                 drHoldbackCategoryOutputDto = new DrHoldbackCategoryOutputDto();
                 drOutput.setHoldbackName(null);
                 log.debug("'holdbackCategory', 'hensigt', 'form', 'indhold', and 'productionCountry' was null by recordId: {}", rightsCalculationInputDto.getRecordId());
@@ -166,7 +168,6 @@ public class RightsCalculation {
                 drHoldbackCategoryOutputDto = getDrHoldbackCategory(holdbackInput);
                 String holdbackName = getDrHoldbackName(holdbackInput, drHoldbackCategoryOutputDto);
                 drOutput.setHoldbackName(holdbackName);
-
             }
         } else {
             drHoldbackCategoryOutputDto = RightsModuleFacade.getDrHoldbackCategoryByName(rightsCalculationInputDto.getHoldbackInput().getHoldbackCategory());
@@ -179,9 +180,8 @@ public class RightsCalculation {
 
     /**
      * Sets the DR holdback information for a radio record in the DR archive.
-     *
-     * <p>This method calculates the DR holdback expiration date based on the start time provided in the input DTO,
-     * sets the DR holdback name to "Radio", and updates the output DTO with the calculated DR holdback expiration date.</p>
+     * This method calculates the DR holdback expiration date based on the start time provided in the input DTO,
+     * sets the DR holdback name to "Radio", and updates the output DTO with the calculated DR holdback expiration date.
      *
      * @param rightsCalculationInputDto the input data transfer object containing the rights calculation details,
      *                                   including the start time. This should not be null.
@@ -195,14 +195,12 @@ public class RightsCalculation {
         drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
     }
 
-
     /**
      * Retrieves a DR holdback category based on the provided holdback calculation input DTO.
-     *
-     * <p>This method extracts the form and content values from the input DTO, retrieves the corresponding key,
+     * This method extracts the form and content values from the input DTO, retrieves the corresponding key,
      * and checks for specific conditions related to that key. If the key is empty, it returns an empty
      * {@link DrHoldbackCategoryOutputDto} with a DR holdback date of "9999-01-01". If the key is "2.05", it validates the key
-     * based on the production country before retrieving the appropriate DR holdback category.</p>
+     * based on the production country before retrieving the appropriate DR holdback category.
      *
      * @param holdbackInput the input data transfer object containing the DR holdback calculation details, including
      *                      form, content, and production country. This should not be null.
@@ -226,13 +224,11 @@ public class RightsCalculation {
         return RightsModuleFacade.getDrHoldbackCategoryByKey(key);
     }
 
-
     /**
      * Retrieves the holdback name based on the provided holdback calculation input
      * and holdback category. This method applies specific logic based on the values
      * in the input DTO to determine the appropriate holdback name.
-     *
-     * <p>The method handles the following cases:</p>
+     * The method handles the following cases:
      * <ul>
      *   <li>If the purpose ({@code hensigt}) in the input is `6000`, the method
      *       returns the name "Undervisning" regardless of other input values.</li>
@@ -271,11 +267,10 @@ public class RightsCalculation {
      * This method includes special handling for a specific key
      * ("2.05"), where the production country is used to determine the
      * resulting key.
-     *
-     * <p>If the key is "2.05" and the production country is "1000",
+     * If the key is "2.05" and the production country is "1000",
      * the method appends ".01" to the key which means that it is produced in Denmark.
      * For any other production country, it appends ".02" to the key which means anywhere not Denmark.
-     * For all other keys, the method returns the key unchanged.</p>
+     * For all other keys, the method returns the key unchanged.
      *
      * @param key the key to validate, should not be null.
      * @param productionCountry the production country identifier as an
@@ -309,7 +304,6 @@ public class RightsCalculation {
      * @return The calculated holdback expiration date in ISO-8601 ({@link DateTimeFormatter#ISO_INSTANT}-format).
      */
     private static String getDrHoldbackExpiredDate(DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto, String recordId, String startDate) {
-
         // In this case holdback cannot be calculated. Pro
         if (drHoldbackCategoryOutputDto.getName() == null || drHoldbackCategoryOutputDto.getName().isEmpty()){
             log.debug("Purpose name was empty for record with id: '{}'. Setting holdback date to 9999-01-01T00:00:00Z", recordId);
@@ -331,9 +325,9 @@ public class RightsCalculation {
         }
     }
 
-
     /**
      * Apply the amount of holdback days to the start date and return the date for when holdback has expired.
+     *
      * @param startDate a date representing the date when a program was broadcast.
      * @param holdbackDays the amount of days that has to parse before a program can be retrieved in the archive.
      * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
@@ -350,6 +344,7 @@ public class RightsCalculation {
 
     /**
      * Apply the amount of holdback years to the start date and return the date for when holdback has expired.
+     *
      * @param startDate a date representing the date when a program was broadcast.
      * @param holdbackYears the amount of years that has to parse before a program can be retrieved in the archive.
      * @return the date, when the holdback period has expired as a string in the format: yyyy-MM-dd'T'HH:mm:ssZ.
@@ -367,6 +362,7 @@ public class RightsCalculation {
 
     /**
      * Get 1st of January for the following year for any LocalDateTime.
+     *
      * @param dateTime to extract year from
      * @return a new ZonedDateTime with the date 1st of january next year from the input datetime
      */
@@ -374,7 +370,6 @@ public class RightsCalculation {
         int year = dateTime.getYear();
         return ZonedDateTime.of(year + 1, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
     }
-
 
     /**
      * Parse a date-time string into a {@link ZonedDateTime} object using the format "yyyy-MM-dd'T'HH:mm:ss[XX][XXX]".

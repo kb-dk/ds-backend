@@ -1,6 +1,5 @@
 package dk.kb.license.servlets;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,20 +29,16 @@ import dk.kb.license.storage.License;
 import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.validation.LicenseValidator;
 
-
 /**
  * This is used by the JSP frontend only. Create/edit a license has its own logic in
  * {@link CreateLicenseServlet CreateLicenseServlet.class}
- * 
  * The methods here are all the minor methods such as editing on the configuration for presentationtypes, packages etc.
  */
 public class ConfigurationServlet extends HttpServlet {
-
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(ConfigurationServlet.class);
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         DeleteReasonDto deleteReason= new DeleteReasonDto();
         deleteReason.setChangeComment("DELETE FROM JSP");
         response.setContentType("text/html; charset=UTF-8");
@@ -53,10 +47,8 @@ public class ConfigurationServlet extends HttpServlet {
         String event = request.getParameter("event");
         log.info("New event for ConfigurationServlet:" + event);
 
-
         try {
             // tab 0 is list licenses
-
             if ("save_presentationtype".equals(event)) {
                 request.setAttribute("tab", "1");
                 String key = request.getParameter("key_presentationtype");
@@ -81,14 +73,11 @@ public class ConfigurationServlet extends HttpServlet {
                 }
                 log.debug("Saving new grouptype:" + key + " klausulering:" + isKlausulering);
                 LicenseModuleFacade.persistLicenseGroupType(key, value_dk, value_en, description, description_en, query, isKlausulering,request.getSession());
-
             } else if ("save_attributetype".equals(event)) {
-
                 request.setAttribute("tab", "3");
                 String value = request.getParameter("value_attributetype");
                 log.debug("Saving new attributetype:" + value);
                 LicenseModuleFacade.persistAttributeType(value,request.getSession());
-
             } else if ("validate".equals(event)) {
                 log.debug("validate called");
                 request.setAttribute("tab", "4");
@@ -99,7 +88,6 @@ public class ConfigurationServlet extends HttpServlet {
                 request.setAttribute("validation_attribute_values", validation_attribute_values);
                 request.setAttribute("validation_groups", validation_groups);
                 request.setAttribute("validation_presentationtype", validation_presentationtype);
-
 
                 String result = decomposeValidateAccess(validation_attribute_values, validation_groups, validation_presentationtype);
                 request.setAttribute("validation_result", result);
@@ -177,7 +165,6 @@ public class ConfigurationServlet extends HttpServlet {
                 log.error("Unknown event:" + event);
                 request.setAttribute("message", "Unknown event:" + event);
             }
-
         } catch (Exception e) {//various server errors
             log.error("unexpected error", e);
             request.setAttribute("message", e.getMessage());
@@ -202,7 +189,6 @@ public class ConfigurationServlet extends HttpServlet {
         PresentationType presentationType = null;
         ArrayList<UserObjAttributeDto> attributes;
         try{
-
             attributes = createUserObjFromFormData(validation_attribute_values);
             ArrayList<String> groups = createGroupsFromFormData(validation_groups);		
             ArrayList<String> presentationTypes = createPresentationTypesFromFormData(validation_presentationtype);
@@ -214,13 +200,11 @@ public class ConfigurationServlet extends HttpServlet {
             input.setAttributes(attributes);
             input.setGroups(groups);
             input.setPresentationType(presentationTypes.get(0));
-
         }
         catch(RuntimeException e){
             infoMessage.append("Input validerings fejl fra web-form:"+e.getMessage());
             return infoMessage.toString();
         }        
-
 
         //The following logic is taken from LicenseValidator.validateAccess().
         //I see no other way that to repeat it when I want to the decomposition.
@@ -252,7 +236,6 @@ public class ConfigurationServlet extends HttpServlet {
                 infoMessage.append("Ingen licenser opfylder access-krav(uden check af grupper) \n");	
                 return infoMessage.toString();
             }
-
 
             //Test method getUsersLicenseGroups
             GetUsersLicensesInputDto inputGroups = new GetUsersLicensesInputDto();
@@ -288,15 +271,13 @@ public class ConfigurationServlet extends HttpServlet {
         return infoMessage.toString();
     }
 
-
     private String decomposeValidateQuery (String validation_attribute_values,  String validation_presentationtypes) {
         StringBuilder infoMessage = new StringBuilder();   
         //parse input first.
         GetUserQueryInputDto input = new GetUserQueryInputDto();
         ArrayList<UserObjAttributeDto> attributes;
         try{
-
-            attributes = createUserObjFromFormData(validation_attribute_values);		
+            attributes = createUserObjFromFormData(validation_attribute_values);
             ArrayList<String> presentationTypes = createPresentationTypesFromFormData(validation_presentationtypes);
             if (presentationTypes.size() == 0){
                 infoMessage.append("Der skal angives een presentationstype");
@@ -305,13 +286,11 @@ public class ConfigurationServlet extends HttpServlet {
             input.setAttributes(attributes);
 
             input.setPresentationType(presentationTypes.get(0));
-
         }
         catch(RuntimeException e){
             infoMessage.append("Input validerings fejl fra web-form:"+e.getMessage());
             return infoMessage.toString();
         }        
-
 
         //The following logic is taken from LicenseValidator.getUserQuery
         //I see no other way that to repeat it when I want to the decomposition.
@@ -338,8 +317,7 @@ public class ConfigurationServlet extends HttpServlet {
             attributes = createUserObjFromFormData(checkAccessIds_attribute_values);		
             input.setAttributes(attributes);
             input.setPresentationType(checkAccessIds_presentationtype);
-            input.setAccessIds(createIdsFormData(checkAccessIds_ids));			
-
+            input.setAccessIds(createIdsFormData(checkAccessIds_ids));
         }
         catch(RuntimeException e){
             infoMessage.append("Input validerings fejl fra web-form:"+e.getMessage());
@@ -360,8 +338,6 @@ public class ConfigurationServlet extends HttpServlet {
         }
         return infoMessage.toString();
     }
-
-
 
     private ArrayList<String> createGroupsFromFormData(String validation_groups){
         ArrayList<String> groups = new ArrayList<String>();
@@ -424,10 +400,8 @@ public class ConfigurationServlet extends HttpServlet {
             for (String value : values){
                 valueList.add(value.trim());
             }
-            attribute.setValues(valueList);	   	
-
+            attribute.setValues(valueList);
         }
         return attributes;
     }
-
 }

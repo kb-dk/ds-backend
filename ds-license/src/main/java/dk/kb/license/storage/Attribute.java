@@ -10,9 +10,7 @@ import java.util.ArrayList;
  * 
  */
 public class Attribute extends Persistent{
-
-	
-	private String attributeName;   
+	private String attributeName;
 	private ArrayList<AttributeValue> values = new ArrayList<AttributeValue>();
 
 	public Attribute(){	      
@@ -21,7 +19,6 @@ public class Attribute extends Persistent{
 	public Attribute(String name){
 		this.attributeName=name;	   
 	}
-
 
 	public String getAttributeName() {
 		return attributeName;
@@ -38,7 +35,4 @@ public class Attribute extends Persistent{
 	public void setValues(ArrayList<AttributeValue> values) {
 		this.values = values;
 	}
-
-
-
 }

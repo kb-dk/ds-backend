@@ -34,7 +34,6 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
 
     @BeforeAll
     public static void beforeClass() throws IOException, SQLException {
-
         ServiceConfig.initialize("conf/ds-license*.yaml", "ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
@@ -42,7 +41,7 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
         storage = new LicenseModuleStorageForUnitTest();
     }
    
-    /*
+    /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
@@ -83,7 +82,6 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
             String changeComment = "changeComment";
             DeleteReasonDto deleteReasonDto = new DeleteReasonDto();
             deleteReasonDto.setChangeComment(changeComment);
-
 
             long presentationTypeId = LicenseModuleFacade.persistLicensePresentationType(key, value, valueEnglish, mockedSession);
             LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated, mockedSession);

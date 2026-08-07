@@ -8,8 +8,7 @@ package dk.kb.license.storage;
  * 
  */
 public class AttributeValue extends Persistent {
-
-	private String value;  
+	private String value;
 
 	public AttributeValue(String value){
 		this.value=value;
@@ -27,6 +26,4 @@ public class AttributeValue extends Persistent {
     public String toString() {
         return value;
     }
-
-
 }

@@ -8,10 +8,8 @@ package dk.kb.license.storage;
  * 
  */
 public class Presentation extends Persistent{
-
 	private String key;
-	
-	
+
 	public Presentation() {
 	
 	}
@@ -20,8 +18,7 @@ public class Presentation extends Persistent{
 		super();
 		this.key = key;
 	}
-	
-	
+
 	public String getKey() {
 		return key;
 	}
@@ -34,8 +31,4 @@ public class Presentation extends Persistent{
     public String toString() {
         return key;
     }
-
-	
-	
-	
 }

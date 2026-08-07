@@ -298,7 +298,6 @@ public class KBOAuth2Handler {
                 .getToken();
     }
 
-
     /**
      * Validate issued date, expiry etc. for the given AccessToken.
      * @param trusted an AccessToken which has passed the cryptographic validation.
@@ -371,8 +370,6 @@ public class KBOAuth2Handler {
         }
     }
 
-    
-    
      /**
       * The Base64 strings that come from a JWKS need some manipulation before they can be decoded.   
       * TODO: Why is replacement even required? See OahtUtil in ds-license. Just splitting on '.' to get the 3 terms is correct by using a OOAuth library.     
@@ -434,6 +431,7 @@ public class KBOAuth2Handler {
     /**
      * Given a public key JSON representation from a Keycloak server, parse the JSON and construct a PublicKey for the
      * stated kid (Key ID).
+     *
      * @param kid ID for the key to use.
      * @param publicKeysString JSON with public keys for the backing Keycloak server.
      * @return a PublicKey ready for use when verifying accessTokens.
@@ -478,6 +476,7 @@ public class KBOAuth2Handler {
 
     /**
      * Remove trailing slash ({@code /)} from the given String. At most 1 slash is removed.
+     *
      * @param s input string.
      * @return the string without trailing slash.
      */
@@ -511,5 +510,4 @@ public class KBOAuth2Handler {
                 Locale.ROOT, "KBOAuth2Handler(mode=%s, baseurl='%s', realms=%s, keysTTL=%ss, cached realm keys=%d)",
                 mode, baseurl, realms, keysTTL, realmKeys.size());
     }
-
 }

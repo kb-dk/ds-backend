@@ -10,14 +10,12 @@ import java.util.ArrayList;
  * 
  */
 public class AttributeGroup extends Persistent{
-
-	private int number;	
+	private int number;
 
 	private ArrayList<Attribute> attributes = new  ArrayList<Attribute>();
 
 	public AttributeGroup(int number){
 		this.number=number;
-
 	}
 
 	public ArrayList<Attribute> getAttributes() {
@@ -35,5 +33,4 @@ public class AttributeGroup extends Persistent{
 	public void setNumber(int number) {
 		this.number = number;
 	}
-
 }

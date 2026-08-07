@@ -35,7 +35,6 @@ public class LicenseModuleFacade {
      */
     public static long persistLicensePresentationType(String key, String value_dk, String value_en, HttpSession session) {
         Long objectId = BaseModuleStorage.performStorageAction("persistLicensePresentationType(" + key + "," + value_dk + "," + value_en + ")", LicenseModuleStorage.class, storage -> {
-
             String user = (session != null) ? (String) session.getAttribute("oauth_user") : null;
 
             PresentationType newType = new PresentationType(key, value_dk, value_en);
@@ -46,7 +45,6 @@ public class LicenseModuleFacade {
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
 
             return id;
-
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
         return objectId;
@@ -64,7 +62,6 @@ public class LicenseModuleFacade {
         return BaseModuleStorage.performStorageAction("persistLicensePresentationType()", LicenseModuleStorage.class, storage -> {
             return ((LicenseModuleStorage) storage).getLicensePresentationTypes();
         });
-
     }
 
     /**
@@ -89,10 +86,8 @@ public class LicenseModuleFacade {
 
             AuditLogEntry auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.DELETE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), deleteReasonDto.getChangeComment(), changes.getBefore(), changes.getAfter());
 
-
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
-
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
         return null;
@@ -100,12 +95,10 @@ public class LicenseModuleFacade {
 
     /**
      * Create a new {@link GroupType}. The new GroupType will not be attached to any existing licenses.
-     * <p>
      * A group type has to be one of the two types:  access-giving(pakke) or restriction(klausulering).
      * The group type must define a solr query string. In case of access-giving(pakke) the query will include
      * additional content. In case of a restriction, the query will remove content unless the user has a license
      * which removes the restriction.
-     * <p>
      * After creation of the GroupType, it is not added to any licences,
      * but can be used when creating or editing an existing license.
      *
@@ -132,7 +125,6 @@ public class LicenseModuleFacade {
 
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
-
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
     }
@@ -161,7 +153,6 @@ public class LicenseModuleFacade {
             ((LicenseModuleStorage) storage).updateLicenseGroupType(id, value_dk, value_en, description, description_en, query, isRestriction);
             ((AuditLogModuleStorage) storage).persistAuditLog(auditLog);
             return null;
-
         });
         LicenseCache.reloadCache(); // Database changed, so reload cache
     }
@@ -176,7 +167,6 @@ public class LicenseModuleFacade {
      */
     public static void updatePresentationType(long id, String value_dk, String value_en, HttpSession session) {
         BaseModuleStorage.performStorageAction("updateLicenseGroupType(" + id + "," + value_dk + "," + value_en + ")", LicenseModuleStorage.class, storage -> {
-
             String user = (session != null) ? (String) session.getAttribute("oauth_user") : null;
             PresentationType oldType = ((LicenseModuleStorage) storage).getPresentationTypeById(id);
             PresentationType newType = new PresentationType(oldType.getKey(), value_dk, value_en);
@@ -196,7 +186,6 @@ public class LicenseModuleFacade {
      * @param groupName The unique name of the grouptype
      */
     public static RecordsCountDto deleteLicenseGroupType(String groupName, HttpSession session, DeleteReasonDto deleteReasonDto) {
-
         inputValidator.validateString(groupName, "groupName");
         inputValidator.validateString(deleteReasonDto.getChangeComment(), "changeComment");
 
@@ -255,7 +244,6 @@ public class LicenseModuleFacade {
                 long id = ((LicenseModuleStorage) storage).persistLicense(license);
                 ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(null, license);
                 auditLog = new AuditLogEntry(id, user, ChangeTypeEnumDto.CREATE, ObjectTypeEnumDto.LICENSE, license.getLicenseName(), null, changes.getBefore(), changes.getAfter());
-
             } else {
                 License oldLicense = ((LicenseModuleStorage) storage).getLicense(license.getId());
                 ChangeDifferenceText changes = LicenseChangelogGenerator.getLicenseChanges(oldLicense, license);
@@ -276,7 +264,6 @@ public class LicenseModuleFacade {
      * @return List of all GroupTypes define in this instance of LicenseModule
      */
     public static ArrayList<GroupType> getLicenseGroupTypes() {
-
         return BaseModuleStorage.performStorageAction("getLicenseGroupTypes()", LicenseModuleStorage.class, storage -> {
             return ((LicenseModuleStorage) storage).getLicenseGroupTypes();
         });
@@ -407,7 +394,6 @@ public class LicenseModuleFacade {
         attributeDto.setValues(attributeValueDtos);
 
         return attributeDto;
-
     }
 
     private static Attribute convertAttributeDtoToAttribute(AttributeDto attributeDto) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
@@ -425,7 +411,6 @@ public class LicenseModuleFacade {
         attribute.setValues(attributeValues);
 
         return attribute;
-
     }
 
     private static AttributeGroupDto convertAttributeGroupToDto(AttributeGroup attributeGroup){ //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
@@ -439,7 +424,6 @@ public class LicenseModuleFacade {
         attributeGroupDto.setAttributes(attributeDtos);
 
         return attributeGroupDto;
-
     }
 
     private static AttributeGroup convertDtoToAttributeGroup(AttributeGroupDto attributeGroupDto){ //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
@@ -452,7 +436,6 @@ public class LicenseModuleFacade {
         attributeGroup.setAttributes(attributes);
 
         return attributeGroup;
-
     }
 
     private static LicenseContentDto convertLicenseContentToDto(LicenseContent licenseContent) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
@@ -468,13 +451,11 @@ public class LicenseModuleFacade {
             presentationDto.setKey(presentation.getKey());
 
             presentationDtos.add(presentationDto);
-
         }
 
         licenseContentDto.setPresentations(presentationDtos);
 
         return licenseContentDto;
-
     }
 
     private static LicenseContent convertDtoToLicenseContent(LicenseContentDto licenseContentDto) { //temporary solution to unblock frontend developers, otherwise this should be expanded and moved to mappers package
@@ -490,13 +471,11 @@ public class LicenseModuleFacade {
             presentation.setKey(presentationDto.getKey());
 
             presentations.add(presentation);
-
         }
 
         licenseContent.setPresentations(presentations);
 
         return licenseContent;
-
     }
 
     private static GroupTypeDto convertGroupTypeToDto(GroupType groupType) {
@@ -585,7 +564,6 @@ public class LicenseModuleFacade {
     }
 
     public static PresentationTypeDto getPresentationTypeById(Long id){
-
         PresentationType presentationType = BaseModuleStorage.performStorageAction("getPresentationTypeById()", LicenseModuleStorage.class, storage -> {
             return ((LicenseModuleStorage) storage).getPresentationTypeById(id);
         });
@@ -612,7 +590,6 @@ public class LicenseModuleFacade {
     }
 
     public static ArrayList<AttributeTypeDto> getAttributeTypesDto() {
-
         ArrayList<AttributeType> attributeTypes = getAttributeTypes();
 
         ArrayList<AttributeTypeDto> attributeTypeDto = new ArrayList();
@@ -635,7 +612,6 @@ public class LicenseModuleFacade {
     }
 
     public static void persistPresentationType(PresentationTypeDto presentationTypeDto) {
-
         if (presentationTypeDto.getId() == 0) {
             persistLicensePresentationType(presentationTypeDto.getKey(), presentationTypeDto.getValueDk(), presentationTypeDto.getValueEn(), null);
         }
@@ -645,7 +621,6 @@ public class LicenseModuleFacade {
     }
 
     public static void persistGroupType(GroupTypeDto groupTypeDto) {
-
         if (groupTypeDto.getId() == 0) {
             persistLicenseGroupType(groupTypeDto.getKey(), groupTypeDto.getValueDk(), groupTypeDto.getValueEn(), groupTypeDto.getDescriptionDk(), groupTypeDto.getDescriptionEn(), groupTypeDto.getQuery(), groupTypeDto.getRestriction(), null);
         }
@@ -657,5 +632,4 @@ public class LicenseModuleFacade {
     public static void persistAttributeTypeDto(AttributeTypeDto attributeTypeDto) {
         persistAttributeType(attributeTypeDto.getValue(), null);
     }
-
 }

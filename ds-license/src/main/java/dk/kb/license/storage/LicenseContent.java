@@ -2,7 +2,6 @@ package dk.kb.license.storage;
 
 import java.util.ArrayList;
 
-
 /**
  * This is a persistent DTO.
  * See the documentation and UML model:<br>
@@ -11,7 +10,6 @@ import java.util.ArrayList;
  * 
  */
 public class LicenseContent extends Persistent{
-
 	private String name;
 	
 	private ArrayList<Presentation> presentations = new ArrayList<Presentation>();
@@ -39,8 +37,4 @@ public class LicenseContent extends Persistent{
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
-	
-	
 }

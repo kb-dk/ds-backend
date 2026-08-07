@@ -98,16 +98,13 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         log.info("Created " + this);
     }
 
-    
     /**
      * Logic: <br>
      * 1. Validate Token present if required for method. 
      * 2. Validate access control for role allowed to call the method.
-     * 
      */
     @Override
     public void handleMessage(Message message) {
-
         //message.getExchange().get(OperationResourceInfo.class);
         final String endpoint = getEndpointName(message);
         log.debug("handleMessage({}) called", endpoint);
@@ -159,6 +156,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
 
     /**
      * If defined, get the {@link KBAuthorization} from the endpoint stated in the message.
+     *
      * @param message CXF Message with the endpoint.
      * @return the authorization annotation for the endpoint or null if not annotated.
      */
@@ -177,6 +175,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
 
     /**
      * Extract the OAuth roles from the endpoint requested in the message.
+     *
      * This does not use any Authorization defined by the caller.
      * @param message CXF message which defined endpoint and roles.
      * @return the roles defined for the endpoint or empty list if no roles are defined.
@@ -233,6 +232,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
     /**
      * Validate that the Authorization in the message has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
+     *
      * @param message CXF message with Authorization information.
      * @throws VerificationException if the authorization validation failed.
      * @return the validated AccessToken.
@@ -263,6 +263,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
     /**
      * Scans the {@link #AUTHORIZATION} headers for an entry with the pattern {@code "Bearer .*"} and returns the
      * part after {@code "Bearer "}, if present. This part should be a base64 representation of a JSON access token.
+     *
      * @param message CXF message with Authorization information.
      * @return a base64 representation of the JSON Bearer access token. Or null if not present.
      */
@@ -287,9 +288,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         return authorizationString.split(" ", 2)[1];
     }
 
-
     public String toString() {
         return String.format(Locale.ROOT, "KBInterceptor(handler=%s)", handler);
     }
-
 }

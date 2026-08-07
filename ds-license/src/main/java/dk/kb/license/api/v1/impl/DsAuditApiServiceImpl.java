@@ -57,5 +57,4 @@ public class DsAuditApiServiceImpl extends ImplBase implements DsAuditApi {
             throw handleException(e);
         }
     }
-   
 }

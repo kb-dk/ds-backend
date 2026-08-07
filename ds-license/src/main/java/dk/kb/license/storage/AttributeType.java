@@ -1,6 +1,5 @@
 package dk.kb.license.storage;
 
-
 /**
  * This is a persistent DTO.
  * See the documentation and UML model:<br>
@@ -9,7 +8,6 @@ package dk.kb.license.storage;
  * 
  */
 public class AttributeType extends Persistent{
-
 	private String value;
 				
 	public AttributeType(String value) {
@@ -23,5 +21,4 @@ public class AttributeType extends Persistent{
     public void setValue(String value) {
     this.value = value;
   }
-		
 }
