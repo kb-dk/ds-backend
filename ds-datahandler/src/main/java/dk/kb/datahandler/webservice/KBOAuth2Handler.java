@@ -295,7 +295,6 @@ public class KBOAuth2Handler {
                 .getToken();
     }
 
-
     /**
      * Validate issued date, expiry etc. for the given AccessToken.
      * @param trusted an AccessToken which has passed the cryptographic validation.
@@ -368,8 +367,6 @@ public class KBOAuth2Handler {
         }
     }
 
-    
-    
      /**
       * The Base64 strings that come from a JWKS need some manipulation before they can be decoded.   
       * TODO: Why is replacement even required? See OahtUtil in ds-license. Just splitting on '.' to get the 3 terms is correct by using a OOAuth library.     
@@ -508,5 +505,4 @@ public class KBOAuth2Handler {
                 Locale.ROOT, "KBOAuth2Handler(mode=%s, baseurl='%s', realms=%s, keysTTL=%ss, cached realm keys=%d)",
                 mode, baseurl, realms, keysTTL, realmKeys.size());
     }
-
 }

@@ -16,58 +16,49 @@ import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class HarvestTimeUtilTest {
-
     private static final Logger log = LoggerFactory.getLogger(HarvestTimeUtilTest.class);
     private static final String DAY_PATTERN = "yyyy-MM-dd";
     
     @Test
     void filePersistenceTest() throws Exception {
-
         try {
-         
-        String oaiTargetFile="testOai.txt";
-        // Write the files to target folder.
+            String oaiTargetFile="testOai.txt";
+            // Write the files to target folder.
 
-        File file = new File("target/");
-        String targetFolder = file.getAbsolutePath() + "/";
-        String persistenceFile=targetFolder+oaiTargetFile;
-      
-        //Delete old files if one exist from previous unittest
-        Files.deleteIfExists(Paths.get(persistenceFile));
-        
-        
-        // Test file does not exist
-        String last = HarvestTimeUtil.loadLastHarvestTime( persistenceFile);        
-        assertEquals(HarvestTimeUtil.DEFAULT_START_DATE,last);
-        
-        //Test create new file
-        HarvestTimeUtil.deleteFileAndWriteToFile(persistenceFile, "2020-01-02T12:34:59Z");
-        last = HarvestTimeUtil.loadLastHarvestTime( persistenceFile);                       
-        assertEquals("2020-01-02T12:34:59Z",last);
-        
-        //Write again when file already is created. This time it is deleted before recreated
-        HarvestTimeUtil.deleteFileAndWriteToFile(persistenceFile, "2020-01-03T00:00:00Z");
-        last = HarvestTimeUtil.loadLastHarvestTime( persistenceFile);
-        assertEquals( "2020-01-03T00:00:00Z",last);
+            File file = new File("target/");
+            String targetFolder = file.getAbsolutePath() + "/";
+            String persistenceFile=targetFolder+oaiTargetFile;
+
+            //Delete old files if one exist from previous unittest
+            Files.deleteIfExists(Paths.get(persistenceFile));
+
+            // Test file does not exist
+            String last = HarvestTimeUtil.loadLastHarvestTime( persistenceFile);
+            assertEquals(HarvestTimeUtil.DEFAULT_START_DATE,last);
+
+            //Test create new file
+            HarvestTimeUtil.deleteFileAndWriteToFile(persistenceFile, "2020-01-02T12:34:59Z");
+            last = HarvestTimeUtil.loadLastHarvestTime( persistenceFile);
+            assertEquals("2020-01-02T12:34:59Z",last);
+
+            //Write again when file already is created. This time it is deleted before recreated
+            HarvestTimeUtil.deleteFileAndWriteToFile(persistenceFile, "2020-01-03T00:00:00Z");
+            last = HarvestTimeUtil.loadLastHarvestTime( persistenceFile);
+            assertEquals( "2020-01-03T00:00:00Z",last);
         }
         catch(Exception e) {
             e.printStackTrace();
             fail("Error with oai targets file persistence",e);
-            
         }
     }
-    
 
     @Test
     void testValidateDayFormat() throws Exception {
     	assertTrue(HarvestTimeUtil.validateDayFormat("2024-01-01"));
     	assertTrue(HarvestTimeUtil.validateDayFormat("2024-12-12"));
     	assertFalse(HarvestTimeUtil.validateDayFormat("2024-02-31")); //31. feb does not exist
-    	
     }
 
-      
-    
     @Test
     void testUtcSecondsFormat() {                  
         //All valid
@@ -114,5 +105,4 @@ public class HarvestTimeUtilTest {
         String day = simpleDateFormat.format(date);               
         return day;        
     }
-    
 }

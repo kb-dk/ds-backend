@@ -32,7 +32,6 @@ import java.util.Locale;
  * This class has a single public method to upload all kaltura streams with from mTime (in Solr) and higher values.
  */
 public class KalturaDeltaUploadJob {
-
     static DsKalturaClient kalturaClient = null;
     private static final Logger log = LoggerFactory.getLogger(KalturaDeltaUploadJob.class);
 
@@ -68,7 +67,6 @@ public class KalturaDeltaUploadJob {
      * @throws InternalServiceException If any Solr or Kaltura call fails. Stop uploading more. Maybe allow single kaltura upload jobs to fail later.
      */
     public static int uploadStreamsToKaltura() throws InternalServiceException {
-
         boolean moreSolrRecords = true;
         long mTimeFromCurrent = 0; //Use this for batching. It will still only extract records without kaltura_id
         int numberStreamsUploaded = 0;
@@ -254,7 +252,6 @@ public class KalturaDeltaUploadJob {
     public static String uploadStream(String title, String referenceId, String description, String filePath,
                                       String tag, MediaType mediaType, String fileExtension, int conversionProfileId)
             throws IOException, APIException {
-
         FileExtension fileExtensionEnum;
         if (StringUtils.isBlank(fileExtension)) {
             fileExtensionEnum = switch (mediaType) {
@@ -304,7 +301,6 @@ public class KalturaDeltaUploadJob {
      *
      */
     static String getInternalIdKaltura(String file_id) throws IOException, APIException {
-
         initKalturaClient();
 
         String kalturaInternalId = kalturaClient.getKalturaInternalId(file_id);

@@ -42,7 +42,6 @@ public class SolrUtils {
         String storageMTime;
         QueryResponse response;
         try (SolrClient solrClient = new HttpJdkSolrClient.Builder(solrQueryUrl).build()) {
-
             storageMTime = "internal_storage_mTime";
 
             // Perform a query
@@ -138,8 +137,7 @@ public class SolrUtils {
                 hasMore=solrDocsStream.hasMore();        
                 if (hasMore) {                    
                     sinceTime=solrDocsStream.getContinuationToken(); //Next batch start from here.
-                } 
-                
+                }
             } catch (IOException e) {
                 log.warn("An error occurred when streaming records from DsPresent. DsPresentClient.getRecordsJSON() " +
                         "was called with the following params: origin='{}', mTime='{}', maxRecords='{}', format='{}'",
@@ -165,7 +163,6 @@ public class SolrUtils {
         return finalResponse;
     }
 
-
     /**
      * Update the final {@code SolrIndexResponse} with the content from the single {@code individualSolrResponse}.
      * The updated {@code SolrIndexResponse} is used as the response for the endpoint
@@ -189,7 +186,6 @@ public class SolrUtils {
      */
      public static void updateFinalResponse(String individualSolrResponse, SolrIndexResponse finalResponse,
                                             Long documents) {
-
         SolrResponseHeader currentResponseHeader = new SolrResponseHeader(individualSolrResponse);
 
         finalResponse.setLastSolrResponseHeader(currentResponseHeader);
@@ -221,7 +217,6 @@ public class SolrUtils {
     public static QueryResponse buildSuggestIndex() throws SolrServerException, IOException {
         String solrUrl = ServiceConfig.getSolrWriteCollectionUrl();
         try (SolrClient solrClient = new HttpJdkSolrClient.Builder(solrUrl).build()) {
-
             // Perform a query at suggest handler
             SolrQuery query = new SolrQuery();
             query.setRequestHandler("/suggest");
@@ -232,5 +227,4 @@ public class SolrUtils {
             return solrClient.query(query);
         }
     }
-
 }

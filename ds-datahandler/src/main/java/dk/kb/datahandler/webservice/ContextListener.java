@@ -135,7 +135,6 @@ public class ContextListener implements ServletContextListener {
                 log.info("Logback config 'logback-test.xml' found. Running in test mode");
                 return;
             }
-
         } catch (Exception e) {
             // We might want to skip this logging as it will log to the unconfigured logback at this point
             log.debug("Logback config 'logback-test.xml' not found. Attempting explicit logback configuration");

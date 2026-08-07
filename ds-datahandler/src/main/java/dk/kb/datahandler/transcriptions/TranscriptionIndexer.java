@@ -18,9 +18,7 @@ import com.google.gson.JsonObject;
 
 import dk.kb.storage.model.v1.TranscriptionDto;
 
-
 public class TranscriptionIndexer {
-
     private static final Logger log = LoggerFactory.getLogger(TranscriptionIndexer.class);
 
     /**

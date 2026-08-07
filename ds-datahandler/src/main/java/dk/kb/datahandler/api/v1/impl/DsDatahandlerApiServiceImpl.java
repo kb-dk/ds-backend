@@ -43,9 +43,7 @@ import java.util.List;
 public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandlerApi {
     private static final Logger log = LoggerFactory.getLogger(DsDatahandlerApiServiceImpl.class);
 
-
-    /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
-
+    // How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
     @Context
     private transient UriInfo uriInfo;
 
@@ -79,7 +77,6 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
 
     @Context
     private transient MessageContext messageContext;
-
 
     @Override
     public Integer oaiIngestFull(String oaiTarget) {
@@ -147,7 +144,6 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
             throw handleException(e);
         }
     }
-  
 
     @Override
     public void kalturaDeltaUpload() {    
@@ -159,10 +155,8 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
         }                       
     }
 
-    
     @Override
     public void transcriptionsLoad() {
-
         try {
             DsDatahandlerFacade.transcriptionsLoad(getCurrentUsername());
          }
@@ -188,6 +182,4 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
         }
         return UNKNOWN;
     }
-
-  
 }

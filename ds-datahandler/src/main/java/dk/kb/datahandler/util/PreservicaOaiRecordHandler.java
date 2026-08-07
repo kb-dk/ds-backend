@@ -13,7 +13,6 @@ import java.util.Locale;
 public class PreservicaOaiRecordHandler extends DefaultHandler {
     private static final Logger log = LoggerFactory.getLogger(OaiResponseFilterPreservicaSeven.class);
 
-
     public boolean recordHasMetadata = false;
     public boolean recordIsDr = false;
     public boolean recordIsTranscoded = false;
@@ -32,7 +31,6 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
     private boolean isLastTranscoded = false;
     private boolean isTranscodingStatus = false;
     private OffsetDateTime lastEncodedDate = null;
-
 
     // TODO: Could these be one stringbuilder which gets reset after each iteration
     private StringBuilder publisherContent = new StringBuilder();
@@ -201,7 +199,6 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
                 }
             }
 
-
             isSpecificRadioTvTranscodingStatus = false;
         }
 
@@ -254,7 +251,6 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
     }
 
     public RecordType getRecordType() {
-
         if (recordType == null ) {
             log.warn("Record type was null, setting it to UNKNOWN");
             return RecordType.UNKNOWN;

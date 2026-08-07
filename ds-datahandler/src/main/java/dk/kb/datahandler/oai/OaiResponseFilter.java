@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.helpers.DefaultHandler;
 
-
 /**
  * Filtering and delivery of OAI records. public implementation generates {@code datasource} prefixed ID,
  * sets type to {@link RecordTypeDto#DELIVERABLEUNIT} and does not resolve {@code parent}.
