@@ -35,12 +35,10 @@ public class RadioTvTitleSuggest {
     @JsonAnySetter
     Map<String, SuggestionObjectList> suggestQueryObject;
 
-
     @JsonAnyGetter
     public Map<String, SuggestionObjectList> getSuggestQueryObject() {
         return suggestQueryObject;
     }
-
 
     @JsonAnySetter
     public void setSuggestQueryObject(Map<String, SuggestionObjectList> suggestQueryObject) {

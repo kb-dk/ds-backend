@@ -67,8 +67,6 @@ public class LicenseModuleClientTest {
         assertTrue(output.getAccess());
     }
 
-
-
     @Test
     public void testGetUserLicenseQuery() throws Exception {
         DsLicenseClient dsLicenseClient = getDsLicenseClient();
@@ -84,7 +82,6 @@ public class LicenseModuleClientTest {
         assertTrue(output.getFilterQuery().indexOf("origin:\"ds.tv\"") >0);
     }
 
-    
     /*  Samlings billeder no longer in corpus
     @Test
     public void testCheckAccessForIds() throws Exception {
@@ -109,7 +106,6 @@ public class LicenseModuleClientTest {
     }
 
 */
-
     @Test
     public void testGetUsersLicenses() throws Exception {
         DsLicenseClient dsLicenseClient = getDsLicenseClient();
@@ -147,12 +143,10 @@ public class LicenseModuleClientTest {
         values.add("yes");
         newUserObjAtt.setValues(values);
         return userObjAttributes;
-
     }
 
     private DsLicenseClient getDsLicenseClient() {
         DsLicenseClient client  = new DsLicenseClient(dsLicenseUrl,100,60000L);                
         return client;
     }
-
 }

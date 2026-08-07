@@ -31,6 +31,4 @@ public class BffApiServiceImplTest {
         assertEquals("text1",messages.get("msg1"));
         assertEquals("text2",messages.get("msg2"));
     }
-
-
 }

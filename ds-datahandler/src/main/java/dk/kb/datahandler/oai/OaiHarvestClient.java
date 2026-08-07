@@ -37,7 +37,6 @@ import org.w3c.dom.ls.*;
 import org.xml.sax.SAXException;
 
 public class OaiHarvestClient {
-
     private static final Logger log = LoggerFactory.getLogger(OaiHarvestClient.class);
 
     private OaiTargetDto oaiTarget = null;
@@ -49,7 +48,6 @@ public class OaiHarvestClient {
         this.oaiTarget=oaiTarget;
         this.from=from;
     }
-
 
     public OaiResponse next() throws IOException {
         OaiResponse oaiResponse = new OaiResponse();
@@ -85,7 +83,6 @@ public class OaiHarvestClient {
             return oaiResponse;// will have no records
          }
 
-
         //More records or completed.
         String  resumptionToken=  getResumptionToken(document);
         oaiResponse.setTotalRecords(getResumptionTotalSize(document));        
@@ -107,12 +104,11 @@ public class OaiHarvestClient {
         return oaiResponse;
     }
 
-
-    /* Will construct the uri for next http request. Resumption token will be set if not null.
+    /**
+     * Will construct the uri for next http request. Resumption token will be set if not null.
      * Also special coding since  Cumulus/Cups API is not OAI-PMH compliant. 
      */
     private String addQueryParamsToUri(String uri, String set, String resumptionToken, String metadataPrefix, String from) {
-
         //For unknown reason cumulus/cups oai API failes if metaData+set parameter is repeated with resumptionToken! (bug)
         if (resumptionToken==null && set != null) { //COPS fails if set is still used with resumptiontoken
             uri += "&set="+set;                        
@@ -133,7 +129,6 @@ public class OaiHarvestClient {
     }
 
     public ArrayList<OaiRecord> extractRecordsFromXml( Document document ) {
-
         NodeList nList = document.getElementsByTagName("ListRecords"); //This is the OAI tag, not part of preservica data.
         Element recordsElement = (Element) nList.item(0); //always one.
         List<Element> elementList = new ArrayList<Element>();
@@ -143,7 +138,6 @@ public class OaiHarvestClient {
 
         ArrayList<OaiRecord> records= new ArrayList<OaiRecord>();
         for (int i =0; i<recordList.size(); i++) {
-
             OaiRecord oaiRecord = new OaiRecord();
             records.add(oaiRecord);
             Element record =  (Element)recordList.get(i);
@@ -164,16 +158,13 @@ public class OaiHarvestClient {
                 //System.out.println("meta:"+metadataXml);
                 oaiRecord.setMetadata(metadataXml);
             }
-
         }
         return records;
     }
 
-
-    /*
+    /**
      * Will return the error message if response contains an error
      * Return null if no error message
-     * 
      */
     private String getErrorMessage(Document document) {        
         try {
@@ -185,14 +176,13 @@ public class OaiHarvestClient {
         }
        return null;        
     }
-    
-    //If the OAI does not return valid XML, then we can not parse it.
-    // All records in this document is lost and also those after because we have no resumption token
 
-    //Important to remove invalid XML encodings since they will be present in metadata. 
-    //If they are not replaced, the DOM parse will fail completely to read anything.
-
-
+    /**
+     * If the OAI does not return valid XML, then we can not parse it.
+     * All records in this document is lost and also those after because we have no resumption token
+     * Important to remove invalid XML encodings since they will be present in metadata.
+     * If they are not replaced, the DOM parse will fail completely to read anything.
+     */
     public static Document sanitizeXml(String xmlResponse, String uri) { //uri only for log
 
         //System.out.println(response);
@@ -213,7 +203,6 @@ public class OaiHarvestClient {
         }
 
         return document;
-
     }
 
     /**
@@ -274,10 +263,8 @@ public class OaiHarvestClient {
         return xml;       
     }
 
-
-    /*
-     * Get the raw XML text from a node. Also make sure encoding is UTF-8.  
-     * 
+    /**
+     * Get the raw XML text from a node. Also make sure encoding is UTF-8.
      */
     private String serializeXmlElementToStringUTF8(Document document , Element element) { 
         DOMImplementation impl = document.getImplementation();
@@ -326,8 +313,7 @@ public class OaiHarvestClient {
     	String valueToEncode = username + ":" + password;
         return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes(StandardCharsets.UTF_8));
     }
-    
-    
+
     private String getResumptionToken( Document document) {
         try {
             String  resumptionToken=  document.getElementsByTagName("resumptionToken").item(0).getTextContent();
@@ -335,13 +321,11 @@ public class OaiHarvestClient {
         }
         catch(NullPointerException e) { //no more records
             return null;
-
         }
     }
 
-    /*
+    /**
      * Not required by OAI standard. Cumulus returns it. Pvica does not
-     * 
      */
     private String getResumptionTotalSize( Document document) {
         try {
@@ -352,5 +336,4 @@ public class OaiHarvestClient {
             return "?";                    
         }
     }
-
 }

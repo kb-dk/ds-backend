@@ -230,7 +230,6 @@ class SolrShieldTest {
     // --- Explicitly denied param overrides unlistedParams.allowed=true ---
     @Test
     void testDisallowedSolrParam() throws IOException {
-
         Map<String, String[]> request = Map.of(
                 "q", new String[]{"*:*"},
                 "fl", new String[]{"id"},
@@ -338,7 +337,6 @@ class SolrShieldTest {
                 "Reason should mention 'start'");
     }
 
-
     @Test
     void queryExceedingMaxCharsRejected() {
         // maxChars for q is 1000
@@ -365,7 +363,6 @@ class SolrShieldTest {
         assertTrue(response.allowed,
                 "Request with q within maxChars should be accepted but got reasons: " + response.reasons);
     }
-
 
     @Test
     void weightCalculationSanity() {
@@ -421,7 +418,6 @@ class SolrShieldTest {
                 "Heavier field should increase weight. id: " + responseLight.weight + ", text: " + responseHeavy.weight);
     }
 
-
     @Test
     void facetFieldNotInWhitelistRejected() {
         Map<String, String[]> request = Map.of(
@@ -450,7 +446,6 @@ class SolrShieldTest {
                 "Facet on field in allowedFields should be accepted but got reasons: " + response.reasons);
     }
 
-
     @Test
     void evaluateMapOverload() {
         Map<String, String[]> request = Map.of(
@@ -464,7 +459,6 @@ class SolrShieldTest {
         assertEquals(1000.0, response.maxWeight,
                 "evaluate(Map) should use defaultMaxWeight from config");
     }
-
 
     @Test
     void defaultMaxWeightEnforced() {

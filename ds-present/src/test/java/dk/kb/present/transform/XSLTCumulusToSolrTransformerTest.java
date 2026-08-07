@@ -33,7 +33,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class XSLTCumulusToSolrTransformerTest extends XSLTTransformerTestBase {
-
 	private static final Logger log = LoggerFactory.getLogger(XSLTCumulusToSolrTransformerTest.class);
 
 	public static final String MODS2SOLR = "xslt/mods2solr.xsl";
@@ -180,6 +179,4 @@ class XSLTCumulusToSolrTransformerTest extends XSLTTransformerTestBase {
 		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, TestFiles.CUMULUS_RECORD_40221e30);
 		assertTrue(solrString.contains("\"origin\":\"ds.test\""));
 	}
-
-
 }

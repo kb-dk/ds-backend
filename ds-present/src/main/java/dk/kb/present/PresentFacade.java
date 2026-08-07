@@ -41,7 +41,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 /**
  *
  */
@@ -70,6 +69,7 @@ public class PresentFacade {
 
     /**
      * Derived an origin from the recordID and requests the record from that, with the specified format.
+     *
      * @param recordID an ID for a record in any known origin.
      * @param format the wanted format (origin specific).
      * @return the record in the given format.
@@ -121,6 +121,7 @@ public class PresentFacade {
 
     /**
      * Deliver streaming output for serialized records from a given origin.
+     *
      * @param httpServletResponse used for setting MIME type.
      * @param originID     the origin to retrieve records for.
      * @param mTime        only records after this time (Epoch milliseconds) will be delivered.
@@ -135,7 +136,6 @@ public class PresentFacade {
             Function<List<String>, List<String>> accessChecker) {
         DSOrigin origin = originHandler.getOrigin(originID);
         Function<List<DsRecordDto>, Stream<DsRecordDto>> accessFilter = validateAccessForRecords(originID, accessChecker, origin);
-
 
         switch (format) {
             case JSON_LD:
@@ -163,6 +163,7 @@ public class PresentFacade {
 
     /**
      * Deliver streaming output for serialized records from a given collection in raw storage format.
+     *
      * @param httpServletResponse used for setting MIME type.
      * @param originID      the origin to retrieve records for.
      * @param mTime         only records after this time (Epoch milliseconds) will be delivered.
@@ -188,9 +189,9 @@ public class PresentFacade {
                         httpServletResponse, ExportWriterFactory.FORMAT.json, accessFilter);
     }
 
-
     /**
      * Converts a raw solr schema to a human-readable version.
+     *
      * @param rawSchema the schema to convert.
      * @param format the format which it gets converted to.
      * @return the transformed solr schema in the specified format.
@@ -201,6 +202,7 @@ public class PresentFacade {
 
     /**
      * Validate if caller is allowed to access metadata from the given origin.
+     *
      * @param originID ID of the origin, containing the metadata being asked for.
      * @param accessChecker used to determine if the request can be authenticated.
      * @param origin of the metadata records going through the access checking.
@@ -270,6 +272,7 @@ public class PresentFacade {
 
     /**
      * Wrap records in a JSON structure, where all records are delivered in a data-object, while errors are delivered in an errors-object.
+     *
      * @param httpServletResponse used to set the propper content type. Can be null.
      * @param format to deliver records in.
      * @param records stream of records that are to be delivered.
@@ -352,6 +355,7 @@ public class PresentFacade {
     /**
      * Uses information from the record object to wrap its data component in either {@code add} or {@code delete}.
      * See the <a href="https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates">solr guide</a>
+     *
      * @param record a record where the data component contains a SolrJSONDocument.
      * @return the record's data component wrapped as either {@code add} or {@code delete}.
      */
@@ -410,5 +414,4 @@ public class PresentFacade {
             httpServletResponse.setHeader("Content-Disposition", "inline; swaggerDownload=\"attachment\"; filename=\"" + filename + "\"");
         }
     }
-
 }

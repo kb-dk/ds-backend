@@ -35,12 +35,9 @@ import java.util.stream.Collectors;
  * </ul>
  * The map is Solr-aware and treats {@code fq} as special-case, where default {@code fq}s are overridden by
  * user {@code fq}s and forced {@code fq}s merges with all other {@code fq}s.
- * <p>
  * The map ignores attempts of adding {@code null} values.
- * <p>
  * Standard use case for the merger is to request an instance from {@link SolrParamMerger.Factory},
  * add user-provided parameters and used the resulting param map for sending a request to Solr.
- * <p>
  * Note that any call to a getter or similar method automatically calls {@link #freeze()}, after which
  * it is no longer possible to add more parameters. The will be reset if {@code #clear} is called.
  */
@@ -61,6 +58,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
     /**
      * Convenience method that wraps the String representation of the given value as a list.
+     *
      * @param key key with which the specified value is to be associated.
      * @param value value to be associated with the specified key. If null, it will be ignored.
      * @return the previous value that was associated with the key.
@@ -75,6 +73,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
     /**
      * Convenience method that adds the given value to the existing values (if any) for the given key.
+     *
      * @param key key with which the specified value is to be associated.
      * @param value value to be associated with the specified key. If null, it will be ignored.
      * @return the previous values that were associated with the key.
@@ -105,6 +104,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
     /**
      * Convenience method that adds the given values to the existing values (if any) for the given key.
+     *
      * @param key key with which the specified value is to be associated.
      * @param values value to be associated with the specified key. If null, it will be ignored.
      * @return the previous values that were associated with the key.
@@ -119,6 +119,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
     /**
      * Convenience method that adds the given values to the existing values (if any) for the given key.
+     *
      * @param key key with which the specified value is to be associated.
      * @param values value to be associated with the specified key. If null, it will be ignored.
      * @return the previous values that were associated with the key.
@@ -141,6 +142,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
     /**
      * Convenience method for putting all single value parameters in the given {@code map}
      * as lists of String representations.
+     *
      * @param map mappings to put.
      */
     public void putAllSingle(Map<? extends String, ?> map) {
@@ -150,6 +152,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
     /**
      * Add the values from {@code map} to the existing values for the matching parameters.
+     *
      * @param map mappings to add.
      */
     public void addAll(Map<? extends String, ?> map) {
@@ -168,8 +171,8 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
     /**
      * Clears the merger and adds default parameters.
-     * <p>
      * If frozen, the merger is unfrozen.
+     *
      * @param addDefaultValues if true, {@link #defaultParams} are added after clearing existing values.
      */
     public void clear(boolean addDefaultValues) {
@@ -319,7 +322,6 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
     /**
      * Apply forced parameters, effectively finalizing the params for use.
-     * <p>
      * After freezing it is no longer possible to add parameters.
      */
     private void freeze() {
@@ -375,6 +377,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
          *     # params are overwritten
          *     forcedParams:
          * </pre>
+         *
          * @param handler a Solr handler as specified in the configuration, i.e. {@code select} or {@code mlt}.
          */
         public Factory(String handler) {
@@ -388,6 +391,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
         /**
          * Create a merger, ready for adding user provided params.
+         *
          * @return a merger ready for input.
          */
         public SolrParamMerger createMerger() {
@@ -396,6 +400,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
 
         /**
          * Create a Solr param map from the given YAML path.
+         *
          * @param yPath the location in the config for the params.
          * @return a Solr param map.
          */
@@ -414,11 +419,11 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
         }
-
     }
 
     /**
      * Converts entries to pairs, with conversion of arrays and lists to String lists.
+     *
      * @param entry a Solr param entry.
      * @return a key-value pair with the entry data or null if {@link Map.Entry#getValue()} is an empty String array.
      */

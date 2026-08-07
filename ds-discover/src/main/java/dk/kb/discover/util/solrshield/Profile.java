@@ -26,10 +26,8 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Representation of a given profile for SolrShield.
- * <p>
  * The implementation uses the <a href="https://en.wikipedia.org/wiki/Prototype_pattern">Prototype Pattern</a> to
  * avoid maintaining 1:1 mapped configuration and instance objects.
- * <p>
  * The profile is used for calculating the weight of a query. Different components (search, facet, highlight...)
  * are dependent on each other and on the fields. To handle interdependency, all elements of the profile are aware
  * of each other.
@@ -45,11 +43,11 @@ public class Profile extends ProfileElement<Profile> {
     /**
      * Ideally all fields requested are defined in {@link #fields}. {@code unlistedFieldsAllowed} controls what
      * action SolrShield takes if an unlisted/undefined field is requested.
-     * <p>
      * If true, unknown fields are accepted. They will be assigned the weight {@link #unlistedFieldsWeight}.
      * If false, specifying a field that is not in {@link #fields} will mark the request as not valid.
      */
     public boolean unlistedFieldsAllowed = false;
+
     /**
      * If a requested field is not present in {@link #fields}, it will be assigned this weight. 
      */
@@ -58,10 +56,8 @@ public class Profile extends ProfileElement<Profile> {
     /**
      * Ideally all request parameters are known by SolrShield. {@code unlistedParamsAllowed} controls what
      * action SolrShield takes is an unknown parameter is requested.
-     * <p>
      * If true, unknown parameters are accepted. They will be assigned the weight {@link #unlistedParamsWeight}.
      * If false, specifying a parameter that is unknown will mark the request as not valid.
-     * <p>
      * It is highly recommended to set this to {@code false}, making the parameters is SolrShield act as a 
      * whitelist of what is permissible.
      */
@@ -76,10 +72,8 @@ public class Profile extends ProfileElement<Profile> {
 
     /**
      * Fields known by SolrShield. This list should ideally contain all fields in the backing Solr(s).
-     * <p>
      * {@code fields} maps from field name to field definition, where the definition currently holds the weight
      * of the field. This might be extended at a later point.
-     * <p>
      * Guidelines for the weight of a field is that the scale goes from 1 to 1000, where
      * <ul>
      *   <li>"An integer field" is 1</li>
@@ -111,8 +105,8 @@ public class Profile extends ProfileElement<Profile> {
 
     /**
      * Create a base setup for SolrShield. and initialize based on the setup specified in {@code config}.
-     * <p>
      * Note: This configuration must state the SolrShield properties directly.
+     *
      * @param config a SolrShield configuration.
      */
     public Profile(YAML config) {

@@ -45,7 +45,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class DsPresentApiServiceImplTest {
-
     HttpServletResponse testResponse;
 
     @BeforeAll
@@ -88,6 +87,7 @@ public class DsPresentApiServiceImplTest {
     /**
      * Assert that compares {@code expectedException} against the inner {@code Exception} (aka wrapped) for the
      * {@code Exception} thrown by running {@code executable}.
+     *
      * @param expectedException the expected inner {@code Exception}.
      * @param executable a code expected to throw an {@code Exception} wrapping an instance of {@code expectedException}.
      * @param message the message to show if the assert fails.
@@ -194,6 +194,7 @@ public class DsPresentApiServiceImplTest {
 
     /**
      * Basic mocking of the {@link DsPresentApiServiceImpl}. Callers should add further mocking.
+     *
      * @return a Mochito mock of {@code } DsPresentApiServiceImpl with {@code httpServletRequest}.
      */
     private static DsPresentApiServiceImpl getMockedPresentAPI() throws NoSuchFieldException {

@@ -20,7 +20,6 @@ import java.io.IOException;
 /**
  * Helper class for temporarily changing the application config.
  * When the test code has finished, the configuration is restored to its previous state.
- * <p>
  * Use the auto-closing try-catch mechanism around the test code using the temporary config:
  * <pre>
  * try (ConfigAdjuster ignored = new ConfigAdjuster("image_server_param.yaml")) {

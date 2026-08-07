@@ -26,14 +26,11 @@ import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.model.v1.OaiTargetDto;
 import dk.kb.datahandler.model.v1.OaiTargetDto.DateStampFormatEnum;
 
-/*
+/**
  * All access to this class is syncronized since we are using filesystem as persistence.
- * 
- *  HarvestTimeUtil methods are protected and called from unittest
- * 
+ * HarvestTimeUtil methods are protected and called from unittest
  */
 public class HarvestTimeUtil {
-
     public static final String DEFAULT_START_DATE = "1900-01-01T00:00:00Z"; //Used as start if no file has been written yet for that target
     private static final Logger log = LoggerFactory.getLogger(HarvestTimeUtil.class);
     private static final Charset UTF8 = StandardCharsets.UTF_8;
@@ -79,8 +76,7 @@ public class HarvestTimeUtil {
             log.warn("Parsing of day format failed:"+day);
             return false;
         }
-        return true;			
-
+        return true;
     }
 
     protected static String loadLastHarvestTime(String oaiTargetNameFile) throws Exception {
@@ -133,13 +129,10 @@ public class HarvestTimeUtil {
     }
 
     /**
-     * 
      * Validate UTC timestamp, format is strict and only seconds allowed
-     * <p/>
      * example: 2021-03-24T19:57:34Z
      */
-    public static boolean validateOaiDateFormat(String datestamp) {            
-
+    public static boolean validateOaiDateFormat(String datestamp) {
         try {
             DateTimeFormatter.ISO_DATE_TIME.parse(datestamp);
             return true;
@@ -176,7 +169,6 @@ public class HarvestTimeUtil {
      * 
      */
     public static String generateFrom(OaiTargetDto oaiTarget, String from){
-
         if(from != null) {
             if (!HarvestTimeUtil.validateOaiDateFormat(from)) {
                 log.warn("From datestamp not in UTC format:" + from); //Should not happen as this is called internally only

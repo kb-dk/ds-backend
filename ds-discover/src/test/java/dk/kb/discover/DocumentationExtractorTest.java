@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @Tag("integration")
 public class DocumentationExtractorTest {
-
     @BeforeAll
     public static void setup() {
         try {

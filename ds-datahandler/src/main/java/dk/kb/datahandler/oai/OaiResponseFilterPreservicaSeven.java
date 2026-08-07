@@ -43,7 +43,6 @@ public class OaiResponseFilterPreservicaSeven extends OaiResponseFilter{
         super(datasource, storage);
     }
 
-
     /**
      * Add records from Preservica OAI-PMH harvest to ds-storage. Records goes through a filtering where StructuralObjects
      * from Preservica are filtered away and not added to ds-storage. Furthermore, types are resolved based on IDs.
@@ -110,7 +109,6 @@ public class OaiResponseFilterPreservicaSeven extends OaiResponseFilter{
      */
     @Override
     public String getOrigin(OaiRecord oaiRecord, String datasource, DefaultHandler recordHandler) {
-
         if (!(recordHandler instanceof PreservicaOaiRecordHandler preservicaRecordHandler)){
             log.error("recordHandler is not an instance of PreservicaOaiRecordHandler");
             throw new InternalServiceException("recordHandler is not an instance of PreservicaOaiRecordHandler");
@@ -128,7 +126,6 @@ public class OaiResponseFilterPreservicaSeven extends OaiResponseFilter{
                 throw new InternalServiceException("Unknown record type: " + preservicaRecordHandler.getRecordType());
         }
     }
-
 
     /**
      * Determine the type of record in hand. For preservica 7 all records injected are most likely InformationObjects

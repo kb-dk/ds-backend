@@ -90,7 +90,6 @@ public class IIPValidationTest {
         log.info("IIP region params gets validated correctly.");
     }
 
-
     @Test
     public void qltTest(){
         String pngCvt = "png";
@@ -136,7 +135,6 @@ public class IIPValidationTest {
 
         assertTrue(actualMessage.contains(expectedMessage));
     }
-
 
     @Test
     public void rotTest(){
@@ -272,7 +270,6 @@ public class IIPValidationTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
-
     }
 
     @Test
@@ -300,7 +297,6 @@ public class IIPValidationTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
-
     }
 
     @Test

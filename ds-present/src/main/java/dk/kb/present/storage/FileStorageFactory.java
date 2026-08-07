@@ -63,7 +63,6 @@ public class FileStorageFactory implements StorageFactory {
         List<String> blacklistStr = conf.getList(BLACKLIST_KEY, null);
         List<Pattern> blacklist = blacklistStr == null ? null :
                 blacklistStr.stream().map(Pattern::compile).collect(Collectors.toList());
-        
 
         return new FileStorage(id, folder, extension, stripPrefix, whitelist, blacklist, isDefault);
     }

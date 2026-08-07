@@ -18,29 +18,23 @@ import dk.kb.present.copyright.CopyrightAccessDto.AccessCondition;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorCorporate;
 import dk.kb.present.copyright.CopyrightAccessDto.CreatorPerson;
 
-
 /**
  * Designteam har brug for eksemple på data/felter samt værdier til deres wireframes. 
  * Dette job udtrækker de udvalgte felter i en csv-fil.
- * 
  * Den kræver 500+ xml med nyeste records i en mappe, derfor ikke checket ind i repository da de også skal opdateres hver gang.
- * 
  */
 public class CsvExtractorTilVisueltDesign {
-    
     private static String TAB="\t";
     private static String NEWLINE="\n";
     private static String SEPERATOR=";";
     private static String testDataDir="/home/teg/testdata/";
-    
-  
+
     /**
      * Call with argument to custom folder
      *
      * @param args path to folder with record XML files
      */
     public static void main(String[] args) {
-
         if (args != null && args.length ==1) {
           testDataDir = args[0];            
         }
@@ -53,9 +47,7 @@ public class CsvExtractorTilVisueltDesign {
         csvFileBuffer.append("file;titel;subTitle;creator;dateOfOrigin;dateNotBefore;dateNotAfter;copyright;resourceDescription; materialDescription;description");
         csvFileBuffer.append(NEWLINE);
         for (String file: files) {
-            
-            
-            try {            
+            try {
              String xml = new String(Files.readAllBytes(Paths.get(testDataDir+file)),"UTF-8");
              CsvExtract csvLine = getCvsExtractromDoc(xml);
             
@@ -87,20 +79,13 @@ public class CsvExtractorTilVisueltDesign {
             catch(Exception e) {
                 e.printStackTrace();
                 System.out.println("Failed parsing:"+file);
-                
             }
-           
-            
-            
         }
         System.out.println(csvFileBuffer.toString());
         //String mods = Resolver.resolveUTF8String("xml/copyright_extraction/DT005031.tif.xml");
-        
-        
     }
     
     public static CsvExtract getCvsExtractromDoc(String xml) throws Exception{
-        
         CsvExtract extract = new CsvExtractorTilVisueltDesign().new CsvExtract();
 
        CopyrightAccessDto copyDto = CopyrightAccessExtractor.buildCopyrightFields(xml);
@@ -120,10 +105,8 @@ public class CsvExtractorTilVisueltDesign {
         if (res2 != null) {
             String  mat_desc=res2.getTextContent();
             extract.setResourceDescription(mat_desc);
-
         }
 
-     
         NodeList titleNodes = doc.getElementsByTagName("mods:title");
 
         extractTitles(titleNodes, extract);
@@ -133,7 +116,6 @@ public class CsvExtractorTilVisueltDesign {
         if (dateNodes.getLength() >0) {
             Element e = (Element) dateNodes.item(0);
             extract.setDateOfOrigin(e.getTextContent());
-            
         }
         
         ArrayList<AccessCondition> accessConditionsList = copyDto.getAccessConditionsList();
@@ -143,23 +125,16 @@ public class CsvExtractorTilVisueltDesign {
            if (value != null) {
                values.append(value+TAB);
            }
-            
-            
-           
-            
         }
         extract.setCopyright(values.toString());
         
         String creators = extractCreators(accessConditionsList);        
         extract.setCreator(creators);
-        
-        
-        
+
      return extract;
  }
     
     private static String extractCreators( ArrayList<AccessCondition>  acList) {
-
         StringBuffer creators= new StringBuffer();
         for (AccessCondition ac :acList) {
             
@@ -172,36 +147,23 @@ public class CsvExtractorTilVisueltDesign {
                 creators.append(cp.getName());                
                 creators.append(TAB);
             }
-            
-
         }
-        
-        
-        return creators.toString();
-        
-        
-        
-    }
-   
- 
- private static void extractTitles(NodeList titleNodes,CsvExtract extract) {
 
-     
+        return creators.toString();
+    }
+
+ private static void extractTitles(NodeList titleNodes,CsvExtract extract) {
      if (titleNodes.getLength() >0) {
          Element titel = (Element) titleNodes.item(0);   
          extract.setTitel(titel.getTextContent());
      }
-     
 
      if (titleNodes.getLength() >1) {
          Element subTitel = (Element) titleNodes.item(1);   
          extract.setSubTitle(subTitel.getTextContent());
      }
-
-     
  }
- 
-    
+
     private static Set<String> getFilesNamesInDir(String dir) {
         return Stream.of(new File(dir).listFiles())
           .filter(file -> !file.isDirectory())
@@ -209,10 +171,7 @@ public class CsvExtractorTilVisueltDesign {
           .collect(Collectors.toSet());
     }
 
-    
-
-    public class CsvExtract {     
-
+    public class CsvExtract {
         private String titel;
         private String subTitle;
         private String creator;
@@ -223,66 +182,87 @@ public class CsvExtractorTilVisueltDesign {
         private String resourceDescription;
         private String materialDescription;
         private String description;
+
         public String getTitel() {
             return titel;
         }
+
         public void setTitel(String titel) {
             this.titel = titel;
         }
+
         public String getSubTitle() {
             return subTitle;
         }
+
         public void setSubTitle(String subTitle) {
             this.subTitle = subTitle;
         }
+
         public String getCreator() {
             return creator;
         }
+
         public void setCreator(String creator) {
             this.creator = creator;
         }
+
         public String getDateOfOrigin() {
             return dateOfOrigin;
         }
+
         public void setDateOfOrigin(String dateOfOrigin) {
             this.dateOfOrigin = dateOfOrigin;
         }
+
         public String getDateNotBefore() {
             return dateNotBefore;
         }
+
         public void setDateNotBefore(String dateNotBefore) {
             this.dateNotBefore = dateNotBefore;
         }
+
         public String getDateNotAfter() {
             return dateNotAfter;
         }
+
         public void setDateNotAfter(String dateNotAfter) {
             this.dateNotAfter = dateNotAfter;
         }
+
         public String getCopyright() {
             return copyright;
         }
+
         public void setCopyright(String copyright) {
             this.copyright = copyright;
         }
+
         public String getResourceDescription() {
             return resourceDescription;
         }
+
         public void setResourceDescription(String resourceDescription) {
             this.resourceDescription = resourceDescription;
         }
+
         public String getMaterialDescription() {
             return materialDescription;
         }
+
         public void setMaterialDescription(String materialDescription) {
             this.materialDescription = materialDescription;
         }
+
         public String getDescription() {
             return description;
         }
+
         public void setDescription(String description) {
             this.description = description;
         }
+
         @Override
         public String toString() {
             return "CsvExtract [titel=" + titel + ", subTitle=" + subTitle + ", creator=" + creator + ", dateOfOrigin="
@@ -290,8 +270,5 @@ public class CsvExtractorTilVisueltDesign {
                     + ", copyright=" + copyright + ", resourceDescription=" + resourceDescription
                     + ", materialDescription=" + materialDescription + ", description=" + description + "]";
         }
-        
-
-    } 
-    
+    }
 }

@@ -23,7 +23,6 @@ import dk.kb.util.Timing;
 public class Stats {
     /**
      * Empty stats for timing parents that defer all measuring to children.
-     * <p>
      * Note: Not truly empty as {@link Timing.STATS#name} is still there, but without any other values.
      */
     public static final Timing.STATS[] EMPTY_STATS = new Timing.STATS[]{Timing.STATS.name};
@@ -37,7 +36,6 @@ public class Stats {
 
     /**
      * Overall statistics for {@link dk.kb.present.api.v1.impl.DsPresentApiServiceImpl#getRecord(String, FormatDto)}.
-     * <p>
      * This holds sub-statistics for the different origins & views as well as access.
      */
     public static final Timing GET_RECORD =
@@ -46,7 +44,6 @@ public class Stats {
     /**
      * Access resolving statistics for
      * {@link dk.kb.present.api.v1.impl.DsPresentApiServiceImpl#getRecord(String, FormatDto)}.
-     * <p>
      * This is a child of {@link #GET_RECORD}.
      */
     public static final Timing RECORD_ACCESS =
@@ -54,6 +51,7 @@ public class Stats {
 
     /**
      * Deliver the {@link Timing} responsible for tracting the specified origin with the specified view.
+     *
      * @param origin {@link DSOrigin#getId()}.
      * @param view {@link View#getId()}.
      * @return a {@link Timing} for tracking {@link View} processing.
