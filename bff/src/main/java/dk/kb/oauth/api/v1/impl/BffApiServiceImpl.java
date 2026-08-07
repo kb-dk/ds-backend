@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.util.webservice.ImplBase;
 
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -32,14 +31,12 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 /**
  * bff
  *
  * <p>bff by the Royal Danish Library
  *
  */
-
 public class BffApiServiceImpl extends ImplBase implements BffApi {
     private static final Logger log = LoggerFactory.getLogger(BffApiServiceImpl.class);
 
@@ -92,7 +89,6 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
                 throw new ServiceException("Proxy Error: unable to connect to uri:'"+uri.toString(),Response.Status.BAD_GATEWAY);
         }
     }
-
 
     private void addCookieToResponse(String accessTokenString) {
         final YAML cookieConf = ServiceConfig.getConfig().getSubMap("cookies");
