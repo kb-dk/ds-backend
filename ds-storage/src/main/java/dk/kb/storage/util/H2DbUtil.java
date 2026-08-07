@@ -10,23 +10,20 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.util.Resolver;
 
-/*
- * When running in Jetty mode, it needs to set up the database. This class can not in test packages or it can not be loaded
- * 
+/**
+ * When running in Jetty mode, it needs to set up the database. This class can not in test packages or it can not be loaded.
  */
 public class H2DbUtil {
     protected static final String CREATE_TABLES_DDL_FILE = "ddl/create_ds_storage_h2_unittest.ddl";
     
     private static final Logger log = LoggerFactory.getLogger(H2DbUtil.class);
-    
-    
+
     public static void createEmptyH2DBFromDDL(String url, String driver, String username, String password) throws Exception {
         //  Instead of deleting h2 database completely, we reuse the table between unittests instead.
         // doDelete(new File(TEST_CLASSES_PATH +"/h2"));
         try {
             Class.forName(driver); // load the driver
         } catch (ClassNotFoundException e) {
-
             throw new SQLException(e);
         }
 
@@ -45,13 +42,10 @@ public class H2DbUtil {
         catch(Exception e) {
             e.printStackTrace();
         }
-
     }
     
     //Use KB-util to resolve file. 
     protected static File getFile(String resource) {
        return Resolver.getPathFromClasspath(resource).toFile(); 
     }
-
-
 }

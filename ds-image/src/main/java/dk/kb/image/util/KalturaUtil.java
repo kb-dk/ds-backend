@@ -11,7 +11,6 @@ import dk.kb.image.config.ServiceConfig;
 import dk.kb.image.model.v1.ThumbnailsDto;
 
 public class KalturaUtil {
-
     private static final Logger log = LoggerFactory.getLogger(KalturaUtil.class);
 
     /**

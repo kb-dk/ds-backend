@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class JobStorage extends BasicStorage {
-
     private static final String INSERT_JOB_QUERY = """
         INSERT INTO jobs (
             id,

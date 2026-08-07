@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class JobStorageForUnitTests extends JobStorage {
-
     public void clearTables() throws SQLException {
         try(PreparedStatement stmt = connection.prepareStatement("DELETE FROM JOBS")) {
             stmt.executeUpdate();

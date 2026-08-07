@@ -25,11 +25,9 @@ import java.nio.file.Path;
  *
  */
 class ServiceConfigTest {
-
-  
     private static final Logger log = LoggerFactory.getLogger(ServiceConfigTest.class);
     
-    /*
+    /**
      * This unit-test probably fails when the template is applied and a proper project is taking form.
      * That is okay. It is only here to serve as a temporary demonstration of unit-testing and configuration.
      */
@@ -40,20 +38,12 @@ class ServiceConfigTest {
         String projectRoot = knownFile.getParent().getParent().getParent().toString();
 
         Path sampleEnvironmentSetup = Path.of(projectRoot, "conf/ds-storage-environment.yaml");
-        
-        
-        
+
         if(!Files.exists(sampleEnvironmentSetup)) {
             log.warn("You must create a local yaml-file: 'ds-storage-environment.yaml' with local values if you want to start up jetty");
             
         }
-        
 
         ServiceConfig.initialize(projectRoot + File.separator + "conf" + File.separator + "ds-storage*.yaml");
-
-     
     }
-    
-    
-    
 }

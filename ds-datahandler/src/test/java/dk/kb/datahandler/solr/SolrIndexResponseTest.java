@@ -19,7 +19,6 @@ public class SolrIndexResponseTest {
         solrIndexResponse.setLastSolrResponseHeader(responseHeader);;
 
         assertEquals(solrIndexResponse.getLastSolrResponseHeader().getqTime(), 1348);
-
     }
 
     @Test
@@ -32,16 +31,11 @@ public class SolrIndexResponseTest {
         SolrIndexResponse indexResponse = new SolrIndexResponse();
         Long documents = 1231516L;
 
-
         for (String response: responses) {
             SolrUtils.updateFinalResponse(response, indexResponse, documents);
         }
 
         assertEquals("SolrIndexResponse{combinedQTime=2860, allDocumentsIndexed=1231516, lastResponseHeader=SolrResponseHeader{rf=1, status=0, qTime=12}}",
                     indexResponse.toString());
-
-
     }
-
-
 }

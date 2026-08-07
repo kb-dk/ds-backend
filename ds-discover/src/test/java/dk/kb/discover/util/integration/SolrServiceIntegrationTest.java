@@ -11,12 +11,10 @@ import dk.kb.discover.SolrManager;
 import dk.kb.discover.SolrService;
 import dk.kb.discover.config.ServiceConfig;
 
-
 /**
  * Integration test: Requires a local solr at port 10007 from the Digitale Samlinger project with a ds-collection
  *  
  */
-
 @Tag("integration")
 public class SolrServiceIntegrationTest extends IntegrationTest {
     
@@ -29,7 +27,6 @@ public class SolrServiceIntegrationTest extends IntegrationTest {
         int suggestCount = 5;
         String wt = "json";
         SolrService solr = SolrManager.getSolrService("ds");
-
 
         String filteredResponse = solr.suggest(suggestDictionary, suggestQuery, suggestCount, wt);
 
@@ -80,5 +77,4 @@ public class SolrServiceIntegrationTest extends IntegrationTest {
                 "      \"skråt op på 3\" : {\n" +
                 "        \"numFound\" : 0,\n"));  //This number will change depending on corpus
     }
-
 }

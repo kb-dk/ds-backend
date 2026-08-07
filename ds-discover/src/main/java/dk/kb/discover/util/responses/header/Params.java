@@ -303,5 +303,4 @@ public class Params {
     public void setSpellcheck(String spellcheck) {
         this.spellcheck = spellcheck;
     }
-
 }

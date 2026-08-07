@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DsKalturaAnalytics extends DsKalturaClientBase {
-
     private final TopContentDtoMapper topContentDtoMapper;
 
     /**
@@ -44,7 +43,6 @@ public class DsKalturaAnalytics extends DsKalturaClientBase {
                 sessionRefreshThreshold, MAX_BATCH_SIZE);
         this.topContentDtoMapper = new TopContentDtoMapper();
     }
-
 
     /**
      * Retrieves a list of BaseEntry objects corresponding to the provided list of object IDs.

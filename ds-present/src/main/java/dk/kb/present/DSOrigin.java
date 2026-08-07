@@ -48,7 +48,6 @@ import java.util.stream.Stream;
 /**
  * An origin encapsulates access to a logical collection ("samling"). It uses the same origins as ds-storage and
  * is typically backed by a ds-storage instance.
- * <p>
  * Access is read-only and always with an explicit export format. The format can be {@code raw} for direct proxying to
  * the connected ds-storage, but common use case is to request MODS, JSON-LD (schema.org) or SolrJSON representations.
  */
@@ -81,7 +80,7 @@ public class DSOrigin {
     private final String prefix;
 
     /**
-     * Human readable description of the origin.
+     * Human-readable description of the origin.
      */
     private final String description;
 
@@ -105,11 +104,10 @@ public class DSOrigin {
      * Type of metadata records to obtain from the service. Metadata can be structured in different files and often
      * the needed metadata is delivered in a specific type. This variable defines which type of metadata records that
      * are to be delivered.
-     * These types are currently:<br/>
+     * These types are currently:
      * {@link RecordTypeDto#COLLECTION}
      * {@link RecordTypeDto#DELIVERABLEUNIT}
      * {@link RecordTypeDto#MANIFESTATION}
-     *
      */
     private final RecordTypeDto recordRequestType;
 
@@ -121,6 +119,7 @@ public class DSOrigin {
     /**
      * Create an origin based on the given conf. The storageHandler is expected to be initialized and should contain
      * the storage specified for the origin.
+     *
      * @param conf configuration for the origin, should contain a single key:value with the key being the
      *             origin ID and the value being the configuration for the origin.
      * @param storageHandler previously initialized pool of storages.
@@ -153,6 +152,7 @@ public class DSOrigin {
 
     /**
      * Retrieve the record with the given id and transform it to the given format before delivery.
+     *
      * @param recordID an ID for a record.
      * @param format the format of the record. See {@link #getViews()} for available formats.
      * @return the record with the given id in the given format.
@@ -170,11 +170,11 @@ public class DSOrigin {
         });
     }
 
-    
     /**
      * Retrieve a record with the given ID in ds-storage record format.
      * Storages that are not {@link dk.kb.present.storage.DSStorage} will deliver best-effort {@link DsRecordDto}s,
      * but full representation is not guaranteed.
+     *
      * @param recordID an ID for a record.
      * @return the record in ds-storage record format.
      * @throws ServiceException if the record could not be retrieved.
@@ -183,12 +183,12 @@ public class DSOrigin {
         return storage.getTranscription(fileId);
     }
 
-    
     /**
      * Retrieve a record with the given ID in ds-storage record format.
      * Storages that are not {@link dk.kb.present.storage.DSStorage} will deliver best-effort {@link DsRecordDto}s,
      * but full representation is not guaranteed.
      * @param recordID an ID for a record.
+     *
      * @return the record in ds-storage record format.
      * @throws ServiceException if the record could not be retrieved.
      */
@@ -199,11 +199,11 @@ public class DSOrigin {
     /**
      * Return a stream of records where the data are transformed to the given format.
      * Only records of type DELIVERABLEUNIT are returned as these are the main metadata format.
-     * <p>
      * The logic is complicated by the need to check for access to the IDs:
      * The raw stream of records is split into batches in order to lower the amount of external calls to ds-license.
      * The {@code flatMap(accessFilter)} processes such a batch (a list of {@code DsRecordDto}s) and flattens the
      * result to a regular stream of {@code DsRecordDto}s.
+     *
      * @param mTime        point in time (epoch * 1000) for the records to deliver, exclusive.
      * @param maxRecords   the maximum number of records to deliver. -1 means no limit.
      * @param format       the format of the record. See {@link #getViews()} for available formats.
@@ -240,13 +240,12 @@ public class DSOrigin {
     /**
      * Return a stream of records where the data are transformed to the given format.
      * Only records of type DELIVERABLEUNIT are returned as these are the main metadata format.
-     * <p>
      * This method does not include failing records as part of the returned stream.
-     * <p>
      * The logic is complicated by the need to check for access to the IDs:
      * The raw stream of records is split into batches in order to lower the amount of external calls to ds-license.
      * The {@code flatMap(accessFilter)} processes such a batch (a list of {@code DsRecordDto}s) and flattens the
      * result to a regular stream of {@code DsRecordDto}s.
+     *
      * @param mTime        point in time (epoch * 1000) for the records to deliver, exclusive.
      * @param maxRecords   the maximum number of records to deliver. -1 means no limit.
      * @param format       the format of the record. See {@link #getViews()} for available formats.
@@ -262,11 +261,11 @@ public class DSOrigin {
     /**
      * Returns a stream of records with IDs of parent and child records.
      * All types of records are returned.
-     * <p>
      * The logic is complicated by the need to check for access to the IDs:
      * The raw stream of records is split into batches in order to lower the amount of external calls to ds-license.
      * The {@code flatMap(accessFilter)} processes such a batch (a list of {@code DsRecordDto}s) and flattens the
      * result to a regular stream of {@code DsRecordDto}s.
+     *
      * @param mTime  starting point in time (epoch * 1000) for the records to deliver, exclusive.
      * @param maxRecords the maximum number of records to deliver. -1 means no limit.
      * @param format the format of the record. See {@link #getViews()} for available formats.
@@ -299,7 +298,8 @@ public class DSOrigin {
     }
 
     /**
-     * Applies the given view to record
+     * Applies the given view to record.
+     *
      * @param format which the transformation is transforming to.
      * @param view to apply to record.
      * @param stopOnError representing how the program should handle errors. If true, then the program stops, otherwise it continues and handles errors based on the presence of
@@ -349,6 +349,7 @@ public class DSOrigin {
      * recordIDs always starts with the origin followed by underscore, e.g. {@code images-dsfl_internalid1234}.
      * The prefix must be present for all recordIDs used for lookup.
      * This might be the same as the {@link #id} but it is not a requirement.
+     *
      * @return the prefix for recordIDs in the origin.
      */
     public String getPrefix() {
@@ -356,7 +357,7 @@ public class DSOrigin {
     }
 
     /**
-     * @return human readable description of the origin.
+     * @return human-readable description of the origin.
      */
     public String getDescription() {
         return description;
@@ -365,6 +366,7 @@ public class DSOrigin {
     /**
      * Map from format -> view. A view is at the core an array of transformations and responsible for transforming
      * metadata to the requested format.
+     *
      * @return the available views (aka formats) for this origin. Keys are lowercase.
      */
     public Map<String, View> getViews() {
@@ -373,6 +375,7 @@ public class DSOrigin {
 
     /**
      * Locate the View which matches the given format (View ID == format.toLowerCase()).
+     *
      * @param format the ID of the View.
      * @return a View matching the given format aka ID.
      * @throws InvalidArgumentServiceException if no View could be located.
@@ -394,7 +397,6 @@ public class DSOrigin {
         return views.containsKey(view.toLowerCase(Locale.ROOT));
     }
 
-
     /**
      * If true, single record errors during records-export stops the whole flow. If false, a warning is logged.
      */
@@ -415,5 +417,4 @@ public class DSOrigin {
                ", stopOnError=" + stopOnError +
                ')';
     }
-
 }

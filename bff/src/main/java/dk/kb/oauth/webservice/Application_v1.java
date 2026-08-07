@@ -9,7 +9,6 @@ import com.fasterxml.jackson.jaxrs.xml.JacksonXMLProvider;
 import dk.kb.oauth.api.v1.impl.BffApiServiceImpl;
 import dk.kb.oauth.api.v1.impl.ServiceApiServiceImpl;
 
-
 public class Application_v1 extends javax.ws.rs.core.Application {
 
     @Override
@@ -22,6 +21,4 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 dk.kb.util.webservice.exception.ServiceExceptionMapper.class
         ));
     }
-
-
 }

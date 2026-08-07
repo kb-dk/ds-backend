@@ -7,11 +7,24 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added line break before `@param` in Javadocs
+- Added line break before `@return` in Javadocs
+
 ### Changed
 
 - Formatted `openapi` file.
 - Added hyphen between `human-readable` in `pom.xml`.
 - Formatted `pom.xml`.
+- Make java multiline comment to Javadocs.
+
+### Removes
+
+- Removed excessive line breaks.
+- Removed `<p>` tag in Javadoc.
+- Removed `<p/>` tag in Javadoc.
+- Removed `<br>` tag in Javadoc.
 
 ## [5.0.0](https://github.com/kb-dk/bff/releases/tag/bff-5.0.0) - 2026-06-10
 

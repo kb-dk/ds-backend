@@ -32,10 +32,7 @@ import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 
-
 public class AuditLogModuleFacadeTest extends UnitTestUtil {
-
-
     protected static AuditLogModuleStorageForUnitTest storage = null;
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleFacadeTest.class);
     static MockedStatic<JAXRSUtils> mocked;
@@ -49,7 +46,7 @@ public class AuditLogModuleFacadeTest extends UnitTestUtil {
         storage = new  AuditLogModuleStorageForUnitTest();               
     }
     
-    /*
+    /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
@@ -68,8 +65,7 @@ public class AuditLogModuleFacadeTest extends UnitTestUtil {
         tables.add("AUDITLOG");    
         storage.clearTableRecords(tables);
     }
-    
-    
+
     @Test
     public void testAuditLogList() throws SQLException {
         HttpSession mockedSession = Mockito.mock(HttpSession.class);

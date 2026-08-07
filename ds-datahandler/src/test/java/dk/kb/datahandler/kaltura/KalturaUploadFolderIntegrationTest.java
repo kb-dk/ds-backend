@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import com.kaltura.client.enums.MediaType;
@@ -23,16 +22,13 @@ import dk.kb.kaltura.client.DsKalturaClient;
 public class KalturaUploadFolderIntegrationTest {
 
     /**
-     * Takes a directory with video or audio files and uploads them to Kaltura.<br>
-     * The upload will use file_id as eksternal kaltura id.<br>
-     * Title and description will be uploaded also to Kaltura title and description field. 
-     *<p/>
+     * Takes a directory with video or audio files and uploads them to Kaltura.
+     * The upload will use file_id as eksternal kaltura id.
+     * Title and description will be uploaded also to Kaltura title and description field.
      * Before running this method, change log-level to warn i logback.test.xml to avoid spamming.
-     * <p/>
      * This can not be changed to a unittest since it will modify Kaltura
      */
     public static void main(String[] args)  {
-
         String kalturaUrl = "https://kmc.kaltura.nordu.net";
         String adminSecret = null;// Use token,tokenId instead
         Integer partnerId = 398; // 398=stage, 397=prod. 
@@ -78,7 +74,6 @@ public class KalturaUploadFolderIntegrationTest {
     }
 
     private static SolrDocument getRecordByFileId(String fileId) throws Exception {
-
         String solrUrl = "http://devel11:10007/solr/ds";
         Http2SolrClient client = new Http2SolrClient.Builder(solrUrl).build();
 
