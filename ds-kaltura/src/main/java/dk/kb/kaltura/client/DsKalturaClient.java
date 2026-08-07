@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-
 /**
  * There are two methods on DsKalturaClient:
  *
@@ -34,14 +33,12 @@ import java.util.stream.Collectors;
  * </ul><p>
  */
 public class DsKalturaClient extends DsKalturaClientBase {
-
     private static final Integer MAX_RETRY_COUNT = 3;
 
     private final Integer conversionQueueThreshold;
     private final Integer conversionQueueRetryDelaySeconds;
 
     private Integer estimatedQueueLength;
-
 
     /**
      * Instantiate a session to Kaltura that can be used. The sessions can be reused between Kaltura calls without
@@ -75,10 +72,8 @@ public class DsKalturaClient extends DsKalturaClientBase {
     }
 
     /**
-     * <p>
      * Delete a stream and all meta-data for the record in Kaltura.
      * It can not be restored in Kaltura and must be uploaded again if deleted by mistake.
-     * </p>
      *
      * @param entryId The unique id in the Kaltura platform for the stream
      * @return True if record was found and deleted. False if the record with the entryId could not be found in Kaltura.
@@ -90,11 +85,9 @@ public class DsKalturaClient extends DsKalturaClientBase {
     }
 
     /**
-     * <p>
      * Block a stream and all meta-data for the record in Kaltura.
      * The stream can not be played. An Kaltura administrator can still see the stream in the KMC and remove the flag it needed.
-     * In KMC refine -> moderation status -> rejected so see a list of all rejected streams and search in them
-     * </p>
+     * In KMC refine -> moderation status -> rejected so see a list of all rejected streams and search in them.
      *
      * @param entryId The unique id in the Kaltura platform for the stream
      * @return True if record was found and blocked. False if the record with the entryId could not be found in Kaltura.
@@ -113,11 +106,9 @@ public class DsKalturaClient extends DsKalturaClientBase {
         return handleRequest(MediaService.count(filter));
     }
 
-
     /**
-     * Search Kaltura for a referenceId. The referenceId was given to Kaltura when uploading the record.<br>
-     * We use filenames (file_id) as refereceIds. Example: b16bc5cb-1ea9-48d4-8e3c-2a94abae501b <br>
-     * <br>
+     * Search Kaltura for a referenceId. The referenceId was given to Kaltura when uploading the record.
+     * We use filenames (file_id) as refereceIds. Example: b16bc5cb-1ea9-48d4-8e3c-2a94abae501b
      * The Kaltura response contains a lot more information that is required, so it is not a light weight call against Kaltura.
      *
      * @param referenceId External reference ID given when uploading the entry to Kaltura.
@@ -210,9 +201,8 @@ public class DsKalturaClient extends DsKalturaClientBase {
 
     /**
      * Creates a search entry builder for the given list of ESearchEntryBaseItems.
-     *
-     * <p>Validates that the list size does not exceed the current batch size limit.
-     * Configures search parameters with an OR operator and sets up pagination.</p>
+     * Validates that the list size does not exceed the current batch size limit.
+     * Configures search parameters with an OR operator and sets up pagination.
      *
      * @param items a list of {@link ESearchEntryBaseItem} to search. Must not exceed the batch size limit.
      * @return an instance of {@link ESearchService.SearchEntryESearchBuilder} configured for the search.
@@ -341,7 +331,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
         }
     }
 
-
     /**
      * Adds content from an uploadToken to an Entry and return entryId. If flavorParamID is not
      * null,
@@ -355,7 +344,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
      */
     private String addUploadTokenToEntry(String uploadtokenId, String entryId)
             throws APIException {
-
         //Connect uploaded file with meta data entry
         UploadedFileTokenResource resource = new UploadedFileTokenResource();
         resource.setToken(uploadtokenId);
@@ -405,7 +393,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
                               String title, String description, String tag,
                               FileExtension fileExtension, @Nullable Integer conversionProfileId)
             throws IOException, APIException {
-
         if (referenceId == null) {
             throw new IllegalArgumentException("referenceId must be defined");
         }
@@ -431,7 +418,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
         estimatedQueueLength++; // Add 1 to conversion queue
         return entryId;
     }
-
 
     /**
      * Checks the conversionQueue and waits if too long. This method first looks at the estimated queue and only
@@ -485,7 +471,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * @throws APIException Thrown when API request fails.
      */
     private int getConversionQueueLength() throws APIException {
-
         MediaEntryFilter replacementFilter = new MediaEntryFilter();
         replacementFilter.setReplacementStatusIn(EntryReplacementStatus.APPROVED_BUT_NOT_READY.getValue()
                 + "," + EntryReplacementStatus.READY_BUT_NOT_APPROVED.getValue() + "," + EntryReplacementStatus.NOT_READY_AND_NOT_APPROVED);
@@ -500,6 +485,4 @@ public class DsKalturaClient extends DsKalturaClientBase {
         log.debug("Queue length is : {}", sum);
         return sum;
     }
-
-
 }
