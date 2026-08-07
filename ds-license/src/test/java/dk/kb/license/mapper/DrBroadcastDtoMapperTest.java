@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class DrBroadcastDtoMapperTest {
-
     final String drProductionId = "9213163000";
 
     @Test

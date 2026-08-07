@@ -20,7 +20,6 @@ public class OauthHelper {
     private static String realm;
     private static AuthzClient authzClient = null;
 
-
     private static synchronized AuthzClient getAuthzClient() {
         if (authzClient == null) {
             final YAML keycloakConf = ServiceConfig.getConfig().getSubMap("keycloak");
@@ -53,6 +52,4 @@ public class OauthHelper {
             throw new InternalServiceException("cannot obtain accesstoken: "+e.getMessage());
         }
     }
-
-
 }

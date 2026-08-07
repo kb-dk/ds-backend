@@ -4,11 +4,9 @@ package dk.kb.present;
  * This class contains references to test files on the classpath.
  * Records have the format COLLECTIONPREFIX_RECORD_IDENTIFIER, where COLLECTIONPREFIX specifies, where the collection
  * comes from and IDENTIFIER is the first part of the id of the record (Typically the first 8 characters).
- * <br/>
  * To fetch the content of a specific testfile resolve it through {@link dk.kb.util.Resolver#resolveUTF8String(String)}
  */
 public class TestFiles {
-
     public static final String PVICA_RECORD_3006e2f8 = "internal_test_files/preservica7/3006e2f8-3f73-477a-a504-4d7cb1ae1e1c.xml";
 
     public static final String PVICA_RECORD_74e22fd8 = "internal_test_files/preservica7/74e22fd8-1268-4bcf-8a9f-22ca25379ea4.xml";

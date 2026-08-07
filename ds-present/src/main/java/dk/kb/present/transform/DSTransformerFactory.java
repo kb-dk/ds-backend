@@ -20,9 +20,7 @@ import java.util.Arrays;
 
 /**
  * Factory for creating a specific type of {@link DSTransformer}s.
- *
  * The class primarily exists as a mechanism for the ServiceLoader to discover transformers.
- *
  * IMPORTANT:
  * Implementations of AbstractTransformerFactory cannot be inner classes due to the way ServiceLoader works.
  * Implementations must be registered in src/main/resources/META-INF/services/dk.kb.present.transformer.AbstractTransformerFactory.
@@ -36,6 +34,7 @@ public interface DSTransformerFactory {
 
     /**
      * Create a new transformer of the supported type and return it.
+     *
      * @param conf configuration for the {@link DSTransformer} to create.
      * @return a {@link DSTransformer} of the supported type with the given configuration;
      * @throws Exception if the transformer could not be created.
@@ -44,6 +43,7 @@ public interface DSTransformerFactory {
 
     /**
      * Helper for verifying existence of keys in the config.
+     *
      * @param config configuration for the concrete transformer.
      * @param requiredKeys 0 or more keys that must be present in the configuration.
      */
@@ -55,6 +55,5 @@ public interface DSTransformerFactory {
                                 "The complete list of mandatory properties is " + Arrays.toString(requiredKeys));
             }
         }
-
     }
 }

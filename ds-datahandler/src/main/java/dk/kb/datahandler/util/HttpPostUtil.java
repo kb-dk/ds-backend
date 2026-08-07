@@ -12,12 +12,10 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  *  Util class for doing POST request with an InputStream so it is not loaded into memory
  *  Can it be done easier with apacheIO ?  
  */
-
 public class HttpPostUtil {
     private static final Logger log = LoggerFactory.getLogger(HttpPostUtil .class);
     

@@ -14,7 +14,6 @@
  */
 package dk.kb.present.storage;
 
-
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.model.v1.RerunClusterDto;
@@ -41,6 +40,7 @@ public class FailStorage implements Storage {
 
     /**
      * Create a storage where all lookups fails.
+     *
      * @param id the ID for the storage, used for connecting origins to storages.
      * @param message the message to deliver when {@link #getRecord(String)} is called.
      * @param isDefault if true, this is the default storage for origins.

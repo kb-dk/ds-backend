@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-
 /**
  * A view is at the core a list of {@link dk.kb.present.transform.DSTransformer}s.
  * It takes one value of {@code DsRecordDto} and return transformed recordContent.
@@ -68,10 +67,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     /**
      * Defines the strategy used to construct the wanted view of the resource.
-     * Strategy can be one of the following: <br/>
-     * {@link #NONE} <br/>
-     * {@link #DR} <br/>
-     * {@link #MANIFESTATION} <br/>
+     * Strategy can be one of the following:
+     * {@link #NONE}
+     * {@link #DR}
+     * {@link #MANIFESTATION}
      */
     enum Strategy {
         /**
@@ -94,6 +93,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     /**
      * Creates a view from the given YAML. Expects the YAML to contain a single entry,
      * where the key is the ID for the view and the value is the configuration of the view.
+     *
      * @param conf the configuration for this specific view.
      * @param origin the origin of the collection specified in the CONF yaml.
      */
@@ -151,7 +151,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
                         "Allowed strategies are: '" + Arrays.toString(Strategy.values()) + "'.");
         }
 
-
         for (DSTransformer transformer: this) {
             try {
                 content = transformer.apply(content, metadata);
@@ -174,6 +173,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      *     <li>Create metadata map entries for own production.</li>
      *     <li>Calculate holdback for the record in hand and add these values to the metadata map.</li>
      * </ul>
+     *
      * @param record to apply the strategy to.
      * @param content of the record.
      * @param metadata map containing values that are to be used in the XSLT transformation.
@@ -234,6 +234,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      *     <li>Extract values from preservica record. (Dates, values for holdback calculation and own-production).</li>
      *     <li>Clean start- and end-date and add them to the metadata map.</li>
      * </ul>
+     *
      * @param record to apply the strategy to.
      * @param content of the record.
      * @param metadata map containing values that are to be used in the XSLT transformation.
@@ -277,6 +278,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     /**
      * Extract start and end date from the record and ensure that they are in a valid format.
+     *
      * @param metadataMap containing values given to the transformer creating the view.
      * @param extractedPreservicaValues containing values that have been extracted from the metadata record.
      */
@@ -287,10 +289,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     /**
      * Extract metadata which should always be present to a metadata map.
+     *
      * @param record to extract basic metadata from.
      */
     private Map<String,String> createBasicMetadataMap(DsRecordDto record) {
-
         final Map<String, String> metadata = new HashMap<>();
         metadata.put("recordID", record.getId());
         metadata.put("origin", origin);
@@ -308,6 +310,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     /**
      * Ensure formatting of date from ds-storage is indexable in solr and correctly formatted for schema.org representation
      * by converting from format {@code yyyy-MM-dd HH:mm:ssZ} to {@code yyyy-MM-ddTHH:mm:ssZ}.
+     *
      * @param dateTime a string representation of a dateTime in the format {@code yyyy-MM-dd HH:mm:ssZ}.
      * @return a solr and schema.org compliant string in the format {@code yyyy-MM-ddTHH:mm:ssZ}
      * converted with the {@link DateTimeFormatter#ISO_INSTANT}.
@@ -339,7 +342,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadata.put("holdbackPurposeName", "");
         } else {
             metadata.put("holdbackPurposeName", rightsOutputDto.getDr().getHoldbackName());
-
         }
     }
 
@@ -360,6 +362,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
    
     /**
      * Add form and content values used for holdback calculation to the XSLT metadata map.
+     *
      * @param metadata map to add values to.
      * @param extractedValues to retrieve form and content values from.
      */
@@ -378,5 +381,4 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
                ", transformers=" + super.toString() +
                ')';
     }
-
 }

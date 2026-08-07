@@ -72,7 +72,6 @@ import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRE
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EmbeddedSolrTest {
-
     private static final Logger log = LoggerFactory.getLogger(EmbeddedSolrTest.class);
     private static final String solr_home = "target/solr";
 
@@ -84,7 +83,6 @@ public class EmbeddedSolrTest {
 
     @BeforeAll
     public static void startEmbeddedSolrServer() throws IOException {
-
         ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
 
         File solrHomeDir = new File(solr_home);
@@ -105,7 +103,7 @@ public class EmbeddedSolrTest {
         embeddedServer.close();
     }
 
-    /*
+    /**
      * Delete all documents in solr between tests, so each unittest gets a clean solr.
      */
     @BeforeEach
@@ -124,7 +122,6 @@ public class EmbeddedSolrTest {
         //multivalue field
         // Creator date of death
         assertMultivalueField(record, "creator_date_of_death", "1868-2-14", "1895-6-25", "1865-3-8" );
-
     }
 
     /**
@@ -149,8 +146,6 @@ public class EmbeddedSolrTest {
                 "postcards", "forts", "Dannebrog", "children", "architectures" );
     }
 
-
-
     /**
      * Full test for item
      */
@@ -161,7 +156,6 @@ public class EmbeddedSolrTest {
         assertContentAllSingleValues(record,"000225.tif", "da",
                 "Billedsamlingen. Danske portrætter, 4°, Egede, Poul (1708-1789)",
                 "Samlingsbilleder","Billedsamlingen",6691996L,1812,1227);
-
 
         //Single value field
         assertEquals("1755",record.getFieldValue("production_date_start"));
@@ -392,6 +386,7 @@ public class EmbeddedSolrTest {
     void testEpisodeTitel() throws Exception {
         testStringValuePreservicaField(PVICA_RECORD_3945e2d1, "episode_title", "Kagerester");
     }
+
     @Test
     @Tag("integration")
     void testRitzauId() throws Exception {
@@ -406,7 +401,6 @@ public class EmbeddedSolrTest {
                 "9263cde1-77c9-4f8c-841b-99a330936dbd");
     }
 
-
     //The embedded solr is returning timestamps in CEST time, which is 2 hours in front of UTC, which is the indexed
     //format and the one available in the metadata
     @Test
@@ -416,7 +410,6 @@ public class EmbeddedSolrTest {
         Date startTime = new Date(547137900000L);
         testDateValuePreservicaField(PVICA_RECORD_b346acc8, "startTime", startTime);
     }
-
 
     @Test
     @Tag("integration")
@@ -492,7 +485,6 @@ public class EmbeddedSolrTest {
     void testRetransmission() throws Exception {
         testBooleanValuePreservicaField(PVICA_RECORD_3945e2d1, "retransmission", false);
     }
-
 
     @Test
     @Tag("integration")
@@ -662,7 +654,6 @@ public class EmbeddedSolrTest {
         testLongValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_one_length_ms", 1320L);
         testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_two_file2UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
         testStringValuePreservicaField(PVICA_RECORD_b346acc8, "internal_program_structure_overlap_type_one_file1UUID", "f73b69da-2bc0-4e06-b19b-95f24756804e");
-
     }*/
 
     @Test
@@ -713,7 +704,6 @@ public class EmbeddedSolrTest {
     void testOwnProductionFields() throws Exception {
         testBooleanValuePreservicaField(PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED, "production_code_allowed", true);
         testIntValuePreservicaField(PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED, "production_code_value", 1000);
-
     }
 
     @Test
@@ -768,15 +758,12 @@ public class EmbeddedSolrTest {
     /*
      * ------- Private helper methods below --------------
      */
-
-    /*
+    /**
      * Embedded solr does not have a http listener, so we can not add call and add documents as JSON.
      * They needs to be converted to SolrInputDocument. This seems to be the simplest way to do it...
      * Correct me if I am wrong.
-     *
      */
     private  SolrInputDocument convertJsonToSolrJavaDoc(String json) throws IOException {
-
         //Object is string or String[] for multivalued
         Map<String, Object> map = new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>(){});
 
@@ -788,7 +775,6 @@ public class EmbeddedSolrTest {
             if (value instanceof String) {
                 //	System.out.println("Adding:"+key +"="+map.get(key));
                 document.addField(key, map.get(key));
-
             }
             else if (value instanceof ArrayList) {
                 for (Object o : (ArrayList<Object>) value) {
@@ -811,6 +797,7 @@ public class EmbeddedSolrTest {
      * <li>Check that there is only a single record in the index</li>
      * <li>Retrieve the Record from Solr and return it</li>
      * </ul>
+     *
      * @param modsFile a file with a METS/MODS transformable by {@link #MODS2SOLR}.
      * @return the indexed record.
      */
@@ -825,15 +812,12 @@ public class EmbeddedSolrTest {
         return getRecordByDerivedId(modsFile);
     }
 
-
     private SolrDocument singlePreservica7Index(String preservicaFile) throws Exception {
         indexPreservica7Record(preservicaFile);
         assertEquals(1, getNumberOfTotalDocuments(),
                 "After indexing '" + preservicaFile + "' the index should only hold a single record");
         return getRecordByDerivedId(preservicaFile);
     }
-
-
 
     private void indexModsRecord(String recordXml) throws Exception {
         String yamlStr =
@@ -856,6 +840,7 @@ public class EmbeddedSolrTest {
 
     /**
      * Adds a SolrJSON document to the embedded solr server.
+     *
      * @param recordXml     that the solrJson has been created from.
      * @param solrString    containing the solr json representation of the record.
      */
@@ -889,7 +874,6 @@ public class EmbeddedSolrTest {
     }
 
     private long getNumberOfTotalDocuments() throws IOException {
-
         // Test number of documents
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("*:*");
@@ -902,14 +886,12 @@ public class EmbeddedSolrTest {
         } catch (SolrServerException e) {
             throw new IOException("Unable to process query '" + solrQuery.getQuery() + "' for all documents", e);
         }
-
     }
 
     private void assertContentAllSingleValues(
             SolrDocument record, String filenameLocal, String catalogingLanguage,
             String shelfLocation, String catalog, String collection,
             Long fileBytesize, int imgHeight, int imgWidth) {
-
         assertEquals(filenameLocal,record.getFieldValue("filename_local"));
         assertEquals(catalogingLanguage,record.getFieldValue("cataloging_language"));
         assertEquals(shelfLocation,record.getFieldValue("location"));
@@ -941,7 +923,6 @@ public class EmbeddedSolrTest {
         }
         SolrDocument record = singlePreservica7Index(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
-
     }
 
     private void testStringPresentInPreservicaMultiField(String preservicaRecord, String solrField, String... fieldValues) throws Exception {
@@ -992,5 +973,4 @@ public class EmbeddedSolrTest {
         SolrDocument record = singlePreservica7Index(preservicaRecord);
         assertEquals(fieldValue, record.getFieldValue(solrField));
     }
-
 }

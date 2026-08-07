@@ -23,14 +23,10 @@ import dk.kb.license.storage.LicenseCache;
 import dk.kb.license.storage.LicenseContent;
 import dk.kb.license.storage.Presentation;
 
-
-
 /**
- * This is used by the JSP frontend when creating or editing a license   
- * 
+ * This is used by the JSP frontend when creating or editing a license.
  */
 public class CreateLicenseServlet extends HttpServlet {
-
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = LoggerFactory.getLogger(CreateLicenseServlet.class);
 
@@ -55,9 +51,8 @@ public class CreateLicenseServlet extends HttpServlet {
 
 		try {				   
 			license = buildLicenseFromRequest(licenseId,request);	
-			request.getSession().setAttribute("license",license);			
-			
-			
+			request.getSession().setAttribute("license",license);
+
 			if ("addAttributeGroup".equals(event)){
 				log.info("Adding new Attributegroup");
 				ArrayList<AttributeGroup> attributeGroups = license.getAttributeGroups();				        
@@ -74,6 +69,7 @@ public class CreateLicenseServlet extends HttpServlet {
 				request.setAttribute("message", "Attributegroup tilføjet");
 				attributeGroups.add(newGroup);		        						
 			}
+
 			if ("deleteAttributeGroup".equals(event)){
 				int attributeGroupNumber= Integer.parseInt(request.getParameter("attributeGroupNumber"));
 				log.info("Deleting Attributegroup:"+attributeGroupNumber);
@@ -95,8 +91,7 @@ public class CreateLicenseServlet extends HttpServlet {
 				int attributeGroupNumber= Integer.parseInt(request.getParameter("attributeGroupNumber"));
 				int attributeNumber=  Integer.parseInt(request.getParameter("attributeNumber"));
 				log.info("Adding new value for attributegroup:"+ attributeGroupNumber+ " and attributeNumber:"+attributeNumber);
-				license.getAttributeGroups().get(attributeGroupNumber-1).getAttributes().get(attributeNumber).getValues().add(new AttributeValue(""));							
-
+				license.getAttributeGroups().get(attributeGroupNumber-1).getAttributes().get(attributeNumber).getValues().add(new AttributeValue(""));
 			}
 			else if ("save".equals(event)){			    				
 				log.info("save");							
@@ -129,9 +124,6 @@ public class CreateLicenseServlet extends HttpServlet {
 			else{
 				log.error("unknown event:"+event);			
 			}
-
-
-
 		} catch (Exception e) {
 			log.error("Unexpected error :"+e);
 			request.setAttribute("message", e.getMessage());
@@ -149,7 +141,6 @@ public class CreateLicenseServlet extends HttpServlet {
 		return;
 	}
 
-	
 	private void returnConfigurationPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("configuration.jsp");
 		dispatcher.forward(request, response);		
@@ -221,15 +212,11 @@ public class CreateLicenseServlet extends HttpServlet {
 					}
 				}
 			}
-
 		}
 		//log.info("number of groups:"+domGroups.size());
 
 		return license;
-
-
 	}
-
 
 	//Attributegroups count start from 1 and not 0 to match its attribute 'number'	
 	private int countAttributeGroups(HttpServletRequest request){
@@ -242,8 +229,7 @@ public class CreateLicenseServlet extends HttpServlet {
 	}
 
 	private int countAttributesForGroup(HttpServletRequest request, int groupNumber){
-
-		int i=0;			
+		int i=0;
 		while (request.getParameter("attributegroup_"+groupNumber+"_attribute"+i) != null){ 			
 			i++;
 		}
@@ -256,8 +242,6 @@ public class CreateLicenseServlet extends HttpServlet {
 		for (AttributeGroup current: groups){
 			current.setNumber(groupNumber++);
 		}
-		
-		
 	}
 	
 	private ArrayList<AttributeValue> getValuesForAttribute(HttpServletRequest request, int groupNumber, int attributeNumber){
@@ -274,5 +258,4 @@ public class CreateLicenseServlet extends HttpServlet {
 
 		return values;
 	}
-
 }

@@ -21,30 +21,16 @@ import dk.kb.kaltura.client.DsKalturaClient;
 public class KalturaManualRejectListe2Job {
 
     /**
-     * 
-     *  Change log level to INFO in lockback-test.xml to avoid http traffic spam when running this job 
-     * 
-     * <p>
+     * Change log level to INFO in lockback-test.xml to avoid http traffic spam when running this job.
      * Manual started job to that set streams to moderation status=REJECTED.
-     * When a stream is rejected it can not be see from outside the KMC and can not be streamed. 
-     *
-     * 
-     * 
-     * </p>
-     *
-     * <p>
+     * When a stream is rejected it can not be seen from outside the KMC and can not be streamed.
      * Input is a text file where each line is a recordId 
-     * Output is a text file of recordId that failed reject 
-     * 
+     * Output is a text file of recordId that failed reject
      * The recordId will be mapped to kaltura entryId by calling solr first.
-     * 
      * The most likely cause of failed reject is that the entryId can does not exist in the KMC.   
-     * because many entries may already has been deleted in kaltura in delete job, so many will fail since they do not exist. 
-     * 
-     * </p>
+     * because many entries may already has been deleted in kaltura in delete job, so many will fail since they do not exist.
      */
     public static void main(String[] args) {
-        
         String kalturaUrl = "https://kmc.kaltura.nordu.net";
         String adminSecret = "";// Use token,tokenId  instead
         Integer partnerId = 397; // 398=stage, 397=prod. 
@@ -61,8 +47,7 @@ public class KalturaManualRejectListe2Job {
 
             List<String> recordIds = readAllLines(input_record_ids);
             System.out.println("Loaded file with recordIds. Number of entries:" + recordIds.size());
-           
-            
+
             DsKalturaClient client = new DsKalturaClient(kalturaUrl, userId, partnerId, token, tokenId, adminSecret,
                     86400, 3600, conversionQueueThreshold, conversionQueueDelaySeconds);
             int numberRejectFailed = 0;
@@ -82,7 +67,6 @@ public class KalturaManualRejectListe2Job {
                         System.out.println("Failed rejecting recordId: " + recordId);
                         addLineToFile(output_record_ids, entryId);
                     }
-
                 } catch (Throwable e) {
                     e.printStackTrace();
                     System.out.println("API error for recordId: " + recordId);
@@ -131,7 +115,6 @@ public class KalturaManualRejectListe2Job {
     }
     
     private static SolrDocument getRecordById(String recordId) throws Exception {
-
         String solrUrl= "http://devel11:10007/solr/ds";
         Http2SolrClient client = new Http2SolrClient.Builder(solrUrl).build();
 

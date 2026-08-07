@@ -10,9 +10,7 @@ import com.kaltura.client.enums.MediaType;
 import dk.kb.datahandler.config.ServiceConfig;
 
 public class KalturaUtil {
-
-
-    private static String DOMS_RADIOTV_PATH;     
+    private static String DOMS_RADIOTV_PATH;
     private static String PRESERVICA_TV_PATH;
     private static String PRESERVICA_RADIO_PATH;
     
@@ -61,8 +59,7 @@ public class KalturaUtil {
             return ServiceConfig.getConversionProfileIdAudio();
         }                         
     }
-    
-    
+
     /**
      * Generate the path on the filesystem to the stream.
      * 
@@ -83,8 +80,7 @@ public class KalturaUtil {
           throw new IOException ("UnKnown originates from:"+originatesFrom);
        }        
     }
-    
-    
+
     // 2 character folders, different folder for tv and radio. No file extension
     private static String generatePreservicaRadioTvPath(String filePath, String resourceDescription) {           
            
@@ -99,11 +95,9 @@ public class KalturaUtil {
             return  PRESERVICA_RADIO_PATH+filePath;
         }       
     }
-   
 
     // 1  character folders and same folder for radio and tv. Extension is path of fullpath, so resourcetype not needed
     private static String generateDomsDownloadPath(String filePath) {                         
         return DOMS_RADIOTV_PATH+filePath;               
     }
-    
 }

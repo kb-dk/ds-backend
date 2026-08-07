@@ -13,21 +13,16 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 import dk.kb.util.Resolver;
-
 
 /**
  * The purpose of this class is to parse a Solr document from ds-solr with records and make Kaltura XML's with downloadlink and metadata for bulk upload in Kaltura.
  * The XML files are then upload to Kaltura manual if there are few, or sent to Petur for very large scale uploads.
- * <p>
  * The solr json document can be produced with this query: holdback_expired_date:[* TO NOW] AND own_production:true
- * Notice for stage you also have to add the file_id:* since we have documents without streams 
- * <p>
+ * Notice for stage you also have to add the file_id:* since we have documents without streams.
  * The Kaltura upload XML has the following structure. To see the item XML see the 'kaltura_item.xml' template. 
  * Change the template if upload format changes or maybe one of the 3 tags are removed 
  * The number of items in each file must be limited or kaltura will break. The limit is currently sat at 100 items for each xml file.
- * <p>
  * <?xml version='1.0' encoding='utf-8'?>
  * <mrss>
  *   <channel>
@@ -35,28 +30,18 @@ import dk.kb.util.Resolver;
  *     <item>...</item>
  *     .... more items
  *   </channel>
- * </mrss>   
- * <p>
- *
+ * </mrss>
  * The file name of the xml files should follow this syntax. Each file having 100 items.
  * DRA_2024-07-07_PROD_1.xml
  * DRA_2024-07-07_PROD_2.xml'
- * ..... 
- * <p>
- * Before starting the job, read the constants below and change values. 
- * <p>
+ * .....
+ * Before starting the job, read the constants below and change values.
  * Test file can be extracted from solr with:
- * <p>
  * {@code curl 'http://devel11:10007/solr/ds/select?indent=true&q.op=OR&q=migrated_from:"DOMS" AND file_id:* AND holdback_expired_date:[* TO NOW] AND own_production:true&rows=500' > solr_doms.json }
- * <p>
  * {@code curl 'http://devel11:10007/solr/ds/select?indent=true&q.op=OR&q=*:* AND NOT migrated_from:DOMS AND file_id:* AND holdback_expired_date:[* TO NOW] AND own_production:true&rows=500' > solr_preservica.json}
- * <p>
- * Always test the download urls are correct and working before uploading to Kaltura
- *
+ * Always test the download urls are correct and working before uploading to Kaltura.
  */
-
 public class GenerateKalturaUploadXmlFromSolrDocs {
-
     final static String XML_KALTURA_ITEM_FRAGMENT_FILE="kaltura/kaltura_item.xml"; //Do not change.
     final static String XML_START="<?xml version='1.0' encoding='utf-8'?>\n<mrss>\n<channel>\n";
     final static String XML_END="<\\channel>\n<\\mrss>\n";        
@@ -91,7 +76,6 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
    //Asger used this on kaltura-STAGE. Dont know what to use for PROD.
     final static String TAG3="test"; 
 
-
     //Custom values that must be changed before running
     final static String SOLR_DOCS_JSON="/home/teg/Downloads/solr_preservica_audio.json";
     //The output folder for the xml files
@@ -100,9 +84,7 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
     final static String XML_FILE_PATTERN="DRA_2024-9-23_STAGE_#NUMBER.xml";   //Kaltura stage
     //static String filePattern="DRA_2024-07-07_PROD_#NUMBER.xml";  //Kaltura production
 
-
     public static void main(String[] args) {
-
         try {
             //Load xml fragment file only once
             XML_KALTURA_ITEM_FRAGMENT = readFile(XML_KALTURA_ITEM_FRAGMENT_FILE);
@@ -128,7 +110,6 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
         catch(Exception e) {        
             System.out.println("Error creating xml");
             e.printStackTrace();
-
         }
     }
 
@@ -147,7 +128,6 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
     }
 
     private static ArrayList<KalturaItemXml> createKalturaItemsFromSolrJson(String jsonFile) throws Exception{
-
         String solrJson= readFile(jsonFile);;
 
         JSONObject solrResponse = new JSONObject(solrJson);
@@ -156,7 +136,6 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
         ArrayList<KalturaItemXml> itemXmlList = new ArrayList<KalturaItemXml>(); 
 
         for (int i=0;i< json_docs.length();i++) {
-
             JSONObject doc = (JSONObject) json_docs.get(i);
 
             String referenceId= doc.getString("file_id");            
@@ -186,7 +165,6 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
                 continue; //Do not add 
             }
 
-
             String downloadUrl=generateDownloadUrl(migratedFrom,resourceType,referenceId);
             KalturaItemXml itemXml= new KalturaItemXml(type, referenceId, name, description, migratedFrom, tag1, tag2, tag3, conversionProfileId,  type,flavorParamsId, downloadUrl);
             itemXmlList.add(itemXml);                                                  
@@ -203,7 +181,6 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
         return text;
     }
 
-
     // Return first title value since it is multivalued. All documents should have at least 1 title.
     private static String getFirstTitle(JSONObject doc ) {
         try {
@@ -213,12 +190,12 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
         catch(Exception e) {            
             System.out.println("No title found for id:"+doc.getString("ID"));
             return "";
-
         }
     }
 
-
-    //Return empty string if field does not exist
+    /**
+     * Return empty string if field does not exist
+     */
     private static String getFieldOrEmpty(JSONObject doc, String field ) {
         try {
             return doc.getString(field);
@@ -228,15 +205,14 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
         }
     }
 
-    /*
+    /**
      * Escape text correct for XML 
      */
     private static String xmlEncode(String text) {        
         return StringEscapeUtils.escapeXml11(text);        
     }
 
-
-    /*
+    /**
      * Write text to a new file
      */
     private static void writeToFile(String text, Path filePath) throws Exception {        
@@ -244,8 +220,7 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
         System.out.println("Created file:"+filePath.toAbsolutePath());
     }
 
-
-    /*
+    /**
      * Substitute values in the xml template. Use XML encode for strings that can have special characters.
      */
     private static String substituteValues(String xml, KalturaItemXml xmlItem) {        
@@ -264,20 +239,15 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
         return xml;
     }
 
-
-
-
     //File path examples. Notice there is no extension for bart-tv and bart-radio
     //Example Preservica/Kuana: https://deic-download.kb.dk/radio-tv/e/b/4/f/eb4fcb8c-99e3-415b-8cc8-33a6ffb17b73.mp4
     //Example bart-tv:   https://deic-download.kb.dk/kuana-store/bart-access-copies-tv/00/01/32
     //Example bart-radio: https://deic-download.kb.dk/kuana-store/bart-access-copies-radio/00/00/02/00000288-7859-4782-b736-a2dc964316e8
 
     private static String generateDownloadUrl(String migratedFrom, String resourceType,String referenceId) {
-
         if ("DOMS".equals(migratedFrom)){ //This is bart
             if ("VideoObject".equals(resourceType)) {              
                 return generateBartTvDownloadUrl(referenceId);
-
             }
             else {              
                 return generateBartRadioDownloadUrl(referenceId);
@@ -287,7 +257,6 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
             return generateKuanaDownloadUrl(referenceId, resourceType);              
         }        
     }
-
 
     // 2  character folders
     private static String generateBartTvDownloadUrl(String fileId) {           
@@ -312,5 +281,4 @@ public class GenerateKalturaUploadXmlFromSolrDocs {
             return fileWithOutExtension+".mp3";
         }            
     }
-
 }

@@ -52,7 +52,6 @@ import static org.mockito.Mockito.mockStatic;
 /**
  * Integration test on class level, will not be run by automatic build flow.
  * Call 'kb init' to fetch YAML property file with server urls
- * 
  */
 @Tag("integration")
 public class DsStorageClientTest {
@@ -60,8 +59,7 @@ public class DsStorageClientTest {
 
     private static DsStorageClient remote = null;
     private static String dsStorageDevel=null;  
-    
- 
+
     @BeforeAll
     static void setUp() throws Exception{
         try {
@@ -94,8 +92,6 @@ public class DsStorageClientTest {
         }                        
     }
 
-         
-    
     @Test
     public void testGetOriginConfiguration() {      
          List<OriginDto> originConfiguration = remote.getOriginConfiguration();          
@@ -112,9 +108,7 @@ public class DsStorageClientTest {
          assertTrue(originStatistics.size() > 0);
          assertTrue(dto.getCount() >=0);
     }
-    
-    
-    
+
     @Test
     public void testGetRecord() {      
         String id = "kb.image.luftfo.luftfoto:oai:kb.dk:images:luftfo:2011:maj:luftfoto:object187744";
@@ -150,16 +144,14 @@ public class DsStorageClientTest {
          String refId="1234";
          remote.updateReferenceIdForRecord(recordId, refId);          
     }
-    
-    
+
     @Test
     public void testUpdateKalturaIdForRecord() {                       
          String refId="1234";
          String kalturaId="1234";
          remote.updateKalturaIdForRecord(refId,kalturaId);         
     }
-    
-   
+
     @Test
     public void testGetMinimalRecords() {                       
         String origin="ds.radio";
@@ -169,8 +161,7 @@ public class DsStorageClientTest {
          List<DsRecordMinimalDto> minimalRecords = remote.getMinimalRecords(origin, maxRecords,mTime);
          assertEquals(10,minimalRecords.size());         
     }
-    
-    
+
     @Test
     public void testRemoteRecordsRaw() throws IOException {       
         try (ContinuationInputStream<Long> recordsIS = remote.getRecordsModifiedAfterJSON(
@@ -238,7 +229,6 @@ public class DsStorageClientTest {
 
     @Test
     public void testRemotePagingCount() throws IOException {
-
         try (ContinuationInputStream<Long> recordsIS = remote.getRecordsModifiedAfterJSON(
                 "ds.tv", 0L, 500L)) {
             assertEquals(500L, recordsIS.getRecordCount());
@@ -253,7 +243,6 @@ public class DsStorageClientTest {
         assertTrue(transcription.getTranscription().indexOf(snippet)>0);               
     }
 
-    
     @Test
     public void testRemotePageLast() throws IOException {        
         Long lastMTime = null;
@@ -279,7 +268,6 @@ public class DsStorageClientTest {
 
     @Test
     public void testRemoteRecordsTreeRaw() throws IOException {
-  
         try (ContinuationInputStream<Long> recordsIS = remote.getRecordsByRecordTypeModifiedAfterLocalTreeJSON(
                              "ds.radio", RecordTypeDto.DELIVERABLEUNIT,  0L, 3L)) {
             String recordsStr = IOUtils.toString(recordsIS, StandardCharsets.UTF_8);
@@ -300,8 +288,7 @@ public class DsStorageClientTest {
         try (ContinuationStream<DsRecordDto, Long> records = remote.getRecordsModifiedAfterStream(
                 "ds.radio", 0L,numberOfRecords)) {
             List<DsRecordDto> recordList = records.collect(Collectors.toList());
-            
-            
+
             assertEquals(numberOfRecords, recordList.size(), "The requested number of records should be received");
             assertNotNull(records.getContinuationToken(),
                     "The highest modification time should be present");
@@ -314,7 +301,6 @@ public class DsStorageClientTest {
 
     @Test
     public void testRemoteRecordsTreeStream() throws IOException {
-      
         try (ContinuationStream<DsRecordDto, Long> records = remote.getRecordsByRecordTypeModifiedAfterLocalTreeStream(
                 "ds.radio", RecordTypeDto.DELIVERABLEUNIT, 0L, 3L)) {
             long count = records.count();
@@ -332,7 +318,6 @@ public class DsStorageClientTest {
 
             assertEquals(5L, count, "The requested number of records should be received");
             assertNotNull(records.getContinuationToken(),"The highest modification time should be present");
-
         }
     }
 
@@ -347,5 +332,4 @@ public class DsStorageClientTest {
             assertFalse(recordsStr.contains("\"data\":"));
         }
     }
-
 }

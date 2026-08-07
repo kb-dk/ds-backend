@@ -35,11 +35,10 @@ public class ReplaceTransformer implements DSTransformer {
 
     /**
      * Construct a transformer that performs rexexp-based replacement on input.
-     * <p>
      * The replacer uses {@link Pattern} with {@link Pattern#DOTALL} enabled for multiline support.
-     * <p>
      * Sample usage: {@code regexp="id=\"([0-9]+)-([a-z]+)\"", replacement="id=\"$2-$1\""} will change the input
      * {@code <mystructure id="123-foo">...} to {@code <mystructure id="foo-123">...}.
+     *
      * @param regexp the regular expression to match. See {@link Pattern} for syntax.
      * @param replacement the replacement. See {@link Matcher#replaceAll(String)} for syntax.
      * @param replaceAll if true, all matches will be replaced. If false, only first match will be replaced.
@@ -68,5 +67,4 @@ public class ReplaceTransformer implements DSTransformer {
         return String.format(Locale.ROOT, "ReplaceTransformer(regexp='%s', replacement='%s', replaceAll=%b)",
                 pattern.pattern(), replacement, replaceAll);
     }
-
 }

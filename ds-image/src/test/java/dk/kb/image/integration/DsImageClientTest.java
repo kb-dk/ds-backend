@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Integration unittest inteded to call client methods on DsImageClient. But no methods has been define yet on the client.
  */
@@ -28,13 +27,8 @@ import org.slf4j.LoggerFactory;
 public class DsImageClientTest extends IntegrationTest{
     private static final Logger log = LoggerFactory.getLogger(DsImageClientTest.class);
 
-
     @Test
     public void test() throws IOException {
         //Must be one unit test to test the setup method is working 
     }
-
-
-
-   
 }

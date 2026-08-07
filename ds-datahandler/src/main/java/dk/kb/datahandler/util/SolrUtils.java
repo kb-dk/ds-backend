@@ -42,7 +42,6 @@ public class SolrUtils {
         String storageMTime;
         QueryResponse response;
         try (SolrClient solrClient = new HttpJdkSolrClient.Builder(solrQueryUrl).build()) {
-
             storageMTime = "internal_storage_mTime";
 
             // Perform a query
@@ -138,8 +137,7 @@ public class SolrUtils {
                 hasMore=solrDocsStream.hasMore();        
                 if (hasMore) {                    
                     sinceTime=solrDocsStream.getContinuationToken(); //Next batch start from here.
-                } 
-                
+                }
             } catch (IOException e) {
                 log.warn("An error occurred when streaming records from DsPresent. DsPresentClient.getRecordsJSON() " +
                         "was called with the following params: origin='{}', mTime='{}', maxRecords='{}', format='{}'",
@@ -165,31 +163,29 @@ public class SolrUtils {
         return finalResponse;
     }
 
-
     /**
      * Update the final {@code SolrIndexResponse} with the content from the single {@code individualSolrResponse}.
      * The updated {@code SolrIndexResponse} is used as the response for the endpoint
      * {@link dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl#indexSolr(String, Long, TypeDto)}. This
      * updated response contains information on the amount of documents that have been indexed in total and not just
      * during the last batch of the stream.
+     *
      * @param individualSolrResponse a string representation of a JSON solr response returned when indexing a batch of
      *                               documents. Eg:
      * <pre>
-     * {"responseHeader": {    <br>
-     *   "rf":1, <br>
-     *   "status":0, <br>
-     *   "QTime":1348}}  <br>
+     * {"responseHeader": {
+     *   "rf":1,
+     *   "status":0,
+     *   "QTime":1348}}
      *</pre>
      * @param finalResponse         containing the {@code rf} value from the latest added {@code individualSolrResponse},
      *                              the {@code status} value from the latest added {@code individualSolrResponse}
      *                              the combined {@code QTime} for all added response headers and the total amount
      *                              of documents indexed.
-     *
      * @param documents             The total amount of documents indexed.
      */
      public static void updateFinalResponse(String individualSolrResponse, SolrIndexResponse finalResponse,
                                             Long documents) {
-
         SolrResponseHeader currentResponseHeader = new SolrResponseHeader(individualSolrResponse);
 
         finalResponse.setLastSolrResponseHeader(currentResponseHeader);
@@ -198,7 +194,8 @@ public class SolrUtils {
     }
 
     /**
-     * Convert a solr index response to a string representing a JSON structure
+     * Convert a solr index response to a string representing a JSON structure.
+     *
      * @param solrIndexResponse
      * @return a string representing a JSON structure
      */
@@ -221,7 +218,6 @@ public class SolrUtils {
     public static QueryResponse buildSuggestIndex() throws SolrServerException, IOException {
         String solrUrl = ServiceConfig.getSolrWriteCollectionUrl();
         try (SolrClient solrClient = new HttpJdkSolrClient.Builder(solrUrl).build()) {
-
             // Perform a query at suggest handler
             SolrQuery query = new SolrQuery();
             query.setRequestHandler("/suggest");
@@ -232,5 +228,4 @@ public class SolrUtils {
             return solrClient.query(query);
         }
     }
-
 }

@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * When running in Jetty mode, it needs to set up the database. This class can not in test packages or it can not be loaded
+ * When running in Jetty mode, it needs to set up the database. This class can not in test packages or it can not be loaded.
  */
 public class H2DbUtil {
 

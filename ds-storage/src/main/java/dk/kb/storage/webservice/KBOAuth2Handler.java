@@ -52,10 +52,8 @@ import java.util.regex.Pattern;
 
 /**
  * Caching of public keys, validation of accessTokens etc. with a focus on the parts used at the Royal Danish Library.
- * <p>
  * The implementation uses the <a href="https://github.com/scribejava/scribejava">Scribe library</a> for the
  * OAuth-specific handling.
- * <p>
  * This class is thread safe.
  */
 public class KBOAuth2Handler {
@@ -75,7 +73,6 @@ public class KBOAuth2Handler {
 
     /**
      * Fetches KB OAuth2 settings from the configuration and initializes the handler.
-     * <p>
      * If no OAUth2 configuration is present, a warning is logged and attempts to access OAuth-annotated endpoints
      * will fail, unless the role {@code public} is specified in the {@link KBAuthorization} annotation.
      */
@@ -136,6 +133,7 @@ public class KBOAuth2Handler {
 
     /**
      * Checks that the roles stated in the accessToken conforms to the endpointRoles.
+     *
      * @param endpoint name of the endpoint. Used for exceptions and logging.
      * @param accessToken a trusted (validated) access token.
      * @param endpointRoles the roles for the endpoint.
@@ -228,6 +226,7 @@ public class KBOAuth2Handler {
     /**
      * Validate that the accessTokenString has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
+     *
      * @param encodedAccessToken untrusted Base64-encoded JSON, in multiple parts split by {@code .}.
      * @return a trusted (validated) AccessToken.
      * @throws VerificationException if the authorization validation failed.
@@ -239,6 +238,7 @@ public class KBOAuth2Handler {
     /**
      * Validate that the accessTokenString has allowed baseurl and realm, that it is not expired etc.
      * This does not check if the roles for the caller matches the roles for the endpoint.
+     *
      * @param encodedAccessToken untrusted Base64-encoded JSON, in multiple parts split by {@code .}.
      * @param mode override of the configured mode.
      * @return a trusted (validated) AccessToken.
@@ -254,6 +254,7 @@ public class KBOAuth2Handler {
 
     /**
      * Parse the access token from the given string and validate its signature.
+     *
      * @param encodedAccessToken untrusted Base64-encoded JSON, in multiple parts split by {@code .}.
      * @param mode override of the configured mode.
      * @return a trusted (validated) AccessToken.
@@ -299,9 +300,9 @@ public class KBOAuth2Handler {
                 .getToken();
     }
 
-
     /**
      * Validate issued date, expiry etc. for the given AccessToken.
+     *
      * @param trusted an AccessToken which has passed the cryptographic validation.
      * @throws VerificationException if any of the validation steps failed.
      */
@@ -337,6 +338,7 @@ public class KBOAuth2Handler {
 
     /**
      * Extracts the realm from the issuer (iss) and verifies that it is on the list of accepted realms.
+     *
      * @param payload from an access token.
      * @return the realm, if present and accepted.
      * @throws VerificationException if the realm cannot be verified.
@@ -360,6 +362,7 @@ public class KBOAuth2Handler {
         }
         return tokenRealm;
     }
+
     private static final Pattern ISSUER = Pattern.compile("^(.*)/(.+)/?$");
 
     private JSONObject decodeJSONObject(String base64JSON) throws VerificationException {
@@ -372,8 +375,6 @@ public class KBOAuth2Handler {
         }
     }
 
-    
-    
      /**
       * The Base64 strings that come from a JWKS need some manipulation before they can be decoded.   
       * TODO: Why is replacement even required? See OahtUtil in ds-license. Just splitting on '.' to get the 3 terms is correct by using a OOAuth library.     
@@ -403,6 +404,7 @@ public class KBOAuth2Handler {
     /**
      * Retrieved the key with the given kid from the given realm. Keys are cached, with Time to Live specified in
      * the configuration.
+     *
      * @param realm a Keycloak realm under the configured {@link #baseurl}.
      * @param kid the ID of the key to use for the realm.
      * @return the public key for the kid.
@@ -435,6 +437,7 @@ public class KBOAuth2Handler {
     /**
      * Given a public key JSON representation from a Keycloak server, parse the JSON and construct a PublicKey for the
      * stated kid (Key ID).
+     *
      * @param kid ID for the key to use.
      * @param publicKeysString JSON with public keys for the backing Keycloak server.
      * @return a PublicKey ready for use when verifying accessTokens.
@@ -479,6 +482,7 @@ public class KBOAuth2Handler {
 
     /**
      * Remove trailing slash ({@code /)} from the given String. At most 1 slash is removed.
+     *
      * @param s input string.
      * @return the string without trailing slash.
      */
@@ -512,5 +516,4 @@ public class KBOAuth2Handler {
                 Locale.ROOT, "KBOAuth2Handler(mode=%s, baseurl='%s', realms=%s, keysTTL=%ss, cached realm keys=%d)",
                 mode, baseurl, realms, keysTTL, realmKeys.size());
     }
-
 }

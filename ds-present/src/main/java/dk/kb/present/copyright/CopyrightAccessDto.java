@@ -9,10 +9,7 @@ import java.util.ArrayList;
  * @author teg@kb.dk 
  *
  */
-
-
 public class CopyrightAccessDto {
-
     public static final String TYPE_RESTRICTION_ON_ACCESS= "restriction on access";
     public static final String TYPE_RESTRICTION_ON_ACCESS_NOTE="restriction on access note";
     public static final String TYPE_USE_AND_REPRODUCTION = "use and reproduction";
@@ -20,7 +17,6 @@ public class CopyrightAccessDto {
 
     public static final String DISPLAY_LABEL_ACCESS_STATUS= "Access Status";
     public static final String DISPLAY_LABEL_RESTRICTED="Restricted";  
-
 
     public static final String SPECIAL_RESTRICTION_BLOKERET= "Blokeret";
     public static final String USE_AND_REPRODUCTION_EJERMAERKE= "Ejermærke";
@@ -43,7 +39,6 @@ public class CopyrightAccessDto {
 
     public  CopyrightAccessDto() {                    
     }
-
 
     public Integer getSkabelsesAar() {
         return skabelsesAar;
@@ -77,7 +72,6 @@ public class CopyrightAccessDto {
         this.accessConditionsList = accessConditionsList;
     }
 
-
     public String getImageUrl() {
         return imageUrl;
     }
@@ -98,25 +92,19 @@ public class CopyrightAccessDto {
         return fotoAftale;
     }
 
-
     public void setFotoAftale(boolean fotoAftale) {
         this.fotoAftale = fotoAftale;
     }
-
 
     public boolean isBilledeAftale() {
         return billedeAftale;
     }
 
-
     public void setBilledeAftale(boolean billedeAftale) {
         this.billedeAftale = billedeAftale;
     }
 
-
-
     public class AccessCondition{
-
         private String type;
         private String displayLabel;    
         private String copyrightPublicationStatus;
@@ -128,12 +116,15 @@ public class CopyrightAccessDto {
         public String getType() {
             return type;
         }
+
         public void setType(String type) {
             this.type = type;
         }
+
         public String getDisplayLabel() {
             return displayLabel;
         }
+
         public void setDisplayLabel(String displayLabel) {
             this.displayLabel = displayLabel;
         }
@@ -141,6 +132,7 @@ public class CopyrightAccessDto {
         public String getValue() {
             return value;
         }
+
         public void setValue(String value) {
             this.value = value;
         }
@@ -148,6 +140,7 @@ public class CopyrightAccessDto {
         public ArrayList<CreatorPerson> getCreatorPersonList() {
             return creatorPersonList;
         }
+
         public void setCreatorPersonList(ArrayList<CreatorPerson> creatorPersonList) {
             this.creatorPersonList = creatorPersonList;
         }
@@ -155,25 +148,27 @@ public class CopyrightAccessDto {
         public ArrayList<CreatorCorporate> getCreatorCorporateList() {
             return creatorCorporateList;
         }
+
         public void setCreatorCorporateList(ArrayList<CreatorCorporate> creatorCorporateList) {
             this.creatorCorporateList = creatorCorporateList;
         }
+
         public String getCopyrightPublicationStatus() {
             return copyrightPublicationStatus;
         }
+
         public void setCopyrightPublicationStatus(String copyrightPublicationStatus) {
             this.copyrightPublicationStatus = copyrightPublicationStatus;
         }
+
         public String getCopyrightStatus() {
             return copyrightStatus;
         }
+
         public void setCopyrightStatus(String copyrightStatus) {
             this.copyrightStatus = copyrightStatus;
         }
-
     }
-
-
 
     public class CreatorPerson {     
         private String name;
@@ -199,11 +194,7 @@ public class CopyrightAccessDto {
         }
     }
 
-
-
-
-    public class CreatorCorporate {     
-
+    public class CreatorCorporate {
         private String name;
         private String yearStarted;
         private String yearEnded;
@@ -226,6 +217,4 @@ public class CopyrightAccessDto {
             this.yearEnded = yearEnded;
         }     
     }
-
-
 }

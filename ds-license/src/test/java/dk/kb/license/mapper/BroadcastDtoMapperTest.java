@@ -14,7 +14,6 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BroadcastDtoMapperTest {
-
     // The format date Solr client from dependency returns
     String parseDateFormat = "EEEE MMM dd HH:mm:ss z yyyy";
 

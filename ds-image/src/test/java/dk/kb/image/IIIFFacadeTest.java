@@ -25,7 +25,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class IIIFFacadeTest {
-
     private final static URI SOURCE;
     static {
         try {
@@ -76,6 +75,5 @@ class IIIFFacadeTest {
             });
             assertEquals(EXPECTED.toString(), requestedURIs.toString());
         }
-
     }
 }

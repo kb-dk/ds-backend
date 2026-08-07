@@ -2,16 +2,13 @@ package dk.kb.license.storage;
 
 /**
  * This is a persistent DTO.
- * See the documentation and UML model:<br>
- * licensemodule_uml.png<br>
- * License_validation_logic.png <br>
- * 
+ * See the documentation and UML model:
+ * licensemodule_uml.png
+ * License_validation_logic.png
  */
 public class Presentation extends Persistent{
-
 	private String key;
-	
-	
+
 	public Presentation() {
 	
 	}
@@ -20,8 +17,7 @@ public class Presentation extends Persistent{
 		super();
 		this.key = key;
 	}
-	
-	
+
 	public String getKey() {
 		return key;
 	}
@@ -34,8 +30,4 @@ public class Presentation extends Persistent{
     public String toString() {
         return key;
     }
-
-	
-	
-	
 }

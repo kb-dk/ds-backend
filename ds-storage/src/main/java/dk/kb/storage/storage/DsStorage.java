@@ -15,6 +15,7 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * This class will be called by the facade class. The facade class is also responsible for commit or rollback
+ * This class will be called by the facade class. The facade class is also responsible for commit or rollback.
  */
 public class DsStorage extends BaseModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(DsStorage.class);
@@ -162,7 +163,6 @@ public class DsStorage extends BaseModuleStorage {
             WHERE
                 id = ?
             """;
-
     // SELECT mtime FROM ds_records WHERE origin= 'test_base' ORDER BY mtime DESC
     private static final String maxMtimeStatement = """
             SELECT
@@ -305,7 +305,6 @@ public class DsStorage extends BaseModuleStorage {
                 mtime ASC
             LIMIT ?
             """;
-
     // TODO: Optimise this
     // The current implementation creates a temporary table
     // Alternative 1: Make a plain select and step through to the end
@@ -663,8 +662,8 @@ public class DsStorage extends BaseModuleStorage {
 
     /**
      * Will only extract with records strictly larger than mTime!
-     * Will be sorted by mTime. Latest is last
-     * Will extract all no matter of parent or child ids
+     * Will be sorted by mTime. Latest is last.
+     * Will extract all no matter of parent or child ids.
      */
     public ArrayList<DsRecordDto> getRecordsModifiedAfter(String origin, long mTime, int batchSize) throws Exception {
         if (batchSize < 1 || batchSize > 10000) { //No doom switch
@@ -685,7 +684,7 @@ public class DsStorage extends BaseModuleStorage {
     }
 
     /**
-     * Will only extract ID.
+     * Will only extract ID. 
      * Will be sorted by mTime. Latest is last.
      * Will extract all no matter of parent or child ids.
      */
@@ -806,7 +805,6 @@ public class DsStorage extends BaseModuleStorage {
             stmt.setString(11, record.getReferenceId());
             stmt.setString(12, record.getKalturaId()); //This value is probably null. It will be updated by a batch job later. 
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             String message = "SQL Exception in createNewRecord with id:" + record.getId() + " error:" + e.getMessage();
             log.error(message);
@@ -958,7 +956,6 @@ public class DsStorage extends BaseModuleStorage {
 
     public void updateReferenceIdForRecord(String recordId, String referenceId) throws Exception {
         long nowStamp = UniqueTimestampGenerator.next();
-
         try (PreparedStatement stmt = connection.prepareStatement(updateReferenceIdStatement)) {
             stmt.setLong(1, nowStamp);
             stmt.setString(2, referenceId);

@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OauthUtilTest {
-
     private static final Logger log = LoggerFactory.getLogger(OauthUtilTest.class);
 
     //this is a access token from keycloak. It is expired though.
@@ -34,6 +33,4 @@ public class OauthUtilTest {
         //Testing token is expired will require public RsaKey. Not secret but not worth including. Also token has expired
         //boolean valid=OauthUtil.isValidAccessToken(accessToken, "rsa public key") <-- Can be tried using RSA public key. Can be seen on KeyCloak server admin page    
     }
-
-
 }

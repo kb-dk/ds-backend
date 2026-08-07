@@ -148,7 +148,7 @@ public class DsStorageFacade {
     }
 
     /**
-     * Get the count of records from a specific origin
+     * Get the count of records from a specific origin.
      *
      * @param origin to count amount of records from.
      * @param mTime  is needed to deliver a number that is equal to the extracted values.
@@ -162,7 +162,7 @@ public class DsStorageFacade {
     }
 
     /**
-     * Retrieve records (DsRecordDs) as a list. The local record tree will not be loaded as objects
+     * Retrieve records (DsRecordDs) as a list. The local record tree will not be loaded as objects.
      *
      * @param origin     origin for the record. Origins are defined in the yaml file
      * @param mTime      Retrieve records starting from this time
@@ -216,7 +216,6 @@ public class DsStorageFacade {
         while (pending > 0) {
             int request = pending < batchSize ? (int) pending : batchSize;
             long delivered = BaseModuleStorage.performStorageAction(id, DsStorage.class, storage -> {
-
                 //important. Only load id's for performance. Then load the recordTree
                 ArrayList<String> ids = ((DsStorage) storage).getRecordsIdsByRecordTypeModifiedAfter(origin, recordType, lastMTime.get(), request);
 
@@ -267,7 +266,7 @@ public class DsStorageFacade {
     }
 
     /**
-     * Load a record with childrenIds
+     * Load a record with childrenIds.
      *
      * @param recordId The record id.
      * @return DsRecordDto or null if record does not exist
@@ -281,8 +280,8 @@ public class DsStorageFacade {
     }
 
     /**
-     * Will load full object tree. The DsRecordDto return will a pointer the record with the recordId in the tree
-     * Logic: Find top parent recursive and load children.
+     * Will load full object tree. The DsRecordDto return will a pointer the record with the recordId in the tree.
+     *  Logic: Find top parent recursive and load children.
      *
      * @param recordId The full object tree will be returned with a pointer to this record
      */
@@ -313,12 +312,11 @@ public class DsStorageFacade {
             DsRecordDto record = getRecord(idNorm); //Load from facade as this will set children as id's.
             setLocalTreeForRecord(record);
             return record;
-
         });
     }
 
     /**
-     * Touch a record and update its mTime
+     * Touch a record and update its mTime.
      *
      * @param recordId of record to touch.
      * @throws NotFoundServiceException when a record cannot be found in storage.
@@ -347,7 +345,6 @@ public class DsStorageFacade {
      * @throws InternalServiceException If a cycle is detected.
      */
     private static DsRecordDto getTopParent(DsRecordDto record) throws InternalServiceException {
-
         HashSet<String> ids = new HashSet<>();
         DsRecordDto topParent = record;
         while (topParent.getParentId() != null) {
@@ -492,7 +489,6 @@ public class DsStorageFacade {
         //update all children one at a time
         ArrayList<String> childrenIds = storage.getChildrenIds(parentId);
         for (String childId : childrenIds) {
-
             RecordsCountDto count = storage.updateMTimeForRecord(childId);
             if (count.getCount() == 0) {
                 log.warn("Children with id does not exist:" + childId);
@@ -550,7 +546,7 @@ public class DsStorageFacade {
     }
 
     /**
-     * Check that the recordId starts with the origin as prefix
+     * Check that the recordId starts with the origin as prefix.
      *
      * @param origin name.
      */
@@ -561,7 +557,7 @@ public class DsStorageFacade {
     }
 
     /**
-     * Validate recordType is not null
+     * Validate recordType is not null.
      *
      * @param type Record type to validate
      */
@@ -584,7 +580,6 @@ public class DsStorageFacade {
         List<String> childrenIds = currentRecord.getChildrenIds();
         List<DsRecordDto> childrenRecords = new ArrayList<>();
         for (String childId : childrenIds) {
-
             //DsRecordDto child = getRecord(childId);          
             DsRecordDto child = childId.equals(origo.getId()) ? origo : getRecord(childId);
             child.setParent(currentRecord);

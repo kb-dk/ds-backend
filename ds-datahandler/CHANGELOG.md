@@ -9,6 +9,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added line break before `@param` in Javadocs
+- Added line break before `@return` in Javadocs
 - Added endpoint `POST /rerun_clusters` that calls ds-storage via DsStorageClient that fetch new rows from remote 
   `p3rerun` database in table `clusters` table, save it to our `rerun_clusters` table, update `mtime` in `ds_records` 
   table and return number of rows inserted or updated in `rerun_clusters` table in a `RecordsCountDto` object.
@@ -19,12 +21,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Moved OpenAPI description from `pom.xml` into `openapi` file.
 - Added `name` in `pom.xml`.
 - Formatted `pom.xml`.
+- Make java multiline comment to Javadocs.
 
-### Deleted
+### Removed
 
-
-### Fixed
-
+- Removed excessive line breaks.
+- Removed `<p>` tag in Javadoc.
+- Removed `<p/>` tag in Javadoc.
+- Removed `<br>` tag in Javadoc.
 
 ## [5.0.0](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-5.0.0) - 2026-06-10
 

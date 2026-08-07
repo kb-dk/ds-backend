@@ -14,8 +14,8 @@ public class ServiceConfig extends AutoYAML {
     private static final boolean AUTO_UPDATE_DEFAULT = false;
     private static final long AUTO_UPDATE_MS_DEFAULT = 60*1000; // every minute
 
-    
     private static ServiceConfig instance;
+
     /**
      * Construct a ServiceConfig without a concrete YAML assigned. In order to use the ServiceConfig,
      * {@link #initialize(String)} must be called. This is done automatically when the container is started
@@ -27,8 +27,6 @@ public class ServiceConfig extends AutoYAML {
         super(null, AUTO_UPDATE_DEFAULT, AUTO_UPDATE_MS_DEFAULT);
     }
 
-   
-    
     /**
      * @return singleton instance of ServiceConfig.
      */
@@ -50,7 +48,6 @@ public class ServiceConfig extends AutoYAML {
      * @return the backing YAML-handler for the configuration.
      */
     public static YAML getConfig() {
-
         if (getInstance().getYAML() == null) {
             throw new IllegalStateException("The configuration should have been loaded, but was not");
         }

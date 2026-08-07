@@ -23,14 +23,10 @@ import java.util.Set;
 
 /**
  * ds-present
- *
- * <p>Metadata delivery for the Royal Danish Library.  This API delivers metadata from collections at the Royal Danish Library. These metadata can be delivered in different formats. The `/record/{id}`-endpoint can deliver metadata as [JSON-LD](https://json-ld.org/), [MODS](http://www.loc.gov/standards/mods/) and [SolrJSON](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates).  Furthermore metadata can be delivered as IIIF Presentation manifests through the `/IIIF/{identifier}/manifest`-endpoint.  For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.0 and should be backwards compatible with version 2.1.1 
- *
+ * Metadata delivery for the Royal Danish Library.  This API delivers metadata from collections at the Royal Danish Library. These metadata can be delivered in different formats. The `/record/{id}`-endpoint can deliver metadata as [JSON-LD](https://json-ld.org/), [MODS](http://www.loc.gov/standards/mods/) and [SolrJSON](https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#json-formatted-index-updates).  Furthermore metadata can be delivered as IIIF Presentation manifests through the `/IIIF/{identifier}/manifest`-endpoint.  For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.0 and should be backwards compatible with version 2.1.1
  */
 public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     private static final Logger log = LoggerFactory.getLogger(ServiceApiServiceImpl.class);
-
-
 
     /**
      * Ping the server to check if the server is reachable.
@@ -39,7 +35,6 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
       *   <li>code = 200, message = "OK", response = String.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
@@ -60,7 +55,6 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
       *   <li>code = 500, message = "Internal Error", response = String.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
@@ -70,7 +64,6 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
 
         try {
             host = InetAddress.getLocalHost().getHostName();
-
         } catch (UnknownHostException e) {
             log.warn("Exception resolving hostname", e);
         }
@@ -91,6 +84,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
 
     /**
      * Extract info from OAUth2 accessTokens.
+     *
      * @return OAUth2 roles from the caller's accessToken, if present.
      */
     @SuppressWarnings("unchecked")

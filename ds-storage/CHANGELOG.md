@@ -9,6 +9,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added line break before `@param` in Javadocs
+- Added line break before `@return` in Javadocs
 - Added support for OffsetDateTime with OpenAPI generation.
 - Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found
   in `create_rerun_clusters.ddl`*).
@@ -39,6 +41,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Removed deprecated `description` from `@Api` in `api.mustache` file.
 - Removed deprecated `servers.description` from `ds-storage-openapi_v1.yaml`.
+- Removed excessive line breaks.
+- Removed `<p>` tag in Javadoc.
+- Removed `<p/>` tag in Javadoc.
+- Removed `<br>` tag in Javadoc.
 
 ### Fixed
 

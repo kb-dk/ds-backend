@@ -120,7 +120,6 @@ public class IIPFacade {
         log.info("Created: '{}'", this);
     }
 
-
     /**
      * Internet Imaging Protocol available through OpenAPI specification. The specification can be found <a href="https://iipimage.sourceforge.io/documentation/protocol/">here</a>.
      *
@@ -166,7 +165,6 @@ public class IIPFacade {
             String FIF, Long WID, Long HEI, List<Float> RGN, Integer QLT, Float CNT,
             String ROT, Float GAM, String CMP, String PFL, String CTW, Boolean INV, String COL,
             List<Integer> JTL, List<Integer> PTL, String CVT, HttpHeaders httpHeaders) throws ServiceException {
-
         IIPParamValidation.validateIIPRequest(FIF, WID, HEI, RGN, QLT, CNT, ROT, GAM, CMP, PFL, CTW, INV, COL, JTL, PTL, CVT);
 
         // Defaults
@@ -220,19 +218,16 @@ public class IIPFacade {
             // Path based DeepZoom server: http://example.com:1234/image_identifier.dzi
             template = UriTemplate
                     .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PATH) + DEEPZOOM_PATH_DZI_TEMPLATE);
-
         } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
             // Param based DeepZoom server: http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
             template = UriTemplate
                     .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PARAM) + DEEPZOOM_PARAM_DZI_TEMPLATE);
-
         } else {
             log.error("No DeepZoom server defined");
             throw new InternalServiceException("No DeepZoom server defined");
         }
 
         template.set("dzipath", idDZI);
-
 
         final URI uri;
         try {
@@ -265,14 +260,12 @@ public class IIPFacade {
             // https://example.com/example-images/fooimage/fooimage_files/11/2_0.jpg
             template = UriTemplate
                     .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PATH) + DEEPZOOM_PATH_TEMPLATE);
-
         } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)) {
             // Param based DeepZoom server
             // https://example.com/fcgi-bin/iipsrv.fcgi?Deepzoom=hs-2007-16-a-full_tif.tif_files/12/2_4.jpg
             template = UriTemplate
                     .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PARAM) + DEEPZOOM_PARAM_TEMPLATE);
             isPath = false;
-
         } else {
             log.error("No Deepzoom server defined");
             throw new InternalServiceException("No Deepzoom server defined");
@@ -325,5 +318,4 @@ public class IIPFacade {
             throw new InvalidArgumentServiceException("The parameter imageid must be defined");
         }
     }
-
 }

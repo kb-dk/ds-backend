@@ -21,9 +21,7 @@ import java.util.List;
 import java.util.Set;
 /**
  * ds-discover
- *
- * <p>ds-discover by the Royal Danish Library 
- *
+ * ds-discover by the Royal Danish Library
  */
 public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     private static final Logger log = LoggerFactory.getLogger(ServiceApiServiceImpl.class);
@@ -35,7 +33,6 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
       *   <li>code = 200, message = "OK", response = String.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
@@ -50,6 +47,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     
     /**
      * Extract info from OAUth2 accessTokens.
+     *
      * @return OAUth2 roles from the caller's accessToken, if present.
      */
     @SuppressWarnings("unchecked")
@@ -81,7 +79,6 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
       *   <li>code = 500, message = "Internal Error", response = String.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
@@ -110,5 +107,4 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
             throw handleException(e);
         }
     }
-
 }

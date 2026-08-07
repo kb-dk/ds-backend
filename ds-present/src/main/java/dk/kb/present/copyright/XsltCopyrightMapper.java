@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
  * imageurl                       | String (temporary hack) 
  */
 public class XsltCopyrightMapper {
-        
     private static final Logger log = LoggerFactory.getLogger(XsltCopyrightMapper.class);
 	
     //These fields must be define in the Solr schema.xml (and temporary also 'imageurl')
@@ -45,8 +44,7 @@ public class XsltCopyrightMapper {
     public static final String ACCESS_MATERIALE_TYPE="access_materiale_type";
     public static final String ACCESS_FOTO_AFTALE_FIELD="access_foto_aftale";
     public static final String ACCESS_BILLEDE_AFTALE_FIELD="access_billede_aftale";
-     
-            
+
     /**
      * Will return a map of key value pair to enrich the XSLT. These additional field all starts with 'access_'. See final ACCESS values in class.
      * The extracted values are not just a field extract from a single field, but depend on various copyright logic. These values
@@ -57,9 +55,7 @@ public class XsltCopyrightMapper {
      * @return
      * @throws Exception
      */
-    
     public static HashMap<String,String> applyXsltCopyrightTransformer (String modMedsXML) {
-                        
         HashMap<String,String> solrFieldsMap = new HashMap<String,String>(); 
         CopyrightAccessDto copyrightAccessDto = null;
         try {
@@ -98,11 +94,9 @@ public class XsltCopyrightMapper {
         catch(Exception e) {
         	//Data error! will be fixed
             log.error("Error transforming... Probably data error:"+e.getMessage());
-            solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,"9999");       
-        	
+            solrFieldsMap.put(ACCESS_SKABELSESAAR_FIELD,"9999");
         }
         
         return solrFieldsMap;
     }
-
 }

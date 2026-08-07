@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
  * Between each unittest the all tables are cleared for data and the method is only defined in this subclass
  */
 public class DsStorageForUnitTest extends DsStorage {
-
     private static final Logger log = LoggerFactory.getLogger(DsStorageForUnitTest.class);
 
     private static String clearTableRecordsStatement = "DELETE FROM DS_RECORDS";

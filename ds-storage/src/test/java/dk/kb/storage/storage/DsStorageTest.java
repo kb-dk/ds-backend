@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class DsStorageTest extends UnitTestUtil {
-
     private static final Logger log = LoggerFactory.getLogger(DsStorageTest.class);
 
     private static DsStorageForUnitTest storage = null;
@@ -87,7 +86,6 @@ public class DsStorageTest extends UnitTestUtil {
         //Test record not exist
         assertTrue(storage.recordExists(id));
 
-
         //Load and check values are correct
         DsRecordDto recordLoaded = storage.loadRecord(id);
         Assertions.assertEquals(id, recordLoaded.getId());
@@ -100,7 +98,6 @@ public class DsStorageTest extends UnitTestUtil {
         Assertions.assertEquals(referenceId, recordLoaded.getReferenceId());
 
         //Now update
-
         String dataUpdate = "Hello updated";
         String parentIdUpdated = "origin.test:id_2_parent";
         long cTimeBefore = recordLoaded.getcTime(); //Must be the same
@@ -142,7 +139,6 @@ public class DsStorageTest extends UnitTestUtil {
         DsRecordDto record_after_mtime_touch = storage.loadRecord(id);
         Assertions.assertTrue(record_after_mtime_touch.getmTime() > record_updated_after_delete.getmTime());
 
-
         //delete if marked for delete.
         int deleted = storage.deleteMarkedForDelete("origin.test").getCount();
         Assertions.assertEquals(0, deleted); //Was not marked for deletes
@@ -155,7 +151,6 @@ public class DsStorageTest extends UnitTestUtil {
         DsRecordDto deletedReally = storage.loadRecord(id);
         Assertions.assertNull(deletedReally);
     }
-
 
     @Test
     public void testUpdateKalturaId() throws Exception {
@@ -179,7 +174,6 @@ public class DsStorageTest extends UnitTestUtil {
         assertEquals(kalturaId, recordUpdated.getKalturaId());
     }
 
-
     @Test
     public void testReferenceId() throws Exception {
         String data = "some data";
@@ -200,7 +194,6 @@ public class DsStorageTest extends UnitTestUtil {
         assertEquals(referenceId, recordUpdated.getReferenceId());
         assertEquals(data, recordUpdated.getData());//Data not modified
     }
-
 
     @Test
     public void testGetMtimeAfterWithLimit() throws Exception {
@@ -225,7 +218,6 @@ public class DsStorageTest extends UnitTestUtil {
         assertTrue(maxTime > beforeTime, "Max time should be higher than before time");
         assertTrue(maxTime < afterTime, "Max time should be lower than after time");
     }
-
 
     @Test
     public void testGetMtimeAfterWithLimitManifestation() throws Exception {
@@ -288,12 +280,10 @@ public class DsStorageTest extends UnitTestUtil {
         String parentId = "test.origin:mega_parent_id";
         long before = UniqueTimestampGenerator.next();
 
-
         createMegaParent(parentId, "test.origin");
 
         ArrayList<DsRecordDto> list1 = storage.getModifiedAfterParentsOnly("test.origin:does_not_exist", before, 100);
         assertEquals(0, list1.size());
-
 
         ArrayList<DsRecordDto> list2 = storage.getModifiedAfterParentsOnly("test.origin", before, 100);
         assertEquals(1, list2.size());
@@ -340,7 +330,6 @@ public class DsStorageTest extends UnitTestUtil {
         assertEquals(0, list6.size());
     }
 
-
     @Test
     public void testDeleteRecordsForOrigin() throws Exception {
         String parentId = "test.origin:mega_parent_id";
@@ -367,10 +356,7 @@ public class DsStorageTest extends UnitTestUtil {
         //None left
         ArrayList<DsRecordDto> list3 = storage.getRecordsModifiedAfter("test.origin", before, 10000);
         assertEquals(0, list3.size());
-
-
     }
-
 
     @Test
     public void testGetModifiedAfter() throws Exception {
@@ -383,7 +369,7 @@ public class DsStorageTest extends UnitTestUtil {
         assertEquals(1001, list1.size()); //100 children +1 parent
     }
 
-    /*
+    /**
      * Example of parent with 1K children
      */
     @Test
@@ -399,12 +385,10 @@ public class DsStorageTest extends UnitTestUtil {
         Assertions.assertEquals(1000, recordsWithChildren.getChildrenIds().size());
     }
 
-    /*
+    /**
      * Created a record with 1000 children
      */
     private void createMegaParent(String id, String origin) throws Exception {
-
-
         DsRecordDto megaParent = new DsRecordDto();
         megaParent.setId(id);
         megaParent.setOrigin(origin);
@@ -424,12 +408,10 @@ public class DsStorageTest extends UnitTestUtil {
 
             storage.createNewRecord(child);
         }
-
     }
 
     @Test
     public void testOriginStatistics() throws Exception {
-
         //3 different origins. 2 records in of them
         DsRecordDto r1 = new DsRecordDto();
         r1.setId("Id1"); //TODO
@@ -476,6 +458,5 @@ public class DsStorageTest extends UnitTestUtil {
         OriginCountDto item2 = originStatisticsList.get(2);
         assertEquals(1, item2.getCount());
         assertEquals("test_origin3", item2.getOrigin());
-
     }
 }
