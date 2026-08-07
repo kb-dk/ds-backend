@@ -22,7 +22,6 @@ import java.util.List;
  * This should work well for most projects with non-dynamic properties.
  */
 public class ServiceConfig {
-
     private static final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
     
     private static final HashMap<String, OaiTargetDto> oaiTargets = new HashMap<String, OaiTargetDto>();

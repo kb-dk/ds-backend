@@ -52,10 +52,8 @@ import java.util.regex.Pattern;
 
 /**
  * Caching of public keys, validation of accessTokens etc. with a focus on the parts used at the Royal Danish Library.
- * <p>
  * The implementation uses the <a href="https://github.com/scribejava/scribejava">Scribe library</a> for the
  * OAuth-specific handling.
- * <p>
  * This class is thread safe.
  */
 public class KBOAuth2Handler {
@@ -75,7 +73,6 @@ public class KBOAuth2Handler {
 
     /**
      * Fetches KB OAuth2 settings from the configuration and initializes the handler.
-     * <p>
      * If no OAUth2 configuration is present, a warning is logged and attempts to access OAuth-annotated endpoints
      * will fail, unless the role {@code public} is specified in the {@link KBAuthorization} annotation.
      */
@@ -293,7 +290,6 @@ public class KBOAuth2Handler {
                 .getToken();
     }
 
-
     /**
      * Validate issued date, expiry etc. for the given AccessToken.
      * @param trusted an AccessToken which has passed the cryptographic validation.
@@ -366,8 +362,6 @@ public class KBOAuth2Handler {
         }
     }
 
-    
-    
      /**
       * The Base64 strings that come from a JWKS need some manipulation before they can be decoded.   
       * TODO: Why is replacement even required? See OahtUtil in ds-license. Just splitting on '.' to get the 3 terms is correct by using a OOAuth library.     
@@ -506,5 +500,4 @@ public class KBOAuth2Handler {
                 Locale.ROOT, "KBOAuth2Handler(mode=%s, baseurl='%s', realms=%s, keysTTL=%ss, cached realm keys=%d)",
                 mode, baseurl, realms, keysTTL, realmKeys.size());
     }
-
 }

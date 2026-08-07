@@ -9,7 +9,6 @@ import dk.kb.license.model.v1.RestrictedIdOutputDto;
  * Generates a change text when saving or updating a Rights object (restrictedID or DR holdback categories)
  */
 public class RightsChangelogGenerator {
-
     public static ChangeDifferenceText createRestrictedIdChanges(RestrictedIdOutputDto restrictedIdOutputDto) {
         return new ChangeDifferenceText(null, restrictedIdOutputDto.toString());
     }

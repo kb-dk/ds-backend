@@ -13,7 +13,6 @@ import java.util.Locale;
 public class PreservicaOaiRecordHandler extends DefaultHandler {
     private static final Logger log = LoggerFactory.getLogger(OaiResponseFilterPreservicaSeven.class);
 
-
     public boolean recordHasMetadata = false;
     public boolean recordIsDr = false;
     public boolean recordIsTranscoded = false;
@@ -33,7 +32,6 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
     private boolean isTranscodingStatus = false;
     private OffsetDateTime lastEncodedDate = null;
 
-
     // TODO: Could these be one stringbuilder which gets reset after each iteration
     private StringBuilder publisherContent = new StringBuilder();
     private StringBuilder formatMediaTypeContent = new StringBuilder();
@@ -52,10 +50,7 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
      * @param localName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
      * @param qName      The qualified name (with prefix), or the empty string if qualified names are not available.
      * @param attributes The attributes of the element, or <code>null</code> if the element has no attributes.
-     *
-     * <p>
      * The following start elements are processed:
-     * </p>
      * <ul>
      *   <li><strong>publisher</strong></li>
      *   <li><strong>formatMediaType</strong></li>
@@ -122,11 +117,7 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
      * @param uri        The Namespace URI, or the empty string if the element has no Namespace.
      * @param localName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
      * @param qName      The qualified name (with prefix), or the empty string if qualified names are not available.
-     *
-     * <p>
      * The following end elements are processed:
-     * </p>
-     *
      * <ul>
      *   <li>
      *     <strong>publisher</strong>: If the element is "publisher", the method checks if the
@@ -201,7 +192,6 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
                 }
             }
 
-
             isSpecificRadioTvTranscodingStatus = false;
         }
 
@@ -254,7 +244,6 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
     }
 
     public RecordType getRecordType() {
-
         if (recordType == null ) {
             log.warn("Record type was null, setting it to UNKNOWN");
             return RecordType.UNKNOWN;

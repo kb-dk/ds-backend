@@ -14,7 +14,6 @@
  */
 package dk.kb.present.storage;
 
-
 import dk.kb.present.util.Combiner;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
@@ -32,7 +31,6 @@ import java.util.stream.Stream;
 
 /**
  * Encapsulation of multiple storages, exposed as a single storage.
- *
  * This storage is used internally by {@link StorageController} and cannot be specified in the configuration.
  */
 public class MultiStorage implements Storage {
@@ -108,6 +106,7 @@ public class MultiStorage implements Storage {
 
     /**
      * Iterate the storageStream and attempt to retrieve a record with the given ID.
+     *
      * @param storageStream stream of storages to query.
      *                      If a parallel stream is given, the requests will be done in parallel.
      * @param id a record ID.
@@ -125,11 +124,9 @@ public class MultiStorage implements Storage {
         throw new NotFoundServiceException("Unable to locate record with id '" + id + "'");
     }
 
-    
-    
-    
     /**
      * Iterate the storageStream and attempt to retrieve a record with the given ID.
+     *
      * @param storageStream stream of storages to query. If a parallel stream is given,
      *                      the requests will be done in parallel.
      * @param id a record ID.
@@ -167,6 +164,7 @@ public class MultiStorage implements Storage {
 
     /**
      * Retrieve the record from the storage, returning either the content or null, instead of throwing an IOException.
+     *
      * @param storage the storage to use for retrieval.
      * @param id the ID of the record.
      * @return the content for the record or null.
@@ -183,6 +181,7 @@ public class MultiStorage implements Storage {
 
     /**
      * Retrieve the record from the storage, returning either the content or null, instead of throwing an IOException.
+     *
      * @param storage the storage to use for retrieval.
      * @param id the ID of the record.
      * @return the content for the record or null.

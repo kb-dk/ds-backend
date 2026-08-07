@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TopContentDtoMapper {
-
     private static final Logger log = LoggerFactory.getLogger(TopContentDtoMapper.class);
 
     /**
@@ -24,7 +23,6 @@ public class TopContentDtoMapper {
      * @return A list of {@link TopContentDto} objects created from the report data.
      */
     public List<TopContentDto> map(ReportTableDto reportTableDto) throws IOException {
-
         List<TopContentDto> topContentDtos = new ArrayList<>();
         if (reportTableDto.getTotalCount() == 0) {
             return topContentDtos;

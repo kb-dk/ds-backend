@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  */
 class SolrParamMergerTest {
-
     @BeforeAll
     public static void setup() throws IOException {
         ServiceConfig.getInstance().initialize("solrparammerger-test.yaml");              
@@ -168,5 +167,4 @@ class SolrParamMergerTest {
         merger.addAll(Map.of("fq", List.of(true, false)));
         assertEquals("[foo, bar, 1, 2, true, false]", merger.get("fq").toString());
     }
-
 }

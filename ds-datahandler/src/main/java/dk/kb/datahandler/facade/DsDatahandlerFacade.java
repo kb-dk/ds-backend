@@ -69,7 +69,6 @@ public class DsDatahandlerFacade {
 
         try {
             while ((entry = zis.getNextEntry()) != null) {
-
                 fileName = entry.getName();
 
                 String recordString = IOUtils.toString(zis, StandardCharsets.UTF_8);
@@ -107,7 +106,6 @@ public class DsDatahandlerFacade {
 
     /**  
      *  Will start an index flow of records from ds-storage into solr.
-     * <p>
      *  1) Call ds-present that will extract records from ds-storage and xslt transform them into solr-add documents json.
      *  2) Send the input stream with json documents directly to solr, so it is not kept in memory.
      *  
@@ -123,9 +121,7 @@ public class DsDatahandlerFacade {
             solrIndexResponse = SolrUtils.indexOrigin(origin, 0L);
 
             updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC), solrIndexResponse.getAllDocumentsIndexed().intValue(), null);
-
         } catch(Exception e) {
-
             updateJob(jobDto, JobStatusDto.FAILED, e.getMessage(), OffsetDateTime.now(ZoneOffset.UTC), null, null);
 
             throw e;
@@ -156,9 +152,7 @@ public class DsDatahandlerFacade {
             solrIndexResponse = SolrUtils.indexOrigin(origin, lastStorageModifiedTime);
 
             updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC), solrIndexResponse.getAllDocumentsIndexed().intValue(), null);
-
         } catch (Exception e) {
-
             updateJob(jobDto, JobStatusDto.FAILED, e.getMessage(), OffsetDateTime.now(ZoneOffset.UTC), null, null);
 
             throw e;
@@ -168,28 +162,21 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * <p>
      * Start job that uploading streams to kaltura that does not have an kaltura_id.
-     * <p>
-     * Will only extract records from Solr with access_malfunction:false and production_code_allowed:true 
-     * <p>
+     * Will only extract records from Solr with access_malfunction:false and production_code_allowed:true
      * Storage records will be updated with the kalturaid or error message. Errors are
      * <ul>
      * <li>File missing</li>
      * <li>File too short</li>
      * <li>Kaltura API error. Very rare this happens. Have not seen it yet.</li>
      * </ul>
-     * <p>
      * It is important to mark the records as failed or a new delta upload job will start processing the same streams with errors every time.
-     *
-     * <p>
      * A solr delta indexing job will be started if both the job completes succesfully or fails. 
      *  
      * @throws InternalServiceException
      * @throws SolrServerException
      * @throws IOException
      */
-
     public static void kalturaDeltaUpload(String user) throws InternalServiceException, SolrServerException, IOException {
         // mTimeFrom is in microseconds
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
@@ -221,13 +208,11 @@ public class DsDatahandlerFacade {
         }
     }
 
-    
-    
     /**
      * Process all new transcription json files in the dropFolder and create the entries in the transcription table.
      * If a transcription is there already the new one will overwrite. Each processed transcription file will be
      * moved to the defined completion folder and the suffix .failed or .complete will be added to the filename.  
-        * 
+     *
      * @return Number of successful transcriptions loaded
      */        
     public static Integer transcriptionsLoad(String user) throws Exception { 
@@ -247,7 +232,6 @@ public class DsDatahandlerFacade {
         }        
     }
 
-    
     /**
      * Starts a full OAI harvest job for the target.
      * The job will harvest records from the OAI server and ingest them into DS-storage  
@@ -290,11 +274,10 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * This method has no specific code for the different OAI targets. Date formats must be set correct for the target when calling this method. <br>
-     * The list of date-intervals must be ascending in time<br> 
+     * This method has no specific code for the different OAI targets. Date formats must be set correct for the target when calling this method.
+     * The list of date-intervals must be ascending in time.
      * The date intervals will be harvested in same order as in list. After each interval harvested they persistent last harvest time will be updated for that OAI target.
-     *  <p/>
-     * For each interval this method will start a new OAI job and call {@link #oaiIngestPerform(OaiTargetJob, String, String)}-method}<br>
+     * For each interval this method will start a new OAI job and call {@link #oaiIngestPerform(OaiTargetJob, String, String)}-method}
      *  
      * @param oaiTargetName the name of the configured oai-target
      * @param modifiedTimeFrom List of date intervals. When calling this method the date formats must be in format accepted by the target.
@@ -302,7 +285,6 @@ public class DsDatahandlerFacade {
      * @throws InternalServiceException
      */
     protected static Integer oaiIngestJobScheduler(String oaiTargetName, String modifiedTimeFrom, String user, TypeDto typeDto) throws InternalServiceException {
-
         log.info("Starting jobs modifiedTimeFrom: " + modifiedTimeFrom + " for target: " + oaiTargetName);
                        
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);
@@ -319,7 +301,6 @@ public class DsDatahandlerFacade {
             updateJob(jobDto, JobStatusDto.COMPLETED, null,  OffsetDateTime.now(ZoneOffset.UTC), numberOfRecords, null);
 
             return numberOfRecords;
-
         } catch (Exception e) {
             log.error("Oai harvest did not complete successfully for target: oaiTarget:'{}' jobId:'{}'", oaiTargetName, jobDto.getId());
 
@@ -340,10 +321,10 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * This method will be called by the {@link #oaiIngestJobScheduler(String, ArrayList)}-method}<br>
-     * The scheduler method will set up the job and responsible for status of the job. <br>
-     * The target will be harvest full for this interval using the resumptionToken from the response and call recursively.<br>
-     * For each successful response the persistent datestamp for the OAI target will be updated with datestamp from last parsed records.<br>
+     * This method will be called by the {@link #oaiIngestJobScheduler(String, ArrayList)}-method}
+     * The scheduler method will set up the job and responsible for status of the job.
+     * The target will be harvest full for this interval using the resumptionToken from the response and call recursively.
+     * For each successful response the persistent datestamp for the OAI target will be updated with datestamp from last parsed records.
      *
      * @param from Datestamp format that will be accepted for that OAI target
      * @return Number of harvested records for this date interval. Records discarded by filter etc. will not be counted.
@@ -351,7 +332,6 @@ public class DsDatahandlerFacade {
      * @throws ServiceException
      */
     private static Integer oaiIngestPerform(OaiTargetDto oaiTargetDto, String from) throws IOException, ServiceException {
-
         //In the OAI spec, the from-parameter can be both yyyy-MM-dd or full UTC timestamp (2021-10-09T09:42:03Z)
         //But COP only supports the short version. So when this is called use short format
         //Preservica seems to only accept full UTC format
@@ -384,7 +364,6 @@ public class DsDatahandlerFacade {
         }
 
         while (response.getRecords().size() > 0) {
-
             OaiRecord lastRecord = response.getRecords().get(response.getRecords().size()-1);
 
             oaiFilter.addToStorage(response);

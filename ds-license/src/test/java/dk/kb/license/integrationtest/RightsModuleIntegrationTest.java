@@ -63,7 +63,6 @@ public class RightsModuleIntegrationTest extends UnitTestUtil {
             message.put(OAuthConstants.ACCESS_TOKEN_STRING,token);
             MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);
             mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
-
         }
         catch(Exception e) {
             log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");
@@ -93,7 +92,6 @@ public class RightsModuleIntegrationTest extends UnitTestUtil {
     public void testQueryLookupForTitle() throws SolrServerException, IOException {
         int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("Øen", IdTypeEnumDto.STRICT_TITLE);
         log.info("touched '{}' records", touchedRecords);
-
 
         assertTrue(touchedRecords > 20);
     }

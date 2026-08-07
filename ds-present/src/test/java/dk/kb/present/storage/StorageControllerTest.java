@@ -29,15 +29,12 @@ class StorageControllerTest {
         assertTrue(ids.contains("folder"), "The implementation 'folder' should be available in " + ids);
     }
 
-    
-
     @Test
     void multiBackend() throws Exception {
         YAML multiConf = YAML.resolveMultiConfig("test_setup.yaml");
         Storage storage = StorageController.createStorage(multiConf.getYAMLList(".storages").get(0));
         assertTrue(storage.getRecord("40221e30-1414-11e9-8fb8-00505688346e.xml").contains("Christian VIII"));
     }
-
 
     // Not a proper test as it requires a local ds-storage with test-data ingested as described in the README
     void getRecordsCoreTest() throws Exception {

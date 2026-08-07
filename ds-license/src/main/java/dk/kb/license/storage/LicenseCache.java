@@ -1,6 +1,5 @@
 package dk.kb.license.storage;
 
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,16 +10,12 @@ import org.slf4j.LoggerFactory;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.validation.LicenseValidator;
 
-
 /** 
 *  Cache implementation that will reload all licenses every 15 minutes. This is an essential cache for performance. Loading the whole license configuration
-*  from the 10 different tables every time a license is called will be massive overhead
-*   
+*  from the 10 different tables every time a license is called will be massive overhead.
 *  When important license configuration is changed, the H2Storage class will fire a reload to this cache and the change be will be instantaneous.
-*   
 */
 public class LicenseCache {
-
     // Cached instances
     private static ArrayList<License> cachedLicenses;
     private static ArrayList<GroupType> cachedLicenseGroupTypes;
@@ -52,7 +47,6 @@ public class LicenseCache {
     public static ArrayList<AttributeType> getConfiguredAttributeTypes() {
         checkReload();
         return cachedAttributeTypes;
-
     }
 
     public static ArrayList<PresentationType> getConfiguredLicenseTypes() {
@@ -95,7 +89,6 @@ public class LicenseCache {
             // Load AttributeTypes
             cachedAttributeTypes = storage.getAttributeTypes();
 
-
             // Load LicensePresentationTypes
             cachedLicensePresentationTypes = storage.getLicensePresentationTypes();
             //create Dk2En name map
@@ -109,8 +102,6 @@ public class LicenseCache {
             for (PresentationType current : cachedLicensePresentationTypes){
                 presentationTypeIdMap.put(current.getKey(), current);            	
             }
-
-
         } catch (SQLException e) {
             log.error("Error in reload cache", e);
             throw new RuntimeException(e);
@@ -121,7 +112,6 @@ public class LicenseCache {
     }
 
     public static String getPresentationtypeName(String id, String locale){
-
         if (LicenseValidator.LOCALE_DA.equals(locale)){
             return presentationTypeIdMap.get(id).getValue_dk();
         }
@@ -132,7 +122,6 @@ public class LicenseCache {
     }
 
     public static String getGroupName(String id, String locale){
-
         if (LicenseValidator.LOCALE_DA.equals(locale)){
             return groupIdMap.get(id).getValue_dk();
         }
@@ -141,5 +130,4 @@ public class LicenseCache {
         }			   
         return null; 	
     }
-
 }

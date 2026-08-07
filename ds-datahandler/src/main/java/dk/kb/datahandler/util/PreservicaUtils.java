@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLInputFactory;
 
-
 public class PreservicaUtils {
-
     private static final Logger log = LoggerFactory.getLogger(PreservicaUtils.class);
     private static final XMLInputFactory factory = XMLInputFactory.newInstance();
 

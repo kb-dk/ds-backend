@@ -1,6 +1,5 @@
 package dk.kb.discover.util;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kb.discover.SolrService;
@@ -49,7 +48,6 @@ public class SolrSuggestLimiter {
      */
     public static SuggestResponse limit(SolrService solr, String rawSuggestBody, ObjectMapper objectMapper, String suggestQuery, int suggestCount, String wt)
             throws JsonProcessingException {
-
         long methodStartTime = System.currentTimeMillis();
 
         // Map original suggest response to POJO.
@@ -147,7 +145,6 @@ public class SolrSuggestLimiter {
         log.debug("Moving values between objects took '{}' ms", System.currentTimeMillis() - objectManipulationStartTime);
         return filteredSuggestResponse;
     }
-
 
     /**
      * Query solr select handler with an accessFilter from DS License returning only facets, no spellchecking, no documents and no highlighting.

@@ -111,5 +111,4 @@ public class EncryptionHelper {
         random.nextBytes(bytes);
         return bytes;
     }
-
 }

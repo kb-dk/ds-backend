@@ -18,12 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UploadPreservicaStreamsFromFileIds {
-
     static String preservicaVideoStreamsFolder = "/home/teg/kuana-store/bart-access-copies-tv";
     static String preservicaAudioStreamsFolder = "/home/teg/kuana-store/bart-access-copies-radio";
 
     public static void main(String[] args) {
-
         String kalturaUrl = "https://kmc.kaltura.nordu.net";
         String adminSecret = "";// Use token,tokenId  instead
         Integer partnerId = 397; // 398=stage, 397=prod. 
@@ -41,7 +39,6 @@ public class UploadPreservicaStreamsFromFileIds {
 
             List<String> ids = loadLines(fileWithFileIds);
             for (String fileId : ids) {
-
                 SolrDocument doc = getRecordByFileId(fileId);
                 String title = ((ArrayList<String>) doc.getFieldValue("title")).get(0);
                 String description = (String) doc.getFieldValue("description");
@@ -66,7 +63,6 @@ public class UploadPreservicaStreamsFromFileIds {
                     media = MediaType.AUDIO;
                     fileExtension = FileExtension.MP3;
                     conversionProfileId = ServiceConfig.getConversionProfileIdAudio();
-
                 }
 
                 String tags = "DS-KALTURA,manual-2024-11-14"; //tags are comma seperated
@@ -99,7 +95,6 @@ public class UploadPreservicaStreamsFromFileIds {
     }
 
     private static SolrDocument getRecordByFileId(String fileId) throws Exception {
-
         String solrUrl = "http://devel11:10007/solr/ds";
         Http2SolrClient client = new Http2SolrClient.Builder(solrUrl).build();
 

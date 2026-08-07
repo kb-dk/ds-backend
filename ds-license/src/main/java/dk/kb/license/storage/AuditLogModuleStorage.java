@@ -38,8 +38,7 @@ public class AuditLogModuleStorage extends BaseModuleStorage {
     private static final String CHANGECOMMENT_COLUMN = "CHANGECOMMENT";
     private static final String TEXTBEFORE_COLUMN = "TEXTBEFORE";
     private static final String TEXTAFTER_COLUMN = "TEXTAFTER";
-    
-                                
+
     private final static String selectAuditLogOlderThanModifiedTimeQuery    = "SELECT * FROM " + TABLE + " WHERE " + MODIFIEDTIME_COLUMN + " < ? ORDER BY "+MODIFIEDTIME_COLUMN + " DESC LIMIT 100";
     private final static String selectAuditLogOlderThanModifiedTimeByChangeNameQuery          = "SELECT * FROM " + TABLE + " WHERE " + MODIFIEDTIME_COLUMN + " < ? AND "+ CHANGENAME_COLUMN + " = ? ORDER BY " + MODIFIEDTIME_COLUMN + " DESC LIMIT 100";
   
@@ -79,7 +78,6 @@ public class AuditLogModuleStorage extends BaseModuleStorage {
                 return auditLogEntryOutputDtoMapper.map(rs);
             }
             throw new IllegalArgumentException("Audit not found for id: " + id);
-
         } catch (SQLException e) {
             log.error("SQL Exception in getAuditLog: " + e.getMessage());
             throw e;
@@ -91,7 +89,6 @@ public class AuditLogModuleStorage extends BaseModuleStorage {
      * AuditLogEntries in the list are sorted by modifiedtime desc, so latest will come first in the list.     
      *      
      * @param modifiedTimeStart Will extract AuditLogEntries with modifiedtime less than this value
-     * 
      * @return List<AuditLogEntryOutputDto> with a maximum of 100 elements in the list. 
      */
    public List<AuditLogEntryOutputDto> getAuditLogOlderThanModifiedTimeListAll(Long modifiedTimeStart) throws IllegalArgumentException, SQLException {
@@ -119,7 +116,6 @@ public class AuditLogModuleStorage extends BaseModuleStorage {
     *      
     * @param modifiedTimeStart Will extract AuditLogEntries with modifiedtime less than this value
     * @param type Optional, list only AuditLogEntries of this type. Will list all types if type is null
-    * 
     * @return List<AuditLogEntryOutputDto> with a maximum of 100 elements in the list. 
     */
   public List<AuditLogEntryOutputDto> getAuditLogOlderThanModifiedTimeListByType(Long modifiedTimeStart, ObjectTypeEnumDto changeName) throws IllegalArgumentException, SQLException {
@@ -146,8 +142,6 @@ public class AuditLogModuleStorage extends BaseModuleStorage {
       }
   }
 
-   
-    
     /**
      * @param objectId The ID for the object extract audit log.
      * @return List of AuditLog objects. Will return empty list if objectId is not found.
@@ -163,7 +157,6 @@ public class AuditLogModuleStorage extends BaseModuleStorage {
                 entries.add(auditLogEntryOutputDtoMapper.map(rs));
             }
             return entries;
-
         } catch (SQLException e) {
             log.error("SQL Exception in g getAuditLogByObjectId: " + e.getMessage());
             throw e;
@@ -187,8 +180,6 @@ public class AuditLogModuleStorage extends BaseModuleStorage {
     }
 
     /**
-     *
-     *
      * @return databaseID for the new AuditLog entry
      */
     public long persistAuditLog(AuditLogEntry auditLog) throws SQLException {

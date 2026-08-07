@@ -32,35 +32,24 @@ import java.util.Locale;
  * This class has a single public method to upload all kaltura streams with from mTime (in Solr) and higher values.
  */
 public class KalturaDeltaUploadJob {
-
     static DsKalturaClient kalturaClient = null;
     private static final Logger log = LoggerFactory.getLogger(KalturaDeltaUploadJob.class);
 
     /**
-     * <p>
      * Start job that will upload missing streams to kaltura.
-     * <p>
      * Workflow:
-     * <p>
      * 1) Extract records from Solr using mTimeFrom and with the condition
      * access_malfunction:false AND production_code_allowed:true AND NOT
      * kaltura_id:* Only extract the few fields from solr that are required:
      * title,description,file_id,id,resource_description,originates_from
-     *
-     * <p>
      * 2) Calculate full path to the stream. Calculation depend on if record is DOMS or Preservica.
      * Validate file exists and not too short bytesize. If this happens mark the record with error and skip.
-     * <p>
      * 3) Check that the file_id has not been uploaded to kaltura before. If it has use the kaltura internal id for this record.
-     * <p>
      * 4) For each new stream:
-     * <p>
      * 4.1) Upload the stream to kaltura. (Notice some streams do not have extension, but this seems not to be an issue with kaltura). The kaltura 'tag'
      * for upload is 'delta-2025-05-01' where last part is current day. The kaltura tag-field is an internal kaltura field that we can use to see in which batch
      * the file was uploaded, and can also be used to search and delete all streams with this tag if something goes wrong.
-     * <p>
-     * 4.2) Update the record's kalturaid in ds-storage
-     * <p>
+     * 4.2) Update the record's kalturaid in ds-storage.
      * All records that has been updated with error or kalturaId will have mTime updated to new value.
      * After completion the facade method will start a solr delta-index job.
      *
@@ -68,7 +57,6 @@ public class KalturaDeltaUploadJob {
      * @throws InternalServiceException If any Solr or Kaltura call fails. Stop uploading more. Maybe allow single kaltura upload jobs to fail later.
      */
     public static int uploadStreamsToKaltura() throws InternalServiceException {
-
         boolean moreSolrRecords = true;
         long mTimeFromCurrent = 0; //Use this for batching. It will still only extract records without kaltura_id
         int numberStreamsUploaded = 0;
@@ -254,7 +242,6 @@ public class KalturaDeltaUploadJob {
     public static String uploadStream(String title, String referenceId, String description, String filePath,
                                       String tag, MediaType mediaType, String fileExtension, int conversionProfileId)
             throws IOException, APIException {
-
         FileExtension fileExtensionEnum;
         if (StringUtils.isBlank(fileExtension)) {
             fileExtensionEnum = switch (mediaType) {
@@ -304,7 +291,6 @@ public class KalturaDeltaUploadJob {
      *
      */
     static String getInternalIdKaltura(String file_id) throws IOException, APIException {
-
         initKalturaClient();
 
         String kalturaInternalId = kalturaClient.getKalturaInternalId(file_id);
@@ -329,10 +315,8 @@ public class KalturaDeltaUploadJob {
      * Validate file exists on the file system and also minimum size in bytes.
      * Will return null if everything is validated or error message on error.
      * Errors are:
-     * <p>
-     * StreamErrorTypeDto.FILE_TOO_SHORT<b>
+     * StreamErrorTypeDto.FILE_TOO_SHORT
      * StreamErrorTypeDto.FILE_MISSING
-     * <p>
      *
      * @param filePath           fill path to stream.
      * @param minimumSizeInBytes minimum size in bytes allowed

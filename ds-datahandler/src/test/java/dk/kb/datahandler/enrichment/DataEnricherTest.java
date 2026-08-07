@@ -28,13 +28,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class DataEnricherTest {
-
     private static FragmentsClient fragmentsClientMock;
     private static ObjectMapper mapper;
 
     @BeforeAll
     public static void setUp() throws IOException, URISyntaxException {
-
         fragmentsClientMock = Mockito.mock(FragmentsClient.class);
         mapper = new ObjectMapper();
 
@@ -56,7 +54,6 @@ public class DataEnricherTest {
 
     @Test
     public void testEnrichment() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
-
         OaiRecord oaiRecord = new OaiRecord();
         oaiRecord.setId("oai:io:test1");
         oaiRecord.setMetadata(Files.readString(Resolver.getPathFromClasspath("xml/unenriched-metadata-test1.xml")));
@@ -69,7 +66,6 @@ public class DataEnricherTest {
 
     @Test
     public void testEnrichmentEmpty() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
-
         OaiRecord oaiRecord = new OaiRecord();
         oaiRecord.setId("oai:io:test2");
         oaiRecord.setMetadata(Files.readString(Resolver.getPathFromClasspath("xml/unenriched-metadata-test1.xml")));
@@ -99,5 +95,4 @@ public class DataEnricherTest {
         NodeList metadataNodes = (NodeList) xpath.evaluate("/XIP/Metadata", document, XPathConstants.NODESET);
         return metadataNodes.getLength();
     }
-
 }

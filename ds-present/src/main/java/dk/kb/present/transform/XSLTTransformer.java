@@ -35,7 +35,6 @@ import java.util.concurrent.Semaphore;
 
 /**
  * XSLT transformer using Saxon HE 3.
- *
  */
 public class XSLTTransformer implements DSTransformer {
     private static final Logger log = LoggerFactory.getLogger(XSLTTransformer.class);
@@ -61,6 +60,7 @@ public class XSLTTransformer implements DSTransformer {
 
     /**
      * Construct a transformer that uses Saxon to perform an XSLT transformation on its input.
+     *
      * @param stylesheet the stylesheet for the transformation. This can be be a file resolved relatively to the current
      *                   folder, under the user.home or on the classpath.
      * @param fixedInjections variables that should always be injected into the transformator.
@@ -132,5 +132,4 @@ public class XSLTTransformer implements DSTransformer {
     public String toString() {
         return "XSLTTransformer(stylesheet='" + stylesheet + "', fixedInjections='" + fixedInjections + "'.)";
     }
-
 }

@@ -23,9 +23,7 @@ import java.util.List;
 /**
  * Client for the service. Intended for use by other projects that calls this service.
  * See the {@code README.md} for details on usage.
- * </p>
  * This class is not used internally.
- * </p>
  * The client is Thread safe and handles parallel requests independently.
  * It is recommended to persist the client and to re-use it between calls.
  */
@@ -34,11 +32,10 @@ public class DsDiscoverClient  {
 
     /**
      * Creates a client for the service.
+     *
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-discover/v1}.
      */
     public DsDiscoverClient(String serviceURI) {
         log.info("Created OpenAPI client for '" + serviceURI + "'");
     }
-        
-     
 }

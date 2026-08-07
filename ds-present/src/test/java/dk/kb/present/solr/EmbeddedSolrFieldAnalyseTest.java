@@ -33,20 +33,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EmbeddedSolrFieldAnalyseTest {
-
     private static final Logger log = LoggerFactory.getLogger(EmbeddedSolrTest.class);
     private static String solr_home = "target/solr";
 
     private static CoreContainer coreContainer = null;
     private static EmbeddedSolrServer embeddedServer = null;
 
-    /*
-     * Start Solr server and index test documents with method addTestDocuments
-     * 
+    /**
+     * Start Solr server and index test documents with method addTestDocuments.
      */
     @BeforeAll
     public static void startEmbeddedSolrServer() throws Exception {
-
         File solrHomeDir = new File(solr_home);
         String solrHomeAbsoluteDir = solrHomeDir.getAbsolutePath();
         Path solrHome = Paths.get(solrHomeAbsoluteDir);
@@ -65,7 +62,7 @@ public class EmbeddedSolrFieldAnalyseTest {
         embeddedServer.close();
     }
 
-    /*
+    /**
      * Delete all documents in solr between tests, so each unittest gets a clean solr.
      */
     @BeforeEach
@@ -73,8 +70,8 @@ public class EmbeddedSolrFieldAnalyseTest {
         embeddedServer.deleteByQuery("*:*");
     }
     
-    /*
-     * Even diacritics must match for text_strict field
+    /**
+     * Even diacritics must match for text_strict field.
      */
     @Test
     void testStrictTextField() throws Exception {
@@ -91,10 +88,9 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals(0, getCreatorNameStrictResultsForQuery("Antoine de Saint Exupéry")); // Even a character '-' must
         // match
         assertEquals(0, getCreatorNameStrictResultsForQuery("Antoine de Saint-Exupery")); // No match without diacritics
-
     }
 
-    /*
+    /**
      * Test normalized field match with and without diacriticts
      */
     @Test
@@ -120,7 +116,6 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals(1, getFreeTextResultsForQuery("Gabriel Garcia Marquez"));
         assertEquals(1, getFreeTextResultsForQuery("Günter Grass"));
         assertEquals(1, getFreeTextResultsForQuery("Gunter Grass"));
-
     }
 
     @Test
@@ -178,7 +173,6 @@ public class EmbeddedSolrFieldAnalyseTest {
         assertEquals(1, getTitleQuery("\"tv avisen\"").getNumFound());
     }
 
-    
     @Test
     public void testSynonymTest() throws SolrServerException, IOException {
         // Synonyms on the title field.
@@ -198,7 +192,6 @@ public class EmbeddedSolrFieldAnalyseTest {
         // test title stored field is not replaced with synonyms
         ArrayList<String> titles = (ArrayList<String>) getTitleQuery("avisen").get(0).getFieldValue("title");
         assertEquals("Velkommen til TVavisen", titles.get(0));
-
     }
 
     @Test
@@ -207,7 +200,6 @@ public class EmbeddedSolrFieldAnalyseTest {
         addSynonymFieldTestDocuments3();
         assertEquals(0, getTitleQuery("tvavisen").getNumFound()); // we do not want to find result with 'tv' 
         assertEquals(1, getTitleQuery("tv").getNumFound()); // still find the tv hit
-        
     }
     
     @Test
@@ -240,8 +232,7 @@ public class EmbeddedSolrFieldAnalyseTest {
         int amountOfSuggestedTerms = response.getSuggestedTerms().get("radiotv_title_suggest").size();
         assertEquals(0, amountOfSuggestedTerms);
     }
-    
-    
+
     private long getCreatorNameStrictResultsForQuery(String query) throws Exception {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.setQuery("creator_strict:(" + query + ")");
@@ -264,7 +255,6 @@ public class EmbeddedSolrFieldAnalyseTest {
         solrQuery.setRows(10);
         QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
         return rsp.getResults().getNumFound();
-
     }
 
     private SolrDocumentList getTitleQuery(String query) throws SolrServerException, IOException {
@@ -281,7 +271,6 @@ public class EmbeddedSolrFieldAnalyseTest {
         solrQuery.setRows(10);
         QueryResponse rsp = embeddedServer.query(solrQuery, METHOD.POST);
         return rsp.getResults().getNumFound();
-
     }
 
     private SuggesterResponse getSuggestResult(String query) throws SolrServerException, IOException{
@@ -293,11 +282,9 @@ public class EmbeddedSolrFieldAnalyseTest {
         solrQuery.add("suggest.build", "true");
         solrQuery.setRows(10);
         return embeddedServer.query(solrQuery, METHOD.POST).getSuggesterResponse();
-
     }
 
     private static void addSimpleFieldTestDocuments() {
-
         try {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", 1);
@@ -317,20 +304,16 @@ public class EmbeddedSolrFieldAnalyseTest {
 
             embeddedServer.add(document);
             embeddedServer.commit();
-
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
-
     }
 
-
-    /*
+    /**
      * Title: Velkommen til TVavisen
      */
     private static void addSynonymFieldTestDocuments1() {
-
         try {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "synonym1");
@@ -342,19 +325,16 @@ public class EmbeddedSolrFieldAnalyseTest {
 
             embeddedServer.add(document);
             embeddedServer.commit();
-
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
     }
-  
-    
-    /*
+
+    /**
      * Title: tv og mere tv tv!tv!
      */
     private static void addSynonymFieldTestDocuments3() {
-
         try {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "synonym1");
@@ -366,18 +346,16 @@ public class EmbeddedSolrFieldAnalyseTest {
 
             embeddedServer.add(document);
             embeddedServer.commit();
-
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
     }
     
-    /*
+    /**
      * Title: Velkommen til TV avisen
      */
     private static void addSynonymFieldTestDocuments2() {
-
         try {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "synonym1");
@@ -388,18 +366,16 @@ public class EmbeddedSolrFieldAnalyseTest {
 
             embeddedServer.add(document);
             embeddedServer.commit();
-
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
     }
     
-    /*
+    /**
      * title: Frank og Kastanjegården
      */
     private static void addSynonymFieldTestBondeknolden() {
-
         try {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "synonym1");
@@ -409,20 +385,16 @@ public class EmbeddedSolrFieldAnalyseTest {
 
             embeddedServer.add(document);
             embeddedServer.commit();
-
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
-
     }
-    
-    
-    /*
+
+    /**
      * title: ansk Melodi Grand Prix 2024
      */
     private static void addSynonymFieldMPG() {
-
         try {
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "synonym1");
@@ -432,17 +404,14 @@ public class EmbeddedSolrFieldAnalyseTest {
 
             embeddedServer.add(document);
             embeddedServer.commit();
-
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
-
     }
     
     private static void addDocForNegativeSuggestTest() {
         try {
-
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "negative1");
             document.addField("origin", "ds.test");
@@ -451,16 +420,13 @@ public class EmbeddedSolrFieldAnalyseTest {
 
             embeddedServer.add(document);
             embeddedServer.commit();
-
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
     }
     private static void addDocWithWrongBroadcaster() {
-
         try {
-
             SolrInputDocument document = new SolrInputDocument();
             document.addField("id", "negative1");
             document.addField("origin", "ds.test");
@@ -470,14 +436,9 @@ public class EmbeddedSolrFieldAnalyseTest {
 
             embeddedServer.add(document);
             embeddedServer.commit();
-
         } catch (Exception e) {
             e.printStackTrace();
             fail("Error indexing test documents");
         }
     }
-
-
-
-
 }
