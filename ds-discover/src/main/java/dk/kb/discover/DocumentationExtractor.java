@@ -13,7 +13,6 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
 
-
 /**
  * Delivers documentation from the backing solr. The primary functionality is to deliver the solr schema in a
  * human-readable way, which includes comments and documentation in processing instructions ({@code <?instruction ?>}-tags).
@@ -26,7 +25,6 @@ import org.apache.commons.io.IOUtils;
  * </ul>
  */
 public class DocumentationExtractor {
-
     /**
      * Get and transform the schema for the input {@code collection}.
      * This method includes comments and documentation in processing instructions ({@code <?instruction ?>}-tags).
@@ -83,7 +81,6 @@ public class DocumentationExtractor {
                  return "schema.md";
              default:
                  throw new InvalidArgumentServiceException("The format '" + format + "' is not supported.");
-
          }
     }
 }

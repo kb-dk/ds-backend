@@ -30,7 +30,6 @@ import ch.qos.logback.core.util.StatusPrinter;
  * Listener to handle the various setups and configuration sanity checks that can be carried out at when the
  * context is deployed/initalized.
  */
-
 public class ContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final Logger transformationsLog = LoggerFactory.getLogger("dk.kb.transformation.errors");
@@ -42,6 +41,7 @@ public class ContextListener implements ServletContextListener {
      * On context initialisation this
      * i) Initialises the logging framework (logback).
      * ii) Initialises the configuration class.
+     *
      * @param sce context provided by the web server upon initialization.
      * @throws java.lang.RuntimeException if anything at all goes wrong.
      */
@@ -86,10 +86,8 @@ public class ContextListener implements ServletContextListener {
      * &lt;/configuration&gt;    
      * </pre>
      * as the JNDI injection is performed <strong>after</strong> the {@code include}.
-     * <p>
      * The workaround is to programatically perform the same environment lookup and reconfigure logback to use
      * the right logback setup file.
-     * <p>
      * To complicate matters further, logback require included files to encapsulate the concrete setup in
      * {@code <included>} instead of {@code <configuration>} so in order to stay backwards compatible (and forward
      * compatible as the JNDI-problem is probably solved at some point in the future), a tiny configuration is
@@ -101,7 +99,6 @@ public class ContextListener implements ServletContextListener {
                 log.info("Logback config 'logback-test.xml' found. Running in test mode");
                 return;
             }
-
         } catch (Exception e) {
             // We might want to skip this logging as it will log to the unconfigured logback at this point
             log.debug("Logback config 'logback-test.xml' not found. Attempting explicit logback configuration");
@@ -141,6 +138,7 @@ public class ContextListener implements ServletContextListener {
     /**
      * Create a logback redirection file that points to the true logback configuration.
      * See {@link #initLogging()} for details.
+     *
      * @param logbackFile the real configuration for logback as a file on the local filesystem.
      * @return a logback config that includes {@code logbackFile}.
      */
@@ -168,10 +166,8 @@ public class ContextListener implements ServletContextListener {
         return redirectFile;
     }
 
-    
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         log.debug("Service destroyed");
     }
-
 }

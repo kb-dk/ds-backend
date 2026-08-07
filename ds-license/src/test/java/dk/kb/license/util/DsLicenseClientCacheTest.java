@@ -124,5 +124,4 @@ public class DsLicenseClientCacheTest {
         assertEquals(fail, clientSpy.checkAccessForIds(request1),
                 "Fourth call with request 1 should miss the cache");
     }
-
 }

@@ -46,9 +46,7 @@ import static org.mockito.Mockito.mockStatic;
 
 /**
  * Integration test, will not be run by automatic build flow.
- * 
  */
-
 @Tag("integration")
 public class DsPresentClientTest {
     private static final Logger log = LoggerFactory.getLogger(DsPresentClientTest.class);
@@ -85,9 +83,7 @@ public class DsPresentClientTest {
         catch(Exception e) {
             log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");            
             e.printStackTrace();
-        }                       
-        
-        
+        }
     }
 
     @Test
@@ -105,10 +101,8 @@ public class DsPresentClientTest {
         }
     }
 
-    
     @Test
     public void testRemoteRecordsStream() throws IOException {
-       
         try (ContinuationStream<DsRecordDto, Long> records = remote.getRecordsRawStream("ds.tv", 0L, 3L)) {
             List<DsRecordDto> recordList = records.collect(Collectors.toList());
 
@@ -138,8 +132,7 @@ public class DsPresentClientTest {
         String result = remote.transformSolrSchema(schema, "markdown");
         assertTrue(result.startsWith("# Schema documentation"));
     }
-   
-    
+
     @Test
     public void testGetOrigin() throws ApiException {
           OriginDto origin = remote.getOrigin("ds.radio"); //this should always exist 
@@ -150,16 +143,12 @@ public class DsPresentClientTest {
     public void testGetOrigins() throws ApiException {
         List<OriginDto> origins=remote.getOrigins(); // there will always be some        
         assertTrue(origins.size() >0);
-          
     }
     
     @Test
     public void testGetRecord() throws ApiException {
      String id="ds.tv:oai:io:d0df0579-4886-41d3-9177-a2f71f62de19"; //tv-avisen
         String record = remote.getRecord(id, FormatDto.JSON_LD);        
-        assertNotNull(record); 
-          
+        assertNotNull(record);
     }
-    
-    
 }

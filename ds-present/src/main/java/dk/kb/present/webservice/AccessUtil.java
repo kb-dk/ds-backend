@@ -14,7 +14,6 @@
  */
 package dk.kb.present.webservice;
 
-
 import dk.kb.license.model.v1.CheckAccessForIdsInputDto;
 import dk.kb.license.model.v1.CheckAccessForIdsOutputDto;
 import dk.kb.license.model.v1.UserObjAttributeDto;
@@ -104,6 +103,7 @@ public class AccessUtil {
      * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
      * the produced function isolate the IDs that the caller is allowed to see metadata for.
      * Order is preserved, input is never changed, output is always a new list.
+     *
      * @param groups token derived user groups.
      * @param presentationType as defined in ds-license, e.g. {@code Search}, {@code Stream}, {@code Thumbnails}...
      * @return function converting a list of IDs to allowed IDs.
@@ -155,6 +155,7 @@ public class AccessUtil {
 
     /**
      * The ds-license client is used to verify access to individual records.
+     *
      * @return a ds-license client, ready for use.
      */
     static DsLicenseClient getLicenseClient() {
@@ -182,6 +183,7 @@ public class AccessUtil {
     /**
      * Important: This is a place holder until OAuth2-support is added.
      * This has zero security checks and only exists for testing token based access flows.
+     *
      * @param httpHeaders HTTP headers from the initiating webservice call.
      * @return the groups that the user belongs to or empty if there are no associated groups.
      */
@@ -195,6 +197,7 @@ public class AccessUtil {
 
     /**
      * Write to log on a debug level which groups are present.
+     *
      * @param groups a set of groups to analyze.
      */
     private static void logAllowanceForGroups(Set<String> groups) {

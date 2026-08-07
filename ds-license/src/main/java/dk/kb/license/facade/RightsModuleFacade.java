@@ -231,7 +231,6 @@ public class RightsModuleFacade {
 
                 // If no exception was thrown, we know that the restriction was created
                 processedSuccessfully++;
-
             } catch (Exception exception) { // need to catch every exception that could be thrown
                 log.error("Failed to add restricted id: {}, exception: ", restrictedIdInputDto, exception);
                 FailedRestrictedIdDto failedRestrictedIdDto = failedRestrictedIdDtoMapper.map(restrictedIdInputDto, exception);
@@ -418,7 +417,6 @@ public class RightsModuleFacade {
                 throw new InternalServiceException("The generic format haven't been implemented yet");
             default:
                 throw new InternalServiceException("A valid platform enum should have been specified. Allowed values are: '" + Arrays.toString(PlatformEnumDto.values()) + "'");
-
         }
     }
 
@@ -443,7 +441,6 @@ public class RightsModuleFacade {
 
     /**
      * Checks if the specified production code from metadata is allowed based on the provided platform.
-     * <p>
      * This method interacts with the storage system to determine whether the given production
      * code is considered allowed. It performs a storage action to retrieve the restriction status
      * for the production code and returns true if the code is allowed, and false otherwise.

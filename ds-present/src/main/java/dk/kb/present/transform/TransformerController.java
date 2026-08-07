@@ -36,6 +36,7 @@ public class TransformerController {
     /**
      * Create a transformer with the given configuration, there the configuration contains a single key which is the
      * transformer ID, with the value being the configuration to use for the transformer.
+     *
      * @return a configured transformer for the given ID, ready for use.
      * @throws NullPointerException if no transformer with the given id could be located.
      * @throws Exception if the transformer could not be created.
@@ -53,6 +54,7 @@ public class TransformerController {
 
     /**
      * Create a transformer with the given configuration.
+     *
      * @param id the ID of the transformer to create. Call {@link #getSupportedTransformerIDs()} for a complete list.
      * @param conf transformer specific configuration.
      * @return a configured transformer for the given ID, ready for use.
@@ -79,6 +81,7 @@ public class TransformerController {
 
     /**
      * Build a map of transformer factories from the classpath.
+     *
      * @return map of [transformerID, transformer].
      */
     private static Map<String, DSTransformerFactory> getTransformerFactories() {
@@ -87,5 +90,4 @@ public class TransformerController {
                 .peek(factory -> log.info("Discovered {} factory", factory.getTransformerID()))
                 .collect(Collectors.toMap(DSTransformerFactory::getTransformerID, factory -> factory));
     }
-
 }

@@ -19,7 +19,6 @@ package dk.kb.present.transform;
  * This is an unchecked wrapper for {@link javax.xml.transform.TransformerException}.
  */
 public class RuntimeTransformerException extends RuntimeException {
-
     public RuntimeTransformerException(String message) {
         super(message);
     }

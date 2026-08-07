@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.io.IOException;
 import java.util.concurrent.*;
 
@@ -56,7 +55,6 @@ class ViewTest {
         assertEquals("SameAsInput", view.apply(record)); // Identity view
     }
 
-
     // Should still work after update of XSLT to JSON-LD, might fail and need reassessment
     @Test
     void jsonldMods() throws Exception {
@@ -79,7 +77,6 @@ class ViewTest {
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_df3dc9cf);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                                                     .origin("ds.radio").kalturaId("randomKalturaId");
-
 
         String jsonld = jsonldView.apply(recordDto);
 
@@ -225,7 +222,6 @@ class ViewTest {
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
-
 
         String jsonld = jsonldView.apply(recordDto);
 
@@ -379,12 +375,10 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
 
-
         String jsonld = jsonldView.apply(recordDto);
         assertTrue(jsonld.contains("\"kb:production_code_allowed\":false," +
                                     "\"kb:production_code_value\":3600"));
     }
-
 
     @Test
     @Tag("integration")
@@ -393,7 +387,6 @@ class ViewTest {
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_RECORD_0e89456b);
         DsRecordDto recordDto = new DsRecordDto().data(pvica).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L)
                 .origin("ds.tv").kalturaId("randomKalturaId");
-
 
         String solrdoc = jsonldView.apply(recordDto);
         assertTrue(solrdoc.contains("\"holdback_name\":\"Underholdning\","));
@@ -459,7 +452,6 @@ class ViewTest {
 
         String solrdoc = jsonldView.apply(recordDto);
         assertTrue(solrdoc.contains("\"production_code_value\":\"4400\""));
-
     }
 
     @Test
@@ -494,7 +486,6 @@ class ViewTest {
         DsRecordDto recordDto = new DsRecordDto().data(preservicaRecord).id("test.id")
                 .mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L).origin("ds.tv");
 
-
         assertThrows(RuntimeException.class, () -> {
             solrView.apply(recordDto);
         } );
@@ -503,7 +494,8 @@ class ViewTest {
     //********************************************** PRIVATE HELPER METHODS BELOW ***************************************************************
 
     /**
-     * Create test view for Preservica Schema.org transformation
+     * Create test view for Preservica Schema.org transformation.
+     *
      * @return Schema.org JSON view for preservica records.
      */
     private static View getPreservicaRadioJsonView() throws IOException {
@@ -518,7 +510,8 @@ class ViewTest {
     }
 
     /**
-     * Create test view for Preservica Schema.org transformation
+     * Create test view for Preservica Schema.org transformation.
+     *
      * @return Schema.org JSON view for preservica records.
      */
     private static View getPreservicaTvJsonView() throws IOException {
@@ -532,7 +525,8 @@ class ViewTest {
     }
 
     /**
-     * Create test view for Preservica solr transformation
+     * Create test view for Preservica solr transformation.
+     *
      * @return solr view for preservica records.
      */
     private static View getSolrTvViewForPreservicaRecord() throws IOException {
@@ -544,7 +538,8 @@ class ViewTest {
     }
 
     /**
-     * Create test view for Preservica solr transformation
+     * Create test view for Preservica solr transformation.
+     *
      * @return Solr JSON view for preservica records.
      */
     private static View getPreservicaRadioSolrView() throws IOException {

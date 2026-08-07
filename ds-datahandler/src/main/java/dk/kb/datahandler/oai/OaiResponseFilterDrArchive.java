@@ -22,7 +22,6 @@ public class OaiResponseFilterDrArchive extends OaiResponseFilterPreservicaSeven
     private static final Logger log = LoggerFactory.getLogger(OaiResponseFilterDrArchive.class);
     public static int nonDrRecords = 0;
 
-
     /**
      * @param datasource source for records. Default implementation uses this for {@code origin}.
      * @param storage    destination for records.

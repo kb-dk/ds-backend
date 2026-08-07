@@ -41,13 +41,13 @@ public class DSStorage implements Storage {
     private final String storageUrl;
     private final int batchCount;
 
-
     private final boolean isDefault;
     
     private static DsStorageClient storageClient;
 
     /**
      * Create a Storage connection to a ds-storage server.
+     *
      * @param id the ID for the storage, used for connecting origins to storages.
      * @param origin the origin used for requests to {@link DsStorageApi#getRecordsModifiedAfter(String, RecordTypeDto, Long, Long)}.
      * @param storageUrl The full url to the service. Example: http://localhost:9072/ds-storage/v1/
@@ -66,7 +66,6 @@ public class DSStorage implements Storage {
         this.origin = origin;
 
         this.isDefault = isDefault;
-       
 
         storageClient = getDsStorageApiClient(storageUrl);
         log.info("Created " + this);
@@ -104,8 +103,6 @@ public class DSStorage implements Storage {
         }
     }
 
-    
-    
     @Override
     public DsRecordDto getDSRecordTreeLocal(String id) throws ServiceException{
         log.debug("getDSRecordTreeLocal(id='{}') called", id);
@@ -122,7 +119,6 @@ public class DSStorage implements Storage {
         }
     }
 
-
     @Override
     public ContinuationStream<DsRecordDto, Long> getDSRecords(final String origin, long mTime, long maxRecords) {
         log.debug("getDSRecords(origin='{}', mTime={}, maxRecords={}) called", origin, mTime, maxRecords);
@@ -135,7 +131,6 @@ public class DSStorage implements Storage {
                                                                  long mTime, long maxRecords) {
         log.debug("getDSRecordsByRecordTypeLocalTree(origin='{}', recordType={}, mTime={}, maxRecords={}) called",
                 origin, recordType, mTime, maxRecords);
-
 
         return getDsRecordDtoStream(mTime, maxRecords, origin, recordType);
     }
@@ -172,8 +167,7 @@ public class DSStorage implements Storage {
         log.info("Ds-storage client generated from url:"+storageUrl);
         return storageClient;
       }
-    
-    
+
     @Override
     public String getID() {
         return id;

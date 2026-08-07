@@ -38,7 +38,4 @@ public interface DSTransformer extends BiFunction<String, Map<String, String>, S
     default String getStylesheet(){
         return null;
     };
-
-
-
 }

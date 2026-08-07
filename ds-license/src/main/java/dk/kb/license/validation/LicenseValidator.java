@@ -16,7 +16,6 @@ import java.util.*;
 
 /**
  * This class is the encapsulation of most of the business logic when validating access.
- * <p>
  * See the OpenApi documentation for ds-license module to understand the concepts.
  */
 public class LicenseValidator {
@@ -57,8 +56,6 @@ public class LicenseValidator {
      * Extract all {@link GroupType} and {@link PresentationType} that validates for the input that describes the user.
      * The {@link UserGroupDto} is a wrapper for {@link GroupType} that also has the  {@link PresentationType} as a list.
      * This method can be used to show a user what he has access to.
-     *
-     * <p>
      * Different licenses can give access to the same group, but a group will only be added once.
      * The solr query can be constructing by 'adding' all queries from the packages and remove exclusions.
      *
@@ -94,7 +91,6 @@ public class LicenseValidator {
      * Takes an input of ID's, which can be for different ID fields in solr
      * and filter them from the query generated from the user attributes.
      * If there are several solr servers configured this method will be called for each solr server.
-     * <p>
      * The steps involved are:
      * <ol>
      *     <li>Extract all licenses that validate for the user.</li>
@@ -158,7 +154,6 @@ public class LicenseValidator {
         return output;
     }
 
-
     /**
      * Get a {@link GetUserQueryOutputDto} object that has the following information about the user.
      *   <ul>
@@ -167,10 +162,9 @@ public class LicenseValidator {
      *     <li>List of names for all {@link GroupType} of type 'exclusion' (Klausulering) that the user does NOT have access to </li>
      *   </ul>
      *
-     * <p>
-     * The filter query is used when filtering ID's in solr.<br>
-     * The solr filtering is called with a query (list of ID's) and the filter query.<br>
-     * The id field is defined in the configuration.<br>
+     * The filter query is used when filtering ID's in solr.
+     * The solr filtering is called with a query (list of ID's) and the filter query.
+     * The id field is defined in the configuration.
      * Example: Query= id:(id1 OR id2 ... OR idn), Filter query: collection:dr
      *
      * @param input The input that defines the user.
@@ -227,9 +221,8 @@ public class LicenseValidator {
 
     /**
      * Validate if a user has access to a specific {@link PresentationType} from a list of {@link GroupType}s.
-     * If there are no GroupTypes of restriction, just one of the GroupTypes needs to have a license giving access.<br>
-     * If there are one or more GroupTypes of restrictions(klausulering) every one of them must validate.<br>
-     * <p>
+     * If there are no GroupTypes of restriction, just one of the GroupTypes needs to have a license giving access.
+     * If there are one or more GroupTypes of restrictions(klausulering) every one of them must validate.
      * The logic is that each restriction can be seen as a padlock on the material.
      * If there are multiple locks, each padlock must be opened to access the material.
      *
@@ -294,15 +287,11 @@ public class LicenseValidator {
      * This method is called with a list of licenses. Each license has information about access to {@link GroupType} and
      * the allowed {@link PresentationType}s for that {@link GroupType}.
      * Get all dom-groups and for each dom-group find the union of PresentationTypes
-     * <p>
      * From the licences extract all {@link GroupType}s with the {@link PresentationType}s which they give access to.
-     * <p>
      * Multiple licenses can give access the same GroupType, and the group type will only be added once.
-     * <br>
-     * Example:<br>
-     * License 1 has GroupType A with PresentationType 'Stream' and 'Search' <br>
-     * License 2 has GroupType A with PresentationType 'Stream' and 'Download'<br>
-     * <p>
+     * Example:
+     * License 1 has GroupType A with PresentationType 'Stream' and 'Search'
+     * License 2 has GroupType A with PresentationType 'Stream' and 'Download'
      * The result will be GroupType A with all 3 PresentationTypes: 'Stream', 'Search' and 'Download'
      *
      * @param licenses of licenses
@@ -335,10 +324,8 @@ public class LicenseValidator {
 
     /**
      * Helper method.
-     * <p>
      * Extract all GroupTypes(name only) having at least one of the PresentationsTypes from list of licences
      * Each license can have multiple GroupTypes each having 1 or more PresentationTypes allowed.
-     * <p>
      *
      * @param licenses          List of licenses.
      * @param presentationTypes List of PresentationTypes (name only)
@@ -351,7 +338,6 @@ public class LicenseValidator {
                 for (Presentation currentPresentation : currentContent.getPresentations()) {
                     if (presentationTypes.contains(currentPresentation.getKey())) {
                         groups.add(currentContent.getName());
-
                     }
                 }
             }
@@ -360,10 +346,8 @@ public class LicenseValidator {
     }
 
     /**
-     * Helper method. <br>
-     * <p>
+     * Helper method.
      * Filter a list of licences and return those valid for a give date.
-     * <p>
      * Each license has a valid from and valid to date. The date given must be between those values.
      *
      * @param licenses The list of licenses to apply date filtering for.
@@ -373,23 +357,20 @@ public class LicenseValidator {
     public static ArrayList<License> filterLicenseByValidDate(ArrayList<License> licenses, long date) {
         ArrayList<License> filtered = new ArrayList<License>();
         for (License currentLicense : licenses) {
-
             long validFromLong = Util.convertDateFormatToLong(currentLicense.getValidFrom());
             long validToLong = Util.convertDateFormatToLong(currentLicense.getValidTo());
 
             if (validFromLong <= date && date < validToLong) { // interval: [start,end[
                 filtered.add(currentLicense);
             }
-
         }
         return filtered;
     }
 
     /**
-     * Filter a list of licenses and return only those that validates from the user attributes. The method can be <br>
-     * used to show a user all licenses that he/she has access to.<br>
-     * There is also no PresentationType used in the filtering.<br>
-     * <p>
+     * Filter a list of licenses and return only those that validates from the user attributes. The method can be
+     * used to show a user all licenses that he/she has access to.
+     * There is also no PresentationType used in the filtering.
      * For a better understanding of license validation, please see either the OpenAPI spefication or POM documentation.
      *
      * @param attributes  The user attributes defining the user.
@@ -419,7 +400,6 @@ public class LicenseValidator {
                     licenseAllreadyAdded = true;
                     licenses.add(currentLicense);
                     log.debug("For license:" + currentLicense.getLicenseName() + " VALIDATED for attributegroup number:" + currentGroup.getNumber());
-
                 } else {
                     log.debug("For license:" + currentLicense.getLicenseName() + " FAILED VALIDATE for attributegroup number:" + currentGroup.getNumber());
                 }
@@ -432,7 +412,6 @@ public class LicenseValidator {
     /**
      * Filter a list of userAttributes against a license attribute (name and list of values).
      * Return only those userAttributes that matches.
-     * <p>
      * If the return list is not empty it means that the user attributes validates against the license attributes.
      *
      * @param licenseAttribute An attribute with a list of valid values.
@@ -466,11 +445,8 @@ public class LicenseValidator {
 
     /**
      * From a list of licenses return only those that has at least one of the GroupTypes with given PresentationType.
-     * <p>
      * Example: If a license does not have the GroupType it not be included. If a license does have the GroupType,
      * but not the PresentationType it will also not be included.
-     *
-     * <p>
      *
      * @param licenses         List of licenses to be filtered.
      * @param groups           List groups where one must match with the PresentationType.
@@ -478,7 +454,6 @@ public class LicenseValidator {
      * @return List of filtered licenses.
      */
     public static ArrayList<License> filterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup(ArrayList<License> licenses, ArrayList<GroupType> groups, PresentationType presentationType) {
-
         //Iterator over groups first, since each must be found
         HashSet<License> filteredSet = new HashSet<License>();
         int groupsFound = 0;
@@ -504,7 +479,6 @@ public class LicenseValidator {
     /**
      * Validate if at least licenses that match one of the GroupTypes and the PresentationType
      * in the case there are only packages (no restrictions).
-     * <p>
      * For no restriction groups access is given if just one license validates.
      *
      * @param licenses         List of licenses to filter
@@ -528,7 +502,7 @@ public class LicenseValidator {
     }
 
     /**
-     * Helper method <br>
+     * Helper method
      * Filter a list of GroupType and only keep restrictions(klasulering).
      *
      * @param groups List of GroupTypes to filter.
@@ -581,7 +555,6 @@ public class LicenseValidator {
      * @throws InvalidArgumentServiceException if no PresentationType with the name was found.
      */
     public static PresentationType matchPresentationtype(String presentationTypeName) {
-
         ArrayList<PresentationType> configuredTypes = LicenseCache.getConfiguredLicenseTypes();
         for (PresentationType currentType : configuredTypes) {
             if (currentType.getKey().equals(presentationTypeName)) {
@@ -592,21 +565,17 @@ public class LicenseValidator {
     }
 
     /**
-     * Generate the query that will be used when filtering ID's for access.<br>
-     * <p>
+     * Generate the query that will be used when filtering ID's for access.
      * This is one of the fundamental purposes of the license module.
      * Each of the access groups will contribute to giving more access by adding a positive term.
      * Each of the missing Restriction groups will contribute to restricting access by adding a negative term.
-     * <p>
-     * Simple Example:<br>
-     * Two accessGroups can contribute to the query part: (collection:dr OR collection:images) <br>
-     * Two missing restrictiongroups can contribute to the query part: -id:test123 -channel:dr5 <br>
-     * The query that is appended when filtering ID's will be: <br>
-     * <br>
-     * (collection:dr OR collection:images) -id:test666 -channel:dr5<br>
-     * <br>
+     * Simple Example:
+     * Two accessGroups can contribute to the query part: (collection:dr OR collection:images)
+     * Two missing restrictiongroups can contribute to the query part: -id:test123 -channel:dr5
+     * The query that is appended when filtering ID's will be:
+     * (collection:dr OR collection:images) -id:test666 -channel:dr5
      * And the full query with a single ID will be:
-     * id:test111 AND  (collection:dr OR collection:images) -id:test666 -channel:dr5  <br>
+     * id:test111 AND  (collection:dr OR collection:images) -id:test666 -channel:dr5
      *
      * @param accessGroups
      * @param missingRestrictionGroups
@@ -666,7 +635,6 @@ public class LicenseValidator {
 
     /**
      * Get the names of all {@link PresentationType}s in danish or english.
-     * <p>
      *
      * @param locale Language for the strings. Only 'da' and 'en' names are defined.
      * @return List of names of all PresentationType name in the requested language.
@@ -745,10 +713,9 @@ public class LicenseValidator {
     }
 
     /**
-     * Filter a list of ID's with a filter query.<br>
-     * <p>
+     * Filter a list of ID's with a filter query.
      * The filtering method to determine access to IDs.
-     * The filter query is generated by the licensemodule from the userattributes for a given user.<br>
+     * The filter query is generated by the licensemodule from the userattributes for a given user.
      * If the filterQuery is empty it will return all ID's that exists in Solr.
      * This case is only used to find the noAccessId, so a user can be
      * informed that am id does exist, but there is access to it through the users attributes.
@@ -786,7 +753,6 @@ public class LicenseValidator {
      * @return
      */
     private static boolean containsName(ArrayList<AttributeValue> values, String valueToFind) {
-
         for (AttributeValue current : values) {
             if (current.getValue().equals(valueToFind)) {
                 return true;

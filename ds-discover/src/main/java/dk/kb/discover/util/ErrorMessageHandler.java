@@ -9,7 +9,6 @@ import dk.kb.util.webservice.exception.InternalServiceException;
  * Util class for parsing incoming error messages, so that they can be rethrown as part of the actual error handling in the service
  */
 public class ErrorMessageHandler {
-
     /**
      * Get error message from a standard SolrResponse string.
      * @param solrResponse string to extract error message from.
