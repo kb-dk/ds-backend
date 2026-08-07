@@ -10,17 +10,14 @@ import com.kaltura.client.services.UploadTokenService;
 import com.kaltura.client.types.*;
 import com.kaltura.client.utils.request.MultiRequestBuilder;
 import com.kaltura.client.utils.response.base.Response;
+import dk.kb.kaltura.domain.ChunkedFileReader;
+import dk.kb.kaltura.domain.ChunkInputStream;
 import dk.kb.kaltura.enums.FileExtension;
 import dk.kb.kaltura.enums.MimeType;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -36,6 +33,7 @@ import java.util.stream.Collectors;
 public class DsKalturaClient extends DsKalturaClientBase {
 
     private static final Integer MAX_RETRY_COUNT = 3;
+    private static final long DEFAULT_CHUNK_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
 
     private final Integer conversionQueueThreshold;
     private final Integer conversionQueueRetryDelaySeconds;
@@ -278,32 +276,37 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * @throws APIException if request fails
      */
     private String uploadFile(String uploadTokenId, String filePath, MimeType mimeType,
-                              String kalturaFileName) throws APIException,
-            IOException {
-        //Upload the file using the upload token.
-        File fileData = new File(filePath);
-        FileInputStream fileInputStream = new FileInputStream(fileData);
+                              String kalturaFileName, long chunkSizeBytes)
+            throws APIException, IOException {
 
-        boolean resume = false;
-        boolean finalChunk = true;
+        File file = new File(filePath);
 
-        if (!fileData.exists() & !fileData.canRead()) {
-            throw new IOException(filePath + " not accessible");
+        try (ChunkedFileReader chunks = new ChunkedFileReader(file, chunkSizeBytes)) {
+            while (chunks.hasNext()) {
+                long offset = chunks.getBytesReadSoFar();
+                log.debug("Creating chunk");
+                try (ChunkInputStream fileChunk = chunks.next()) {
+                    log.debug("Starting chunk upload");
+                    UploadToken result = handleRequest(UploadTokenService.upload(
+                            uploadTokenId,
+                            fileChunk,
+                            mimeType.getValue(),
+                            kalturaFileName,
+                            chunks.getFileLength(),
+                            offset != 0,
+                            !chunks.hasNext(),
+                            offset));
+
+                    log.debug("Uploaded chunk {}/{} (offset={}, length={}, finalChunk={}) for token '{}'.",
+                            chunks.getBytesReadSoFar(), chunks.getFileLength(),
+                            offset, fileChunk.getChunkSize(), !chunks.hasNext(),
+                            result.getId());
+                }
+            }
         }
-
-        try {
-            UploadToken results = handleRequest(UploadTokenService.upload(uploadTokenId, fileInputStream,
-                    mimeType.getValue(), kalturaFileName, resume, finalChunk));
-
-            log.debug("File '{}' uploaded successfully to upload token '{}'.", filePath,
-                    results.getId());
-            return results.getId();
-        } catch (APIException e) {
-            log.warn("Failed to upload file '{}' to upload token '{}' because: '{}'", filePath,
-                    uploadTokenId, e.getMessage());
-            throw e;
-        }
+        return uploadTokenId;
     }
+
 
     /**
      * Adds en Entry to Kaltura containing only metadata.
@@ -318,7 +321,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      */
     private String addEmptyEntry(MediaType mediaType, String title, String description, String referenceId,
                                  String tag, Integer conversionProfileId) throws APIException {
-        //Create entry with meta data
+        //Create entry with metadata
         MediaEntry entry = new MediaEntry();
         entry.setMediaType(mediaType);
         entry.setName(title);
@@ -384,8 +387,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * <p>
      * </ul><p>
      * <p>
-     * If there for some reason happens an error after the file is uploaded and not connected to the metadata record, it does not
-     * seem possible to later see the file in the kaltura administration gui. This error has only happened because I forced it.
      *
      * @param filePath            File path to the media file to upload.
      * @param referenceId         Use our internal ID's there. This referenceId can be used to find the record at Kaltura and also map to internal KalturaId.
@@ -425,13 +426,12 @@ public class DsKalturaClient extends DsKalturaClientBase {
         String kalturaFileName = referenceId + fileExtension.getExtension();
 
         String uploadTokenId = addUploadToken();
-        uploadFile(uploadTokenId, filePath, mimeType, kalturaFileName);
+        uploadFile(uploadTokenId, filePath, mimeType, kalturaFileName, DEFAULT_CHUNK_SIZE_BYTES);
         String entryId = addEmptyEntry(mediaType, title, description, referenceId, tag, conversionProfileId);
         addUploadTokenToEntry(uploadTokenId, entryId);
         estimatedQueueLength++; // Add 1 to conversion queue
         return entryId;
     }
-
 
     /**
      * Checks the conversionQueue and waits if too long. This method first looks at the estimated queue and only
@@ -500,6 +500,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
         log.debug("Queue length is : {}", sum);
         return sum;
     }
+
 
 
 }
