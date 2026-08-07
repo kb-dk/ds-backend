@@ -27,8 +27,6 @@ import static dk.kb.present.transform.XSLTPreservicaToSolrTransformerTest.SCHEMA
 public class TestUtil {
 	private static final Logger log = LoggerFactory.getLogger(TestUtil.class);
 
-
-
 	public static String getTransformed(String xsltResource, String xmlResource) throws IOException {
         return getTransformed(xsltResource, xmlResource, null, null);
 	}
@@ -69,6 +67,7 @@ public class TestUtil {
 
     /**
      * Implicit test of {@link dk.kb.present.transform.XSLTFactory}.
+	 *
      * @param config XSLTFactory compliant YAML.
      * @return the result generating a {@link dk.kb.present.transform.DSTransformer} using XSLTFactory and
      *         transforming the {@code xmlResource} with that, including access fields resolved using
@@ -87,6 +86,7 @@ public class TestUtil {
 	/**
 	 * Transforms the inputted XML with the given transformer to schema.org compliant JSON, then transforms the
 	 * schema.org JSON to solr documents.
+	 *
 	 * @param schemaOrgTransformer used to transform from origin specific format to general schema.org json.
 	 * @param record the record to transform.
 	 * @return a solr document ready for indexing, created from the schema.org representation of the inputted XML.

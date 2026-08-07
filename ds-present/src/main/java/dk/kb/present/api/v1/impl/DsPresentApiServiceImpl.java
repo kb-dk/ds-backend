@@ -23,7 +23,6 @@ import java.util.Map;
 
 /**
  * ds-present
- * <p>
  * Metadata delivery for the Royal Danish Library
  */
 @InInterceptors(interceptors = "dk.kb.present.webservice.KBAuthorizationInterceptor")
@@ -51,19 +50,16 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
          */
         not_exists}
 
-    /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
-
+    // How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
     /**
      * Retrieve a formal description of a single origin
      * 
      * @param id: The ID of the origin
-     * 
      * @return <ul>
       *   <li>code = 200, message = "OK: The origin was known and a description is returned", response = OriginDto.class</li>
       *   <li>code = 404, message = "Origin is unknown", response = String.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
@@ -84,7 +80,6 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
       *   <li>code = 200, message = "OK: Origins are returned", response = OriginDto.class, responseContainer = "List"</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override
@@ -102,15 +97,12 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
      * Retrieve metadata for the record with the given ID and in the given format
      * 
      * @param id: The ID of the record
-     * 
-     * @param format: The delivery format for the record: * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default) * MODS: [Metadata Object Description Schema[(http://www.loc.gov/standards/mods/) * SolrXML: [Solr XML Formatted Index Updates)(https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#xml-formatted-index-updates) * raw: Metadata unchanged from the source. 
-     * 
+     * @param format: The delivery format for the record: * JSON-LD: [Linked Data in JSON](https://json-ld.org/) (default) * MODS: [Metadata Object Description Schema[(http://www.loc.gov/standards/mods/) * SolrXML: [Solr XML Formatted Index Updates)(https://solr.apache.org/guide/8_8/uploading-data-with-index-handlers.html#xml-formatted-index-updates) * raw: Metadata unchanged from the source.
      * @return <ul>
       *   <li>code = 200, message = "OK: The record was available in the requested format", response = String.class</li>
       *   <li>code = 404, message = "Record ID is unknown", response = ErrorDto.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
      */
     @Override

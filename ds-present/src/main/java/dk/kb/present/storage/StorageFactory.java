@@ -18,9 +18,7 @@ import dk.kb.util.yaml.YAML;
 
 /**
  * Factory for creating a specific type of {@link Storage}.
- *
  * The class primarily exists as a mechanism for the ServiceLoader to discover storages.
- *
  * IMPORTANT:
  * Implementations of StorageFactory cannot be inner classes due to the way ServiceLoader works.
  * Implementations must be registered in src/main/resources/META-INF/services/dk.kb.present.storage.StorageFactory.
@@ -34,6 +32,7 @@ public interface StorageFactory {
 
     /**
      * Create a new storage of the supported type and return it.
+     *
      * @param id the ID for this storage, as specified in the configuration.
      * @param conf configuration for the {@link Storage} to create.
      * @param isDefault whether or not the storage is the default storage.

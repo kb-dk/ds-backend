@@ -46,7 +46,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PresentFacadeTest {
-
     private HttpServletResponse testResponse;
 
     @BeforeAll
@@ -132,6 +131,7 @@ public class PresentFacadeTest {
     /**
      * Count the number of occurrences of {@code <mets:mets } (note the trailing space) in {@code out}.
      * This is equivalent to record counting.
+     *
      * @param out stream of records in METS/MODS-format.
      * @return the number of records in the stream.
      */
@@ -143,6 +143,7 @@ public class PresentFacadeTest {
         }
         return count;
     }
+
     private static final Pattern METS_PATTERN = Pattern.compile("<mets:mets ");
 
     @Test
@@ -191,8 +192,6 @@ public class PresentFacadeTest {
             assertTrue(result.endsWith("]\n"), "Result should end with ']' as it should be a JSON array"); // JSON array
 
         }
-
-
     }
 
     @Test
@@ -294,5 +293,4 @@ public class PresentFacadeTest {
             return os.toString(StandardCharsets.UTF_8);
         }
     }
-    
 }

@@ -21,15 +21,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DsKalturaClientBase {
-
     public static final int DEFAULT_NUMBER_OF_RETRIES = 3;
     public static final int DEFAULT_RETRY_DELAY_MILLIS = 10_000;
-
     // Kaltura-default: 30, maximum 500: https://developer.kaltura.com/api-docs/service/eSearch/action/searchEntry
     public static final int MAX_BATCH_SIZE = 500;
     public static final int MIN_BATCH_SIZE = 1;
     public static final int MAX_RESULT_SIZE = 10000;
-
 
     static {
         // Kaltura library uses log4j2 and will remove this error message on start up: Log4j2 could not find a logging implementation
@@ -176,7 +173,6 @@ public class DsKalturaClientBase {
                 throw response.error;
             }
             return (ReturnedType) response.results;
-
         } catch (APIException e) {
             e.setMessage("Request '" + requestBuilder.getTag() + "' was unsuccessful. Reason: '" + e.getMessage() +
                     "'");
@@ -321,7 +317,6 @@ public class DsKalturaClientBase {
 
     /**
      * Initiates a session for an application token using the provided parameters.
-     * <p>
      * This method starts a widget session for the specified client, computes a hash
      * based on the provided token and the widget session, and then builds a session
      * request using the AppTokenService. The request is executed, and if successful,
@@ -341,5 +336,4 @@ public class DsKalturaClientBase {
                 AppTokenService.startSession(tokenId, hash, null, type, sessionDurationSeconds);
         return handleRequest(sessionBuilder, false, true).getKs();
     }
-
 }

@@ -111,14 +111,11 @@ public class ServiceConfig {
         }
     }
 
-    
     public static String getKalturaUrl() {
         return serviceConfig.getString("kaltura.url");
     }
 
-
     /* -------------------------------------------------------------------------------------------------------------- */
-
     /**
      * Register an observer of configuration changes.
      * If the configuration has already been loaded, which is the default case, the observer is notified immediately.
@@ -164,7 +161,6 @@ public class ServiceConfig {
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
-
     /**
      * @return true if the configuration is automatically reloaded if the source files are changed.
      */
@@ -246,5 +242,4 @@ public class ServiceConfig {
             this.interrupt();
         }
     }
-
 }

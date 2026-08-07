@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  */
 class ReplaceTransformerTest {
-
     private final ReplaceFactory replaceFactory = new ReplaceFactory();
 
     @Test

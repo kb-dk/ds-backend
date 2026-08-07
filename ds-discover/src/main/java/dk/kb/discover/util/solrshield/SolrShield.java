@@ -23,13 +23,10 @@ import java.util.*;
 /**
  * Gateway for Solr calls, using a combination of whitelisted arguments as well as weighing of queries with an upper
  * limit on how much load the caller is allowed to effect on the backing server.
- * <p>
  * The {@code weight} is a score for how heavy (memory and/or processing power) an incoming request is expected
  * to be when issued against a Solr installation.
- * <p>
  * Each instance of SolrShield holds its own configuration and can be used independently, allowing per-collection
  * shield configurations.
- * <p>
  * The input for SolrShield is an {@code Iterable<Map.Entry<String, String[]>>}. This was chosen to align with
  * {@code SolrParams} / {@code SolrQuery} from SolrJ, in anticipation of a future switch to SolrJ and/or reuse of
  * SolrShield in a context where SolrJ is used.
@@ -57,6 +54,7 @@ public class SolrShield {
      * Create a SolrShield instance from the given configuration.
      * The configuration must state the SolrShield properties directly at root level
      * (i.e. not wrapped under {@code solr.shield}).
+     *
      * @param solrShieldConf the configuration for this SolrShield instance.
      */
     public SolrShield(YAML solrShieldConf) {
@@ -78,6 +76,7 @@ public class SolrShield {
      * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
      * as a boolean stated if the request is allowed to be issued.
      * This method uses {@link #defaultMaxWeight} as {@code maxWeight}.
+     *
      * @param request a Solr request.
      * @return calculated weight etc.
      */
@@ -89,6 +88,7 @@ public class SolrShield {
      * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
      * as a boolean stated if the request is allowed to be issued.
      * This method uses {@link #defaultMaxWeight} as {@code maxWeight}.
+     *
      * @param request a Solr request.
      * @return calculated weight etc.
      */
@@ -99,6 +99,7 @@ public class SolrShield {
     /**
      * Estimate the weight of the {@code request} and construct a {@link Response} with the weight as well
      * as a boolean stated if the request is allowed to be issued.
+     *
      * @param request a Solr request.
      * @param maxWeight the maximum weight allowed.
      * @return calculated weight etc.
@@ -128,6 +129,7 @@ public class SolrShield {
      * Estimate the weight of the {@code request}.
      * This also checks for hard limits or non-allowed arguments. If any of those are triggered,
      * {@link Response#allowed} is set to false, else it is set to true.
+     *
      * @param request a Solr request.
      * @return calculated weight etc.
      */
@@ -138,5 +140,4 @@ public class SolrShield {
 
         return new Response(request, defaultMaxWeight, allowed, reasons, applied.getWeight());
     }
-
 }

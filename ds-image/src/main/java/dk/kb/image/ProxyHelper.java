@@ -34,14 +34,12 @@ import java.net.*;
 import java.util.Collection;
 import java.util.Objects;
 
-
 /**
  * Implementation of HTTP(S) proxying.
  */
 @SuppressWarnings("UnusedReturnValue")
 public class ProxyHelper {
-
-	final static String HEADER_ACCEPT="Accept";
+    final static String HEADER_ACCEPT="Accept";
 	private static final Logger log = LoggerFactory.getLogger(ProxyHelper.class);
 
     /**
@@ -113,7 +111,6 @@ public class ProxyHelper {
         }
 
         return output -> pipeContent(request, uri, clientRequestURI, connection, output);
-
     }
 
     /**
@@ -222,7 +219,6 @@ public class ProxyHelper {
         return connection;
     }
 
-
     /**
      * Streams the content from the given connection to output.
      * Closes the inputstream from the connection after streaming.
@@ -247,8 +243,8 @@ public class ProxyHelper {
 
     /**
      * Add a query param to the UriTemplate if a value is present and not the empty string.
-     * <p>
      * If the value is a Collection, it is serialized as comma separated String-representation of the elements.
+     *
      * @return the given template for chaining.
      */
     public static UriTemplate addIfPresent(UriTemplate template, String key, Object value) {
@@ -261,5 +257,4 @@ public class ProxyHelper {
         }
         return template;
     }
-
 }

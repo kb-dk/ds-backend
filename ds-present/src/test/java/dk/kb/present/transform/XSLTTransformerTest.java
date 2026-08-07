@@ -48,9 +48,7 @@ class XSLTTransformerTest {
         String prettyJsonString = gson.toJson(je);
 
         assertTrue(solrString.contains("{\"field_external1\":\"value1"), "External field_parameter1 was not 'value1':"+prettyJsonString); //First parameter
-        assertTrue(solrString.contains("\"field_external2\":\"value2"), "External field_parameter2 was not 'value2':"+prettyJsonString); 
-                   
-
+        assertTrue(solrString.contains("\"field_external2\":\"value2"), "External field_parameter2 was not 'value2':"+prettyJsonString);
     }
 
     @Test
@@ -58,7 +56,6 @@ class XSLTTransformerTest {
     	Map<String, String>  fixed = new HashMap<String,String>();
     	fixed.put("external_parameter1" , "value1");
     	fixed.put("external_parameter2" , "value2");
-
 
         String solrString =  TestUtil.getTransformed("id_inject.xsl", "id_inject.xml", fixed, null);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -77,7 +74,6 @@ class XSLTTransformerTest {
 
         Map<String, String>  metadata = Map.of("external_parameter1" , "value1");
 
-
         String solrString =  TestUtil.getTransformed("id_inject.xsl", "id_inject.xml", fixed, metadata);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonElement je = JsonParser.parseString(solrString);
@@ -87,7 +83,4 @@ class XSLTTransformerTest {
         assertTrue(solrString.contains("{\"field_external1\":\"value1"), "External field_parameter1 was not 'value1':"+prettyJsonString); //First parameter
         assertTrue(solrString.contains("\"field_external2\":\"value2"), "External field_parameter2 was not 'value2':"+prettyJsonString);
     }
-
-
-
 }

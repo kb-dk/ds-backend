@@ -60,7 +60,6 @@ public class IIIFFacade {
         log.info("Created: '{}'", this);
     }
 
-
     /**
      * IIIF Image Request
      *
@@ -143,5 +142,4 @@ public class IIIFFacade {
 
         // TODO: Implement proper validation
     }
-
 }

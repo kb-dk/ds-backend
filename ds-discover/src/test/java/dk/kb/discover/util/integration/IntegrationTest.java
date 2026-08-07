@@ -1,6 +1,5 @@
 package dk.kb.discover.util.integration;
 
-
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mockStatic;
 
@@ -67,7 +66,4 @@ public abstract class IntegrationTest {
     public void test() throws IOException {
     //Must be one unit test to test the setup method is working 
     }
-         
-         
-    
 }

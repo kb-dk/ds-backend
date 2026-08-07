@@ -126,7 +126,6 @@ public class RightsCalculationTest extends UnitTestUtil {
 
     @Test
     public void testHoldbackDate() throws SQLException {
-
         RightsCalculationInputDto tenYearHoldbackRecord = map("testRecord1", PlatformEnumDto.DRARKIV,
                 "2016-01-20T10:34:42+0100", 1000, 4411, 3190, null,
                 1000, "ds.tv", "1000", "9283748300", "Program 1");
@@ -185,7 +184,6 @@ public class RightsCalculationTest extends UnitTestUtil {
 
     @Test
     public void testHoldbackForeign() throws SQLException {
-
         RightsCalculationInputDto foreignRecord = map("testRecord1", PlatformEnumDto.DRARKIV,
                 "2016-01-20T10:34:42+0100", 1000, 4411, 3190, null,
                 5000, "ds.tv", "5000", "9283748300", "Program 1");

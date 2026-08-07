@@ -17,11 +17,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 /**
  * Unittest that will call the API search method. Search for a local refenceId to get the Kaltura internal id for the record.
  * Using Kaltura client v.19.3.3 there is no longer sporadic errors when calling the API.
- *
  */
 @Tag("integration")
 public class KalturaApiIntegrationTest {
@@ -174,5 +172,4 @@ public class KalturaApiIntegrationTest {
                 conf.getInteger("conversionQueueThreshold"),
                 conf.getInteger("conversionQueueDelaySeconds"));
     }
-
 }

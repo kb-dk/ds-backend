@@ -41,20 +41,16 @@ import java.util.stream.Collectors;
  * Works in tandem with {@link KBOAuth2Handler} to validate access tokens versus endpoint annotations.
  * The end result is either an up-front rejection in the case of required credentials not being present or extension
  * of the {@link Message} with roles from the access token.
- * <p>
  * The KBInterceptor expects that {@code config.security.baseurl} and {@code config.security.realms}
  * are defined in the setup. If not, all calls to endpoints annotated with {@link KBAuthorization} will fail.
- * <p>
  * Example: {@code @KBAuthorization(roles={"student", "public"})}
  * "public" is a reserved role and means that all callers can send requests to the endpoint.
  * "student", while seemingly redundant because of "public" signals that a "student" role will give access with
  * escalated capabilities.
  * It is up to the implementation to determine what the response can be.
- * <p>
  * NOTE: If present, authentication objects for {@link #ACCESS_TOKEN}, {@link #TOKEN_ROLES} and {@link #ENDPOINT_ROLES}
  * are added to the message when {@link #handleMessage(Message)} is called. These can be retrieved using e.g.
  * {@code JAXRSUtils.getCurrentMessage().get(KBAuthorizationInterceptor.TOKEN_ROLES)}.
- * <p>
  * Note 2: If an endpoint is marked as {@link KBAuthorization#PUBLIC} but fails validation, {@link #VALID_TOKEN}
  * will be set to {@code false} and the reason for failed validation will be stated in {@link #FAILED_REASON}.
  */             
@@ -98,16 +94,13 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         log.info("Created " + this);
     }
 
-    
     /**
-     * Logic: <br>
+     * Logic:
      * 1. Validate Token present if required for method. 
      * 2. Validate access control for role allowed to call the method.
-     * 
      */
     @Override
     public void handleMessage(Message message) throws Fault {
-
         //message.getExchange().get(OperationResourceInfo.class);
         final String endpoint = getEndpointName(message);
         log.debug("handleMessage({}) called", endpoint);
@@ -293,9 +286,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
         return authorizationString.split(" ", 2)[1];
     }
 
-
     public String toString() {
         return String.format(Locale.ROOT, "KBInterceptor(handler=%s)", handler);
     }
-
 }

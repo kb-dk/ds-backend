@@ -23,7 +23,6 @@ import dk.kb.license.storage.PresentationType;
  *
  */
 public class LicenseChangelogGenerator {
-
     private static String NEWLINE = "\n";
     private static final Logger log = LoggerFactory.getLogger(LicenseChangelogGenerator.class);
     /*
@@ -55,10 +54,8 @@ public class LicenseChangelogGenerator {
      * For a newly created license licenseOld must be null.
      * When deleting licenses set the licenseNew to null.
      * The lines are name, valid dates, description, attributegroup(multiline) and licensecontent(multiline)
-     * 
      */
     public static ChangeDifferenceText getLicenseChanges(License licenseOld, License licenseNew) {
-
         if (licenseOld == null) {
             return getNewLicenseChanges(licenseNew);
         }
@@ -77,11 +74,9 @@ public class LicenseChangelogGenerator {
         String dateNew = getValidDateText(licenseNew);        
         addToBuildersIfDifferent(dateOld, dateNew, oldBuilder, newBuilder);
 
-
         String descriptionOld = getDescriptionText(licenseOld);
         String descriptionNew = getDescriptionText(licenseNew);
         addToBuildersIfDifferent(descriptionOld , descriptionNew, oldBuilder, newBuilder);
-
 
         String attributeGroupsOld = getAttributeGroupsText(licenseOld.getAttributeGroups());
         String attributeGroupsNew = getAttributeGroupsText(licenseNew.getAttributeGroups());
@@ -91,19 +86,16 @@ public class LicenseChangelogGenerator {
         String licenseContentsNew = getLicenseContentsText(licenseNew.getLicenseContents());
         addToBuildersIfDifferent(licenseContentsOld , licenseContentsNew ,oldBuilder, newBuilder);
 
-
         ChangeDifferenceText changes = new ChangeDifferenceText(oldBuilder.toString(),newBuilder.toString());
         return changes;
     }
-
 
     /**
      * Will generate a changeText.  
      * For a newly created {@link PresentationType}  before must be null.
      * When deleting a PresentationType set after to null.
      */
-    public static ChangeDifferenceText getPresentationTypeChanges(PresentationType before,PresentationType after) {   
-
+    public static ChangeDifferenceText getPresentationTypeChanges(PresentationType before,PresentationType after) {
         if (before== null) {
             return getNewPresentationTypeChanges(after);
         }
@@ -114,7 +106,6 @@ public class LicenseChangelogGenerator {
         StringBuilder oldBuilder = new StringBuilder();
         StringBuilder newBuilder = new StringBuilder();
 
-
         oldBuilder.append(before.getKey());
         newBuilder.append(after.getKey());
 
@@ -123,14 +114,12 @@ public class LicenseChangelogGenerator {
         return changes;
     }
 
-    
     /**
      * Will generate a changeText.  
      * For a newly created {@link GroupType} before must be null.
      * When deleting a GroupType set after to null.
      */
-    public static ChangeDifferenceText getGroupTypeChanges(GroupType before,GroupType after) {   
-
+    public static ChangeDifferenceText getGroupTypeChanges(GroupType before,GroupType after) {
         if (before== null) {
             return getNewGroupTypeChanges(after);
         }
@@ -180,8 +169,7 @@ public class LicenseChangelogGenerator {
         ChangeDifferenceText changes = new ChangeDifferenceText(null, builder.toString());
         return changes;
     }
-    
-    
+
     private static ChangeDifferenceText getNewPresentationTypeChanges(PresentationType type) {   
         StringBuilder builder = new StringBuilder();
         builder.append(getDescriptionText(type));
@@ -219,15 +207,13 @@ public class LicenseChangelogGenerator {
         String after    =change.getAfter();
         String before = change.getBefore();       
         return new ChangeDifferenceText(after, before);
-
     }
 
     private static void addToBuildersIfDifferent(String oldText,String newText, StringBuilder oldBuilder,  StringBuilder newBuilder ) {
         if(!oldText.equals(newText)) {
             oldBuilder.append(oldText);
             newBuilder.append(newText);
-        }          
-
+        }
     }
 
     private static String getValidDateText(License license) {
@@ -240,7 +226,6 @@ public class LicenseChangelogGenerator {
 
     public static String getDescriptionText(PresentationType type) {
         return "PresentationType value DK/En:"+type.getValue_dk() +" / "+ type.getValue_en() +NEWLINE;
-
     }
     
     private static String getDescriptionText(License license) {
@@ -289,6 +274,4 @@ public class LicenseChangelogGenerator {
 
         return b.toString();
     }
-
-
 }

@@ -15,7 +15,6 @@ package dk.kb.license.config;
  *
  */
 class ServiceConfigTest {
-
     //maybe implement something here.
     void sampleConfigTest() {
    

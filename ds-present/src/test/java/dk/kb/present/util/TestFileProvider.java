@@ -35,16 +35,12 @@ import java.util.stream.Stream;
 
 /**
  * Helper class for downloading non-open test files.
- * <p>
  * This will only work on the developer network at the Royal Danish Library,
  * but the resulting files will be cached for future use.
- *
  * As of 2023-08-24, the recommended way to retrieve internal tets files is to run the aegis command 'kb init'
  * in the project checkout. This will copy the test files to the expected location. The aegis project is available at
  * <a href="https://github.com/kb-dk/aegis/">github.com/kb-dk/aegis</a> (KB Developer access only).
- * 
  * Notice with the new tag("Integration") marked for unittests, they will fail on run if file it not found and not using this class any longer.
- * 
  */
 public class TestFileProvider {
     private static final Logger log = LoggerFactory.getLogger(TestFileProvider.class);
@@ -58,6 +54,7 @@ public class TestFileProvider {
     /**
      * Ensures that test files are available, by checking the local cache and downloading from the KB-internal
      * test file provider if they are not.
+     *
      * @return true if at least some test files are available, else false.
      */
     public static boolean ensureTestFiles() {
@@ -106,6 +103,7 @@ public class TestFileProvider {
     /**
      * Checks that there are files for all {@code filenames} and fetch missing files from the
      * {@code testFileProviderService}.
+     *
      * @param testFileProviderService the {@code ds-internal-tests} service.
      * @param testType the type of test file names to retrieve.
      * @param filenames a list of names of test files to fetch.
@@ -146,6 +144,7 @@ public class TestFileProvider {
     /**
      * Retrieve the JSON structure with test filenames from the {@code testFileProviderService} and return a list
      * with the filenames.
+     *
      * @param testFileProviderService the {@code ds-internal-tests} service.
      * @param testType the type of test file names to retrieve.
      * @return a list of test file names for the given {@code testType} or null if non-resolvable
@@ -172,11 +171,11 @@ public class TestFileProvider {
             log.warn("Unable to retrieve list of test files from '" + testFileProviderService + "'", e);
             return null;
         }
-
     }
 
     /**
      * Checks if at least one test file is available.
+     *
      * @return true if at least 1 test file is avalable.
      */
     public static boolean hasSomeTestFiles() {
@@ -190,6 +189,7 @@ public class TestFileProvider {
 
     /**
      * Recursive descend into folder, returning true if any file is found.
+     *
      * @param folder any folder.
      * @return true if the folder or any subfolders contain at least 1 file.
      */
@@ -205,5 +205,4 @@ public class TestFileProvider {
             return false;
         }
     }
-
 }

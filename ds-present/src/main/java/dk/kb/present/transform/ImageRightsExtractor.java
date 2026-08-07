@@ -56,5 +56,4 @@ public class ImageRightsExtractor implements DSTransformer {
     public String toString() {
         return "ImageRightsExtractor()";
     }
-
 }

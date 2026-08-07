@@ -25,11 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- *
  *  To run these tests, the test metadata has to be fetched from the internal aegis project.
  *  With aegis running this can be done by running 'kb init' in this repository.
  */
-
 @Tag("integration")
 public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase {
     public static final String SCHEMA2SOLR =  "xslt/schemaorg2solr.xsl";
@@ -45,7 +43,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         if (Resolver.getPathFromClasspath("internal_test_files/preservica7") == null){
             fail("Internal test files are not present. Unittest 'XSLTPreservicaToSolrTransformerTest' is therefore not run.");
         }
-        
     }
 
     @Test
@@ -122,12 +119,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     public void testBroadcaster() {
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"broadcaster\":\"DR\"");
     }
+
     @Test
     public void testCreatorAffiliationGeneric() {
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic\":\"DR P1\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic_length\":\"5\"");
-
     }
+
     @Test
     public void testCreatorAffiliationGenericCount() {
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic_count\":\"1\"");
@@ -142,7 +140,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testShortDescription(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"abstract\":\"Eng. krimiserie\",");
     }
-
 
     @Test
     public void testOrigin(){
@@ -194,7 +191,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testSurround(){
         assertPvicaContains(TestFiles.PVICA_RECORD_4b18d02d, "\"surround_sound\":\"true\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"surround_sound\":\"false\"");
-
     }
 
     @Test
@@ -260,11 +256,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testSeriesId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_series_id\":\"146180\"");
     }
+
     @Test
     void testSubtitles(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"has_subtitles\":\"false\"");
         // TODO: Create test for has_subtitles:true, with custom test file
     }
+
     @Test
     void testSubtitlesHearingImpaired(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"has_subtitles_for_hearing_impaired\":\"false\"");
@@ -276,6 +274,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_is_teletext\":\"false\"");
         // TODO: Create test for internal_is_teletext:true, with custom test file
     }
+
     @Test
     void testShowviewcode(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_showviewcode\":\"0\"");
@@ -305,7 +304,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testProgramStructure(){
         assertPvicaContains(TestFiles.PVICA_RECORD_2b462c63, "\"internal_program_structure_missing_seconds_start\":\"0\"," +
                                                  "\"internal_program_structure_missing_seconds_end\":\"0\"");
-
         //TODO: add tests for fields 'holes' and 'overlaps' with a constructed test file.
     }
 
@@ -342,8 +340,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(solrDocument.contains("\"transcription\":\"Dette er en transcription\""));
     }
 
-    
-    
     @Test
     void testStartTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"1987-05-04T14:45:00Z\"");
@@ -409,6 +405,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void testHoldbackName() {
         assertPvicaContains(TestFiles.PVICA_DOMS_MIG_eaea0362, "\"holdback_name\":\"Aktualitet og debat\"");
     }
+
     @Test
     void testHoldbackDate() {
         assertPvicaContains(TestFiles.PVICA_DOMS_MIG_eaea0362, "\"holdback_expired_date\":\"2026-01-17T09:34:42Z\"");
@@ -458,7 +455,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"title_length\":\"25\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"abstract_length\":\"15\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description_length\":\"374\"");
-
     }
 
     @Test
@@ -466,7 +462,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_extension\":\"mp4\"", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
-
     }
 
     @Test
@@ -474,7 +469,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_id\":\"b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_path\":\"b5\\/57\\/b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_extension\":\"mp3\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
-
     }
 
     @Test
@@ -504,12 +498,14 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         assertTrue(solrString.contains("\"actor_count\":\"3\""));
     }
+
     @Test
     void testCharacters() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         assertTrue(solrString.contains("\"character\":[" +
                 "\"Deborah\",\"Max\",\"Noodles\"],"));
     }
+
     @Test
     void testCharacterCount() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
@@ -521,6 +517,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
         assertTrue(solrString.contains("\"contributor\":["));
     }
+
     @Test
     void testContributorCount() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
@@ -532,6 +529,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(solrString.contains("\"actor\":["));
     }
+
     @Test
     void testNoCharacters() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
@@ -655,6 +653,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     /**
      * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
      * transformed record contains the given {@code substring}.
+     *
      * @param recordFile the file to load, transform and test.
      * @param substring must be present in the transformed record.
      */
@@ -671,6 +670,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     /**
      * Wrapper for {@link #assertMultiTestsThroughSchemaTransformation(String, Consumer[])} which verifies that the
      * transformed record does not contain the given {@code substring}.
+     *
      * @param recordFile the file to load, transform and test.
      * @param substring must be present in the transformed record.
      */
@@ -686,10 +686,10 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     /**
      * Checks that internal test files are available and if not, logs a warning and returns.
-     * <p>
      * If the check passes, the content of the file {@code record} is transformed using two XSLTs.
      * At first the XML record is transformed to Schema.org JSON and then the schema.org JSON is transformed to solr
      * documents and the given tests are performed on the result.
+     *
      * @param record file with a record that is to be transformed.
      * @param tests Zero or more tests to perform on the transformed record.
      */
@@ -708,7 +708,4 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         }
         Arrays.stream(tests).forEach(test -> test.accept(solrString));
     }
-
-
-
 }

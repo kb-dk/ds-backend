@@ -26,8 +26,6 @@ import java.util.Set;
 public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     private final static Logger log = LoggerFactory.getLogger(ServiceApiServiceImpl.class);
 
-
-
     /**
      * Ping the server to check if the server is reachable.
      * 
@@ -102,8 +100,7 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
 
         return jobs;        
     }
-    
-    
+
     /**
      * Extract info from OAUth2 accessTokens.
      * @return OAUth2 roles from the caller's accessToken, if present.
@@ -128,6 +125,4 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
         }
         return whoami;
     }
-
-    
 }

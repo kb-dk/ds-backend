@@ -3,7 +3,6 @@ package dk.kb.datahandler.kaltura;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 public class KalturaItemXml {
-    
     private int type;
     private String referenceId;
     private String name;
@@ -25,8 +24,7 @@ public class KalturaItemXml {
             || flavorParamsId <=0 ||  downloadUrl== null) { //migrated from can be null            
             throw new InvalidArgumentServiceException("All parameters must be defined");            
         }
-        
-        
+
         this.type = type;
         this.referenceId = referenceId;
         this.name = name;

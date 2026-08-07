@@ -19,7 +19,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class FragmentClientTest {
-
     private FragmentsClient fragmentsClient;
     private HttpURLConnection mockConnection;
 
@@ -32,8 +31,6 @@ public class FragmentClientTest {
         // Mock the getConnection method to always return the mockConnection object
         doReturn(mockConnection).when(fragmentsClient).getConnection(anyString());
     }
-
-
 
     @Test
     public void testFetchFragments() throws IOException, URISyntaxException {
@@ -66,5 +63,4 @@ public class FragmentClientTest {
         assertThrows(IOException.class, () -> fragmentsClient.fetchMetadataFragments("test"));
         verify(mockConnection, times(5)).getResponseCode();
     }
-
 }

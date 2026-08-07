@@ -29,6 +29,7 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
     private static final Logger log = LoggerFactory.getLogger(XSLTCumulusToSchemaDotOrgTransformerTest.class);
     public static final String JSON_ROOT = "src/test/resources/schemaOrgJsonTestFiles/";
     public static final String MODS2SCHEMAORG = "xslt/mods2schemaorg.xsl";
+
     @Override
     String getXSLT() {
         return MODS2SCHEMAORG;
@@ -61,7 +62,6 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
         assertJSONTransformationFactory(MODS2SCHEMAORG, TestFiles.CUMULUS_RECORD_770379f0, "schemaOrg_770379f0-8a0d-11e1-805f-0016357f605f.json");
     }
 
-
     @Test
     void testCreatorDescriptionAndContentNoteToAbout() throws Exception {
         assertJSONTransformation(MODS2SCHEMAORG, TestFiles.CUMULUS_RECORD_f4668ad0, "schemaOrg_f4668ad0-f334-11e8-b74f-00505688346e.json");
@@ -71,7 +71,6 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
     void testContentLocationAndKeywords() throws Exception {
         assertJSONTransformation(MODS2SCHEMAORG, TestFiles.CUMULUS_RECORD_3956d820, "schemaOrg_3956d820-7b7d-11e6-b2b3-0016357f605f.json");
     }
-
 
     @Test
     void testMaterialSize() throws Exception {
@@ -88,12 +87,11 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
         assertJSONTransformation(MODS2SCHEMAORG, TestFiles.CUMULUS_RECORD_40221e30, "schemaOrg_40221e30-1414-11e9-8fb8-00505688346e.json");
     }
 
-
-
     private void updateTestFiles() throws Exception {
         createTestFiles(TestFiles.CUMULUS_RECORD_05fea810, TestFiles.CUMULUS_RECORD_770379f0, TestFiles.CUMULUS_RECORD_e5a0e980, TestFiles.CUMULUS_RECORD_f4668ad0, TestFiles.CUMULUS_RECORD_3956d820,
                 TestFiles.CUMULUS_RECORD_ANSK, TestFiles.CUMULUS_RECORD_DNF, TestFiles.CUMULUS_RECORD_40221e30);
     }
+
     private void createTestFiles(String... records) throws Exception {
         for (String record : records) {
             Map<String, String> injections = Map.of("imageserver", "https://example.com/imageserver/",
@@ -110,6 +108,7 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
 
     /**
      * Import test file to assert JSON strings against.
+     *
      * @param path of file to load
      * @return the file as a string
      */
@@ -123,11 +122,10 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
     /**
      * Perform a transformation of the given {@code xml} using the given {@code xslt}.
      * The {@link XSLTTransformer} is used with injection {@code imageserver: "https://example.com/imageserver/"}.
-     * <br/>
      * The helper expects the output to be JSON and comparison is done with pretty printed JSON for easy visuel
      * comparison.
-     * <br/>
      * The {@code XSLTTransformer} used is created directly.
+     *
      * @param xslt the transforming stylesheet.
      * @param xml  the xml to transform.
      * @param expectedJSONFile the expected result, relative to {@code src/test/resources/schemaOrgJsonTestFiles/}.
@@ -143,11 +141,10 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
     /**
      * Perform a transformation of the given {@code xml} using the given {@code xslt}.
      * The {@link XSLTTransformer} is used with injection {@code imageserver: "https://example.com/imageserver/"}.
-     * <br/>
      * The helper expects the output to be JSON and comparison is done with pretty printed JSON for easy visuel
      * comparison.
-     * <br/>
      * The {@code XSLTTransformer} used is created using {@link XSLTFactory}.
+     *
      * @param xslt the transforming stylesheet.
      * @param xml  the xml to transform.
      * @param expectedJSONFile the expected result, relative to {@code src/test/resources/schemaOrgJsonTestFiles/}.
@@ -165,6 +162,7 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
     /**
      * Load JSON from the {@code expectedJSONFile} and compare it to {@code actualJSON},
      * where both JSONs are pretty printed.
+     *
      * @param expectedJSONFile a file containing the expected JSON.
      * @param actualJSON a String with the actual JSON.
      */
@@ -181,5 +179,4 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
 
         Assertions.assertEquals(expectedPrettyJSON, transformedPrettyJSON);
     }
-
 }
