@@ -39,12 +39,11 @@ public class StorageController {
 
     private static final Map<String, StorageFactory> factories = getFactories();
 
-
     /**
      * Create a storage with the given configuration, there the configuration contains a single key which is the
      * storage ID, with the value being the configuration to use for the storage.
-     *
      * If the config contains multiple backends, those are wrapped in a {@link MultiStorage}.
+     *
      * @return a configured storage for the given ID, ready for use.
      * @throws NullPointerException if no storage with the given id could be located.
      * @throws Exception if the storage could not be created.
@@ -96,6 +95,7 @@ public class StorageController {
 
     /**
      * Create a storage with the given configuration.
+     *
      * @param storageType the ID of the storage to create. Call {@link #getSupportedStorageIDs()} for a complete list.
      * @param storageID the ID for the storage, as specified in the configuration.
      * @param conf storage specific configuration.
@@ -123,6 +123,7 @@ public class StorageController {
 
     /**
      * Build a map of storage factories from the classpath.
+     *
      * @return map of [storageID, storage].
      */
     private static Map<String, StorageFactory> getFactories() {
@@ -131,5 +132,4 @@ public class StorageController {
                 .peek(factory -> log.info("Discovered {} factory", factory.getStorageType()))
                 .collect(Collectors.toMap(StorageFactory::getStorageType, factory -> factory));
     }
-
 }

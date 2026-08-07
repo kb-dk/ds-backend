@@ -1,6 +1,5 @@
 package dk.kb.present.util;
 
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +23,10 @@ import java.util.*;
 
 import org.apache.hc.core5.net.URIBuilder;
 
-
 /**
  * Client for the service. Intended for use by other projects that calls this service.
  * See the {@code README.md} for details on usage.
- * </p>
  * This class is not used internally.
- * </p>
  * The client is Thread safe and handles parallel requests independently.
  * It is recommended to persist the client and to re-use it between calls.
  */
@@ -40,9 +36,8 @@ public class DsPresentClient {
     private final String serviceURI;
     
     /**
-     * <pr>
      * Creates a client for the remote ds-present service.
-     * <p>
+     *
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-present/v1}.
      */
     @SuppressWarnings("JavadocLinkAsPlainText")
@@ -51,7 +46,6 @@ public class DsPresentClient {
         log.info("Created OpenAPI client for '{}'", serviceURI);
     }
 
-    
     /**
      * Retrieve a formal description of a single origin.
      * 
@@ -71,8 +65,7 @@ public class DsPresentClient {
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
          }          
     }
-    
-    
+
     /**
     * Retrieve a formal description of all available origins.
     * 
@@ -89,8 +82,7 @@ public class DsPresentClient {
         catch (URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
-         }          
-        
+        }
     }
     
     /**
@@ -114,14 +106,12 @@ public class DsPresentClient {
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
          }          
     }
-    
-    
 
     /**
      * Call the remote ds-present {@link #getRecords} and return the response unchanged as a wrapped
      * bytestream. The concrete representation of the content is controlled by {@code format}.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin     the origin for the records.
      * @param mTime      exclusive start time for records to deliver:
      *                   Epoch time in microseconds (milliseconds times 1000).
@@ -158,8 +148,8 @@ public class DsPresentClient {
      * Call the remote ds-present {@link #getRecordsRaw} and return the JSON serialised
      * {@link dk.kb.storage.model.v1.DsRecordDto}s unchanged as a wrapped bytestream.
      * The concrete JSON representation is controlled by {@code asJsonLines}.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin      the origin for the records.
      * @param mTime       exclusive start time for records to deliver:
      *                    Epoch time in microseconds (milliseconds times 1000).
@@ -197,11 +187,10 @@ public class DsPresentClient {
 
     /**
      * Call the remote ds-storage {@link #getRecordsRaw} and return the response in the form of a Stream of records.
-     * <p>
      * The stream is unbounded by memory and gives access to the highest modification time (microseconds since
      * Epoch 1970) for any record that will be delivered by the stream {@link ContinuationStream#getContinuationToken}.
-     * <p>
      * Important: Ensure that the returned stream is closed to avoid resource leaks.
+     *
      * @param origin      the origin for the records.
      * @param mTime       exclusive start time for records to deliver:
      *                    Epoch time in microseconds (milliseconds times 1000).
@@ -217,6 +206,7 @@ public class DsPresentClient {
 
     /**
      * Calls the transformsolrschema in ds-present to convert the schema.
+     *
      * @param rawSchema the schema to convert.
      * @param format the format which it gets converted to.
      * @return the transformed solr schema in the specified format.
@@ -247,7 +237,6 @@ public class DsPresentClient {
             } else {
                 throw new InternalServiceException("transformation of schema failed. Got http status "+status);
             }
-
         } catch (URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
             throw new InternalServiceException("Invalid url:"+e.getMessage(),e);

@@ -34,7 +34,6 @@ class OriginHandlerTest {
             fail();
         }
     }
-    
 
     @Test
     void idPattern() {
@@ -48,7 +47,6 @@ class OriginHandlerTest {
         }) {
             assertTrue(recordIDPattern.matcher(TEST).matches());
         }
-
     }
 
     @Test
@@ -82,8 +80,6 @@ class OriginHandlerTest {
         log.debug("Prepend collection and colon to this: " + id);
     }
 
-
-
     @Test
     void localCorpusMODS() throws IOException {
         OriginHandler ch = new OriginHandler(config);
@@ -103,7 +99,6 @@ class OriginHandlerTest {
         assertTrue(record.contains("\"id\":\"local.radio.test:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
 
-
     @Test
     void localCorpusFail() throws IOException {        
         OriginHandler ch = new OriginHandler(config);
@@ -114,5 +109,4 @@ class OriginHandlerTest {
             // Expected
         }
     }
-
 }

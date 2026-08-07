@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ServiceConfigTest {
 
-    /*
+    /**
      * This unit-test probably fails when the template is applied and a proper project is taking form.
      * That is okay. It is only here to serve as a temporary demonstration of unit-testing and configuration.
      */
@@ -90,5 +90,4 @@ class ServiceConfigTest {
                         getString("transformers[1].xslt.injections[0].imageserver"),
                 "Requesting path substituted values from a sub map should work on a newly loaded config");
     }
-
 }

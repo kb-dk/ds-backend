@@ -60,8 +60,9 @@ import java.util.List;
 public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPresentationApi {
     private static final Logger log = LoggerFactory.getLogger(IiifPresentationApiServiceImpl.class);
 
-    /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
-
+    /**
+     * How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
+     */
     @Context
     private transient UriInfo uriInfo;
 
@@ -96,7 +97,6 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
     @Context
     private transient MessageContext messageContext;
 
-
     /**
      * IIIF Presentation Collection
      * 
@@ -114,7 +114,6 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
         // TODO: Implement...
         log.debug("getPresentationCollection(name='{}') called with call details: {}", name, getCallDetails());
 
-        
         try { 
             CollectionDto response = new CollectionDto();
         response.setId("i9HXo7kIBw");
@@ -123,7 +122,6 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
         } catch (Exception e){
             throw handleException(e);
         }
-    
     }
 
     /**
@@ -135,7 +133,6 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
       *   <li>code = 200, message = "OK", response = ManifestDto.class</li>
       *   </ul>
       * @throws ServiceException when other http codes should be returned
-      *
       * The manifest resource represents a single object and any intellectual work or works embodied within that object. In particular it includes the descriptive, rights and linking information for the object.
       *
       * @implNote return will always produce a HTTP 200 code. Throw ServiceException if you need to return other codes
@@ -145,7 +142,7 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
         return rawGetPresentationManifest(identifier);
     }
 
-    /*
+    /**
      * Manually specified handler for IIIF IDs containing non-escaped slashes.
      * This will always preceed the OpenAPI-generated handler, but that should not be a problem.
      */
@@ -163,6 +160,7 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
      * The implementation of {@link #getPresentationManifest(String)}.
      * They need to be two different methods as {@link #getPresentationManifest(String)} is Apache CXF annotated and
      * cannot be called directly from {@link #getPresentationManifestNonescaped}.
+     *
      * @param identifier the IIIF image identifier.
      * @return a Manifest for the image.
      * @throws ServiceException if lookup failed.
@@ -365,7 +363,5 @@ public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPres
         } catch (Exception e){
             throw handleException(e);
         }
-    
     }
-
 }

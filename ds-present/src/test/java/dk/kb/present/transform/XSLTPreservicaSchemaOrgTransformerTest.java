@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.util.Map;
 
-
 @Tag("integration")
 public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestBase {
     private static final Logger log = LoggerFactory.getLogger(XSLTCumulusToSchemaDotOrgTransformerTest.class);
@@ -34,7 +33,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         if (Resolver.getPathFromClasspath("internal_test_files/preservica7") == null){
             fail("Internal test files are not present. Unittest 'XSLTPreservicaSchemaOrgTransformerTest'");
         }
-        
     }
 
     @Test
@@ -67,7 +65,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"kb:file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\""));
         assertTrue(transformedJSON.contains("\"kb:file_path\":\"c8\\/d2\\/e7\\/c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\""));
         assertTrue(transformedJSON.contains("\"kb:file_extension\":\"mp4\""));
-
     }
 
     @Test
@@ -77,8 +74,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"kb:file_path\":\"b5\\/57\\/b557f9dd-197c-47f6-b481-785d5f7accd2\""));
         assertTrue(transformedJSON.contains("\"kb:file_extension\":\"mp3\""));
     }
-
-
 
     @Test
     void testName() throws IOException {
@@ -121,7 +116,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
                 && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"RecordID\",\"value\":\"ds.test:e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml\"}")
                 && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"PID\",\"value\":\"109.1.4\\/e683b0b8-425b-45aa-be86-78ac2b4ef0ca\"}"));
     }
-
 
     @Test
     void noAlternateName() throws IOException {
@@ -218,7 +212,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertFalse(transformedJSON.contains("\"abstract\":"));
     }
 
-
     @Test
     void testVideoQuality() throws IOException {
         String ikkeHD = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8afb121);
@@ -234,7 +227,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String notPremiere = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8afb121);
         Assertions.assertFalse(notPremiere.contains("\"datePublished\":"));
         // TODO: Add test for datePublished. where the value is present, either by creating a test record with premiere:premiere or by finding a record with that value
-
     }
 
     @Test
@@ -268,6 +260,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         Assertions.assertFalse(radio.contains("\"videoQuality\":"));
     }
+
     @Test
     void whiteProgramID() throws IOException {
         String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_c295ae6c);
@@ -275,6 +268,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
                 "\"PropertyID\":\"WhiteProgramID\"," +
                 "\"value\":\"A-1966-03-20-P-0197_059\""));
     }
+
     @Test
     void noShowViewcodeForRadio() throws IOException {
         String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_c295ae6c);
@@ -292,6 +286,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
         Assertions.assertFalse(radio.contains("\"kb:color\":"));
     }
+
     @Test
     void noTeletextForRadio() throws IOException {
         String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
@@ -305,7 +300,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertFalse(radio.contains("\"kb:has_subtitles_for_hearing_impaired\":"));
     }
 
-
     @Test
     void testKBInternalMap() throws IOException {
         // TODO: Add individual tests for all params
@@ -318,17 +312,20 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertTrue(transformedJSON.contains("\"kb:showviewcode\":\"0\""));
         Assertions.assertTrue(transformedJSON.contains("\"kb:padding_seconds\":15"));
     }
+
     @Test
     void testInternalGenreSub() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
         Assertions.assertTrue(transformedJSON.contains("\"kb:genre_sub\":\"Alle\""));
     }
+
     @Test
     void testAspectRatio() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
 
         Assertions.assertTrue(transformedJSON.contains("\"videoFrameSize\":\"16:9\""));
     }
+
     @Test
     void testInternalSubtitlesAndTeletext() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
@@ -345,6 +342,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
                                                         "\"kb:access_claused\":\"Nej\"," +
                                                         "\"kb:access_malfunction\":\"Nej\""));
     }
+
     @Test
     void testInternalIds() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
@@ -375,7 +373,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     void testNoEmptyInternalMap() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4f706cda);
         Assertions.assertFalse(transformedJSON.contains("\"kb:internal\":{}"));
-
     }
 
     @Test
@@ -407,7 +404,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eaea0362);
         assertTrue(transformedJSON.contains("\"episodeNumber\":8,") && transformedJSON.contains("\"numberOfEpisodes\":24"));
     }
-
 
     @Test
     public void testNotANumberPlusSign() throws IOException {
@@ -448,6 +444,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
     /**
      * This tests that when multiple main genres are present the conversion to predefined values still occurs correctly.
+     *
      * @throws IOException
      */
     @Test
@@ -536,7 +533,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     public void testNoDirectors() throws IOException{
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(transformedJSON.contains("\"director\""));
-
     }
 
     @Test
@@ -551,7 +547,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     public void testNoCreators() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(transformedJSON.contains("\"creator\""));
-
     }
 
     @Test
@@ -573,7 +568,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         prettyPrintJson(transformedJSON);
         assertTrue(transformedJSON.contains("\"alternateName\":\"DR 1\""));
     }
-
 
     @Test
     public void invalidNumbersTest() throws IOException {
@@ -598,7 +592,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         prettyPrintJson(transformedJson);
         assertTrue(transformedJson.contains("\"kb:ritzau_channel_id\":325"));
         assertTrue(transformedJson.contains("\"kb:nielsen_channel_id\":103"));
-
     }
 
     @Test
@@ -637,5 +630,4 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         //Assert
         assertTrue(transformedJSON.contains("\"annotation\":\"Dette indhold blev sendt i dansk radio under den tyske besættelse af Danmark, hvor Danmarks Radio ikke havde redaktionel frihed. Oprindeligt udsendelses tidspunkt er ukendt, det angivne tidspunkt kan derfor være ukorrekt.\""));
     }
-
 }

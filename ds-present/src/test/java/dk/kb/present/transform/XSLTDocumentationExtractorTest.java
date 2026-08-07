@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class XSLTDocumentationExtractorTest {
-
     public static final String SCHEMA2DOC = "xslt/schema2markdown.xsl";
     public static final String SCHEMA = "target/solr/dssolr/conf/schema.xml";
 

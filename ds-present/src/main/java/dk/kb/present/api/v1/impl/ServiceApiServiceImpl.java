@@ -30,8 +30,6 @@ import java.util.Set;
 public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
     private static final Logger log = LoggerFactory.getLogger(ServiceApiServiceImpl.class);
 
-
-
     /**
      * Ping the server to check if the server is reachable.
      * 
@@ -70,7 +68,6 @@ public class ServiceApiServiceImpl extends ImplBase implements ServiceApi {
 
         try {
             host = InetAddress.getLocalHost().getHostName();
-
         } catch (UnknownHostException e) {
             log.warn("Exception resolving hostname", e);
         }
