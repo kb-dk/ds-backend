@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 /**
  * This is a persistent DTO.
- * See the documentation and UML model:<br>
- * licensemodule_uml.png<br>
- * License_validation_logic.png <br>
- * 
+ * See the documentation and UML model:
+ * licensemodule_uml.png
+ * License_validation_logic.png
  */
 public class AttributeGroup extends Persistent{
 	private int number;

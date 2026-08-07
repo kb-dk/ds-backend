@@ -11,7 +11,7 @@ import dk.kb.license.Util;
 /**
  * This is a persistent DTO.
  * See the documentation and UML model:
- * licensemodule_uml.png<br>
+ * licensemodule_uml.png
  * License_validation_logic.png
  */
 public class License extends Persistent{

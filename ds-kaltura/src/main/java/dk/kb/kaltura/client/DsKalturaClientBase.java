@@ -263,7 +263,6 @@ public abstract class DsKalturaClientBase {
 
     /**
      * Initiates a session for an application token using the provided parameters.
-     * <p>
      * This method starts a widget session for the specified client, computes a hash
      * based on the provided token and the widget session, and then builds a session
      * request using the AppTokenService. The request is executed, and if successful,

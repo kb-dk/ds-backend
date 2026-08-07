@@ -77,11 +77,10 @@ public abstract class Param<T extends Param<?, ?>, V> extends ProfileElement<T> 
 
     /**
      * Assign the given values to the Param.
-     * <p>
      * {@code values} are guaranteed to contain at least 1 element.
-     * <p>
      * {@link #enabled} will be set to true before this method is called. If the concrete {@code values} require
      * {@link #enabled} to be set to false, it is up to the method implementation to do so (e.g. for boolean switches).
+     *
      * @param values array of values, represented as Strings.
      */
     protected abstract void applyTypes(String[] values);

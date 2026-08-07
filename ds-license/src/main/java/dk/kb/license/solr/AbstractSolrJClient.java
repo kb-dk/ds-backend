@@ -73,7 +73,7 @@ public abstract class AbstractSolrJClient {
    
     /** 
      * Will remove " from id's to remove query-injection (Little Bobby Tables). Each id will be a phrase search with '""' added.
-     * Example: give the ids (id1,id2,id3)  and the filter i field 'resource_id' the query string return will be:<br>
+     * Example: give the ids (id1,id2,id3)  and the filter i field 'resource_id' the query string return will be:
      * resource_id:("id1" OR "id2" OR "id3")
      * 
      * @param ids List of ID's to filter

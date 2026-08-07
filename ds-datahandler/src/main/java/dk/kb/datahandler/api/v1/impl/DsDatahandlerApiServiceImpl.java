@@ -35,9 +35,7 @@ import java.util.List;
 
 /**
  * ds-datahandler
- *
- * <p>ds-datahandler by the Royal Danish Library 
- *
+ * ds-datahandler by the Royal Danish Library
  */
 @InInterceptors(interceptors = "dk.kb.datahandler.webservice.KBAuthorizationInterceptor")
 public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandlerApi {

@@ -26,11 +26,10 @@ import java.util.stream.Collectors;
 
 /**
  * There are two methods on DsKalturaClient:
- *
- * <p><ul>
+ * <ul>
  * <li> API lookup and map external ID to internal Kaltura ID
  * <li> Upload a media entry (video, audio etc.) to Kaltura with meta data.
- * </ul><p>
+ * </ul>
  */
 public class DsKalturaClient extends DsKalturaClientBase {
     private static final Integer MAX_RETRY_COUNT = 3;
@@ -363,15 +362,13 @@ public class DsKalturaClient extends DsKalturaClientBase {
     /**
      * Upload a video or audio file to Kaltura.
      * The upload require 4 API calls to Kaltura
-     * <p><ul>
+     * <ul>
      * <li> Request a upload token
      * <li> Upload file using the upload token. Get a tokenID for the upload
      * <li> Create the metadata record in Kaltura
      * <li> Connect the metadata record with the tokenID
-     * </ul><p>
-     * <p>
-     * </ul><p>
-     * <p>
+     * </ul>
+     * </ul>
      * If there for some reason happens an error after the file is uploaded and not connected to the metadata record, it does not
      * seem possible to later see the file in the kaltura administration gui. This error has only happened because I forced it.
      *
@@ -464,9 +461,9 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * Get the length of the conversion queue from Kaltura. We define the conversion queue as the count of all
      * entries with status or replacementStatus that indicates that it is waiting for or in
      * progress of being converted/transcoded.
-     * <p>
      * This method uses multiRequest, which essentially does multiple API requests with one http request,
      * reducing Round-trip time significantly.
+     *
      * @return length of current queue
      * @throws APIException Thrown when API request fails.
      */

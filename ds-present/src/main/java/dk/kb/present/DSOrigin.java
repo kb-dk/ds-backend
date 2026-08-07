@@ -48,7 +48,6 @@ import java.util.stream.Stream;
 /**
  * An origin encapsulates access to a logical collection ("samling"). It uses the same origins as ds-storage and
  * is typically backed by a ds-storage instance.
- * <p>
  * Access is read-only and always with an explicit export format. The format can be {@code raw} for direct proxying to
  * the connected ds-storage, but common use case is to request MODS, JSON-LD (schema.org) or SolrJSON representations.
  */
@@ -105,7 +104,7 @@ public class DSOrigin {
      * Type of metadata records to obtain from the service. Metadata can be structured in different files and often
      * the needed metadata is delivered in a specific type. This variable defines which type of metadata records that
      * are to be delivered.
-     * These types are currently:<br/>
+     * These types are currently:
      * {@link RecordTypeDto#COLLECTION}
      * {@link RecordTypeDto#DELIVERABLEUNIT}
      * {@link RecordTypeDto#MANIFESTATION}

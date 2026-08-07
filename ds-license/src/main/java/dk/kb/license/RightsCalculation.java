@@ -111,15 +111,13 @@ public class RightsCalculation {
      *   <li>Checks if the title is restricted.</li>
      * </ul>
      *
-     * <p>The results of these checks are then set in the provided
-     * {@link RightsCalculationOutputDrDto} object.</p>
+     * The results of these checks are then set in the provided {@link RightsCalculationOutputDrDto} object.
      *
      * @param rightsCalculationInputDto the input DTO containing the restrictions
      *                                    input to be checked. It should not be
      *                                    null.
      * @param drOutput the output DTO where the results of the restrictions
      *                  checks will be set. It should not be null.
-     *
      * @throws IllegalArgumentException if either {@code rightsCalculationInputDto}
      *                                  or {@code drOutput} is null.
      */
@@ -292,11 +290,11 @@ public class RightsCalculation {
     /**
      * Calculates the holdback expiration date based on the specified holdback category and start date.
      *
-     * <p>If the holdback category's name is empty, the method logs a debug message and returns a default expiration
+     * If the holdback category's name is empty, the method logs a debug message and returns a default expiration
      * date of "9999-01-01T00:00:00Z". If the holdback days are less than a configured threshold (default = 365), it calculates
      * the expiration date by adding the holdback days directly to the start date. If the holdback days are
      * equal to or greater than the threshold, it calculates the expiration date on a yearly basis form the following 1st of January by converting
-     * the holdback days to years and adjusting the start date accordingly.</p>
+     * the holdback days to years and adjusting the start date accordingly.
      *
      * @param drHoldbackCategoryOutputDto The holdback category containing the number of holdback days and its name.
      * @param recordId identifier of record associated with this holdback category.

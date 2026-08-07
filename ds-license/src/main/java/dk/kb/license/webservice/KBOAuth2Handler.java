@@ -51,10 +51,8 @@ import java.util.regex.Pattern;
 
 /**
  * Caching of public keys, validation of accessTokens etc. with a focus on the parts used at the Royal Danish Library.
- * <p>
  * The implementation uses the <a href="https://github.com/scribejava/scribejava">Scribe library</a> for the
  * OAuth-specific handling.
- * <p>
  * This class is thread safe.
  */
 public class KBOAuth2Handler {

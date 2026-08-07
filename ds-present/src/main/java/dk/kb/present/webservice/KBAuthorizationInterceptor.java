@@ -95,7 +95,7 @@ public class KBAuthorizationInterceptor extends AbstractPhaseInterceptor<Message
     }
 
     /**
-     * Logic: <br>
+     * Logic:
      * 1. Validate Token present if required for method. 
      * 2. Validate access control for role allowed to call the method.
      */

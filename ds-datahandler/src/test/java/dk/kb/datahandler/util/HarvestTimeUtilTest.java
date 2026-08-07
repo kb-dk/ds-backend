@@ -95,7 +95,6 @@ public class HarvestTimeUtilTest {
     }
     
     /**
-     * 
      * From a java date format yyyy-MM-dd
      * 
      * @param date  Java date object

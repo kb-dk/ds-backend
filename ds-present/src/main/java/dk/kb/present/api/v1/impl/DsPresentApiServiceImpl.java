@@ -50,7 +50,7 @@ public class DsPresentApiServiceImpl extends ImplBase implements DsPresentApi {
          */
         not_exists}
 
-    /* How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations */
+    // How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
     /**
      * Retrieve a formal description of a single origin
      * 

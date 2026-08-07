@@ -130,9 +130,9 @@ public abstract class BaseModuleStorage implements AutoCloseable {
 
     /**
      * Start a storage transaction and performs the given action on it, returning the result from the action.
-     * <p>
      * If the action throws an exception, a {@link LicenseModuleStorage#rollback()} is performed.
      * If the action passes without exceptions, a {@link LicenseModuleStorage#commit()} is performed.
+     *
      * @param actionID a debug-oriented ID for the action, typically the name of the calling method.
      * @param storageClass
      * @param action the action to perform on the storage.

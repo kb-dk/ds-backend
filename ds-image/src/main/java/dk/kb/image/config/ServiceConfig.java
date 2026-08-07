@@ -13,7 +13,6 @@ import java.util.List;
 /**
  * Sample configuration class using the Singleton and Observer patterns.
  * See <a href="https://en.wikipedia.org/wiki/Observer_pattern">Wiki</a>
- * <p>
  * If wanted, changes to the configuration source (typically files) can result in an update of the ServiceConfig and
  * a callback to relevant classes. To enable this, add autoupdate keys to the YAML config:
  * <pre>
@@ -22,10 +21,8 @@ import java.util.List;
  *   intervalms: 60000
  * </pre>
  * Notifications on config changes can be received using {@link #registerObserver(Observer)}.
- * <p>
  * Alternatively {@link #AUTO_UPDATE_DEFAULT} and {@link #AUTO_UPDATE_MS_DEFAULT} can be set so that auto-update is
  * enabled by default for the application.
- * <p>
  * Implementation note: Watching for changes is a busy-wait, i.e. the ServiceConfig actively reloads the configuration
  * each x milliseconds and checks if is has changed. This is necessary as the source for the configuration is not
  * guaranteed to be a file (it could be a URL or packed in a WAR instead), so watching for file system changes is not
@@ -43,6 +40,7 @@ public class ServiceConfig extends AutoYAML {
     /**
      * Construct a ServiceConfig without a concrete YAML assigned. In order to use the ServiceConfig,
      * {@link #initialize(String)} must be called.
+     *
      * @throws IOException if initialization failed.
      */
     public ServiceConfig() throws IOException {
@@ -74,6 +72,7 @@ public class ServiceConfig extends AutoYAML {
      * Direct access to the backing YAML-class is used for configurations with more flexible content
      * and/or if the service developer prefers key-based property access.
      * @see #getHelloLines() for alternative.
+     *
      * @return the backing YAML-handler for the configuration.
      */
     public static YAML getConfig() {
@@ -86,6 +85,7 @@ public class ServiceConfig extends AutoYAML {
     /**
      * Demonstration of a first-class property, meaning that an explicit method has been provided.
      * @see #getConfig() for alternative.
+     *
      * @return the "Hello World" lines defined in the config file.
      */
     public static List<String> getHelloLines() {
@@ -95,8 +95,8 @@ public class ServiceConfig extends AutoYAML {
     /**
      * Equivalent to {@code ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)} but guarantees that
      * the retrieved value DOES NOT end with {@code /}.
-     * <p>
      * This is used with {@link UriTemplate} to ensure valid URIs.
+     *
      * @param serverKey YAML key for a server stated in the configuration.
      * @return the server for the given {@code serverKey}, guaranteeing that it does not end with {@code /}.
      */

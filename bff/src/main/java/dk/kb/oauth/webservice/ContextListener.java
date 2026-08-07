@@ -149,10 +149,8 @@ public class ContextListener implements ServletContextListener {
      * &lt;/configuration&gt;
      * </pre>
      * as the JNDI injection is performed <strong>after</strong> the {@code include}.
-     * <p>
      * The workaround is to programatically perform the same environment lookup and reconfigure logback to use
      * the right logback setup file.
-     * <p>
      * To complicate matters further, logback require included files to encapsulate the concrete setup in
      * {@code <included>} instead of {@code <configuration>} so in order to stay backwards compatible (and forward
      * compatible as the JNDI-problem is probably solved at some point in the future), a tiny configuration is

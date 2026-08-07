@@ -15,7 +15,6 @@ import java.util.List;
 
 /**
  * The LicenseModuleFacade exposes all methods that can be called on a LicenceModule. This includes both persistence logic and business logic resolving licence access.
- * <p>
  * This facade class is also responsible for the transactional integrity of a storage. The storage model will never commit or rollback. All storage
  * transactional logic is controlled by this class. This makes it possible to use multiple storage methods as building blocks and rollback
  * everything if one of the steps fails.
@@ -52,7 +51,6 @@ public class LicenseModuleFacade {
 
     /**
      * Get a list of all defined Presentation types.
-     * <p>
      * This is only intended to be called from the admin GUI when creating or updating a license
      * to show all possible presentation types that can be added to the licence.
      *

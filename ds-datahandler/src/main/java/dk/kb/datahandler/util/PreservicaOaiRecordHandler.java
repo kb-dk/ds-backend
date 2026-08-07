@@ -50,10 +50,7 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
      * @param localName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
      * @param qName      The qualified name (with prefix), or the empty string if qualified names are not available.
      * @param attributes The attributes of the element, or <code>null</code> if the element has no attributes.
-     *
-     * <p>
      * The following start elements are processed:
-     * </p>
      * <ul>
      *   <li><strong>publisher</strong></li>
      *   <li><strong>formatMediaType</strong></li>
@@ -120,11 +117,7 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
      * @param uri        The Namespace URI, or the empty string if the element has no Namespace.
      * @param localName  The local name (without prefix), or the empty string if Namespace processing is not being performed.
      * @param qName      The qualified name (with prefix), or the empty string if qualified names are not available.
-     *
-     * <p>
      * The following end elements are processed:
-     * </p>
-     *
      * <ul>
      *   <li>
      *     <strong>publisher</strong>: If the element is "publisher", the method checks if the

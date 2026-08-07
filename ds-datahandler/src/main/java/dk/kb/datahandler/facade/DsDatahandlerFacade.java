@@ -106,7 +106,6 @@ public class DsDatahandlerFacade {
 
     /**  
      *  Will start an index flow of records from ds-storage into solr.
-     * <p>
      *  1) Call ds-present that will extract records from ds-storage and xslt transform them into solr-add documents json.
      *  2) Send the input stream with json documents directly to solr, so it is not kept in memory.
      *  
@@ -275,11 +274,10 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * This method has no specific code for the different OAI targets. Date formats must be set correct for the target when calling this method. <br>
-     * The list of date-intervals must be ascending in time<br> 
+     * This method has no specific code for the different OAI targets. Date formats must be set correct for the target when calling this method.
+     * The list of date-intervals must be ascending in time.
      * The date intervals will be harvested in same order as in list. After each interval harvested they persistent last harvest time will be updated for that OAI target.
-     *  <p/>
-     * For each interval this method will start a new OAI job and call {@link #oaiIngestPerform(OaiTargetJob, String, String)}-method}<br>
+     * For each interval this method will start a new OAI job and call {@link #oaiIngestPerform(OaiTargetJob, String, String)}-method}
      *  
      * @param oaiTargetName the name of the configured oai-target
      * @param modifiedTimeFrom List of date intervals. When calling this method the date formats must be in format accepted by the target.
@@ -323,10 +321,10 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * This method will be called by the {@link #oaiIngestJobScheduler(String, ArrayList)}-method}<br>
-     * The scheduler method will set up the job and responsible for status of the job. <br>
-     * The target will be harvest full for this interval using the resumptionToken from the response and call recursively.<br>
-     * For each successful response the persistent datestamp for the OAI target will be updated with datestamp from last parsed records.<br>
+     * This method will be called by the {@link #oaiIngestJobScheduler(String, ArrayList)}-method}
+     * The scheduler method will set up the job and responsible for status of the job.
+     * The target will be harvest full for this interval using the resumptionToken from the response and call recursively.
+     * For each successful response the persistent datestamp for the OAI target will be updated with datestamp from last parsed records.
      *
      * @param from Datestamp format that will be accepted for that OAI target
      * @return Number of harvested records for this date interval. Records discarded by filter etc. will not be counted.

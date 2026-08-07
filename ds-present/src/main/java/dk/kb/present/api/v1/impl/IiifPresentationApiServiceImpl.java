@@ -53,16 +53,12 @@ import java.util.List;
 
 /**
  * ds-present
- *
- * <p>Metadata delivery for the Royal Danish Library  This API delivers metadata from collections at the Royal Danish Library. Metadata can be delivered as IIIF Presentation manifests.  For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.= and should be backwards compatible with version 2.1.1 
- *
+ * Metadata delivery for the Royal Danish Library  This API delivers metadata from collections at the Royal Danish Library. Metadata can be delivered as IIIF Presentation manifests.  For information on the IIIF Presentation API see the following [link](https://iiif.io/api/presentation/3.0/). This API supports version 3.= and should be backwards compatible with version 2.1.1
  */
 public class IiifPresentationApiServiceImpl extends ImplBase implements IiifPresentationApi {
     private static final Logger log = LoggerFactory.getLogger(IiifPresentationApiServiceImpl.class);
 
-    /**
-     * How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
-     */
+    // How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
     @Context
     private transient UriInfo uriInfo;
 

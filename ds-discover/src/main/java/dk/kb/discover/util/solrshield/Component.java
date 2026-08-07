@@ -134,7 +134,6 @@ public abstract class Component<T extends Component<T>> extends ProfileElement<T
 
     /**
      * Ensure that the {@link Param}s in {@link #params} are the same as their first class attributes.
-     * <p>
      * Important: The {@link Param}s in {@link #params} are authoritative and should override all other pointers.
      */
     abstract void alignParams();

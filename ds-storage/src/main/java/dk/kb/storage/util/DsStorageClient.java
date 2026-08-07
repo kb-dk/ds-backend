@@ -392,8 +392,8 @@ public class DsStorageClient {
     }
 
     /**
-     * Update the referenceId for a record <br>
-     * The referenceId is an id in the external system for the record. <br>
+     * Update the referenceId for a record,
+     * The referenceId is an id in the external system for the record.
      * For preservica records the referenceId is the name of the stream file.
      *  
      * @param recordId of the record to update referenceId for

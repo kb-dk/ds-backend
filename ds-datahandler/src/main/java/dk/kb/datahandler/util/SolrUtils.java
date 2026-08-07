@@ -169,19 +169,19 @@ public class SolrUtils {
      * {@link dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl#indexSolr(String, Long, TypeDto)}. This
      * updated response contains information on the amount of documents that have been indexed in total and not just
      * during the last batch of the stream.
+     *
      * @param individualSolrResponse a string representation of a JSON solr response returned when indexing a batch of
      *                               documents. Eg:
      * <pre>
-     * {"responseHeader": {    <br>
-     *   "rf":1, <br>
-     *   "status":0, <br>
-     *   "QTime":1348}}  <br>
+     * {"responseHeader": {
+     *   "rf":1,
+     *   "status":0,
+     *   "QTime":1348}}
      *</pre>
      * @param finalResponse         containing the {@code rf} value from the latest added {@code individualSolrResponse},
      *                              the {@code status} value from the latest added {@code individualSolrResponse}
      *                              the combined {@code QTime} for all added response headers and the total amount
      *                              of documents indexed.
-     *
      * @param documents             The total amount of documents indexed.
      */
      public static void updateFinalResponse(String individualSolrResponse, SolrIndexResponse finalResponse,
@@ -194,7 +194,8 @@ public class SolrUtils {
     }
 
     /**
-     * Convert a solr index response to a string representing a JSON structure
+     * Convert a solr index response to a string representing a JSON structure.
+     *
      * @param solrIndexResponse
      * @return a string representing a JSON structure
      */

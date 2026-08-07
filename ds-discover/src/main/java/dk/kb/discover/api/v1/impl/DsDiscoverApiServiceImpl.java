@@ -42,9 +42,7 @@ import dk.kb.util.webservice.exception.ServiceException;
 
 /**
  * ds-discover
- *
- * <p>ds-discover by the Royal Danish Library 
- *
+ * ds-discover by the Royal Danish Library
  */
 @InInterceptors(interceptors = "dk.kb.discover.webservice.KBAuthorizationInterceptor")
 public class DsDiscoverApiServiceImpl extends ImplBase implements DsDiscoverApi {

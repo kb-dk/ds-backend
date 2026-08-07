@@ -33,9 +33,7 @@ import java.util.stream.Collectors;
 
 /**
  * bff
- *
- * <p>bff by the Royal Danish Library
- *
+ * bff by the Royal Danish Library
  */
 public class BffApiServiceImpl extends ImplBase implements BffApi {
     private static final Logger log = LoggerFactory.getLogger(BffApiServiceImpl.class);

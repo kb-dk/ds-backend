@@ -242,14 +242,13 @@ public class SolrService {
 
     /**
      * Issue a Solr More Like This (MLT) request. All parameters from standard Solr.
-     * <p>
      * A Solr MLT works internally in Solr by issuing a search for the given query ({code q} with the given
      * filter queries {@code fq}. The significant terms from the first hit from the search are then used for
      * a new search, where the resulting documents are returned. The end result of this indirect search should
      * be documents that are similar in terms (aka content) to the first hit in the original search result.
-     * <p>
      * A common way of using MLT is to issue a query for a specific document: {@code q=id:"ds.radiotv:oai:man:123..."}.
      * @see <a href="https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html">Solr MLT</a>.
+     *
      * @return solr More Like This response.
      */
     @SuppressWarnings("SuspiciousTernaryOperatorInVarargsCall")
@@ -544,8 +543,8 @@ public class SolrService {
 
     /**
      * Return the MIME type corresponding to the given Solr schema wt, defaulting to JSON.
-     * <p>
      * The schema WT differs from standard WT by missing {@code csv} and adding {@code schema.xml}.
+     *
      * @param wt the Solr param wt. Can be null, which will result in {@code application/json}.
      * @return the MIME type corresponding to the wt.
      * @throws InvalidArgumentServiceException if the wt is unsupported.
@@ -586,10 +585,10 @@ public class SolrService {
     /**
      * Remove filters with {@code prefix} from the {@code params.fq} entries in {@code solrResponse}.
      * Intended use is to remove internal licensing information from responses returned to external caller.
-     * <p>
      * Note: This uses regexp-based search/replace to adjust JSON & XML.
      *       This is error prone and should generally be avoided.
      *       It is used here as the service is expected to under heavy load so performance is a high priority.
+     *
      * @param solrResponse a Solr search response in {@code wt} format.
      * @param prefix the prefix identifying the filter to remove, e.g. {@code {!cache=true}}.
      * @param wt the delivery format ({@code json}, {@code xml}, {@code csv}). null means {@code json}.
@@ -614,10 +613,10 @@ public class SolrService {
     /**
      * Remove filters with {@code prefix} from the {@code params.fq} entries in {@code solrResponse}.
      * Intended use is to remove internal licensing information from responses returned to external caller.
-     * <p>
      * Note: This uses regexp-based search/replace to adjust the JSON.
      *       This is error prone and should generally be avoided.
      *       It is used here as the service is expected to under heavy load so performance is a high priority.
+     *
      * @param solrResponse a Solr search response in JSON format.
      * @param prefix the prefix identifying the filter to remove, e.g. {@code {!cache=true}}.
      * @return the response with the prefixed filter removed.
@@ -655,10 +654,10 @@ public class SolrService {
     /**
      * Remove filters with {@code prefix} from the {@code params.fq} entries in {@code solrResponse}.
      * Intended use is to remove internal licensing information from responses returned to external caller.
-     * <p>
      * Note: This uses regexp-based search/replace to adjust the XML.
      *       This is error prone and should generally be avoided.
      *       It is used here as the service is expected to under heavy load so performance is a high priority.
+     *
      * @param solrResponse a Solr search response in XML format.
      * @param prefix the prefix identifying the filter to remove, e.g. {@code {!cache=true}}.
      * @return the response with the prefixed filter removed.

@@ -243,8 +243,8 @@ public class ProxyHelper {
 
     /**
      * Add a query param to the UriTemplate if a value is present and not the empty string.
-     * <p>
      * If the value is a Collection, it is serialized as comma separated String-representation of the elements.
+     *
      * @return the given template for chaining.
      */
     public static UriTemplate addIfPresent(UriTemplate template, String key, Object value) {
