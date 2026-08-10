@@ -3,11 +3,11 @@ package dk.kb.kaltura.domain;
 import java.io.ByteArrayInputStream;
 
 public class ChunkInputStream extends ByteArrayInputStream {
-    final long chunkSize;
+    private final long chunkSize;
 
-    public ChunkInputStream(long chunkSize, byte[] buf) {
+    public ChunkInputStream(byte[] buf) {
         super(buf);
-        this.chunkSize = chunkSize;
+        this.chunkSize = buf.length;
     }
 
     public long getChunkSize() {

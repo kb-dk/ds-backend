@@ -32,8 +32,7 @@ public class ChunkedFileReader implements Iterator<ChunkInputStream>, Closeable 
             byte[] buffer = new byte[(int) thisChunkSize];
             file.readFully(buffer);          // advances the file pointer for us
             bytesReadSoFar += thisChunkSize;
-
-            return new ChunkInputStream(thisChunkSize, buffer); // self-bounded — no extra logic needed
+            return new ChunkInputStream(buffer); // self-bounded — no extra logic needed
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
