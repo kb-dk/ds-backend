@@ -9,7 +9,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Added `ChunkedFileReader` to spilt file into smaller `InputStreams`
 - Added line break before `@param` in Javadocs
 - Added line break before `@return` in Javadocs
 
