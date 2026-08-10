@@ -10,10 +10,10 @@ import com.kaltura.client.services.UploadTokenService;
 import com.kaltura.client.types.*;
 import com.kaltura.client.utils.request.MultiRequestBuilder;
 import com.kaltura.client.utils.response.base.Response;
-import dk.kb.kaltura.domain.ChunkInputStream;
-import dk.kb.kaltura.domain.ChunkedFileReader;
 import dk.kb.kaltura.enums.FileExtension;
 import dk.kb.kaltura.enums.MimeType;
+import dk.kb.kaltura.fileHandling.ChunkInputStream;
+import dk.kb.kaltura.fileHandling.ChunkedFileReader;
 
 import javax.annotation.Nullable;
 import java.io.File;

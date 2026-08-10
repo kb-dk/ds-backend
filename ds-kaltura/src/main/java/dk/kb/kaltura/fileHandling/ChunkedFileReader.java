@@ -1,4 +1,4 @@
-package dk.kb.kaltura.domain;
+package dk.kb.kaltura.fileHandling;
 
 import java.io.*;
 import java.util.Iterator;
