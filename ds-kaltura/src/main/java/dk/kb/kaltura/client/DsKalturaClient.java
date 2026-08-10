@@ -286,7 +286,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
             byte[] buffer = new byte[(int) thisChunkSize];
             randomAccessFile.readFully(buffer);
 
-            // Read before incrementing FilePointer
+            // Read after incrementing FilePointer
             remaining = fileLength - randomAccessFile.getFilePointer();
             boolean finalChunk = randomAccessFile.getFilePointer() > fileLength;
 
