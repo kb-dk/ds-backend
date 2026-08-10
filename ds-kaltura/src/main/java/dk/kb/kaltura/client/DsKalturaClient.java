@@ -276,7 +276,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
 
         try (ChunkedFileReader chunks = new ChunkedFileReader(file, chunkSizeBytes)) {
             while (chunks.hasNext()) {
-                long offset = chunks.getBytesReadSoFar();
+                long offset = chunks.getBytesReadSoFar(); // Read before calling next
                 try (ByteArrayInputStream fileChunk = chunks.next()) {
                     UploadToken result = handleRequest(UploadTokenService.upload(
                             uploadTokenId,
