@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class ChunkedFileReader implements Iterator<ChunkInputStream>, Closeable {
+public class ChunkedFileReader implements Iterator<ByteArrayInputStream>, Closeable {
 
     private final RandomAccessFile file;
     private final long chunkSize;
@@ -23,7 +23,7 @@ public class ChunkedFileReader implements Iterator<ChunkInputStream>, Closeable 
     }
 
     @Override
-    public ChunkInputStream next() {
+    public ByteArrayInputStream next() {
         if (!hasNext()) throw new NoSuchElementException("No more chunks");
         try {
             long remaining = fileLength - bytesReadSoFar;
@@ -32,7 +32,7 @@ public class ChunkedFileReader implements Iterator<ChunkInputStream>, Closeable 
             byte[] buffer = new byte[(int) thisChunkSize];
             file.readFully(buffer);          // advances the file pointer for us
             bytesReadSoFar += thisChunkSize;
-            return new ChunkInputStream(buffer); // self-bounded — no extra logic needed
+            return new ByteArrayInputStream(buffer); // self-bounded — no extra logic needed
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

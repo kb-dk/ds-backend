@@ -12,10 +12,10 @@ import com.kaltura.client.utils.request.MultiRequestBuilder;
 import com.kaltura.client.utils.response.base.Response;
 import dk.kb.kaltura.enums.FileExtension;
 import dk.kb.kaltura.enums.MimeType;
-import dk.kb.kaltura.fileHandling.ChunkInputStream;
 import dk.kb.kaltura.fileHandling.ChunkedFileReader;
 
 import javax.annotation.Nullable;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -277,7 +277,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
         try (ChunkedFileReader chunks = new ChunkedFileReader(file, chunkSizeBytes)) {
             while (chunks.hasNext()) {
                 long offset = chunks.getBytesReadSoFar();
-                try (ChunkInputStream fileChunk = chunks.next()) {
+                try (ByteArrayInputStream fileChunk = chunks.next()) {
                     UploadToken result = handleRequest(UploadTokenService.upload(
                             uploadTokenId,
                             fileChunk,
@@ -288,9 +288,9 @@ public class DsKalturaClient extends DsKalturaClientBase {
                             !chunks.hasNext(),
                             offset));
 
-                    log.debug("Uploaded chunk {}/{} (offset={}, length={}, finalChunk={}) for uploadToken '{}'.",
+                    log.debug("Uploaded chunk {}/{} (offset={}, finalChunk={}) for uploadToken '{}'.",
                             chunks.getBytesReadSoFar(), chunks.getFileLength(),
-                            offset, fileChunk.getChunkSize(), !chunks.hasNext(),
+                            offset, !chunks.hasNext(),
                             result.getId());
                 }
             }
