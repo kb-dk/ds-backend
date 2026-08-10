@@ -12,12 +12,12 @@ import com.kaltura.client.utils.request.MultiRequestBuilder;
 import com.kaltura.client.utils.response.base.Response;
 import dk.kb.kaltura.enums.FileExtension;
 import dk.kb.kaltura.enums.MimeType;
-import dk.kb.kaltura.fileHandling.ChunkedFileReader;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -272,28 +272,49 @@ public class DsKalturaClient extends DsKalturaClientBase {
                               String kalturaFileName, long chunkSizeBytes)
             throws APIException, IOException {
 
-        File file = new File(filePath);
+        RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");
+        long fileLength = randomAccessFile.length();
+        long remaining = fileLength;
 
-        try (ChunkedFileReader chunks = new ChunkedFileReader(file, chunkSizeBytes)) {
-            while (chunks.hasNext()) {
-                long offset = chunks.getBytesReadSoFar(); // Read before calling next
-                try (ByteArrayInputStream fileChunk = chunks.next()) {
+        while (randomAccessFile.getFilePointer() < fileLength) {
+            long thisChunkSize = Math.min(chunkSizeBytes, remaining);
+
+            // Read before incrementing FilePointer
+            boolean resume = randomAccessFile.getFilePointer() != 0;
+
+            // incrementing FilePointer
+            byte[] buffer = new byte[(int) thisChunkSize];
+            randomAccessFile.readFully(buffer);
+
+            // Read before incrementing FilePointer
+            remaining = fileLength - randomAccessFile.getFilePointer();
+            boolean finalChunk = randomAccessFile.getFilePointer() > fileLength;
+
+            int attempt = 0;
+            while (true) {
+                try (InputStream inputStream = new ByteArrayInputStream(buffer)) {
                     UploadToken result = handleRequest(UploadTokenService.upload(
                             uploadTokenId,
-                            fileChunk,
+                            inputStream,
                             mimeType.getValue(),
                             kalturaFileName,
-                            chunks.getFileLength(),
-                            offset != 0,
-                            !chunks.hasNext(),
-                            offset));
+                            fileLength,
+                            resume,
+                            finalChunk,
+                            randomAccessFile.getFilePointer()));
 
-                    log.debug("Uploaded chunk {}/{} (offset={}, finalChunk={}) for uploadToken '{}'.",
-                            chunks.getBytesReadSoFar(), chunks.getFileLength(),
-                            offset, !chunks.hasNext(),
+                    log.debug("Uploaded chunk {}/{} (finalChunk={}, chunkSize={}) for uploadToken '{}'.",
+                            randomAccessFile.getFilePointer(), fileLength, finalChunk, thisChunkSize,
                             result.getId());
+                    break; // success, move to next chunk
+                } catch (APIException e) {
+                    attempt++;
+                    if (attempt >= MAX_RETRY_COUNT) throw e;
+                    log.warn("Retrying chunk at offset {} (attempt {}) for token '{}': {}",
+                            randomAccessFile.getFilePointer(), attempt, uploadTokenId, e.getMessage());
                 }
             }
+
         }
         return uploadTokenId;
     }
