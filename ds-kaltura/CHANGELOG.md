@@ -9,11 +9,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added `ChunkedFileReader` to spilt file into smaller `InputStreams`
 - Added line break before `@param` in Javadocs
 - Added line break before `@return` in Javadocs
 
 ### Changed
 
+- Changed `uploadFile` method to split data into smaller chunks enable to enhance upload job stability.
 - Removed all scripts, jobs and a lot of obsolete methods and tests.
 - Use null safe `StringUtils.isBlank` instead of `String.isEmpty`.
 - Start on unittest for `DsKalturaAnalytics`.
