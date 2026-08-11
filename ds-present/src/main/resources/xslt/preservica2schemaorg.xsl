@@ -1182,19 +1182,19 @@
   <xsl:template name="internal-video-fields">
     <xsl:param name="pbCore"/>
 
-    <xsl:if test="$holdbackPurposeName != null or $holdbackPurposeName != ''">
+    <xsl:if test="$holdbackPurposeName != ''">
       <f:string key="kb:holdback_name">
         <xsl:value-of select="$holdbackPurposeName"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="$holdbackFormValue != null or $holdbackFormValue != ''">
+    <xsl:if test="$holdbackFormValue != ''">
       <f:string key="kb:holdback_form_value">
         <xsl:value-of select="$holdbackFormValue"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="$holdbackContentValue != null or $holdbackContentValue != ''">
+    <xsl:if test="$holdbackContentValue != ''">
       <f:string key="kb:holdback_content_value">
         <xsl:value-of select="$holdbackContentValue"/>
       </f:string>
