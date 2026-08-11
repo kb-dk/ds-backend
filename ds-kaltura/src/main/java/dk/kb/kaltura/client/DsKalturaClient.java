@@ -56,7 +56,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * @param sessionRefreshThreshold          The threshold in seconds for session renewal.
      * @param conversionQueueThreshold         The threshold for the size of the conversionQueue. If queue gets larger than
      *                                         this threshold, upload will wait and retry.
-     * @param conversionQueueRetryDelaySeconds the delay in seconds to wait for a retry if the
+     * @param retryDelaySeconds the delay in seconds to wait for a retry if the
      *                                         conversionQueueLength is larger than or equal to
      *                                         conversionQueueThreshold.
      * @throws APIException If session could not be created at Kaltura
@@ -314,10 +314,12 @@ public class DsKalturaClient extends DsKalturaClientBase {
                                 result.getId());
                         break; // success, move to next chunk
                     } catch (APIException e) {
+                        log.error("failed to upload file.");
                         attempt++;
                         if (attempt >= MAX_RETRY_COUNT) throw e;
                         log.warn("Retrying chunk at offset {} (attempt {}) for token '{}': {}",
                                 randomAccessFile.getFilePointer(), attempt, uploadTokenId, e.getMessage());
+                        sleepBeforeRetry(attempt, 30);
                     }
                 }
             }
@@ -518,5 +520,14 @@ public class DsKalturaClient extends DsKalturaClientBase {
         return sum;
     }
 
+    private void sleepBeforeRetry(int attempt, int maxSleepTimeSeconds) {
+        try {
+            long sleepTime = Math.min(1000 * (1L << attempt), maxSleepTimeSeconds * 1000L);
+            log.debug("Sleep before retry: {}s", sleepTime / 1000);
+            Thread.sleep(sleepTime); // exponential backoff, capped
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
 
 }
