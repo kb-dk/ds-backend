@@ -265,6 +265,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      *
      * @param uploadTokenId The uploadToken created beforehand
      * @param filePath      The path of file to be uploaded
+     * @param chunkSizeBytes Size of chunks the files should be devided in. Should be larger than 0.
      * @return The UploadTokenId when upload is complete
      * @throws APIException if request fails
      */
@@ -272,15 +273,21 @@ public class DsKalturaClient extends DsKalturaClientBase {
                               String kalturaFileName, long chunkSizeBytes)
             throws APIException, IOException {
 
+        if (chunkSizeBytes <= 0) {
+            throw new IllegalArgumentException("chunkSizeBytes must be larger than 0");
+        }
+
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r")) {
             long fileLength = randomAccessFile.length();
             long remaining = fileLength;
 
-            while (randomAccessFile.getFilePointer() < fileLength) {
+            while (remaining > 0) {
                 long thisChunkSize = Math.min(chunkSizeBytes, remaining);
 
                 // Read before incrementing FilePointer
                 boolean resume = randomAccessFile.getFilePointer() != 0;
+                long offset = randomAccessFile.getFilePointer();
+                boolean finalChunk = offset > fileLength;
 
                 // incrementing FilePointer
                 byte[] buffer = new byte[(int) thisChunkSize];
@@ -288,7 +295,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
 
                 // Read after incrementing FilePointer
                 remaining = fileLength - randomAccessFile.getFilePointer();
-                boolean finalChunk = randomAccessFile.getFilePointer() > fileLength;
+
 
                 int attempt = 0;
                 while (true) {
@@ -301,10 +308,10 @@ public class DsKalturaClient extends DsKalturaClientBase {
                                 fileLength,
                                 resume,
                                 finalChunk,
-                                randomAccessFile.getFilePointer()));
+                                offset));
 
-                        log.debug("Uploaded chunk {}/{} (finalChunk={}, chunkSize={}) for uploadToken '{}'.",
-                                randomAccessFile.getFilePointer(), fileLength, finalChunk, thisChunkSize,
+                        log.debug("Uploaded chunk {}/{} (finalChunk={}, resume={},  chunkSize={}) for uploadToken '{}'.",
+                                randomAccessFile.getFilePointer(), fileLength, finalChunk, resume, thisChunkSize,
                                 result.getId());
                         break; // success, move to next chunk
                     } catch (APIException e) {
@@ -316,7 +323,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
                 }
             }
         }
-        ;
 
         return uploadTokenId;
     }
