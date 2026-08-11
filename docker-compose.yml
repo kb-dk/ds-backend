@@ -14,6 +14,8 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
     environment:
       TZ: UTC
     healthcheck:
@@ -309,6 +311,49 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  postgres-storage:
+    image: postgres:13.23-alpine3.21
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    container_name: ds-postgres-storage
+    environment:
+      TZ: UTC
+      POSTGRES_DB: digisam
+      POSTGRES_USER: digisam
+      POSTGRES_PASSWORD: p0stgr3s
+    healthcheck:
+      test: [ "CMD", "pg_isready", "--username=digisam" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    ports:
+      - "8092:5432"
+    volumes:
+      - postgres_storage_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+    security_opt:
+      - no-new-privileges:true
+
+  flyway:
+    image: redgate/flyway:13.2.0
+    container_name: local-flyway
+    command: -url=jdbc:postgresql://postgres-storage:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-storage/flyway/sql -connectRetries=60 migrate
+    volumes:
+      - ./ds-storage/src/main/resources/db/migration:/ds-storage/flyway/sql
+    networks:
+      - postgres_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   solr:
     image: solr-image/master:latest
     build:
@@ -344,6 +389,7 @@ volumes:
   solr_data:
   keycloak_data:
   postgres_data:
+  postgres_storage_data:
 
 secrets:
   maven_settings:
