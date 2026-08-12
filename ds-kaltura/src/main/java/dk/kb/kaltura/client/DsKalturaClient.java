@@ -304,7 +304,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
                                 inputStream,
                                 mimeType.getValue(),
                                 kalturaFileName,
-                                fileLength,
+                                thisChunkSize,
                                 resume,
                                 finalChunk,
                                 offset));
