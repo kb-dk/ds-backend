@@ -56,7 +56,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * @param sessionRefreshThreshold          The threshold in seconds for session renewal.
      * @param conversionQueueThreshold         The threshold for the size of the conversionQueue. If queue gets larger than
      *                                         this threshold, upload will wait and retry.
-     * @param retryDelaySeconds the delay in seconds to wait for a retry if the
+     * @param conversionQueueRetryDelaySeconds the delay in seconds to wait for a retry if the
      *                                         conversionQueueLength is larger than or equal to
      *                                         conversionQueueThreshold.
      * @throws APIException If session could not be created at Kaltura
@@ -263,14 +263,15 @@ public class DsKalturaClient extends DsKalturaClientBase {
     /**
      * Uploads file to Kaltura uploadToken.
      *
-     * @param uploadTokenId The uploadToken created beforehand
-     * @param filePath      The path of file to be uploaded
-     * @param chunkSizeBytes Size of chunks the files should be devided in. Should be larger than 0.
-     * @return The UploadTokenId when upload is complete
+     * @param uploadTokenId   The uploadToken created beforehand
+     * @param filePath        The path of file to be uploaded
+     * @param mimeType        type of mediaFile
+     * @param kalturaFileName Name of file once uploaded (the actual file, not the actual).
+     * @param chunkSizeBytes  Size of chunks the files should be devided in. Should be larger than 0.
      * @throws APIException if request fails
      */
-    private String uploadFile(String uploadTokenId, String filePath, MimeType mimeType,
-                              String kalturaFileName, long chunkSizeBytes)
+    private void uploadFile(String uploadTokenId, String filePath, MimeType mimeType,
+                            String kalturaFileName, long chunkSizeBytes)
             throws APIException, IOException {
 
         if (chunkSizeBytes <= 0) {
@@ -371,27 +372,34 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * content is added to specified flavor within the Entry. If FlavorParamID is null content is added as source
      * flavor.
      *
-     * @param uploadtokenId Upload token with content
+     * @param uploadTokenId Upload token with content
      * @param entryId       Entry to receive content
-     * @return EntryId of updated entry
      * @throws APIException if request fails
      */
-    private String addUploadTokenToEntry(String uploadtokenId, String entryId)
+    private void addUploadTokenToEntry(String uploadTokenId, String entryId)
             throws APIException {
-        //Connect uploaded file with meta data entry
+        //Connect uploaded file with metadata entry
         UploadedFileTokenResource resource = new UploadedFileTokenResource();
-        resource.setToken(uploadtokenId);
+        resource.setToken(uploadTokenId);
         AddContentMediaBuilder requestBuilder;
 
         requestBuilder = MediaService.addContent(entryId, resource);
 
         try {
-            return handleRequest(requestBuilder).getId();
+            handleRequest(requestBuilder);
         } catch (APIException e) {
-            log.warn("UploadToken '{}' was not added to entry '{}' because: '{}'", uploadtokenId, entryId,
+            log.warn("UploadToken '{}' was not added to entry '{}' because: '{}'", uploadTokenId, entryId,
                     e.getMessage());
             throw e;
         }
+    }
+
+    public String uploadMedia(String filePath, String referenceId, MediaType mediaType,
+                              String title, String description, String tag,
+                              FileExtension fileExtension, @Nullable Integer conversionProfileId) throws APIException, IOException {
+        return uploadMedia(filePath, referenceId, mediaType,
+                title, description, tag,
+                fileExtension, conversionProfileId, DEFAULT_CHUNK_SIZE_BYTES);
     }
 
     /**
@@ -425,7 +433,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      */
     public String uploadMedia(String filePath, String referenceId, MediaType mediaType,
                               String title, String description, String tag,
-                              FileExtension fileExtension, @Nullable Integer conversionProfileId)
+                              FileExtension fileExtension, @Nullable Integer conversionProfileId, long chunkSizeBytes)
             throws IOException, APIException {
         if (referenceId == null) {
             throw new IllegalArgumentException("referenceId must be defined");
@@ -446,7 +454,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
         String kalturaFileName = referenceId + fileExtension.getExtension();
 
         String uploadTokenId = addUploadToken();
-        uploadFile(uploadTokenId, filePath, mimeType, kalturaFileName, DEFAULT_CHUNK_SIZE_BYTES);
+        uploadFile(uploadTokenId, filePath, mimeType, kalturaFileName, chunkSizeBytes);
         String entryId = addEmptyEntry(mediaType, title, description, referenceId, tag, conversionProfileId);
         addUploadTokenToEntry(uploadTokenId, entryId);
         estimatedQueueLength++; // Add 1 to conversion queue
