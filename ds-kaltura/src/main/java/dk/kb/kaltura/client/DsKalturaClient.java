@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public class DsKalturaClient extends DsKalturaClientBase {
     private static final Integer MAX_RETRY_COUNT = 3;
-    private static final long DEFAULT_CHUNK_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+    private static final long CHUNK_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
 
     private final Integer conversionQueueThreshold;
     private final Integer conversionQueueRetryDelaySeconds;
@@ -267,23 +267,18 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * @param filePath        The path of file to be uploaded
      * @param mimeType        type of mediaFile
      * @param kalturaFileName Name of file once uploaded (the actual file, not the actual).
-     * @param chunkSizeBytes  Size of chunks the files should be devided in. Should be larger than 0.
      * @throws APIException if request fails
      */
     private void uploadFile(String uploadTokenId, String filePath, MimeType mimeType,
-                            String kalturaFileName, long chunkSizeBytes)
+                            String kalturaFileName)
             throws APIException, IOException {
-
-        if (chunkSizeBytes <= 0) {
-            throw new IllegalArgumentException("chunkSizeBytes must be larger than 0");
-        }
 
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r")) {
             long fileLength = randomAccessFile.length();
             long remaining = fileLength;
 
             while (remaining > 0) {
-                long thisChunkSize = Math.min(chunkSizeBytes, remaining);
+                long thisChunkSize = Math.min(CHUNK_SIZE_BYTES, remaining);
 
                 // Read before incrementing FilePointer
                 boolean resume = randomAccessFile.getFilePointer() != 0;
@@ -320,13 +315,11 @@ public class DsKalturaClient extends DsKalturaClientBase {
                         if (attempt >= MAX_RETRY_COUNT) throw e;
                         log.warn("Retrying chunk at offset {} (attempt {}) for token '{}': {}",
                                 randomAccessFile.getFilePointer(), attempt, uploadTokenId, e.getMessage());
-                        sleepBeforeRetry(attempt, 30);
+                        sleepBeforeRetry(attempt);
                     }
                 }
             }
         }
-
-        return uploadTokenId;
     }
 
 
@@ -394,14 +387,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
         }
     }
 
-    public String uploadMedia(String filePath, String referenceId, MediaType mediaType,
-                              String title, String description, String tag,
-                              FileExtension fileExtension, @Nullable Integer conversionProfileId) throws APIException, IOException {
-        return uploadMedia(filePath, referenceId, mediaType,
-                title, description, tag,
-                fileExtension, conversionProfileId, DEFAULT_CHUNK_SIZE_BYTES);
-    }
-
     /**
      * Upload a video or audio file to Kaltura.
      * The upload require 4 API calls to Kaltura
@@ -433,7 +418,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      */
     public String uploadMedia(String filePath, String referenceId, MediaType mediaType,
                               String title, String description, String tag,
-                              FileExtension fileExtension, @Nullable Integer conversionProfileId, long chunkSizeBytes)
+                              FileExtension fileExtension, @Nullable Integer conversionProfileId)
             throws IOException, APIException {
         if (referenceId == null) {
             throw new IllegalArgumentException("referenceId must be defined");
@@ -454,7 +439,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
         String kalturaFileName = referenceId + fileExtension.getExtension();
 
         String uploadTokenId = addUploadToken();
-        uploadFile(uploadTokenId, filePath, mimeType, kalturaFileName, chunkSizeBytes);
+        uploadFile(uploadTokenId, filePath, mimeType, kalturaFileName);
         String entryId = addEmptyEntry(mediaType, title, description, referenceId, tag, conversionProfileId);
         addUploadTokenToEntry(uploadTokenId, entryId);
         estimatedQueueLength++; // Add 1 to conversion queue
@@ -528,9 +513,9 @@ public class DsKalturaClient extends DsKalturaClientBase {
         return sum;
     }
 
-    private void sleepBeforeRetry(int attempt, int maxSleepTimeSeconds) {
+    private void sleepBeforeRetry(int attempt) {
         try {
-            long sleepTime = Math.min(1000 * (1L << attempt), maxSleepTimeSeconds * 1000L);
+            long sleepTime = Math.min(1000 * (1L << attempt), 30 * 1000L);
             log.debug("Sleep before retry: {}s", sleepTime / 1000);
             Thread.sleep(sleepTime); // exponential backoff, capped
         } catch (InterruptedException ie) {
