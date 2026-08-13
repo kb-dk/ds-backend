@@ -1,51 +1,47 @@
 package dk.kb.storage.util;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.util.Resolver;
-
 /**
- * When running in Jetty mode, it needs to set up the database. This class can not in test packages or it can not be loaded.
+ * Utility for initializing and running Flyway database migrations
+ * against a PostgreSQL instance (e.g. Jetty local dev mode or embedded setups).
  */
 public class H2DbUtil {
-    protected static final String CREATE_TABLES_DDL_FILE = "ddl/create_ds_storage_h2_unittest.ddl";
-    
+
     private static final Logger log = LoggerFactory.getLogger(H2DbUtil.class);
 
+    /**
+     * Executes Flyway migrations against the configured PostgreSQL database.
+     * Replaces the legacy H2 RUNSCRIPT execution.
+     */
     public static void createEmptyH2DBFromDDL(String url, String driver, String username, String password) throws Exception {
-        //  Instead of deleting h2 database completely, we reuse the table between unittests instead.
-        // doDelete(new File(TEST_CLASSES_PATH +"/h2"));
+        log.info("Initializing database migrations via Flyway for target: {}", url);
+
         try {
-            Class.forName(driver); // load the driver
+            Class.forName(driver);
         } catch (ClassNotFoundException e) {
-            throw new SQLException(e);
+            throw new SQLException("Failed to load database driver: " + driver, e);
         }
 
-        try (Connection connection = DriverManager.getConnection(url,username,password)){
-            File file = getFile(CREATE_TABLES_DDL_FILE);
-            log.info("Running DDL script: {}", file.getAbsolutePath());
+        try {
+            // Programmatically invoke Flyway against the Postgres target
+            Flyway flyway = Flyway.configure()
+                    .dataSource(url, username, password)
+                    .locations("classpath:db/migration")
+                    .connectRetries(30)
+                    .load();
 
-            if (!file.exists()) {
-                log.error("DDL script not found: {}", file.getAbsolutePath());
-                throw new RuntimeException("DDL Script file not found:" + file.getAbsolutePath());
-            }
-
-            connection.createStatement().execute("RUNSCRIPT FROM '" + file.getAbsolutePath() + "'");
-            connection.createStatement().execute("SHUTDOWN");
+            flyway.migrate();
+            log.info("Flyway database migration completed successfully.");
+        } catch (Exception e) {
+            log.error("Failed to execute Flyway database migrations", e);
+            throw e;
         }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    //Use KB-util to resolve file. 
-    protected static File getFile(String resource) {
-       return Resolver.getPathFromClasspath(resource).toFile(); 
     }
 }

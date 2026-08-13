@@ -2,6 +2,7 @@ package dk.kb.storage.storage;
 
 import java.io.File;
 
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.util.H2DbUtil;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
  * Setup for the environment for unittest the same way as done in the InitialContext loader in the web container.
@@ -17,17 +19,38 @@ import dk.kb.storage.util.H2DbUtil;
  * 2) Load the Yaml property files.
  */
 public abstract class DsStorageUnitTestUtil {
-    protected static final String DRIVER = "org.h2.Driver";
+    private static final PostgreSQLContainer<?> postgres;
 
-    //We need the relative location. This works both in IDE's and Maven.
-    protected static final String TEST_CLASSES_PATH = new File(Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()).getParentFile().getAbsolutePath();
-    protected static final String URL = "jdbc:h2:"+TEST_CLASSES_PATH+"/h2/ds_storage;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
-    protected static final String USERNAME = "";
-    protected static final String PASSWORD = "";
+    static {
+        System.setProperty("DOCKER_HOST", "unix:///var/run/docker.sock");
+        System.setProperty("api.version", "1.40");
+
+        postgres = new PostgreSQLContainer<>("postgres:13.23-alpine3.21")
+                .withDatabaseName("digisam")
+                .withUsername("digisam")
+                .withPassword("p0stgr3s");
+
+        postgres.start();
+
+        // Execute Flyway migrations against the container
+        Flyway flyway = Flyway.configure()
+                .dataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
+                .locations("filesystem:src/main/resources/db/migration")
+                .load();
+
+        flyway.migrate();
+    }
+
+    protected static final String DRIVER = "org.postgresql.Driver";
+    protected static final String URL = postgres.getJdbcUrl();
+    protected static final String USERNAME = postgres.getUsername();
+    protected static final String PASSWORD = postgres.getPassword();
+
+    protected static final String TEST_CLASSES_PATH = new File(
+            Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()
+    ).getParentFile().getAbsolutePath();
 
     protected static DsStorageForUnitTest storage = null;
-
-    private static final Logger log = LoggerFactory.getLogger(DsStorageUnitTestUtil.class);
 
     @BeforeAll
     public static void beforeClass() throws Exception {
