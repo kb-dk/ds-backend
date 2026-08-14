@@ -6,16 +6,14 @@ import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import dk.kb.storage.config.ServiceConfig;
-import dk.kb.storage.util.H2DbUtil;
+import dk.kb.storage.util.DbUtil;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
  * Setup for the environment for unittest the same way as done in the InitialContext loader in the web container.
- * 1) Create a h2 database for unittests with schema defined
+ * 1) Create a Postgres database for unittests with schema defined
  * 2) Load the Yaml property files.
  */
 public abstract class DsStorageUnitTestUtil {
@@ -55,7 +53,7 @@ public abstract class DsStorageUnitTestUtil {
     @BeforeAll
     public static void beforeClass() throws Exception {
         ServiceConfig.initialize("conf/ds-storage*.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD);
+        DbUtil.runFlywayMigrations(URL,DRIVER,USERNAME,PASSWORD);
         DsStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         storage = new DsStorageForUnitTest();
     }

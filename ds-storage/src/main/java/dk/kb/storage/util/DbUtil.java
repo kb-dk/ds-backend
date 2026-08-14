@@ -1,7 +1,5 @@
 package dk.kb.storage.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.flywaydb.core.Flyway;
@@ -12,15 +10,15 @@ import org.slf4j.LoggerFactory;
  * Utility for initializing and running Flyway database migrations
  * against a PostgreSQL instance (e.g. Jetty local dev mode or embedded setups).
  */
-public class H2DbUtil {
+public class DbUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(H2DbUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(DbUtil.class);
 
     /**
      * Executes Flyway migrations against the configured PostgreSQL database.
      * Replaces the legacy H2 RUNSCRIPT execution.
      */
-    public static void createEmptyH2DBFromDDL(String url, String driver, String username, String password) throws Exception {
+    public static void runFlywayMigrations(String url, String driver, String username, String password) throws Exception {
         log.info("Initializing database migrations via Flyway for target: {}", url);
 
         try {
