@@ -1,4 +1,4 @@
-create_ds_datahandler_db.ddl
+SKIP_create_ds_datahandler_db.ddl
 licensemodule_create_db.ddl
 audit_log_module_create_db.ddl
 rightsmodule_create.ddl

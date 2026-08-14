@@ -5,7 +5,7 @@ import dk.kb.datahandler.model.v1.*;
 import dk.kb.datahandler.storage.BasicStorage;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.storage.JobStorageForUnitTests;
-import dk.kb.datahandler.util.H2DbUtil;
+import dk.kb.datahandler.util.DbUtil;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +31,7 @@ public class DsDatahandlerFacadeTest {
     @BeforeAll
     public static void beforeClass() throws Exception {
         ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(DB_URL, DRIVER, USERNAME, PASSWORD);
+        DbUtil.runFlywayMigrations(DB_URL, DRIVER, USERNAME, PASSWORD);
         JobStorage.initialize(DRIVER, DB_URL, USERNAME, PASSWORD);
 
         storage = new JobStorageForUnitTests();

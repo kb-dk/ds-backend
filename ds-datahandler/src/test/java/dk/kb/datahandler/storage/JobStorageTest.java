@@ -5,7 +5,7 @@ import dk.kb.datahandler.model.v1.CategoryDto;
 import dk.kb.datahandler.model.v1.JobDto;
 import dk.kb.datahandler.model.v1.JobStatusDto;
 import dk.kb.datahandler.model.v1.TypeDto;
-import dk.kb.datahandler.util.H2DbUtil;
+import dk.kb.datahandler.util.DbUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ public class JobStorageTest {
     public static void beforeClass() throws Exception {
         ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
 
-        H2DbUtil.createEmptyH2DBFromDDL(DB_URL, DRIVER, USERNAME, PASSWORD);
+        DbUtil.runFlywayMigrations(DB_URL, DRIVER, USERNAME, PASSWORD);
         JobStorage.initialize(DRIVER, DB_URL, USERNAME, PASSWORD);
 
         storage = new JobStorageForUnitTests();
