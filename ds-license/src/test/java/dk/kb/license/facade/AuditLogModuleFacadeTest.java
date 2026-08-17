@@ -23,28 +23,18 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
-import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.AuditLogModuleStorageForUnitTest;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.UnitTestUtil;
-import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.util.DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 
 public class AuditLogModuleFacadeTest extends UnitTestUtil {
-    protected static AuditLogModuleStorageForUnitTest storage = null;
+
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleFacadeTest.class);
     static MockedStatic<JAXRSUtils> mocked;
-
-    @BeforeAll
-    public static void beforeClass() throws IOException, SQLException {
-        ServiceConfig.initialize("conf/ds-license*.yaml", "ds-license-integration-test.yaml");
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl","ddl/audit_log_module_create_h2_unittest.ddl"));
-        storage = new  AuditLogModuleStorageForUnitTest();               
-    }
     
     /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.
@@ -63,7 +53,7 @@ public class AuditLogModuleFacadeTest extends UnitTestUtil {
         tables.add("LICENSECONTENT");    
         tables.add("PRESENTATION");
         tables.add("AUDITLOG");    
-        storage.clearTableRecords(tables);
+        //storage.clearTableRecords(tables);
     }
 
     @Test

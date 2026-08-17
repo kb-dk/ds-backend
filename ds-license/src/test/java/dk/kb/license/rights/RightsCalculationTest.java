@@ -6,7 +6,7 @@ import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
 import dk.kb.license.storage.UnitTestUtil;
-import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.util.DbUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,25 +24,10 @@ public class RightsCalculationTest extends UnitTestUtil {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculationTest.class);
 
     @BeforeAll
-    public static void beforeClass() throws IOException, SQLException {
+    public static void beforeClass() throws Exception {
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, "public");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-    }
-
-    @BeforeEach
-    public void beforeEach() throws SQLException {
-        try (RightsModuleStorageForUnitTest storage = new RightsModuleStorageForUnitTest()) {
-            List<String> tables = new ArrayList<String>();
-            tables.add("RESTRICTED_IDS");
-            tables.add("DR_HOLDBACK_RANGES");
-            tables.add("DR_HOLDBACK_CATEGORIES");
-
-            storage.clearTableRecords(tables);
-        } catch (Exception e) {
-            throw e;
-        }
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_default_dr_holdback_categories_data.sql", "ddl/rightsmodule_default_dr_holdback_ranges_data.sql"));
     }
 
     public RightsCalculationInputDto map(String recordId, PlatformEnumDto platform, String startTime,

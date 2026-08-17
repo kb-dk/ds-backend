@@ -1,10 +1,19 @@
 package dk.kb.license.storage;
 
 import java.io.File;
+import java.sql.SQLException;
 
+import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.util.DbUtil;
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.BeforeAll;
+
+
+import org.junit.jupiter.api.BeforeEach;
+import org.testcontainers.containers.PostgreSQLContainer;
+
+import static org.apache.solr.common.util.IOUtils.closeQuietly;
 
 /**
  * Setup for the environment for unittest the same way as done in the InitialContext loader in the web container.
@@ -12,15 +21,52 @@ import org.slf4j.LoggerFactory;
  * 2) Load the Yaml property files.
  */
 public abstract class UnitTestUtil {
-    protected static final String DRIVER = "org.h2.Driver";
+    private static final PostgreSQLContainer<?> postgres;
 
-    //We need the relative location. This works both in IDE's and Maven.
-    protected static final String TEST_CLASSES_PATH = new File(Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()).getParentFile().getAbsolutePath();
-    protected static final String URL = "jdbc:h2:"+TEST_CLASSES_PATH+"/h2/ds_license;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
-    protected static final String USERNAME = "";
-    protected static final String PASSWORD = "";
+    static {
+        System.setProperty("DOCKER_HOST", "unix:///var/run/docker.sock");
+        System.setProperty("api.version", "1.40");
 
-    private static final Logger log = LoggerFactory.getLogger(UnitTestUtil.class);
+        postgres = new PostgreSQLContainer<>("postgres:13.23-alpine3.21")
+                .withDatabaseName("digisam")
+                .withUsername("digisam")
+                .withPassword("p0stgr3s")
+                .withCommand("postgres", "-c", "datestyle=ISO,DMY");
+
+        postgres.start();
+
+        // Execute Flyway migrations against the container
+        Flyway flyway = Flyway.configure()
+                .dataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
+                .locations("filesystem:src/main/resources/db/migration")
+                .load();
+
+        flyway.migrate();
+    }
+
+    protected static final String DRIVER = "org.postgresql.Driver";
+    protected static final String URL = postgres.getJdbcUrl();
+    protected static final String USERNAME = postgres.getUsername();
+    protected static final String PASSWORD = postgres.getPassword();
+
+    protected static final String TEST_CLASSES_PATH = new File(
+            Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()
+    ).getParentFile().getAbsolutePath();
+
+    protected static AuditLogModuleStorageForUnitTest auditStorage = null;
+    protected static LicenseModuleStorageForUnitTest licenseStorage = null;
+    protected static RightsModuleStorageForUnitTest rightsStorage = null;
+    protected static BaseModuleStorage baseModuleStorage = null;
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
+        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        DbUtil.runFlywayMigrations(URL,DRIVER,USERNAME,PASSWORD,"public");
+        auditStorage = new AuditLogModuleStorageForUnitTest();
+        licenseStorage = new LicenseModuleStorageForUnitTest();
+        rightsStorage = new RightsModuleStorageForUnitTest();
+    }
 
     @AfterAll
     public static void afterClass() {
@@ -30,6 +76,5 @@ public abstract class UnitTestUtil {
         AuditLogModuleStorage.shutdown();
         LicenseModuleStorage.shutdown();
         RightsModuleStorage.shutdown();
-        BaseModuleStorage.shutdown();
     }
 }

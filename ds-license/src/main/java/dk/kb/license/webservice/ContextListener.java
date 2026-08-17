@@ -20,7 +20,7 @@ import javax.servlet.ServletContextListener;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.storage.*;
-import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.util.DbUtil;
 
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
@@ -98,26 +98,19 @@ public class ContextListener implements ServletContextListener {
        String url = ServiceConfig.getDBUrl();
        String user = ServiceConfig.getDBUserName();
        String password = ServiceConfig.getDBPassword();
-                     
-       //If running jetty for development
-       if ("org.h2.Driver".equals(driver)) { //Would be slightly better if we can detect it is jetty in local environment
-         createLocalH2ForJettyEnvironment(driver, url, user, password);
-       }
        
        BaseModuleStorage.initialize(driver,url,user,password);
     }
 
-    private void createLocalH2ForJettyEnvironment(String driver, String url, String user, String password) {
-        try {
-         log.info("Setting up H2 database under jetty in development mode");          
-         H2DbUtil.createEmptyH2DBFromDDL(url, driver,  user, password, List.of(
-                 "ddl/licensemodule_create_h2_unittest.ddl",
-                 "ddl/rightsmodule_create_h2_unittest.ddl"));
-       }
-       catch(Exception e) {
-         log.error("Unable to create local h2 database for jetty environment",e);             
-       }
-    }
+//    private void createLocalH2ForJettyEnvironment(String driver, String url, String user, String password) {
+//        try {
+//         log.info("Setting up H2 database under jetty in development mode");
+//         DbUtil.runFlywayMigrations(url, driver,  user, password, 'public');
+//       }
+//       catch(Exception e) {
+//         log.error("Unable to create local h2 database for jetty environment",e);
+//       }
+//    }
 
     /**
      * For unfathomable reasons, logback 1.4.11 does not support the construction

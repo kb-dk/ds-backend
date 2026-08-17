@@ -6,7 +6,7 @@ import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
 import dk.kb.license.storage.UnitTestUtil;
-import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.util.DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -47,9 +47,9 @@ public class RightsModuleFacadeTest extends UnitTestUtil {
     List<AuditLogEntryOutputDto> auditLogEntriesForObject;
 
     @BeforeAll
-    public static void beforeClass() throws IOException, SQLException {
+    public static void beforeClass() throws Exception {
         ServiceConfig.initialize("conf/ds-license*.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl", "ddl/audit_log_module_create_h2_unittest.ddl"));
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, "public");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         storage = new RightsModuleStorageForUnitTest();

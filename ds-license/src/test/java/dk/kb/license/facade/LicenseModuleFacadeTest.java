@@ -6,7 +6,7 @@ import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.*;
-import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.util.DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
@@ -33,11 +33,11 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
 
     @BeforeAll
-    public static void beforeClass() throws IOException, SQLException {
+    public static void beforeClass() throws Exception {
         ServiceConfig.initialize("conf/ds-license*.yaml", "ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl", "ddl/audit_log_module_create_h2_unittest.ddl"));
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, "public");
         storage = new LicenseModuleStorageForUnitTest();
     }
    

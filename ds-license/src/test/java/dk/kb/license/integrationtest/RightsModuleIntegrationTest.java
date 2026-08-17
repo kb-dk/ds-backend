@@ -6,7 +6,7 @@ import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.UnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
-import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.util.DbUtil;
 import dk.kb.util.oauth2.KeycloakUtil;
 import dk.kb.util.webservice.OAuthConstants;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -37,12 +37,12 @@ public class RightsModuleIntegrationTest extends UnitTestUtil {
     private static RightsModuleStorage storage;
 
     @BeforeAll
-    static void setup() {
+    static void setup() throws Exception {
         try {
             ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");
 
             BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-            H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
+            DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, "public");
 
             // Instantiate the RightsModuleStorage without it being able to touch records in a backing DS-storage
             storage = new RightsModuleStorage();

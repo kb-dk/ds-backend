@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 
 /**
@@ -104,13 +106,18 @@ public abstract class BaseModuleStorage implements AutoCloseable {
         log.info("Running DDL script: " + file.getAbsolutePath());
 
         if (!file.exists()) {
-            log.error("DDL script not found: " + file.getAbsolutePath());
-            throw new RuntimeException("DDLscript file not found: " + file.getAbsolutePath());
+          log.error("DDL script not found: " + file.getAbsolutePath());
+         throw new RuntimeException("DDL script file not found: " + file.getAbsolutePath());
         }
 
-        String scriptStatement = "RUNSCRIPT FROM '" + file.getAbsolutePath() + "'";
-
-        connection.prepareStatement(scriptStatement).execute();
+        try {
+            String sql = Files.readString(file.toPath());
+            try (Statement stmt = connection.createStatement()) {
+             stmt.execute(sql);
+            }
+        } catch (Exception e) {
+            log.error("Failed to execute DDL script: " + file.getAbsolutePath(), e);
+            throw new SQLException("Failed to execute DDL script", e); }
     }
 
     // This is called by from InialialziationContextListener by the Web-container
