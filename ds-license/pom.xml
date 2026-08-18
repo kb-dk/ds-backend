@@ -7,13 +7,13 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>100.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
     <!-- Human-readable name, uppercase and spaces welcome -->
     <name>ds-license</name>
     <groupId>dk.kb.license</groupId>
     <artifactId>ds-license</artifactId>
-    <version>100.0.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>ds-license by the Royal Danish Library</description>
     <scm>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
             <artifactId>ds-shared</artifactId>
-            <version>100.0.0-SNAPSHOT</version>
+            <version>6.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>dk.kb.util</groupId>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
-            <version>100.0.0-SNAPSHOT</version>
+            <version>6.0.0-SNAPSHOT</version>
             <type>jar</type>
             <classifier>api</classifier>
             <exclusions>

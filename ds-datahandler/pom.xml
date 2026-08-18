@@ -7,13 +7,13 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>100.0.0-SNAPSHOT</version>
+        <version>6.0.0-SNAPSHOT</version>
     </parent>
     <!-- Human-readable name, uppercase and spaces welcome -->
     <name>ds-datahandler</name>
     <groupId>dk.kb.datahandler</groupId>
     <artifactId>ds-datahandler</artifactId>
-    <version>100.0.0-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>ds-datahandler by the Royal Danish Library</description>
     <scm>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
             <artifactId>ds-shared</artifactId>
-            <version>100.0.0-SNAPSHOT</version>
+            <version>6.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>dk.kb.util</groupId>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
-            <version>100.0.0-SNAPSHOT</version>
+            <version>6.0.0-SNAPSHOT</version>
             <type>jar</type>
             <classifier>api</classifier>
             <exclusions>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>dk.kb.present</groupId>
             <artifactId>ds-present</artifactId>
-            <version>100.0.0-SNAPSHOT</version>
+            <version>6.0.0-SNAPSHOT</version>
             <type>jar</type>
             <classifier>api</classifier>
             <exclusions>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>dk.kb.kaltura</groupId>
             <artifactId>ds-kaltura</artifactId>
-            <version>100.0.0-SNAPSHOT</version>
+            <version>6.0.0-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
