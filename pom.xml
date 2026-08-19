@@ -10,14 +10,14 @@
     <name>ds-parent</name>
     <groupId>dk.kb.dsparent</groupId>
     <artifactId>ds-parent</artifactId>
-    <version>6.0.0</version>
+    <version>6.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>ds-parent by the Royal Danish Library</description>
     <scm>
         <url>https://github.com/kb-dk/ds-backend</url>
         <connection>scm:git:git@github.com:kb-dk/ds-backend.git</connection>
         <developerConnection>scm:git:https://github.com/kb-dk/ds-backend.git</developerConnection>
-        <tag>v6.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

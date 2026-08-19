@@ -4,20 +4,20 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>6.0.0</version>
+        <version>6.0.1-SNAPSHOT</version>
     </parent>
     <!-- Human-readable name, uppercase and spaces welcome -->
     <name>ds-kaltura</name>
     <groupId>dk.kb.kaltura</groupId>
     <artifactId>ds-kaltura</artifactId>
-    <version>6.0.0</version>
+    <version>6.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>ds-kaltura by the Royal Danish Library</description>
     <scm>
         <url>https://github.com/kb-dk/ds-backend</url>
         <connection>scm:git:git@github.com:kb-dk/ds-backend.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds-backend.git</developerConnection>
-        <tag>v6.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <properties>
         <!-- Specify java version here, to support forbiddenapis plugin -->
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
             <artifactId>ds-shared</artifactId>
-            <version>6.0.0</version>
+            <version>6.0.1-SNAPSHOT</version>
         </dependency>
         <!--Command line -->
         <dependency>
