@@ -7,13 +7,13 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>6.0.0-SNAPSHOT</version>
+        <version>200.100.0-snapshot</version>
     </parent>
     <!-- Human-readable name, uppercase and spaces welcome -->
     <name>ds-kaltura</name>
     <groupId>dk.kb.kaltura</groupId>
     <artifactId>ds-kaltura</artifactId>
-    <version>6.0.0-SNAPSHOT</version>
+    <version>200.100.0-snapshot</version>
     <packaging>jar</packaging>
     <description>ds-kaltura by the Royal Danish Library</description>
     <scm>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
             <artifactId>ds-shared</artifactId>
-            <version>6.0.0-SNAPSHOT</version>
+            <version>200.100.0-snapshot</version>
         </dependency>
         <!--Command line -->
         <dependency>
