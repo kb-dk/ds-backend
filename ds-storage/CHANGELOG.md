@@ -78,8 +78,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.3.3](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-2.3.3) 2025-03-05
 
-## [Unreleased]
-
 - Bumped SwaggerUI dependency to v5.18.2
 - Bumped kb-util to v1.6.9 for service2service oauth support.
 - Added injection of Oauth token on all service methods when using DsStorageClient.
