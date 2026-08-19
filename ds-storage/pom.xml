@@ -4,20 +4,20 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>200.100.1-SNAPSHOT</version>
+        <version>200.100.1</version>
     </parent>
     <!-- Human-readable name, uppercase and spaces welcome -->
     <name>ds-storage</name>
     <groupId>dk.kb.storage</groupId>
     <artifactId>ds-storage</artifactId>
-    <version>200.100.1-SNAPSHOT</version>
+    <version>200.100.1</version>
     <packaging>war</packaging>
     <description>ds-storage by the Royal Danish Library</description>
     <scm>
         <url>https://github.com/kb-dk/ds-backend</url>
         <connection>scm:git:git@github.com:kb-dk/ds-backend.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds-backend.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v200.100.1</tag>
     </scm>
     <licenses>
         <!--SBForge stuff should have a license-->
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
             <artifactId>ds-shared</artifactId>
-            <version>200.100.1-SNAPSHOT</version>
+            <version>200.100.1</version>
         </dependency>
         <dependency>
             <groupId>dk.kb.util</groupId>
