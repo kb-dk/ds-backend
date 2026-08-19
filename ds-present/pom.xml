@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-        xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>200.100.0-snapshot</version>
+        <version>200.100.0</version>
     </parent>
     <!-- Human-readable name, uppercase and spaces welcome -->
     <name>ds-present</name>
     <groupId>dk.kb.present</groupId>
     <artifactId>ds-present</artifactId>
-    <version>200.100.0-snapshot</version>
+    <version>200.100.0</version>
     <packaging>war</packaging>
     <description>ds-present by the Royal Danish Library</description>
     <scm>
         <url>https://github.com/kb-dk/ds-backend</url>
         <connection>scm:git:git@github.com:kb-dk/ds-backend.git</connection>
         <developerConnection>scm:git:git@github.com:kb-dk/ds-backend.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v200.100.0</tag>
     </scm>
     <licenses>
         <!--SBForge stuff should have a license-->
@@ -44,7 +41,7 @@
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
             <artifactId>ds-shared</artifactId>
-            <version>200.100.0-snapshot</version>
+            <version>200.100.0</version>
         </dependency>
         <dependency>
             <groupId>dk.kb.util</groupId>
@@ -53,7 +50,7 @@
         <dependency>
             <groupId>dk.kb.license</groupId>
             <artifactId>ds-license</artifactId>
-            <version>200.100.0-snapshot</version>
+            <version>200.100.0</version>
             <type>jar</type>
             <classifier>api</classifier>
             <exclusions>
@@ -66,7 +63,7 @@
         <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
-            <version>200.100.0-snapshot</version>
+            <version>200.100.0</version>
             <type>jar</type>
             <classifier>api</classifier>
             <exclusions>
