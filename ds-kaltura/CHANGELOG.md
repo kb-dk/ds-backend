@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Changed `uploadFile` method to split data into smaller chunks enable to enhance upload job stability.
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
@@ -16,7 +20,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Changed `uploadFile` method to split data into smaller chunks enable to enhance upload job stability.
 - Removed all scripts, jobs and a lot of obsolete methods and tests.
 - Use null safe `StringUtils.isBlank` instead of `String.isEmpty`.
 - Start on unittest for `DsKalturaAnalytics`.
