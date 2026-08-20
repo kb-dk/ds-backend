@@ -310,11 +310,13 @@ public class DsKalturaClient extends DsKalturaClientBase {
                                 result.getId());
                         break; // success, move to next chunk
                     } catch (APIException e) {
-                        log.error("failed to upload file.");
+                        log.warn("failed to upload file chunk: {}", e.getMessage());
                         attempt++;
-                        if (attempt >= MAX_RETRY_COUNT) throw e;
-                        log.warn("Retrying chunk at offset {} (attempt {}) for token '{}': {}",
-                                randomAccessFile.getFilePointer(), attempt, uploadTokenId, e.getMessage());
+                        if (attempt >= MAX_RETRY_COUNT) {
+                            throw e;
+                        }
+                        log.warn("Retrying chunk at offset {} (attempt {}) for token '{}'",
+                                randomAccessFile.getFilePointer(), attempt, uploadTokenId);
                         sleepBeforeRetry(attempt);
                     }
                 }
