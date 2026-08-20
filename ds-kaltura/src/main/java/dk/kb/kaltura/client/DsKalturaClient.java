@@ -14,9 +14,10 @@ import dk.kb.kaltura.enums.FileExtension;
 import dk.kb.kaltura.enums.MimeType;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  */
 public class DsKalturaClient extends DsKalturaClientBase {
     private static final Integer MAX_RETRY_COUNT = 3;
+    private static final long CHUNK_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
 
     private final Integer conversionQueueThreshold;
     private final Integer conversionQueueRetryDelaySeconds;
@@ -261,38 +263,67 @@ public class DsKalturaClient extends DsKalturaClientBase {
     /**
      * Uploads file to Kaltura uploadToken.
      *
-     * @param uploadTokenId The uploadToken created beforehand
-     * @param filePath      The path of file to be uploaded
-     * @return The UploadTokenId when upload is complete
+     * @param uploadTokenId   The uploadToken created beforehand
+     * @param filePath        The path of file to be uploaded
+     * @param mimeType        type of mediaFile
+     * @param kalturaFileName Name of file once uploaded (the actual file, not the actual).
      * @throws APIException if request fails
      */
-    private String uploadFile(String uploadTokenId, String filePath, MimeType mimeType,
-                              String kalturaFileName) throws APIException,
-            IOException {
-        //Upload the file using the upload token.
-        File fileData = new File(filePath);
-        FileInputStream fileInputStream = new FileInputStream(fileData);
+    private void uploadFile(String uploadTokenId, String filePath, MimeType mimeType,
+                            String kalturaFileName)
+            throws APIException, IOException {
 
-        boolean resume = false;
-        boolean finalChunk = true;
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r")) {
+            long fileLength = randomAccessFile.length();
+            long remaining = fileLength;
 
-        if (!fileData.exists() & !fileData.canRead()) {
-            throw new IOException(filePath + " not accessible");
-        }
+            while (remaining > 0) {
+                long thisChunkSize = Math.min(CHUNK_SIZE_BYTES, remaining);
 
-        try {
-            UploadToken results = handleRequest(UploadTokenService.upload(uploadTokenId, fileInputStream,
-                    mimeType.getValue(), kalturaFileName, resume, finalChunk));
+                // Read before incrementing FilePointer
+                boolean resume = randomAccessFile.getFilePointer() != 0;
+                long offset = randomAccessFile.getFilePointer();
 
-            log.debug("File '{}' uploaded successfully to upload token '{}'.", filePath,
-                    results.getId());
-            return results.getId();
-        } catch (APIException e) {
-            log.warn("Failed to upload file '{}' to upload token '{}' because: '{}'", filePath,
-                    uploadTokenId, e.getMessage());
-            throw e;
+                // incrementing FilePointer
+                byte[] buffer = new byte[(int) thisChunkSize];
+                randomAccessFile.readFully(buffer);
+
+                // Read after incrementing FilePointer
+                remaining = fileLength - randomAccessFile.getFilePointer();
+                boolean finalChunk = remaining <= 0;
+
+                int attempt = 0;
+                while (true) {
+                    try (InputStream inputStream = new ByteArrayInputStream(buffer)) {
+                        UploadToken result = handleRequest(UploadTokenService.upload(
+                                uploadTokenId,
+                                inputStream,
+                                mimeType.getValue(),
+                                kalturaFileName,
+                                thisChunkSize,
+                                resume,
+                                finalChunk,
+                                offset));
+
+                        log.debug("Uploaded chunk {}/{} (finalChunk={}, resume={},  chunkSize={}) for uploadToken '{}'.",
+                                randomAccessFile.getFilePointer(), fileLength, finalChunk, resume, thisChunkSize,
+                                result.getId());
+                        break; // success, move to next chunk
+                    } catch (APIException e) {
+                        log.warn("failed to upload file chunk: {}", e.getMessage());
+                        attempt++;
+                        if (attempt >= MAX_RETRY_COUNT) {
+                            throw e;
+                        }
+                        log.warn("Retrying chunk at offset {} (attempt {}) for token '{}'",
+                                randomAccessFile.getFilePointer(), attempt, uploadTokenId);
+                        sleepBeforeRetry(attempt);
+                    }
+                }
+            }
         }
     }
+
 
     /**
      * Adds en Entry to Kaltura containing only metadata.
@@ -307,7 +338,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
      */
     private String addEmptyEntry(MediaType mediaType, String title, String description, String referenceId,
                                  String tag, Integer conversionProfileId) throws APIException {
-        //Create entry with meta data
+        //Create entry with metadata
         MediaEntry entry = new MediaEntry();
         entry.setMediaType(mediaType);
         entry.setName(title);
@@ -336,24 +367,23 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * content is added to specified flavor within the Entry. If FlavorParamID is null content is added as source
      * flavor.
      *
-     * @param uploadtokenId Upload token with content
+     * @param uploadTokenId Upload token with content
      * @param entryId       Entry to receive content
-     * @return EntryId of updated entry
      * @throws APIException if request fails
      */
-    private String addUploadTokenToEntry(String uploadtokenId, String entryId)
+    private void addUploadTokenToEntry(String uploadTokenId, String entryId)
             throws APIException {
-        //Connect uploaded file with meta data entry
+        //Connect uploaded file with metadata entry
         UploadedFileTokenResource resource = new UploadedFileTokenResource();
-        resource.setToken(uploadtokenId);
+        resource.setToken(uploadTokenId);
         AddContentMediaBuilder requestBuilder;
 
         requestBuilder = MediaService.addContent(entryId, resource);
 
         try {
-            return handleRequest(requestBuilder).getId();
+            handleRequest(requestBuilder);
         } catch (APIException e) {
-            log.warn("UploadToken '{}' was not added to entry '{}' because: '{}'", uploadtokenId, entryId,
+            log.warn("UploadToken '{}' was not added to entry '{}' because: '{}'", uploadTokenId, entryId,
                     e.getMessage());
             throw e;
         }
@@ -367,8 +397,10 @@ public class DsKalturaClient extends DsKalturaClientBase {
      * <li> Upload file using the upload token. Get a tokenID for the upload
      * <li> Create the metadata record in Kaltura
      * <li> Connect the metadata record with the tokenID
-     * </ul>
-     * </ul>
+     * </ul><p>
+     * <p>
+     * </ul><p>
+     * <p>
      * If there for some reason happens an error after the file is uploaded and not connected to the metadata record, it does not
      * seem possible to later see the file in the kaltura administration gui. This error has only happened because I forced it.
      *
@@ -482,4 +514,15 @@ public class DsKalturaClient extends DsKalturaClientBase {
         log.debug("Queue length is : {}", sum);
         return sum;
     }
+
+    private void sleepBeforeRetry(int attempt) {
+        try {
+            long sleepTime = Math.min(1000 * (1L << attempt), 30 * 1000L);
+            log.debug("Sleep before retry: {}s", sleepTime / 1000);
+            Thread.sleep(sleepTime); // exponential backoff, capped
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
 }

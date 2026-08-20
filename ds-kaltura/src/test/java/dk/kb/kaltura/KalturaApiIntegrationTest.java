@@ -27,6 +27,8 @@ public class KalturaApiIntegrationTest {
 
     private static final int DEFAULT_SESSION_DURATION_SECONDS = 86400;
     private static final int DEFAULT_REFRESH_THRESHOLD = 3600;
+    private static int conversionProfileIdAudio = 0;
+    private static int conversionProfileIdVideo = 0;
 
     @BeforeAll
     public static void setup() throws IOException {
@@ -36,6 +38,8 @@ public class KalturaApiIntegrationTest {
             throw new IllegalStateException("An kaltura.token and kaltura.tokenId must be set to perform integration test. Please generate an appToken and" +
                     "add it to the local configuration (NOT the *-behaviour.YAML configuration)");
         }
+        conversionProfileIdAudio = ServiceConfig.getConfig().getSubMap("kaltura").getInteger("conversionProfileIdAudio");
+        conversionProfileIdVideo = ServiceConfig.getConfig().getSubMap("kaltura").getInteger("conversionProfileIdVideo");
     }
 
     @Test
@@ -73,7 +77,7 @@ public class KalturaApiIntegrationTest {
         String title = "test2 title from unittest";
         String description = "test2 description from unittest";
         FileExtension fileExtension = FileExtension.MP4;
-        int conversionProfileId = 0; // <-- change to relevant conversionProfileId found in KMC
+        int conversionProfileId = conversionProfileIdVideo; // <-- change to relevant conversionProfileId found in KMC
 
         //Upload with default flavor and default conversionProfileID
         String kalturaId = clientSession.uploadMedia(file, referenceId, mediaType, title, description, tag,
@@ -90,10 +94,9 @@ public class KalturaApiIntegrationTest {
         String tag = "DS-KALTURA"; //This tag is use for all upload from DS to Kaltura
         String title = "test3 title from unittest";
         String description = "test3 description from unittest";
-        int conversionProfileId = 0;
 
         Throwable t = assertThrows(Exception.class, () -> clientSession.uploadMedia(file, referenceId, mediaType, title,
-                description, tag, FileExtension.MP3, conversionProfileId));
+                description, tag, FileExtension.MP3, conversionProfileIdAudio));
         log.debug(t.toString());
     }
 
