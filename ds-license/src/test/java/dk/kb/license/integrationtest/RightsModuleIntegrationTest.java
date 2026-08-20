@@ -41,9 +41,6 @@ public class RightsModuleIntegrationTest extends UnitTestUtil {
         try {
             ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");
 
-            BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-            DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, "public");
-
             // Instantiate the RightsModuleStorage without it being able to touch records in a backing DS-storage
             storage = new RightsModuleStorage();
         } catch (IOException | SQLException e) {
@@ -82,7 +79,7 @@ public class RightsModuleIntegrationTest extends UnitTestUtil {
     @Test
     @Tag("integration")
     public void testQueryLookupForId() throws SolrServerException, IOException {
-        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("ds.tv:oai:io:5a888d7d-3c0d-4375-9e67-343d88d1dbd9", IdTypeEnumDto.DS_ID);
+        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("ds.tv:oai:io:b1a557d6-f505-445c-ae71-5e593b5fabe2", IdTypeEnumDto.DS_ID);
 
         assertEquals(1, touchedRecords);
     }

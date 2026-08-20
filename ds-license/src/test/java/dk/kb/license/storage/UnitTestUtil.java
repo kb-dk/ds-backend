@@ -2,20 +2,14 @@ package dk.kb.license.storage;
 
 import java.io.File;
 import java.lang.invoke.MethodHandles;
-import java.sql.SQLException;
 import java.util.Locale;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.util.DbUtil;
-import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
-
-import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.PostgreSQLContainer;
-
-import static org.apache.solr.common.util.IOUtils.closeQuietly;
 
 /**
  * Setup for the environment for unittest the same way as done in the InitialContext loader in the web container.
