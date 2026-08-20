@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Changed `uploadFile` method to split data into smaller chunks enable to enhance upload job stability.
+
+## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
+
 ### Added
 
 - Added line break before `@param` in Javadocs
