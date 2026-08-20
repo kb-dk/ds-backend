@@ -33,11 +33,9 @@ public class DbUtil {
                     .dataSource(url, username, password)
                     .locations("classpath:db/migration")
                     .connectRetries(30)
-                    .cleanDisabled(false) // Explicitly enable clean() (disabled by default in Flyway v9+)
+                    .schemas(schema)
+                    .createSchemas(true)
                     .load();
-
-            log.info("Wiping existing database schemas...");
-            flyway.clean();
 
             log.info("Applying Flyway migrations...");
             flyway.migrate();

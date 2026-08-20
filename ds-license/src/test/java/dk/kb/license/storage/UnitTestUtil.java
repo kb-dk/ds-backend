@@ -1,7 +1,9 @@
 package dk.kb.license.storage;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
+import java.util.Locale;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.util.DbUtil;
@@ -35,34 +37,30 @@ public abstract class UnitTestUtil {
 
         postgres.start();
 
-        // Execute Flyway migrations against the container
-        Flyway flyway = Flyway.configure()
-                .dataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
-                .locations("filesystem:src/main/resources/db/migration")
-                .load();
-
-        flyway.migrate();
     }
 
+    public static String getJdbcUrlForSchema(String schemaName) {
+        String baseUrl = postgres.getJdbcUrl();
+        String delimiter = baseUrl.contains("?") ? "&" : "?";
+        return baseUrl + delimiter + "currentSchema=" + schemaName;
+    }
+
+    protected static String schemaName = MethodHandles.lookup().lookupClass().getSimpleName().toLowerCase(Locale.ROOT);
+
     protected static final String DRIVER = "org.postgresql.Driver";
-    protected static final String URL = postgres.getJdbcUrl();
+    protected static final String URL = getJdbcUrlForSchema(schemaName);
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
-
-    protected static final String TEST_CLASSES_PATH = new File(
-            Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()
-    ).getParentFile().getAbsolutePath();
 
     protected static AuditLogModuleStorageForUnitTest auditStorage = null;
     protected static LicenseModuleStorageForUnitTest licenseStorage = null;
     protected static RightsModuleStorageForUnitTest rightsStorage = null;
-    protected static BaseModuleStorage baseModuleStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        DbUtil.runFlywayMigrations(URL,DRIVER,USERNAME,PASSWORD,"public");
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
         auditStorage = new AuditLogModuleStorageForUnitTest();
         licenseStorage = new LicenseModuleStorageForUnitTest();
         rightsStorage = new RightsModuleStorageForUnitTest();

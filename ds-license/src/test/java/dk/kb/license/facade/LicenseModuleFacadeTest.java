@@ -29,17 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
 public class LicenseModuleFacadeTest extends UnitTestUtil {
-    protected static LicenseModuleStorageForUnitTest storage = null;
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
 
-    @BeforeAll
-    public static void beforeClass() throws Exception {
-        ServiceConfig.initialize("conf/ds-license*.yaml", "ds-license-integration-test.yaml");
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, "public");
-        storage = new LicenseModuleStorageForUnitTest();
-    }
    
     /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.
@@ -58,7 +49,7 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
         tables.add("LICENSECONTENT");    
         tables.add("PRESENTATION");
         tables.add("AUDITLOG");    
-        storage.clearTableRecords(tables);
+        licenseStorage.clearTableRecords(tables);
     }
     
     @Test
@@ -87,7 +78,7 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
             LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated, mockedSession);
             LicenseModuleFacade.deletePresentationType(key, mockedSession, deleteReasonDto);
 
-            ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
+            ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject = licenseStorage.getAuditLogByObjectId(presentationTypeId);
 
             assertEquals(3, auditLogEntriesForObject.size());
             AuditLogEntryOutputDto createAuditLog = auditLogEntriesForObject.get(2);

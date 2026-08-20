@@ -23,13 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RightsCalculationTest extends UnitTestUtil {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculationTest.class);
 
-    @BeforeAll
-    public static void beforeClass() throws Exception {
-        ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, "public");
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-    }
-
     public RightsCalculationInputDto map(String recordId, PlatformEnumDto platform, String startTime,
                                          Integer hensigt, Integer form, Integer indhold, String holdbackCategory, Integer productionCountry, String origin,
                                          String productionCode, String drProductionId, String title) {
