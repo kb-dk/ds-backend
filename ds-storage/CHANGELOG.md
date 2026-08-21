@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
+
 ### Added
 
 - Added line break before `@param` in Javadocs
@@ -77,8 +79,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - touchRecord endpoint is now using a POST request instead of a GET request
 
 ## [2.3.3](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-2.3.3) 2025-03-05
-
-## [Unreleased]
 
 - Bumped SwaggerUI dependency to v5.18.2
 - Bumped kb-util to v1.6.9 for service2service oauth support.

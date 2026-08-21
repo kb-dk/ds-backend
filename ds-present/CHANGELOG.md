@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
+
 ### Added
 
 - Added line break before `@param` in Javadocs
@@ -34,6 +36,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Marked unittest with @Tag ("integration") so it can build without aegis.
 - Bumb solr schema version to 1.8.9
 - Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
+- Marked unittest with @Tag("integration") so it can build without aegis.
+- Only allow formatMediaTypes 'Moving Image' and 'Sound' (casesensitive)
 
 ## [4.0.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-4.0.2) 2026-04-07
 
