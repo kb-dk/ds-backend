@@ -16,6 +16,17 @@
   </xsl:param>
 
   <!-- FUNCTIONS -->
+  <!-- Value of a "key:value" PBCore extension string $extensionString for $key, or the empty sequence when the key value
+       does not match  -->
+  <xsl:function name="my:valueFromPBCoreExtensionString" as="xs:string?">
+    <xsl:param name="extentionString" as="xs:string?"/>
+    <xsl:param name="key" as="xs:string"/>
+    <xsl:variable name="marker" select="$key || ':'"/>
+    <xsl:sequence select="if (f:contains($extentionString, $marker) and f:substring-after($extentionString, $marker) ne '')
+                          then f:substring-after($extentionString, $marker)
+                          else ()"/>
+  </xsl:function>
+
   <!-- Get milliseconds between two datetimes. -->
   <xsl:function name="my:toMilliseconds" as="xs:integer">
     <xsl:param name="startDate" as="xs:dateTime"/>
@@ -262,14 +273,6 @@
       <xsl:otherwise><xsl:value-of select="f:upper-case($channelCode)"/></xsl:otherwise>
     </xsl:choose>
   </xsl:function>
-
-  <!-- Named template to create a genre string containing the value given as a parameter to the template. -->
-  <xsl:template name="my:createGenreString">
-    <xsl:param name="genreValue"/>
-    <f:string key="genre">
-      <xsl:value-of select="$genreValue"/>
-    </f:string>
-  </xsl:template>
 
   <!-- Check if a sequence contains values from another sequence. Returns boolean true if sequence A contains a value also present in sequence B. -->
   <xsl:function name="my:sequenceAContainsValueFromSequenceB" as="xs:boolean">
