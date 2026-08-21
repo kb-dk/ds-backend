@@ -11,7 +11,6 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -20,7 +19,6 @@ import javax.servlet.ServletContextListener;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.storage.*;
-import dk.kb.license.util.DbUtil;
 
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;

@@ -163,21 +163,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
-        </dependency>
-        <!-- To get client generation to work -->
-        <!-- https://mvnrepository.com/artifact/org.openapitools/openapi-generator -->
-        <dependency>
-            <groupId>org.openapitools</groupId>
-            <artifactId>openapi-generator</artifactId>
-            <exclusions>
-                <exclusion>
-                    <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
-                    <artifactId>slf4j-simple</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- Logging dependencies -->
+        </dependency>        <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -224,12 +210,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
-        </dependency>
-        <!-- Flyway Core API for Java -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>10.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>

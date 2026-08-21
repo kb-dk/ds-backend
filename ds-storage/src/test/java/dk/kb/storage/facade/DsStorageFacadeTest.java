@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.storage.DsStorageUnitTestUtil;
+import dk.kb.storage.util.DsStorageUnitTestUtil;
 import dk.kb.util.webservice.exception.InternalServiceException;
 
 public class DsStorageFacadeTest extends DsStorageUnitTestUtil{

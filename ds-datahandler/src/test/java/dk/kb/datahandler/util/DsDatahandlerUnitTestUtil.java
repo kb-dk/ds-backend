@@ -1,0 +1,71 @@
+package dk.kb.datahandler.util;
+
+import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.datahandler.storage.JobStorage;
+import dk.kb.datahandler.storage.JobStorageForUnitTests;
+import dk.kb.shared.util.DbUtil;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.testcontainers.containers.PostgreSQLContainer;
+
+import java.io.File;
+import java.lang.invoke.MethodHandles;
+import java.sql.SQLException;
+import java.util.Locale;
+
+/**
+ * Setup for the environment for unittest the same way as done in the InitialContext loader in the web container.
+ * 1) Create a Postgres database for unittests with schema defined
+ * 2) Load the Yaml property files.
+ */
+public abstract class DsDatahandlerUnitTestUtil {
+    private static final PostgreSQLContainer<?> postgres;
+
+    static {
+        System.setProperty("DOCKER_HOST", "unix:///var/run/docker.sock");
+        System.setProperty("api.version", "1.40");
+
+        postgres = new PostgreSQLContainer<>("postgres:13.23-alpine3.21")
+                .withDatabaseName("digisam")
+                .withUsername("digisam")
+                .withPassword("p0stgr3s")
+                .withCommand("postgres", "-c", "datestyle=ISO,DMY");
+
+        postgres.start();
+
+    }
+
+    public static String getJdbcUrlForSchema(String schemaName) {
+        String baseUrl = postgres.getJdbcUrl();
+        String delimiter = baseUrl.contains("?") ? "&" : "?";
+        return baseUrl + delimiter + "currentSchema=" + schemaName;
+    }
+
+    protected static String schemaName = MethodHandles.lookup().lookupClass().getSimpleName().toLowerCase(Locale.ROOT);
+
+    protected static final String DRIVER = "org.postgresql.Driver";
+    protected static final String URL = getJdbcUrlForSchema(schemaName);
+    protected static final String USERNAME = postgres.getUsername();
+    protected static final String PASSWORD = postgres.getPassword();
+
+    protected static final String TEST_CLASSES_PATH = new File(
+            Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()
+    ).getParentFile().getAbsolutePath();
+
+    protected static JobStorageForUnitTests storage = null;
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
+
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
+        JobStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        storage = new JobStorageForUnitTests();
+    }
+
+    @BeforeEach
+    public void beforeTest() throws SQLException {
+        storage.clearTables();
+    }
+
+}

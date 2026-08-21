@@ -1,14 +1,17 @@
-package dk.kb.storage.storage;
+package dk.kb.storage.util;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
+import java.util.Locale;
 
-import org.flywaydb.core.Flyway;
+import dk.kb.storage.storage.DsStorage;
+import dk.kb.storage.storage.DsStorageForUnitTest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import dk.kb.storage.config.ServiceConfig;
-import dk.kb.storage.util.DbUtil;
+import dk.kb.shared.util.DbUtil;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
@@ -26,21 +29,22 @@ public abstract class DsStorageUnitTestUtil {
         postgres = new PostgreSQLContainer<>("postgres:13.23-alpine3.21")
                 .withDatabaseName("digisam")
                 .withUsername("digisam")
-                .withPassword("p0stgr3s");
+                .withPassword("p0stgr3s")
+                .withCommand("postgres", "-c", "datestyle=ISO,DMY");
 
         postgres.start();
 
-        // Execute Flyway migrations against the container
-        Flyway flyway = Flyway.configure()
-                .dataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
-                .locations("filesystem:src/main/resources/db/migration")
-                .load();
-
-        flyway.migrate();
     }
 
+    public static String getJdbcUrlForSchema(String schemaName) {
+        String baseUrl = postgres.getJdbcUrl();
+        String delimiter = baseUrl.contains("?") ? "&" : "?";
+        return baseUrl + delimiter + "currentSchema=" + schemaName;
+    }
+
+    protected static String schemaName = MethodHandles.lookup().lookupClass().getSimpleName().toLowerCase(Locale.ROOT);
     protected static final String DRIVER = "org.postgresql.Driver";
-    protected static final String URL = postgres.getJdbcUrl();
+    protected static final String URL = getJdbcUrlForSchema(schemaName);
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
 
@@ -53,17 +57,17 @@ public abstract class DsStorageUnitTestUtil {
     @BeforeAll
     public static void beforeClass() throws Exception {
         ServiceConfig.initialize("conf/ds-storage*.yaml");
-        DbUtil.runFlywayMigrations(URL,DRIVER,USERNAME,PASSWORD);
+        DbUtil.runFlywayMigrations(URL,DRIVER,USERNAME,PASSWORD, schemaName);
         DsStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         storage = new DsStorageForUnitTest();
     }
 
     /**
-     * Delete all records between each unittest. The clearTableRecords is only called from here. 
+     * Delete all records between each unittest. The clearTableRecords is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
-    public void beforeEach() throws Exception {                     
+    public void beforeEach() throws Exception {
         storage.clearMappingAndRecordTable();
         storage.commit();
     }

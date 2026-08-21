@@ -1,11 +1,10 @@
 package dk.kb.license.storage;
 
-import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 
 import dk.kb.license.config.ServiceConfig;
-import dk.kb.license.util.DbUtil;
+import dk.kb.shared.util.DbUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -16,7 +15,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
  * 1) Create a h2 database for unittests with schema defined
  * 2) Load the Yaml property files.
  */
-public abstract class UnitTestUtil {
+public abstract class DsLicenseUnitTestUtil {
     private static final PostgreSQLContainer<?> postgres;
 
     static {

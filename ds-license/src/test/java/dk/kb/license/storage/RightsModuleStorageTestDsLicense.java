@@ -1,14 +1,10 @@
 package dk.kb.license.storage;
 
-import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.util.DbUtil;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class RightsModuleStorageTest extends UnitTestUtil {
+public class RightsModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
 
     /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.

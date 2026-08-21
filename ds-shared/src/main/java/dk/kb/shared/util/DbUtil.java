@@ -1,4 +1,4 @@
-package dk.kb.storage.util;
+package dk.kb.shared.util;
 
 import java.sql.SQLException;
 
@@ -7,19 +7,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility for initializing and running Flyway database migrations
- * against a PostgreSQL instance (e.g. Jetty local dev mode or embedded setups).
+ * Utility for resetting and running Flyway database migrations
+ * for unit testing against a database instance.
  */
 public class DbUtil {
 
     private static final Logger log = LoggerFactory.getLogger(DbUtil.class);
 
     /**
-     * Executes Flyway migrations against the configured PostgreSQL database.
-     * Replaces the legacy H2 RUNSCRIPT execution.
+     * Cleans (wipes) the target database and executes Flyway migrations
+     * to provide a fresh baseline for unit tests.
      */
-    public static void runFlywayMigrations(String url, String driver, String username, String password) throws Exception {
-        log.info("Initializing database migrations via Flyway for target: {}", url);
+    public static void runFlywayMigrations(String url, String driver, String username, String password, String schema) throws Exception {
+        log.info("Initializing fresh test database via Flyway for target: {}", url);
 
         try {
             Class.forName(driver);
@@ -33,12 +33,16 @@ public class DbUtil {
                     .dataSource(url, username, password)
                     .locations("classpath:db/migration")
                     .connectRetries(30)
+                    .schemas(schema)
+                    .createSchemas(true)
                     .load();
 
+            log.info("Applying Flyway migrations...");
             flyway.migrate();
-            log.info("Flyway database migration completed successfully.");
+
+            log.info("Flyway database cleanup and migration completed successfully.");
         } catch (Exception e) {
-            log.error("Failed to execute Flyway database migrations", e);
+            log.error("Failed to execute Flyway database cleanup/migration", e);
             throw e;
         }
     }

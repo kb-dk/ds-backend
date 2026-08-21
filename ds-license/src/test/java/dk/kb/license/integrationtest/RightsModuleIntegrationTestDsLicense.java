@@ -3,10 +3,8 @@ package dk.kb.license.integrationtest;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.UnitTestUtil;
+import dk.kb.license.storage.DsLicenseUnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
-import dk.kb.license.util.DbUtil;
 import dk.kb.util.oauth2.KeycloakUtil;
 import dk.kb.util.webservice.OAuthConstants;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,8 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mockStatic;
 
-public class RightsModuleIntegrationTest extends UnitTestUtil {
-    private static final Logger log = LoggerFactory.getLogger( RightsModuleIntegrationTest.class);
+public class RightsModuleIntegrationTestDsLicense extends DsLicenseUnitTestUtil {
+    private static final Logger log = LoggerFactory.getLogger( RightsModuleIntegrationTestDsLicense.class);
 
     private static RightsModuleStorage storage;
 

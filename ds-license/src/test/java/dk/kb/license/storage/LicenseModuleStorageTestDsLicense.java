@@ -31,7 +31,7 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class LicenseModuleStorageTest extends UnitTestUtil {
+public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
 
     private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";
     private static PresentationType DOWNLOAD = new PresentationType("Download", "Download_dk", "Download_en");
@@ -461,7 +461,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
     public void testGetUserGroupsWithPresentation() throws SQLException {
         insertDefaultConfigurationTypes();
 
-        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
+        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
         licenseStorage.persistLicense(license);
 
         GetUserGroupsInputDto input = new GetUserGroupsInputDto();
@@ -592,7 +592,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
 
     @Test
     public void testfilterUserObjAttributesToValidatedOnly() {
-        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
+        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
 
         //Attribute: wayf.schacHomeOrganization and values: au.dk
         //UserObj: xxx_wayf.schacHomeOrganization and values: au.dk
@@ -667,7 +667,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
          * wayf.schacHomeOrganization  with values: au.dk
          * wayf.eduPersonPrimaryAffiliation with values: staff
          */
-        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
+        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
         ArrayList<License> allLicenses= new ArrayList<License>();
         allLicenses.add(license);
 
@@ -701,7 +701,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
          * wayf.schacHomeOrganization  with values: au.dk
          *
          */
-        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
+        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
         ArrayList<License> allLicenses= new ArrayList<License>();
         allLicenses.add(license);
 
@@ -729,7 +729,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
          * attribut_store.MediestreamFullAccess with values : yes
          *
          */
-        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
+        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
         ArrayList<License> allLicenses= new ArrayList<License>();
         allLicenses.add(license);
 
@@ -815,7 +815,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
     @Test
     public void testFilterLicensesWithGroupNamesAndPresentationTypeNoRestrictionGroup() {
         ArrayList<License> licenses = new ArrayList<License>();
-        licenses.add(LicenseModuleStorageTest.createTestLicenseWithAssociations(1L));
+        licenses.add(LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L));
 
         //'Reklamefilm' not marked for this license
         GroupType group1 = new GroupType(1L,"Reklamefilm","Reklamefilm","Reklamefilm_en","","","",false);
@@ -843,7 +843,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
     public void testGetUserGroupsWithPresentationTypes() {
         //For this test notice the presentationtypes are loaded from the DB, only the names from input is used
         ArrayList<License> licenses = new ArrayList<License>();
-        licenses.add(LicenseModuleStorageTest.createTestSimpleRestrictionGroupsLicenseWithAssociations());
+        licenses.add(LicenseModuleStorageTestDsLicense.createTestSimpleRestrictionGroupsLicenseWithAssociations());
         ArrayList<String> presentationTypes = new ArrayList<String>();
         presentationTypes.add("Download");
 
@@ -862,7 +862,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
     public void testFilterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup() {
         //For this test notice the presentationtypes are loaded from the DB, only the names from input is used
         ArrayList<License> licenses = new ArrayList<License>();
-        licenses.add(LicenseModuleStorageTest.createTestSimpleRestrictionGroupsLicenseWithAssociations());
+        licenses.add(LicenseModuleStorageTestDsLicense.createTestSimpleRestrictionGroupsLicenseWithAssociations());
 
         //access, 1 restriction group
         GroupType group1 = new GroupType(1L,"IndividueltForbud","Individuelt forbud", "Individuelt forbud_en","","","",true);
@@ -943,7 +943,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
 
     @Test
     public void testFilterGroupsWithPresentationtype() {
-        License l = LicenseModuleStorageTest.createTestLicenseWithAssociations(1);
+        License l = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1);
         ArrayList<License> list = new ArrayList<License>();
         list.add(l);
         //Easy, just 1 license
@@ -960,7 +960,7 @@ public class LicenseModuleStorageTest extends UnitTestUtil {
         assertEquals(2,group2.getPresentationTypes().size());
 
         //add another license
-        License l2 =  LicenseModuleStorageTest.createTestLicenseWithAssociations(1);
+        License l2 =  LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1);
         LicenseContent c = new LicenseContent("TV3");
         ArrayList<Presentation> p_list = new ArrayList<Presentation>();
         c.setPresentations(p_list);

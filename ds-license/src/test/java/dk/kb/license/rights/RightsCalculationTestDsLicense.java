@@ -1,27 +1,19 @@
 package dk.kb.license.rights;
 
-import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
-import dk.kb.license.storage.UnitTestUtil;
-import dk.kb.license.util.DbUtil;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import dk.kb.license.storage.DsLicenseUnitTestUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RightsCalculationTest extends UnitTestUtil {
-    private final static Logger log = LoggerFactory.getLogger(RightsCalculationTest.class);
+public class RightsCalculationTestDsLicense extends DsLicenseUnitTestUtil {
+    private final static Logger log = LoggerFactory.getLogger(RightsCalculationTestDsLicense.class);
 
     public RightsCalculationInputDto map(String recordId, PlatformEnumDto platform, String startTime,
                                          Integer hensigt, Integer form, Integer indhold, String holdbackCategory, Integer productionCountry, String origin,

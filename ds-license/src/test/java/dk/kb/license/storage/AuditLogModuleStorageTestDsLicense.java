@@ -30,8 +30,8 @@ import static org.mockito.Mockito.mockStatic;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class AuditLogModuleStorageTest extends UnitTestUtil {
-    private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageTest.class);
+public class AuditLogModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
+    private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageTestDsLicense.class);
 
     /**
      * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module

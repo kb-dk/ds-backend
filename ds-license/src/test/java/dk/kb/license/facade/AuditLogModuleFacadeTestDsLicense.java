@@ -3,7 +3,6 @@ package dk.kb.license.facade;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mockStatic;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.AccessToken;
@@ -21,19 +19,15 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.storage.AuditLogModuleStorageForUnitTest;
-import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.UnitTestUtil;
-import dk.kb.license.util.DbUtil;
+import dk.kb.license.storage.DsLicenseUnitTestUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 
-public class AuditLogModuleFacadeTest extends UnitTestUtil {
+public class AuditLogModuleFacadeTestDsLicense extends DsLicenseUnitTestUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(AuditLogModuleFacadeTest.class);
+    private static final Logger log = LoggerFactory.getLogger(AuditLogModuleFacadeTestDsLicense.class);
     static MockedStatic<JAXRSUtils> mocked;
     
     /**

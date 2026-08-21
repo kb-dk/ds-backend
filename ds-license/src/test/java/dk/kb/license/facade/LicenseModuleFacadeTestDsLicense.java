@@ -1,16 +1,13 @@
 package dk.kb.license.facade;
 
-import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.*;
-import dk.kb.license.util.DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.AccessToken;
@@ -20,16 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-public class LicenseModuleFacadeTest extends UnitTestUtil {
-    private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
+public class LicenseModuleFacadeTestDsLicense extends DsLicenseUnitTestUtil {
+    private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTestDsLicense.class);
 
    
     /**

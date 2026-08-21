@@ -20,7 +20,7 @@ import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.model.v1.JobStatusDto;
 import dk.kb.datahandler.storage.BasicStorage;
 import dk.kb.datahandler.storage.JobStorage;
-import dk.kb.datahandler.util.DbUtil;
+import dk.kb.shared.util.DbUtil;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
@@ -104,7 +104,7 @@ public class ContextListener implements ServletContextListener {
     private void createLocalH2ForJettyEnvironment(String driver, String url, String user, String password) {
         try {
             log.info("Setting up postgres database under jetty in development mode");
-            DbUtil.runFlywayMigrations(url, driver, user, password);
+            DbUtil.runFlywayMigrations(url, driver, user, password, "public");
         }
         catch(Exception e) {
             log.error("Unable to create local postgres database for jetty environment", e);
