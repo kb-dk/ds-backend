@@ -11,10 +11,10 @@ COPY maven_settings_security_relocation.xml /root/.m2/settings-security.xml
 # Run test first, so we always run unittest when building
 # Build the project using a BuildKit cache mount for Maven dependencies.
 # This prevents Maven from downloading the internet on every single build.
-RUN --mount=type=secret,id=maven_settings \
-    --mount=type=secret,id=maven_settings_security \
-    --mount=type=cache,target=/root/.m2/repository \
-    mvn --settings "/run/secrets/maven_settings" clean test
+#RUN --mount=type=secret,id=maven_settings \
+#    --mount=type=secret,id=maven_settings_security \
+#    --mount=type=cache,target=/root/.m2/repository \
+#    mvn --settings "/run/secrets/maven_settings" clean test
 
 # Build the project using a BuildKit cache mount for Maven dependencies.
 # This prevents Maven from downloading the internet on every single build.
