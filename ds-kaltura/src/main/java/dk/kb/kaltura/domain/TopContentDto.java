@@ -1,9 +1,10 @@
 package dk.kb.kaltura.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang3.math.NumberUtils;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TopContentDto {
     private String object_id;
     private String entry_name;
@@ -14,6 +15,9 @@ public class TopContentDto {
     private Float load_play_ratio;
     private Float avg_view_drop_off;
     private Integer unique_known_users;
+    private Float sum_view_period;
+    private Float avg_view_period_time;
+    private Float avg_completion_rate;
 
     // Default constructor
     public TopContentDto() {
@@ -30,7 +34,10 @@ public class TopContentDto {
             @JsonProperty("count_loads") Integer count_loads,
             @JsonProperty("load_play_ratio") Float load_play_ratio,
             @JsonProperty("avg_view_drop_off") Float avg_view_drop_off,
-            @JsonProperty("unique_known_users") Integer unique_known_users
+            @JsonProperty("unique_known_users") Integer unique_known_users,
+            @JsonProperty("sum_view_period") Float sum_view_period,
+            @JsonProperty("avg_view_period_time") Float avg_view_period_time,
+            @JsonProperty("avg_completion_rate") Float avg_completion_rate
     ) {
         this.object_id = object_id;
         this.entry_name = entry_name;
@@ -41,6 +48,9 @@ public class TopContentDto {
         this.load_play_ratio = load_play_ratio;
         this.avg_view_drop_off = avg_view_drop_off;
         this.unique_known_users = unique_known_users;
+        this.sum_view_period = sum_view_period;
+        this.avg_view_period_time = avg_view_period_time;
+        this.avg_completion_rate = avg_completion_rate;
     }
 
     public String getObject_id() {
@@ -113,6 +123,30 @@ public class TopContentDto {
 
     public void setUnique_known_users(Integer unique_known_users) {
         this.unique_known_users = unique_known_users;
+    }
+
+    public Float getSum_view_period() {
+        return sum_view_period;
+    }
+
+    public void setSum_view_period(Float sum_view_period) {
+        this.sum_view_period = sum_view_period;
+    }
+
+    public Float getAvg_view_period_time() {
+        return avg_view_period_time;
+    }
+
+    public void setAvg_view_period_time(Float avg_view_period_time) {
+        this.avg_view_period_time = avg_view_period_time;
+    }
+
+    public Float getAvg_completion_rate() {
+        return avg_completion_rate;
+    }
+
+    public void setAvg_completion_rate(Float avg_completion_rate) {
+        this.avg_completion_rate = avg_completion_rate;
     }
 
     @Override
