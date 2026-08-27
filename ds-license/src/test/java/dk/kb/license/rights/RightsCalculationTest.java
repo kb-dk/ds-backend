@@ -4,16 +4,22 @@ import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
 import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RightsCalculationTestDsLicense extends DsLicenseUnitTestUtil {
-    private final static Logger log = LoggerFactory.getLogger(RightsCalculationTestDsLicense.class);
+public class RightsCalculationTest extends DsLicenseUnitTestUtil {
+    private final static Logger log = LoggerFactory.getLogger(RightsCalculationTest.class);
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
 
     public RightsCalculationInputDto map(String recordId, PlatformEnumDto platform, String startTime,
                                          Integer hensigt, Integer form, Integer indhold, String holdbackCategory, Integer productionCountry, String origin,

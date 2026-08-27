@@ -6,6 +6,7 @@ import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.AccessToken;
@@ -14,6 +15,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,10 @@ import static org.mockito.Mockito.mockStatic;
 public class AuditLogModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageTestDsLicense.class);
 
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
     /**
      * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
      * The facade class is responsible for committing transactions. So clean up between unittests.

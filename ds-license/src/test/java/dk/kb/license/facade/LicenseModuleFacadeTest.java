@@ -8,6 +8,7 @@ import dk.kb.license.storage.*;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.AccessToken;
@@ -17,16 +18,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-public class LicenseModuleFacadeTestDsLicense extends DsLicenseUnitTestUtil {
-    private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTestDsLicense.class);
+public class LicenseModuleFacadeTest extends DsLicenseUnitTestUtil {
+    private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
 
-   
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
+
     /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.

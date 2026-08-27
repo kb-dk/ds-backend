@@ -6,11 +6,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import dk.kb.shared.util.DbUtil;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,11 +34,16 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
+public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
 
     private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";
     private static PresentationType DOWNLOAD = new PresentationType("Download", "Download_dk", "Download_en");
     private static PresentationType THUMBNAILS = new PresentationType("Thumbnails", "Thumbnails_dk", "Thumbnails_en");
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
 
     /**
      * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
@@ -43,18 +51,18 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
-       List<String> tables = new ArrayList<>();
-       tables.add("PRESENTATIONTYPES");
-       tables.add("GROUPTYPES");
-       tables.add("ATTRIBUTETYPES");
-       tables.add("LICENSE");
-       tables.add("ATTRIBUTEGROUP");
-       tables.add("ATTRIBUTE");
-       tables.add("VALUE_ORG");
-       tables.add("LICENSECONTENT");
-       tables.add("PRESENTATION");
-       tables.add("AUDITLOG");
-       licenseStorage.clearTableRecords(tables);
+        List<String> tables = new ArrayList<>();
+        tables.add("PRESENTATIONTYPES");
+        tables.add("GROUPTYPES");
+        tables.add("ATTRIBUTETYPES");
+        tables.add("LICENSE");
+        tables.add("ATTRIBUTEGROUP");
+        tables.add("ATTRIBUTE");
+        tables.add("VALUE_ORG");
+        tables.add("LICENSECONTENT");
+        tables.add("PRESENTATION");
+        tables.add("AUDITLOG");
+        licenseStorage.clearTableRecords(tables);
     }
 
     @Test
@@ -82,8 +90,8 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         String type1_description_en = "type1_description:en";
         String type1_query = "type1_query";
         String type2 = "unit_test_type2";
-        licenseStorage.persistLicenseGroupType( type1Key,type1, type1_en,type1_description, type1_description_en,type1_query, false);
-        licenseStorage.persistLicenseGroupType(type2Key,type2, "type_en", "type2_description", "description_en","type2_query", false);
+        licenseStorage.persistLicenseGroupType(type1Key, type1, type1_en, type1_description, type1_description_en, type1_query, false);
+        licenseStorage.persistLicenseGroupType(type2Key, type2, "type_en", "type2_description", "description_en", "type2_query", false);
 
         ArrayList<GroupType> list = licenseStorage.getLicenseGroupTypes();
         assertEquals(2, list.size());
@@ -118,12 +126,12 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testInsertDefaultConfiguration() throws SQLException {
+    public void testInsertDefaultConfiguration() throws Exception {
         insertDefaultConfigurationTypes();
     }
 
     @Test
-    public void testDeleteDomAttributeType() throws SQLException {
+    public void testDeleteDomAttributeType() throws Exception {
         // create configurationstypes and license using some of the attributestypes
         insertDefaultConfigurationTypes();
         License license = createTestLicenseWithAssociations(1L);
@@ -153,7 +161,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testDeleteDomGroupType() throws SQLException {
+    public void testDeleteDomGroupType() throws Exception {
         // create configurationstypes and license using some of the grouptypes
         insertDefaultConfigurationTypes();
         License license = createTestLicenseWithAssociations(1L);
@@ -182,7 +190,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testDeleteDomPresentationType() throws SQLException {
+    public void testDeleteDomPresentationType() throws Exception {
         // create configurationstypes and license using some of the grouptypes
         insertDefaultConfigurationTypes();
         License license = createTestLicenseWithAssociations(1L);
@@ -232,7 +240,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testPersistLicenseWithAssocations() throws SQLException, IllegalArgumentException {
+    public void testPersistLicenseWithAssocations() throws Exception {
         insertDefaultConfigurationTypes();
 
         // Full persistence and load test of associations
@@ -295,7 +303,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         License license = createTestLicenseWithAssociations(1L);
         long attributeGroupId = 1L;
 
-    //    licenseStorage.persistAttributesForAttributeGroup(attributeGroupId, license.getAttributeGroups().get(0).getAttributes(), true);
+        //    licenseStorage.persistAttributesForAttributeGroup(attributeGroupId, license.getAttributeGroups().get(0).getAttributes(), true);
         licenseStorage.persistAttributesForAttributeGroup(attributeGroupId, license.getAttributeGroups().get(0).getAttributes());
         ArrayList<Attribute> attributes = licenseStorage.getAttributesForAttributeGroup(attributeGroupId);
         assertEquals(2, attributes.size());
@@ -458,10 +466,10 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testGetUserGroupsWithPresentation() throws SQLException {
+    public void testGetUserGroupsWithPresentation() throws Exception {
         insertDefaultConfigurationTypes();
 
-        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
+        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
         licenseStorage.persistLicense(license);
 
         GetUserGroupsInputDto input = new GetUserGroupsInputDto();
@@ -492,7 +500,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         ArrayList<UserGroupDto> usersGroups = LicenseValidator.getUsersGroups(input);
         //Test danish names
         UserGroupDto group1 = usersGroups.get(0);
-        assertEquals("DR 1 TV",group1.getGroupName());
+        assertEquals("DR 1 TV", group1.getGroupName());
         assertEquals("Thumbnails_dk", group1.getPresentationTypes().get(0));
 
         input.setLocale("en");
@@ -500,7 +508,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
 
         //Test english names
         group1 = usersGroups.get(0);
-        assertEquals("English text",group1.getGroupName());
+        assertEquals("English text", group1.getGroupName());
         assertEquals("Thumbnails_en", group1.getPresentationTypes().get(0));
     }
 
@@ -592,7 +600,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
 
     @Test
     public void testfilterUserObjAttributesToValidatedOnly() {
-        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
+        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
 
         //Attribute: wayf.schacHomeOrganization and values: au.dk
         //UserObj: xxx_wayf.schacHomeOrganization and values: au.dk
@@ -608,7 +616,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         values.add("au.dk");
         newUserObjAtt.setValues(values);
         ArrayList<UserObjAttributeDto> filtered = LicenseValidator.filterUserObjAttributesToValidatedOnly(attribute, userObjAttributes);
-        assertEquals(0,filtered.size());
+        assertEquals(0, filtered.size());
 
         //Attribute: wayf.schacHomeOrganization and values: au.dk
         //UserObj: wayf.schacHomeOrganization and values: au.dk
@@ -621,7 +629,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         values.add("au.dk");
         newUserObjAtt.setValues(values);
         filtered = LicenseValidator.filterUserObjAttributesToValidatedOnly(attribute, userObjAttributes);
-        assertEquals(1,filtered.size());
+        assertEquals(1, filtered.size());
         assertEquals("wayf.schacHomeOrganization", filtered.get(0).getAttribute());
         assertEquals(1, filtered.get(0).getValues().size());
         assertEquals("au.dk", filtered.get(0).getValues().get(0)); //only value au.dk
@@ -638,7 +646,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         values.add("test.dk");
         newUserObjAtt.setValues(values);
         filtered = LicenseValidator.filterUserObjAttributesToValidatedOnly(attribute, userObjAttributes);
-        assertEquals(0,filtered.size());
+        assertEquals(0, filtered.size());
 
         //
         //Attribute:wayf.eduPersonPrimaryAffiliation and values: student , staff
@@ -654,7 +662,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         values.add("staff");
         newUserObjAtt.setValues(values);
         filtered = LicenseValidator.filterUserObjAttributesToValidatedOnly(attribute, userObjAttributes);
-        assertEquals(1,filtered.size());
+        assertEquals(1, filtered.size());
         assertEquals("wayf.eduPersonPrimaryAffiliation", filtered.get(0).getAttribute());
         assertEquals(1, filtered.get(0).getValues().size());
         assertEquals("staff", filtered.get(0).getValues().get(0));
@@ -667,8 +675,8 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
          * wayf.schacHomeOrganization  with values: au.dk
          * wayf.eduPersonPrimaryAffiliation with values: staff
          */
-        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
-        ArrayList<License> allLicenses= new ArrayList<License>();
+        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
+        ArrayList<License> allLicenses = new ArrayList<License>();
         allLicenses.add(license);
 
         ArrayList<UserObjAttributeDto> userObjAttributes = new ArrayList<UserObjAttributeDto>();
@@ -690,7 +698,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
 
         //Must validate
         ArrayList<License> licenses = LicenseValidator.findLicensesValidatingAccess(userObjAttributes, allLicenses);
-        assertEquals(1,licenses.size());
+        assertEquals(1, licenses.size());
     }
 
     @Test
@@ -701,8 +709,8 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
          * wayf.schacHomeOrganization  with values: au.dk
          *
          */
-        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
-        ArrayList<License> allLicenses= new ArrayList<License>();
+        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
+        ArrayList<License> allLicenses = new ArrayList<License>();
         allLicenses.add(license);
 
         ArrayList<UserObjAttributeDto> userObjAttributes = new ArrayList<UserObjAttributeDto>();
@@ -717,7 +725,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
 
         // Does not validate
         ArrayList<License> licenses = LicenseValidator.findLicensesValidatingAccess(userObjAttributes, allLicenses);
-        assertEquals(0,licenses.size());
+        assertEquals(0, licenses.size());
     }
 
     @Test
@@ -729,8 +737,8 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
          * attribut_store.MediestreamFullAccess with values : yes
          *
          */
-        License license = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L);
-        ArrayList<License> allLicenses= new ArrayList<License>();
+        License license = LicenseModuleStorageTest.createTestLicenseWithAssociations(1L);
+        ArrayList<License> allLicenses = new ArrayList<License>();
         allLicenses.add(license);
 
         ArrayList<UserObjAttributeDto> userObjAttributes = new ArrayList<UserObjAttributeDto>();
@@ -759,11 +767,11 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
 
         //Must validate
         ArrayList<License> licenses = LicenseValidator.findLicensesValidatingAccess(userObjAttributes, allLicenses);
-        assertEquals(1,licenses.size());
+        assertEquals(1, licenses.size());
     }
 
     @Test
-    public void testFilterRestrictionGroups() throws SQLException {
+    public void testFilterRestrictionGroups() throws Exception {
         insertDefaultConfigurationTypes();
         LicenseCache.reloadCache(); //The buildGroup and FilterRestrictionGroup uses cache for performance
 
@@ -774,7 +782,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         groups.add("Pligtafleveret170Aar");
         groups.add("DRRadio");
         ArrayList<GroupType> buildGroups = LicenseValidator.buildGroups(groups);
-        assertEquals(2,buildGroups.size());
+        assertEquals(2, buildGroups.size());
         ArrayList<GroupType> filtered = LicenseValidator.filterRestrictionGroups(buildGroups);
         assertEquals(0, filtered.size());
 
@@ -783,7 +791,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         groups.add("Pligtafleveret170Aar");
         groups.add("IndividueltForbud");
         buildGroups = LicenseValidator.buildGroups(groups);
-        assertEquals(2,buildGroups.size());
+        assertEquals(2, buildGroups.size());
         filtered = LicenseValidator.filterRestrictionGroups(buildGroups);
 
         assertEquals(1, filtered.size());
@@ -796,18 +804,17 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         groups.add("Klausuleret");
 
         buildGroups = LicenseValidator.buildGroups(groups);
-        assertEquals(3,buildGroups.size());
+        assertEquals(3, buildGroups.size());
         filtered = LicenseValidator.filterRestrictionGroups(buildGroups);
         assertEquals(2, filtered.size());
 
         //1 group that does not exist in DB
         groups = new ArrayList<String>();
         groups.add("does not exist");
-        try{
+        try {
             LicenseValidator.buildGroups(groups);
             fail();
-        }
-        catch (InvalidArgumentServiceException e){
+        } catch (InvalidArgumentServiceException e) {
             //expected
         }
     }
@@ -815,100 +822,99 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     @Test
     public void testFilterLicensesWithGroupNamesAndPresentationTypeNoRestrictionGroup() {
         ArrayList<License> licenses = new ArrayList<License>();
-        licenses.add(LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1L));
+        licenses.add(LicenseModuleStorageTest.createTestLicenseWithAssociations(1L));
 
         //'Reklamefilm' not marked for this license
-        GroupType group1 = new GroupType(1L,"Reklamefilm","Reklamefilm","Reklamefilm_en","","","",false);
+        GroupType group1 = new GroupType(1L, "Reklamefilm", "Reklamefilm", "Reklamefilm_en", "", "", "", false);
         ArrayList<GroupType> groups = new ArrayList<GroupType>();
         groups.add(group1);
         ArrayList<License> filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoRestrictionGroup(licenses, groups, DOWNLOAD);
-        assertEquals(0,filtered.size());
+        assertEquals(0, filtered.size());
 
         //'TV2 TV' is marked, but not for presentationtype images
-        group1 = new GroupType(1L,"TV2","TV2 TV","TV2 TV_EN","","","",false);
+        group1 = new GroupType(1L, "TV2", "TV2 TV", "TV2 TV_EN", "", "", "", false);
         groups = new ArrayList<GroupType>();
         groups.add(group1);
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoRestrictionGroup(licenses, groups, THUMBNAILS);
-        assertEquals(0,filtered.size());
+        assertEquals(0, filtered.size());
 
         //'TV2 TV' is marked with Download allowed
-        group1 = new GroupType(1L,"TV2","TV2 TV","TV2 TV_en","","","",false);
+        group1 = new GroupType(1L, "TV2", "TV2 TV", "TV2 TV_en", "", "", "", false);
         groups = new ArrayList<GroupType>();
         groups.add(group1);
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeNoRestrictionGroup(licenses, groups, DOWNLOAD);
-        assertEquals(1,filtered.size()); //license validated.
+        assertEquals(1, filtered.size()); //license validated.
     }
 
     @Test
     public void testGetUserGroupsWithPresentationTypes() {
         //For this test notice the presentationtypes are loaded from the DB, only the names from input is used
         ArrayList<License> licenses = new ArrayList<License>();
-        licenses.add(LicenseModuleStorageTestDsLicense.createTestSimpleRestrictionGroupsLicenseWithAssociations());
+        licenses.add(LicenseModuleStorageTest.createTestSimpleRestrictionGroupsLicenseWithAssociations());
         ArrayList<String> presentationTypes = new ArrayList<String>();
         presentationTypes.add("Download");
 
-        ArrayList<String> groups = LicenseValidator.filterGroups(licenses,presentationTypes);
-        assertEquals(2,groups.size());
+        ArrayList<String> groups = LicenseValidator.filterGroups(licenses, presentationTypes);
+        assertEquals(2, groups.size());
         assertTrue(groups.contains("IndividueltForbud"));
         assertTrue(groups.contains("TV2"));
 
         presentationTypes.add("Thumbnails"); //now both Download and Thumbnails
 
-        groups = LicenseValidator.filterGroups(licenses,presentationTypes);
-        assertEquals(3,groups.size());
+        groups = LicenseValidator.filterGroups(licenses, presentationTypes);
+        assertEquals(3, groups.size());
     }
 
     @Test
     public void testFilterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup() {
         //For this test notice the presentationtypes are loaded from the DB, only the names from input is used
         ArrayList<License> licenses = new ArrayList<License>();
-        licenses.add(LicenseModuleStorageTestDsLicense.createTestSimpleRestrictionGroupsLicenseWithAssociations());
+        licenses.add(LicenseModuleStorageTest.createTestSimpleRestrictionGroupsLicenseWithAssociations());
 
         //access, 1 restriction group
-        GroupType group1 = new GroupType(1L,"IndividueltForbud","Individuelt forbud", "Individuelt forbud_en","","","",true);
+        GroupType group1 = new GroupType(1L, "IndividueltForbud", "Individuelt forbud", "Individuelt forbud_en", "", "", "", true);
         ArrayList<GroupType> groups = new ArrayList<GroupType>();
         groups.add(group1);
         ArrayList<License> filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup(licenses, groups, DOWNLOAD);
-        assertEquals(1,filtered.size());
+        assertEquals(1, filtered.size());
 
         //NOT access, 1 restriction group that it found, but not with presentationtype Download
-        group1 = new GroupType(1L,"Klausuleret","Klausuleret_dk","Klausleret_en","","","",true);
+        group1 = new GroupType(1L, "Klausuleret", "Klausuleret_dk", "Klausleret_en", "", "", "", true);
         groups = new ArrayList<GroupType>();
         groups.add(group1);
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup(licenses, groups, DOWNLOAD);
-        assertEquals(0,filtered.size());
+        assertEquals(0, filtered.size());
 
         //access, 2 restriction groups which both have presentation type images
-        group1 = new GroupType(1L,"IndividueltForbud","Individuelt forbud_dk","Individuelt forbud_en","","","",true);
-        GroupType group2 = new GroupType(2L,"Klausuleret","Klausuleret_dk","Klausuleret_en","","","",true);
+        group1 = new GroupType(1L, "IndividueltForbud", "Individuelt forbud_dk", "Individuelt forbud_en", "", "", "", true);
+        GroupType group2 = new GroupType(2L, "Klausuleret", "Klausuleret_dk", "Klausuleret_en", "", "", "", true);
         groups = new ArrayList<GroupType>();
         groups.add(group1);
         groups.add(group2);
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup(licenses, groups, THUMBNAILS);
-        assertEquals(1,filtered.size());
+        assertEquals(1, filtered.size());
 
         //NOT access, 2 restriction groups but one of the missing presentationtype Download
-        group1 = new GroupType(1L,"Individuelt forbud","Individuelt forbud_dk","Klausuleret forbud_en","","","",true);
-        group2 = new GroupType(2L,"Klausuleret","Klausuleret_dk","Klausuleret_en","","","",true);
+        group1 = new GroupType(1L, "Individuelt forbud", "Individuelt forbud_dk", "Klausuleret forbud_en", "", "", "", true);
+        group2 = new GroupType(2L, "Klausuleret", "Klausuleret_dk", "Klausuleret_en", "", "", "", true);
         groups = new ArrayList<GroupType>();
         groups.add(group1);
         groups.add(group2);
         filtered = LicenseValidator.filterLicensesWithGroupNamesAndPresentationTypeRestrictionGroup(licenses, groups, DOWNLOAD);
-        assertEquals(0,filtered.size());
+        assertEquals(0, filtered.size());
     }
 
     @Test
     public void testMatchPresentationtype() throws SQLException {
         //Create a persentation type and reload cache
-        licenseStorage.persistLicensePresentationType("Download","value_dk","value_en");
+        licenseStorage.persistLicensePresentationType("Download", "value_dk", "value_en");
         licenseStorage.commit();
         LicenseCache.reloadCache();
 
-        try{
+        try {
             LicenseValidator.matchPresentationtype("does not exist");
             fail();
-        }
-        catch (InvalidArgumentServiceException e){
+        } catch (InvalidArgumentServiceException e) {
             //Expected
         }
 
@@ -917,7 +923,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     }
 
     @Test
-    public void testGenerateQueryString() throws SQLException {
+    public void testGenerateQueryString() throws Exception {
         insertDefaultConfigurationTypes();
         LicenseCache.reloadCache();
         ArrayList<String> groups = new ArrayList<String>();
@@ -943,7 +949,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
 
     @Test
     public void testFilterGroupsWithPresentationtype() {
-        License l = LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1);
+        License l = LicenseModuleStorageTest.createTestLicenseWithAssociations(1);
         ArrayList<License> list = new ArrayList<License>();
         list.add(l);
         //Easy, just 1 license
@@ -954,13 +960,13 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         assertEquals(2, filtered.size());
         UserGroupDto group1 = filtered.get(0);
         UserGroupDto group2 = filtered.get(1);
-        assertEquals("DR1",group1.getGroupName());
-        assertEquals(1,group1.getPresentationTypes().size());
-        assertEquals("TV2",group2.getGroupName());
-        assertEquals(2,group2.getPresentationTypes().size());
+        assertEquals("DR1", group1.getGroupName());
+        assertEquals(1, group1.getPresentationTypes().size());
+        assertEquals("TV2", group2.getGroupName());
+        assertEquals(2, group2.getPresentationTypes().size());
 
         //add another license
-        License l2 =  LicenseModuleStorageTestDsLicense.createTestLicenseWithAssociations(1);
+        License l2 = LicenseModuleStorageTest.createTestLicenseWithAssociations(1);
         LicenseContent c = new LicenseContent("TV3");
         ArrayList<Presentation> p_list = new ArrayList<Presentation>();
         c.setPresentations(p_list);
@@ -979,29 +985,29 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
         assertEquals(3, filtered2.size());
 
         UserGroupDto group3 = filtered2.get(2);
-        assertEquals("TV3",group3.getGroupName());
+        assertEquals("TV3", group3.getGroupName());
 
-        assertEquals(1,group3.getPresentationTypes().size());
+        assertEquals(1, group3.getPresentationTypes().size());
 
         group2 = filtered2.get(1);
-        assertEquals("TV2",group2.getGroupName());
-        assertEquals(3,group2.getPresentationTypes().size());
+        assertEquals("TV2", group2.getGroupName());
+        assertEquals(3, group2.getPresentationTypes().size());
     }
 
     @Test
     public void testMakeAuthIdPart() {
-        String filterField=ServiceConfig.SOLR_FILTER_ID_FIELD;
+        String filterField = ServiceConfig.SOLR_FILTER_ID_FIELD;
         ArrayList<String> ids = new ArrayList<String>();
         ids.add("testId1");
         ids.add("testId2");
-        String solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids,filterField);
+        String solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids, filterField);
         assertEquals("(" + filterField + ":\"testId1\" OR " + filterField + ":\"testId2\")", solrIdsQuery);
 
         //prevent Lucene query injection. Remove all " and / from the string
         ids = new ArrayList<String>();
         ids.add("test\"Id3\\");
 
-        solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids,filterField);
+        solrIdsQuery = AbstractSolrJClient.makeAuthIdPart(ids, filterField);
 
         assertEquals("(" + filterField + ":\"testId3\")", solrIdsQuery);
     }
@@ -1029,9 +1035,7 @@ public class LicenseModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
      *
      * @throws SQLException
      */
-    public static void insertDefaultConfigurationTypes() throws SQLException {
-        File insert_ddl_file = new File(INSERT_DEFAULT_CONFIGURATION_DDL_FILE);
-        licenseStorage.runDDLScript(insert_ddl_file);
-        licenseStorage.commit();
+    public static void insertDefaultConfigurationTypes() throws Exception {
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
     }
 }

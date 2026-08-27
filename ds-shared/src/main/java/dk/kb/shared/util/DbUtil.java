@@ -31,12 +31,15 @@ public class DbUtil {
             // Programmatically invoke Flyway against the Postgres target
             Flyway flyway = Flyway.configure()
                     .dataSource(url, username, password)
-                    .locations("classpath:db/migration")
+                    .locations("classpath:db/migration", "classpath:db/testdata")
                     .connectRetries(30)
                     .schemas(schema)
                     .createSchemas(true)
+                    .cleanDisabled(false)
                     .load();
 
+            log.info("Wiping existing schema completely: {}", schema);
+            flyway.clean();
             log.info("Applying Flyway migrations...");
             flyway.migrate();
 

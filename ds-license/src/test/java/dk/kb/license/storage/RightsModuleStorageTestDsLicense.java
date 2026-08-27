@@ -2,9 +2,11 @@ package dk.kb.license.storage;
 
 import dk.kb.license.model.v1.*;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * open and open the database and see what the unit-tests did.
  */
 public class RightsModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
 
     /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.

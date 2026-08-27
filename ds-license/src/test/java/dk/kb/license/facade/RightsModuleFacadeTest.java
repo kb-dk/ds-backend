@@ -22,6 +22,7 @@ import org.keycloak.representations.AccessToken;
 import org.mockito.MockedStatic;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,7 +35,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class RightsModuleFacadeTestDsLicense extends DsLicenseUnitTestUtil {
+public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
     static MockedStatic<JAXRSUtils> mocked;
 
     final String userName = "mockedName";
@@ -43,6 +44,7 @@ public class RightsModuleFacadeTestDsLicense extends DsLicenseUnitTestUtil {
 
     @BeforeAll
     public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
         MessageImpl message = new MessageImpl();
         AccessToken mockedToken = mock(AccessToken.class);
         when(mockedToken.getName()).thenReturn("mockedName");
@@ -70,6 +72,7 @@ public class RightsModuleFacadeTestDsLicense extends DsLicenseUnitTestUtil {
         tables.add("RESTRICTED_IDS");
         tables.add("DR_HOLDBACK_RANGES");
         tables.add("DR_HOLDBACK_CATEGORIES");
+        tables.add("AUDITLOG");
         tables.add("AUDITLOG");
        rightsStorage.clearTableRecords(tables);
     }

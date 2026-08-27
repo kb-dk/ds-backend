@@ -38,10 +38,7 @@ public abstract class DsLicenseUnitTestUtil {
         return baseUrl + delimiter + "currentSchema=" + schemaName;
     }
 
-    protected static String schemaName = MethodHandles.lookup().lookupClass().getSimpleName().toLowerCase(Locale.ROOT);
-
     protected static final String DRIVER = "org.postgresql.Driver";
-    protected static final String URL = getJdbcUrlForSchema(schemaName);
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
 
@@ -49,11 +46,17 @@ public abstract class DsLicenseUnitTestUtil {
     protected static LicenseModuleStorageForUnitTest licenseStorage = null;
     protected static RightsModuleStorageForUnitTest rightsStorage = null;
 
-    @BeforeAll
-    public static void beforeClass() throws Exception {
+    protected static String URL;
+    protected static String schemaName;
+
+    protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
+        schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
+        URL = getJdbcUrlForSchema(schemaName);
+
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
+
         auditStorage = new AuditLogModuleStorageForUnitTest();
         licenseStorage = new LicenseModuleStorageForUnitTest();
         rightsStorage = new RightsModuleStorageForUnitTest();
