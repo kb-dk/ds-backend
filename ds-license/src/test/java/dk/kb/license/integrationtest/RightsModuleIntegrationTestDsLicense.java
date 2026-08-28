@@ -3,7 +3,7 @@ package dk.kb.license.integrationtest;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.util.oauth2.KeycloakUtil;
 import dk.kb.util.webservice.OAuthConstants;

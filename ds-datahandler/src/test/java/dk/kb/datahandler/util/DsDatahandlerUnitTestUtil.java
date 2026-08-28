@@ -4,12 +4,11 @@ import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.storage.JobStorageForUnitTests;
 import dk.kb.shared.util.DbUtil;
-import org.junit.jupiter.api.BeforeAll;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.io.File;
-import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.Locale;
 
@@ -41,10 +40,10 @@ public abstract class DsDatahandlerUnitTestUtil {
         return baseUrl + delimiter + "currentSchema=" + schemaName;
     }
 
-    protected static String schemaName = MethodHandles.lookup().lookupClass().getSimpleName().toLowerCase(Locale.ROOT);
+    protected static String URL;
+    protected static String schemaName;
 
     protected static final String DRIVER = "org.postgresql.Driver";
-    protected static final String URL = getJdbcUrlForSchema(schemaName);
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
 
@@ -54,12 +53,14 @@ public abstract class DsDatahandlerUnitTestUtil {
 
     protected static JobStorageForUnitTests storage = null;
 
-    @BeforeAll
-    public static void beforeClass() throws Exception {
-        ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
+    protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
+        schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
+        URL = getJdbcUrlForSchema(schemaName);
 
+        ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
         DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
         JobStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+
         storage = new JobStorageForUnitTests();
     }
 

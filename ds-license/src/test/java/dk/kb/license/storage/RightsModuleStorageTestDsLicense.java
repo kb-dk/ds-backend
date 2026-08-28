@@ -1,6 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.model.v1.*;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

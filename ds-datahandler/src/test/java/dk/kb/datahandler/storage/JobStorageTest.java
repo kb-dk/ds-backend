@@ -6,9 +6,11 @@ import dk.kb.datahandler.model.v1.JobStatusDto;
 import dk.kb.datahandler.model.v1.TypeDto;
 import dk.kb.datahandler.util.DsDatahandlerUnitTestUtil;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -20,6 +22,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class JobStorageTest extends DsDatahandlerUnitTestUtil {
     protected static final String TEST_CLASSES_PATH = new File(Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()).getParentFile().getAbsolutePath();
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
 
     @Test
     public void testCreateJob() throws SQLException {

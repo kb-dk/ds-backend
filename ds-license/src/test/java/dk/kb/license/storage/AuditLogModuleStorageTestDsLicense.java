@@ -3,6 +3,7 @@ package dk.kb.license.storage;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;

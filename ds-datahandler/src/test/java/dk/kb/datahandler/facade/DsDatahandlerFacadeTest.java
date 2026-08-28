@@ -7,8 +7,10 @@ import dk.kb.datahandler.util.DsDatahandlerUnitTestUtil;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -17,6 +19,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DsDatahandlerFacadeTest extends DsDatahandlerUnitTestUtil {
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
 
     @Test
     void testGetJobs() {

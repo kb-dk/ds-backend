@@ -3,7 +3,7 @@ package dk.kb.license.rights;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

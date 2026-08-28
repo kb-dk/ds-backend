@@ -7,10 +7,12 @@ import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageUnitTestUtil;
 import dk.kb.storage.util.UniqueTimestampGenerator;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +22,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DsStorageTest extends DsStorageUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(DsStorageTest.class);
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
 
     @Test
     public void testBasicCRUD() throws Exception {

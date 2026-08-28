@@ -1,12 +1,11 @@
-package dk.kb.license.storage;
+package dk.kb.license.util;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 
 import dk.kb.license.config.ServiceConfig;
+import dk.kb.license.storage.*;
 import dk.kb.shared.util.DbUtil;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -38,6 +37,9 @@ public abstract class DsLicenseUnitTestUtil {
         return baseUrl + delimiter + "currentSchema=" + schemaName;
     }
 
+    protected static String URL;
+    protected static String schemaName;
+
     protected static final String DRIVER = "org.postgresql.Driver";
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
@@ -45,9 +47,6 @@ public abstract class DsLicenseUnitTestUtil {
     protected static AuditLogModuleStorageForUnitTest auditStorage = null;
     protected static LicenseModuleStorageForUnitTest licenseStorage = null;
     protected static RightsModuleStorageForUnitTest rightsStorage = null;
-
-    protected static String URL;
-    protected static String schemaName;
 
     protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);

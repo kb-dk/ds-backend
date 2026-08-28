@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 
 public class AuditLogModuleFacadeTest extends DsLicenseUnitTestUtil {

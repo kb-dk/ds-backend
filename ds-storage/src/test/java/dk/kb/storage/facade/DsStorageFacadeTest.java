@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -13,7 +15,14 @@ import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.util.DsStorageUnitTestUtil;
 import dk.kb.util.webservice.exception.InternalServiceException;
 
+import java.lang.invoke.MethodHandles;
+
 public class DsStorageFacadeTest extends DsStorageUnitTestUtil{
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
 
     //THIS UNITTEST MUST BE UPDATED WHEN VALIDATION RULES ARE MORE CLEAR!
     @Test

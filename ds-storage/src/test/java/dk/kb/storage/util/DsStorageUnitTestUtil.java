@@ -1,13 +1,11 @@
 package dk.kb.storage.util;
 
 import java.io.File;
-import java.lang.invoke.MethodHandles;
 import java.util.Locale;
 
 import dk.kb.storage.storage.DsStorage;
 import dk.kb.storage.storage.DsStorageForUnitTest;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import dk.kb.storage.config.ServiceConfig;
@@ -42,9 +40,10 @@ public abstract class DsStorageUnitTestUtil {
         return baseUrl + delimiter + "currentSchema=" + schemaName;
     }
 
-    protected static String schemaName = MethodHandles.lookup().lookupClass().getSimpleName().toLowerCase(Locale.ROOT);
+    protected static String URL;
+    protected static String schemaName;
+
     protected static final String DRIVER = "org.postgresql.Driver";
-    protected static final String URL = getJdbcUrlForSchema(schemaName);
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
 
@@ -54,11 +53,14 @@ public abstract class DsStorageUnitTestUtil {
 
     protected static DsStorageForUnitTest storage = null;
 
-    @BeforeAll
-    public static void beforeClass() throws Exception {
+    protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
+        schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
+        URL = getJdbcUrlForSchema(schemaName);
+
         ServiceConfig.initialize("conf/ds-storage*.yaml");
-        DbUtil.runFlywayMigrations(URL,DRIVER,USERNAME,PASSWORD, schemaName);
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
         DsStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+
         storage = new DsStorageForUnitTest();
     }
 

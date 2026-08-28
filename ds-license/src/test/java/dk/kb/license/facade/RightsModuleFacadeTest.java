@@ -2,7 +2,7 @@ package dk.kb.license.facade;
 
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
-import dk.kb.license.storage.DsLicenseUnitTestUtil;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
