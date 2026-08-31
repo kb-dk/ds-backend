@@ -134,26 +134,13 @@
         <xsl:variable name="errorDoc">
           <f:map>
             <!-- First three fields for schema.org are these no matter which object the transformer transforms to. -->
-            <f:string key="@context">http://schema.org/</f:string>
-            <f:string key="@type"><xsl:value-of select="$type"/></f:string>
-            <f:string key="id">
-              <xsl:value-of select="$recordID"/>
-            </f:string>
-            <f:array key="identifier">
-              <f:map>
-                <f:string key="@type">PropertyValue</f:string>
-                <f:string key="PropertyID">Origin</f:string>
-                <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-              </f:map>
-            </f:array>
-            <f:map key="kb:internal">
-              <!-- Internal value for backing ds-storage mTime-->
-              <f:string key="kb:storage_mTime">
-                <xsl:value-of select="format-number($mTime, '0')"/>
-              </f:string>
-              <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
-              <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
-            </f:map>
+            <xsl:call-template name="schema-context-and-type">
+              <xsl:with-param name="type" select="$type"/>
+            </xsl:call-template>
+            <xsl:call-template name="origin-identifier"/>
+            <xsl:call-template name="error-internal-map">
+              <xsl:with-param name="errorDescription" select="concat($err:code, ': ', $err:description)"/>
+            </xsl:call-template>
           </f:map>
         </xsl:variable>
         <xsl:value-of select="f:xml-to-json($errorDoc)"/>
@@ -230,10 +217,10 @@
           <!-- Aspect ratio contains many dirty values. such as ',', ', ', '16:9,' and '16:9, '. -->
           <xsl:choose>
             <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = ','"/>
-            <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9,' or normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9, '">
+            <xsl:when test="normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) = '16:9,'">
               <f:string key="videoFrameSize">16:9</f:string>
             </xsl:when>
-            <xsl:when test="$pbCore/pbcoreInstantiation/formatAspectRatio != '' and normalize-space($pbCore/pbcoreInstantiation/formatAspectRatio) != ',' or ', '">
+            <xsl:when test="$pbCore/pbcoreInstantiation/formatAspectRatio != ''">
               <f:string key="videoFrameSize">
                 <xsl:value-of select="$pbCore/pbcoreInstantiation/formatAspectRatio"/>
               </f:string>
@@ -260,47 +247,38 @@
           <xsl:with-param name="pbCore" select="$pbCore"/>
         </xsl:call-template>
 
-        <!-- This template also extracts internal fields only relevant for video. The rest of the extension extraction
-             is handled in the kb-internal template called above. -->
-        <xsl:for-each select="$pbCore//pbcoreExtension/extension">
-          <xsl:call-template name="video-extension-extractor"/>
-        </xsl:for-each>
+        <!-- Video-only extension fields, each found in the whole extension set: showviewcode carries a
+             value; the subtitle / teletext / hearing-impaired flags are booleans. Handled elsewhere for
+             non-video records via kb-internal above.
+             TODO: check whether has_subtitles / subtitles-for-hearing-impaired can be described in schema.org. -->
+        <xsl:sequence select="my:extensionStringField($pbcExtensions, 'showviewcode', 'kb:showviewcode')"/>
+        <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'tekstet', 'tekstet', 'ikke tekstet', 'kb:has_subtitles')"/>
+        <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'th', 'tekstet for hørehæmmede', 'ikke tekstet for hørehæmmede', 'kb:has_subtitles_for_hearing_impaired')"/>
+        <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'ttv', 'tekst-tv', 'ikke tekst-tv', 'kb:is_teletext')"/>
         </f:map>
 
         <!-- Catches all errors in sequence constructors (places where data can be used as input). If an error occurs
              the field origin will be created and internal fields about the error will be created as well. -->
         <xsl:catch errors="*">
-          <f:array key="identifier">
-            <f:map>
-              <f:string key="@type">PropertyValue</f:string>
-              <f:string key="PropertyID">Origin</f:string>
-              <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-            </f:map>
-          </f:array>
-          <f:map key="kb:internal">
-            <!-- Internal value for backing ds-storage mTime-->
-            <f:string key="kb:storage_mTime">
-              <xsl:value-of select="format-number($mTime, '0')"/>
-            </f:string>
-            <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
-            <f:string key="kb:transformation_error_description"><xsl:value-of select="concat($err:code, ': ', $err:description)"/></f:string>
-          </f:map>
+          <xsl:call-template name="origin-identifier"/>
+          <xsl:call-template name="error-internal-map">
+            <xsl:with-param name="errorDescription" select="concat($err:code, ': ', $err:description)"/>
+          </xsl:call-template>
         </xsl:catch>
       </xsl:try>
 
     </f:map>
   </xsl:template>
 
-  <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. The template requires the following five parameters:
-        type: The type of schema-org object in hand.
-        pbcExtensions: A parameter containing all PBCore Extensions for better retrieval of specific extensions during
-                       the transformation. -->
+  <!-- TEMPLATE FOR TRANSFORMING AUDIOOBJECTS. Parameters:
+        pbCore:        The PBCore metadata document node.
+        type:          The type of schema-org object in hand (here always 'AudioObject').
+        pbcExtensions: All PBCore Extensions, for retrieval of specific extensions during the transformation. -->
   <xsl:template name="audio-transformation">
     <xsl:param name="pbCore"/>
     <xsl:param name="type"/>
     <xsl:param name="pbcExtensions"/>
 
-    <!-- As the generic template currently is the same as the AudioObject, then this template is called here-->
     <xsl:call-template name="generic-transformation">
       <xsl:with-param name="pbCore" select="$pbCore"/>
       <xsl:with-param name="type" select="$type"/>
@@ -336,31 +314,13 @@
               </xsl:call-template>
 
 
-              <!-- Extract contributor if any present in metadata. see https://schema.org/contributor and the JSON.LD example -->
-              <xsl:if test="$pbCore/pbcoreContributor/contributorRole = 'medvirkende' and ./pbcoreContributor/contributor != ''">
-                <f:array key="contributor">
-                  <xsl:for-each select="./pbcoreContributor">
-                    <xsl:if test="./contributorRole = 'medvirkende' and ./contributor != ''">
-                      <f:map>
-                        <f:string key="@type">Person</f:string>
-                        <f:string key="name">
-                          <xsl:value-of select="normalize-space(./contributor)"/>
-                        </f:string>
-                      </f:map>
-                    </xsl:if>
-                  </xsl:for-each>
-                </f:array>
-              </xsl:if>
+              <!-- Contributors with role 'medvirkende' as a schema.org person array.
+                   see https://schema.org/contributor and the JSON.LD example -->
+              <xsl:sequence select="my:personArray($pbCore/pbcoreContributor[contributorRole = 'medvirkende' and contributor != '']/contributor, 'contributor')"/>
             </xsl:for-each>
           </xsl:when>
           <xsl:otherwise>
-            <f:array key="identifier">
-              <f:map>
-                <f:string key="@type">PropertyValue</f:string>
-                <f:string key="PropertyID">Origin</f:string>
-                <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-              </f:map>
-            </f:array>
+            <xsl:call-template name="origin-identifier"/>
           </xsl:otherwise>
         </xsl:choose>
 
@@ -378,21 +338,10 @@
         <!-- Catches all errors in sequence constructors (places where data can be used as input). If an error occurs
            the field origin will be created and internal fields about the error will be created as well. -->
         <xsl:catch>
-          <f:array key="identifier">
-            <f:map>
-              <f:string key="@type">PropertyValue</f:string>
-              <f:string key="PropertyID">Origin</f:string>
-              <f:string key="value"><xsl:value-of select="$origin"/></f:string>
-            </f:map>
-          </f:array>
-          <f:map key="kb:internal">
-            <!-- Internal value for backing ds-storage mTime-->
-            <f:string key="kb:storage_mTime">
-              <xsl:value-of select="format-number($mTime, '0')"/>
-            </f:string>
-            <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
-            <f:string key="kb:transformation_error_description"><xsl:value-of select="$err:description"/></f:string>
-          </f:map>
+          <xsl:call-template name="origin-identifier"/>
+          <xsl:call-template name="error-internal-map">
+            <xsl:with-param name="errorDescription" select="$err:description"/>
+          </xsl:call-template>
         </xsl:catch>
       </xsl:try>
     </f:map>
@@ -409,6 +358,33 @@
     </f:string>
   </xsl:template>
 
+  <!-- The 'identifier' array carrying only the Origin PropertyValue. Emitted on its own in the
+       error/fallback paths, where the full identifier array (with RecordID etc.) is not available. -->
+  <xsl:template name="origin-identifier">
+    <f:array key="identifier">
+      <f:map>
+        <f:string key="@type">PropertyValue</f:string>
+        <f:string key="PropertyID">Origin</f:string>
+        <f:string key="value"><xsl:value-of select="$origin"/></f:string>
+      </f:map>
+    </f:array>
+  </xsl:template>
+
+  <!-- The 'kb:internal' map produced when a transformation error is caught: the storage mTime plus
+       the error flag and description. The description differs per call site, so it is passed in
+       (it must be computed where the err: error variables are in scope, i.e. inside xsl:catch). -->
+  <xsl:template name="error-internal-map">
+    <xsl:param name="errorDescription"/>
+    <f:map key="kb:internal">
+      <!-- Internal value for backing ds-storage mTime-->
+      <f:string key="kb:storage_mTime">
+        <xsl:value-of select="format-number($mTime, '0')"/>
+      </f:string>
+      <f:string key="kb:transformation_error"><xsl:value-of select="true()"/></f:string>
+      <f:string key="kb:transformation_error_description"><xsl:value-of select="$errorDescription"/></f:string>
+    </f:map>
+  </xsl:template>
+
 
   <!-- TEMPLATE FOR ACCESSING PBCORE METADATA. This template transforms all fields, that are relevant for all objects.
        Fields such as 'videoQuality' is not part of the template extraction and are extracted in the video-transformation
@@ -420,20 +396,8 @@
     <!-- Create fields headline and alternativeHeadline if needed.
          Determine if title and original title are alike. Both fields should always be in metadata -->
     <!-- TODO: Do some validation of titles - check with metadata schema when they are set.    -->
-    <xsl:variable name="title">
-      <xsl:for-each select="./pbcoreTitle">
-        <xsl:if test="./titleType = 'titel'">
-          <xsl:value-of select="./title"/>
-        </xsl:if>
-      </xsl:for-each>
-    </xsl:variable>
-    <xsl:variable name="original-title">
-      <xsl:for-each select="/pbcoreTitle">
-        <xsl:if test="./titleType = 'originaltitel'">
-          <xsl:value-of select="./title"/>
-        </xsl:if>
-      </xsl:for-each>
-    </xsl:variable>
+    <xsl:variable name="title" select="string-join(pbcoreTitle[titleType = 'titel']/title, ' ')"/>
+    <xsl:variable name="original-title" select="string-join(pbcoreTitle[titleType = 'originaltitel']/title, ' ')"/>
 
     <xsl:choose>
       <xsl:when test="$title = $original-title and $title != '' or ($title != '' and $original-title = '')">
@@ -458,23 +422,8 @@
 
     <!-- Publisher extraction. Some metadata has two pbcorePublisher/publisher/publisherRole.
       We use the one with the value "kanalnavn" as this should be present in all metadata files.-->
-    <xsl:variable name="publisherSpecificIfExists">
-      <xsl:for-each select="./pbcorePublisher">
-        <xsl:if test="./publisherRole ='kanalnavn'">
-          <xsl:value-of select="./publisher"/>
-        </xsl:if>
-      </xsl:for-each>
-    </xsl:variable>
-    <xsl:variable name="publisherGeneralIfExists">
-      <xsl:for-each select="./pbcorePublisher">
-        <xsl:choose>
-          <xsl:when test="./publisherRole ='channel_name'">
-            <xsl:value-of select="./publisher"/>
-          </xsl:when>
-          <xsl:otherwise></xsl:otherwise>
-        </xsl:choose>
-      </xsl:for-each>
-    </xsl:variable>
+    <xsl:variable name="publisherSpecificIfExists" select="string-join(pbcorePublisher[publisherRole = 'kanalnavn']/publisher, ' ')"/>
+    <xsl:variable name="publisherGeneralIfExists" select="string-join(pbcorePublisher[publisherRole = 'channel_name']/publisher, ' ')"/>
 
     <xsl:variable name="publisherSpecific">
       <xsl:choose>
@@ -501,19 +450,10 @@
     <xsl:if test="./pbcorePublisher">
       <f:map key="publication">
         <f:string key="@type">BroadcastEvent</f:string>
-        <!-- Define isLiveBroadcast from live extension field.  -->
-        <!-- TODO: Figure out what to do when live field isn't present in metadata. -->
-        <xsl:for-each select="./pbcoreExtension/extension">
-          <xsl:if test="f:contains(., 'live:live') or f:contains(., 'live:ikke live')">
-            <f:boolean key="isLiveBroadcast">
-              <!-- Chooses between 'live' or 'ikke live' as these are boolean values.-->
-              <xsl:choose>
-                <xsl:when test="contains(., 'live:live')"><xsl:value-of select="f:true()"/></xsl:when>
-                <xsl:when test="contains(., 'live:ikke live')"><xsl:value-of select="false()"/></xsl:when>
-              </xsl:choose>
-            </f:boolean>
-          </xsl:if>
-        </xsl:for-each>
+        <!-- Define isLiveBroadcast from the 'live' extension: live:live -> true, live:ikke live -> false,
+             nothing when absent. Same helper as the kb:* booleans (exact match over the whole extension set).
+             TODO: Figure out what to do when the live field isn't present in metadata. -->
+        <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'live', 'live', 'ikke live', 'isLiveBroadcast')"/>
         <!-- Preservica contains two different fields for broadcaster-->
         <xsl:if test="$publisherSpecific != ''">
           <f:map key="publishedOn">
@@ -528,8 +468,9 @@
                 </xsl:otherwise>
               </xsl:choose>
             </f:string>
-            <xsl:if test="(f:exists($publisherGeneral) and not(f:empty($publisherGeneral)) and $publisherGeneral != '') or
-                          ($publisherSpecific = 'DR1' or $publisherSpecific = 'DR2')">
+            <!-- $publisherGeneral is a result-tree variable so it always exists/is non-empty; only its
+                 string value matters. -->
+            <xsl:if test="$publisherGeneral != '' or $publisherSpecific = 'DR1' or $publisherSpecific = 'DR2'">
             <f:string key="alternateName">
               <xsl:choose>
                 <!-- Do clean up of DR channel names -->
@@ -577,35 +518,29 @@
       </f:map>
     </xsl:if>
 
-    <!-- Create boolean containing true, if either 'produktionsland' or 'produktionsland_id' is present in metadata. -->
-    <xsl:variable name="produktionslandBoolean">
-      <xsl:choose>
-        <xsl:when test="$pbcExtensions[f:contains(., 'produktionsland:') or f:contains(., 'produktionsland_id:')]">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
+    <!-- True if either 'produktionsland' or 'produktionsland_id' is present in metadata.
+         Kept on contains() (not my:valueFromPBCoreExtensionKey) so an empty-valued extension still yields a bare
+         Country map, exactly as before. -->
+    <xsl:variable name="produktionslandBoolean"
+                  select="exists($pbcExtensions[f:contains(., 'produktionsland:') or f:contains(., 'produktionsland_id:')])"/>
 
     <!-- Create country of origin and add the identifier for the production country as text. -->
-    <xsl:if test="$produktionslandBoolean = f:true()">
+    <xsl:if test="$produktionslandBoolean">
       <f:map key="countryOfOrigin">
         <f:string key="@type">Country</f:string>
         <xsl:for-each select="./pbcoreExtension/extension">
-          <xsl:choose>
-            <xsl:when test="f:contains(. , 'produktionsland:') and substring-after(. , 'produktionsland:') != ''">
-              <f:string key="name">
-                <xsl:value-of select="f:substring-after(. , 'produktionsland:')"/>
-              </f:string>
-            </xsl:when>
-            <xsl:when test="f:contains(. , 'produktionsland_id:') and substring-after(. , 'produktionsland_id:') != ''">
-              <f:string key="identifier">
-                <xsl:value-of select="f:substring-after(. , 'produktionsland_id:')"/>
-              </f:string>
-            </xsl:when>
-          </xsl:choose>
+          <!-- A single extension is either produktionsland:X or produktionsland_id:Y, so the
+               two branches are mutually exclusive and can be independent xsl:if. -->
+          <xsl:if test="my:valueFromPBCoreExtensionString(., 'produktionsland')">
+            <f:string key="name">
+              <xsl:value-of select="my:valueFromPBCoreExtensionString(., 'produktionsland')"/>
+            </f:string>
+          </xsl:if>
+          <xsl:if test="my:valueFromPBCoreExtensionString(., 'produktionsland_id')">
+            <f:string key="identifier">
+              <xsl:value-of select="my:valueFromPBCoreExtensionString(., 'produktionsland_id')"/>
+            </f:string>
+          </xsl:if>
         </xsl:for-each>
       </f:map>
     </xsl:if>
@@ -627,13 +562,7 @@
                   f:string-length(substring-after(., 'antalepisoder:')) > 0)]">
       <f:map key="encodesCreativeWork">
         <!-- Determine the type of episode based on the general type of the metadata record.-->
-        <f:string key="@type">
-          <xsl:choose>
-            <xsl:when test="$type = 'VideoObject'">TVEpisode</xsl:when>
-            <xsl:when test="$type = 'AudioObject'">RadioEpisode</xsl:when>
-            <xsl:otherwise>Episode</xsl:otherwise>
-          </xsl:choose>
-        </f:string>
+        <f:string key="@type"><xsl:value-of select="my:episodeType($type)"/></f:string>
 
         <!-- If episode titel is defined it is extracted here. -->
         <xsl:for-each select="./pbcoreTitle">
@@ -661,72 +590,30 @@
                   </f:number>
                 </xsl:if>
 
-                <f:map key="partOfSeason">
-                  <f:string key="@type">
-                    <xsl:choose>
-                      <xsl:when test="$type = 'VideoObject'">TVSeason</xsl:when>
-                      <xsl:when test="$type = 'AudioObject'">RadioSeason</xsl:when>
-                      <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
-                    </xsl:choose>
-                  </f:string>
-                  <xsl:variable name="numberOfEpisodes">
-                    <xsl:value-of select="number(normalize-space(substring-after($episodeInfo, ':')))"/>
-                  </xsl:variable>
-                  <xsl:if test="string($numberOfEpisodes) != 'NaN'">
-                    <f:number key="numberOfEpisodes">
-                      <xsl:value-of select="substring-after($episodeInfo, ':')"/>
-                    </f:number>
-                  </xsl:if>
-                </f:map>
+                <xsl:sequence select="my:partOfSeason(substring-after($episodeInfo, ':'), $type)"/>
             </xsl:when>
             <xsl:otherwise>
-              <!-- Extract metadata from PBC extensions related to episodes -->
-              <xsl:for-each select=".">
-                <!-- Extract episode number if present.
-                     Checks for 'episodenr' in PBC extension and checks that there is a substring after the key.-->
-                <xsl:if test="f:contains(., 'episodenr:') and f:string-length(normalize-space(substring-after(., 'episodenr:'))) > 0">
-                  <xsl:variable name="episodeNumber">
-                      <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
-                  </xsl:variable>
-                  <!-- Check that variable only contains valid digits and not crazy stuff like 2+3 to show that both episode 2 and 3 are present in this program. -->
-                  <xsl:if test="string($episodeNumber) != 'NaN' and matches($episodeNumber, '^\d+$')">
-                    <f:number key="episodeNumber">
-                      <xsl:value-of select="substring-after(., 'episodenr:')"/>
-                    </f:number>
-                  </xsl:if>
+              <!-- Separate 'episodenr:N' / 'antalepisoder:M' extensions (not the combined episodenr:N:M form). -->
+              <!-- Episode number, only when it is a plain integer - not e.g. '2+3' meaning episodes 2 and 3. -->
+              <xsl:if test="f:contains(., 'episodenr:') and f:string-length(normalize-space(substring-after(., 'episodenr:'))) > 0">
+                <xsl:variable name="episodeNumber">
+                    <xsl:value-of select="normalize-space(substring-after(., 'episodenr:'))"/>
+                </xsl:variable>
+                <xsl:if test="string($episodeNumber) != 'NaN' and matches($episodeNumber, '^\d+$')">
+                  <f:number key="episodeNumber">
+                    <xsl:value-of select="substring-after(., 'episodenr:')"/>
+                  </f:number>
                 </xsl:if>
-              </xsl:for-each>
+              </xsl:if>
 
-              <!-- Extract metadata from PBC extensions related to season length. -->
-              <xsl:for-each select=".">
-                <!-- Extract number of episodes in a season, if present.
-                     Checks for 'antalepisoder' in PBC extension and checks that the value is not an empty string or 0.
-                     Create partOfSeason field, if any metadata is present. -->
-                <xsl:if test="f:contains(., 'antalepisoder:') and
-                          not(f:contains(., 'antalepisoder:0')) and
-                          f:string-length(substring-after(., 'antalepisoder:')) > 0">
-                  <!-- TODO: Figure if  there is a difference between no value and 0.
-                       Could one mean that a series is related but no data on it and
-                       the other means individual program with no series? -->
-                  <f:map key="partOfSeason">
-                    <f:string key="@type">
-                      <xsl:choose>
-                        <xsl:when test="$type = 'VideoObject'">TVSeason</xsl:when>
-                        <xsl:when test="$type = 'AudioObject'">RadioSeason</xsl:when>
-                        <xsl:otherwise>CreativeWorkSeason</xsl:otherwise>
-                      </xsl:choose>
-                    </f:string>
-                    <xsl:variable name="numberOfEpisodes">
-                      <xsl:value-of select="number(normalize-space(substring-after(., 'antalepisoder:')))"/>
-                    </xsl:variable>
-                    <xsl:if test="string($numberOfEpisodes) != 'NaN'">
-                      <f:number key="numberOfEpisodes">
-                        <xsl:value-of select="substring-after(., 'antalepisoder:')"/>
-                      </f:number>
-                    </xsl:if>
-                  </f:map>
-                </xsl:if>
-              </xsl:for-each>
+              <!-- Number of episodes in the season, when 'antalepisoder' has a non-empty, non-zero value.
+                   TODO: Figure if there is a difference between no value and 0. Could one mean a series is
+                   related but no data on it, and the other an individual program with no series? -->
+              <xsl:if test="f:contains(., 'antalepisoder:') and
+                        not(f:contains(., 'antalepisoder:0')) and
+                        f:string-length(substring-after(., 'antalepisoder:')) > 0">
+                <xsl:sequence select="my:partOfSeason(substring-after(., 'antalepisoder:'), $type)"/>
+              </xsl:if>
             </xsl:otherwise>
           </xsl:choose>
         </xsl:for-each>
@@ -795,12 +682,12 @@
                               'natur og dyr', 'mad og drikke', 'undervisning og kultur', 'medier', 'forbrugerstof', 'litteratur', 'forkyndende sangprogrammer', 'kulturforhold', 'sjælelivet')"/>
         <!-- These values should map to: Sport-->
         <xsl:variable name="Sport" as="item()*"
-                      select="('sport', 'blandet sport - nyhedspræget uden', 'fodbold', 'hestesport (gallop trav ridebane'), 'atletik', 'badminton.', 'boksning.', 'blandet sport - nyhedspræget med',
+                      select="('sport', 'blandet sport - nyhedspræget uden', 'fodbold', 'hestesport (gallop trav ridebane)', 'atletik', 'badminton.', 'boksning.', 'blandet sport - nyhedspræget med',
                               'bordtennis.', 'cykling.', 'dansk klub-fodbold', 'dansk klub-håndbold - herrer',
                               'dansk klub-håndbold - kvinder', 'danske fodboldlandskampe', 'danske håndboldlandskampe - kvinder', 'engelsk klub-fodbold.',
                               'europa cup-kampe - herrer', 'europa cup-kampe - kvinder', 'europacup-fodbold', 'folkelig idræt (herunder f.eks.-', 'golf.', 'gymnastik.', 'håndbold.', 'ishockey.',
                               'kano/kajak/roning.', 'motorsport.', 'ol- em og vm-fodboldlandskampe', 'ol- em- og vm-håndboldkampe – herrer', 'ol- em- og vm-håndboldkampe – kvinder', 'sejlsport.','skisport.',
-                              'speedway.', 'sportsdans.', 'sportstema - blandet sport uden', 'svømning.', 'taekwon-do o.lign.', 'tennis.', 'vintersport.', 'volleyball.'"/>
+                              'speedway.', 'sportsdans.', 'sportstema - blandet sport uden', 'svømning.', 'taekwon-do o.lign.', 'tennis.', 'vintersport.', 'volleyball.')"/>
         <!-- These values should map to: Underholdning-->
         <xsl:variable name="Entertainment" as="item()*"
                       select="('underholdning', 'tips &amp; lotto', 'anden underholdning', 'individet', 'comedy/situation comedy', 'journalistisk underholdning', 'humor', 'quiz',
@@ -817,9 +704,8 @@
         <!-- These values should map to: Videnskab og natur-->
         <xsl:variable name="ScienceNature" as="item()*"
                       select="('videnskab &amp; forskning', 'videnskab &amp; teknologi', 'natur &amp; miljø', 'natur', 'natur og kultur (fakta)', 'sundhed', 'naturvidenskab')"/>
-        <!-- These values should map to: Diverse-->
-        <xsl:variable name="Misc" as="item()*"
-                      select="('alle', 'andet', 'andet.', 'blandet', 'ikke formålsfordelt', 'N/A', 'n/a', 'præsentation og services', 'øvrige programsatte udsendelser')"/>
+        <!-- The former 'Misc'/'Diverse' category list ('alle', 'andet', 'blandet', ...) was removed: it
+             mapped to the same rodekasse bucket as the no-match fall-through, so it never affected output. -->
 
         <!-- Save keywords as a sequence -->
         <xsl:variable name="keywordsSequence" as="item()*">
@@ -844,60 +730,25 @@
             <f:string key="keywords">
               <xsl:value-of select="$keywordsString"/>
             </f:string>
-            <xsl:variable name="genreValue">
-              <xsl:choose>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $NewsPoliticsSociety)">
-                  <xsl:value-of select="'Nyheder, politik og samfund'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Music)">
-                  <xsl:value-of select="'Musik'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Culture)">
-                  <xsl:value-of select="'Kultur og oplysning'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Sport)">
-                  <xsl:value-of select="'Sport'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Entertainment)">
-                  <xsl:value-of select="'Humor, quiz og underholdning'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ChildrenYouth)">
-                  <xsl:value-of select="'Børn og unge'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Documentary)">
-                  <xsl:value-of select="'Dokumentar'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Fiction)">
-                  <xsl:value-of select="'Film og serier'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Lifestyle)">
-                  <xsl:value-of select="'Livsstil'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $ScienceNature)">
-                  <xsl:value-of select="'Natur og videnskab'"/>
-                </xsl:when>
-                <xsl:when test="my:sequenceAContainsValueFromSequenceB($keywordsSequence, $Misc)">
-                  <xsl:choose>
-                    <xsl:when test="$type = 'VideoObject'">
-                      <xsl:value-of select="'TV-rodekasse'"/>
-                    </xsl:when>
-                    <xsl:when test="$type = 'AudioObject'">
-                      <xsl:value-of select="'Radio-rodekasse'"/>
-                    </xsl:when>
-                  </xsl:choose>
-                </xsl:when>
-                <xsl:otherwise>
-                  <xsl:choose>
-                    <xsl:when test="$type = 'VideoObject'">
-                      <xsl:value-of select="'TV-rodekasse'"/>
-                    </xsl:when>
-                    <xsl:when test="$type = 'AudioObject'">
-                      <xsl:value-of select="'Radio-rodekasse'"/>
-                    </xsl:when>
-                  </xsl:choose>
-                </xsl:otherwise>
-              </xsl:choose>
-            </xsl:variable>
+            <!-- Genre categories, in priority order: the first whose value list intersects the record's
+                 keywords wins. An unmatched genre (formerly incl. the removed 'Misc' list) falls back to
+                 the rodekasse bucket. Add/adjust a category by editing one row here. -->
+            <xsl:variable name="genreCategories" as="map(*)*" select="(
+              map { 'label': 'Nyheder, politik og samfund', 'values': $NewsPoliticsSociety },
+              map { 'label': 'Musik',                        'values': $Music },
+              map { 'label': 'Kultur og oplysning',          'values': $Culture },
+              map { 'label': 'Sport',                        'values': $Sport },
+              map { 'label': 'Humor, quiz og underholdning', 'values': $Entertainment },
+              map { 'label': 'Børn og unge',                 'values': $ChildrenYouth },
+              map { 'label': 'Dokumentar',                   'values': $Documentary },
+              map { 'label': 'Film og serier',               'values': $Fiction },
+              map { 'label': 'Livsstil',                     'values': $Lifestyle },
+              map { 'label': 'Natur og videnskab',           'values': $ScienceNature })"/>
+            <xsl:variable name="matchedGenre" as="xs:string?"
+                          select="(for $cat in $genreCategories
+                                   return if (my:sequenceAContainsValueFromSequenceB($keywordsSequence, $cat?values))
+                                          then $cat?label else ())[1]"/>
+            <xsl:variable name="genreValue" select="($matchedGenre, my:rodekasse($type))[1]"/>
             <f:string key="genre">
               <xsl:value-of select="$genreValue"/>
             </f:string>
@@ -906,51 +757,17 @@
       </xsl:when>
       <!-- Adding a fallback to 'Rodekassen' as we have 160K records without genre at all. -->
       <xsl:otherwise>
-        <f:string key="genre">
-          <xsl:choose>
-            <xsl:when test="$type = 'VideoObject'">
-              <xsl:value-of select="'TV-rodekasse'"/>
-            </xsl:when>
-            <xsl:when test="$type = 'AudioObject'">
-              <xsl:value-of select="'Radio-rodekasse'"/>
-            </xsl:when>
-          </xsl:choose>
-        </f:string>
+        <f:string key="genre"><xsl:value-of select="my:rodekasse($type)"/></f:string>
       </xsl:otherwise>
     </xsl:choose>
 
     <!-- Extract directors if any present in metadata. see https://schema.org/director -->
-    <!-- In our devel system we dont have any records where there are more than one contributer with the role 'instruktion' therefore this is not implemented as an array. -->
-    <xsl:if test="./pbcoreContributor/contributorRole = 'instruktion' and ./pbcoreContributor/contributor != ''">
-      <f:array key="director">
-        <xsl:for-each select="./pbcoreContributor">
-          <xsl:if test="./contributorRole = 'instruktion' and ./contributor != ''">
-            <f:map>
-              <f:string key="@type">Person</f:string>
-              <f:string key="name">
-                <xsl:value-of select="normalize-space(./contributor)"/>
-              </f:string>
-            </f:map>
-          </xsl:if>
-        </xsl:for-each>
-      </f:array>
-    </xsl:if>
+    <!-- Directors: contributors with role 'instruktion' as a schema.org person array. -->
+    <xsl:sequence select="my:personArray(pbcoreContributor[contributorRole = 'instruktion' and contributor != '']/contributor, 'director')"/>
 
-    <!-- Extract authors/creators here we are using creators as these two can be used for the same content and we are using creator for images as well. -->
-    <xsl:if test="./pbcoreCreator/creatorRole = 'forfatter' and ./pbcoreCreator/creator != ''">
-      <f:array key="creator">
-        <xsl:for-each select="./pbcoreCreator">
-          <xsl:if test="./creatorRole = 'forfatter' and ./creator != ''">
-            <f:map>
-              <f:string key="@type">Person</f:string>
-              <f:string key="name">
-                <xsl:value-of select="normalize-space(./creator)"/>
-              </f:string>
-            </f:map>
-          </xsl:if>
-        </xsl:for-each>
-      </f:array>
-    </xsl:if>
+    <!-- Creators/authors: pbcoreCreator with role 'forfatter' as a schema.org person array (creator is
+         also used for images, hence the shared field). -->
+    <xsl:sequence select="my:personArray(pbcoreCreator[creatorRole = 'forfatter' and creator != '']/creator, 'creator')"/>
 
     <!-- Construct identifiers for accession_number, ritzau_id and tvmeter_id -->
     <f:array key="identifier">
@@ -983,37 +800,32 @@
           <f:string key="description">Kaltura ID of the access copy. Created internally by Kaltura.</f:string>
         </f:map>
       </xsl:if>
-      <xsl:if test="//pbcoreIdentifier">
-        <xsl:for-each select="./pbcoreIdentifier">
-          <xsl:choose>
-            <!-- Do nothing when identifierSource or identifier is empty. -->
-            <xsl:when test="identifierSource = ''">
-            </xsl:when>
-            <xsl:when test="identifier = ''">
-            </xsl:when>
-            <xsl:when test="identifierSource = 'Det Kongelige Bibliotek; Radio/TV-samlingen; De hvide programmer'">
-              <f:map>
-                <f:string key="@type">PropertyValue</f:string>
-                <f:string key="PropertyID">WhiteProgramID</f:string>
-                <f:string key="value">
-                  <xsl:value-of select="normalize-space(substring-after(identifier, 'ID:'))"/>
-                </f:string>
-              </f:map>
-            </xsl:when>
-            <xsl:otherwise>
-              <f:map>
-                <f:string key="@type">PropertyValue</f:string>
-                <f:string key="PropertyID">
-                  <xsl:value-of select="./identifierSource"/>
-                </f:string>
-                <f:string key="value">
-                  <xsl:value-of select="./identifier"/>
-                </f:string>
-              </f:map>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:for-each>
-      </xsl:if>
+      <!-- Skip identifiers with an empty source or value (the [not(...)] predicate); the rest map to a
+           PropertyValue, with a special PropertyID for the 'De hvide programmer' source. -->
+      <xsl:for-each select="./pbcoreIdentifier[not(identifierSource = '') and not(identifier = '')]">
+        <xsl:choose>
+          <xsl:when test="identifierSource = 'Det Kongelige Bibliotek; Radio/TV-samlingen; De hvide programmer'">
+            <f:map>
+              <f:string key="@type">PropertyValue</f:string>
+              <f:string key="PropertyID">WhiteProgramID</f:string>
+              <f:string key="value">
+                <xsl:value-of select="normalize-space(substring-after(identifier, 'ID:'))"/>
+              </f:string>
+            </f:map>
+          </xsl:when>
+          <xsl:otherwise>
+            <f:map>
+              <f:string key="@type">PropertyValue</f:string>
+              <f:string key="PropertyID">
+                <xsl:value-of select="./identifierSource"/>
+              </f:string>
+              <f:string key="value">
+                <xsl:value-of select="./identifier"/>
+              </f:string>
+            </f:map>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:for-each>
       <!-- Extracts PID as identifier if present.-->
       <xsl:if test="$pidHandles != ''">
         <f:map>
@@ -1045,6 +857,59 @@
     </xsl:if>
   </xsl:template>
 
+  <!-- Build a schema.org person array (creator / director / contributor): one {@type:Person, name} map
+       per name in $names, or nothing when the sequence is empty. Callers pass the already-filtered name
+       nodes, e.g. pbcoreCreator[creatorRole = 'forfatter' and creator != '']/creator. -->
+  <xsl:function name="my:personArray" visibility="public">
+    <xsl:param name="names" as="xs:string*"/>
+    <xsl:param name="outputKey" as="xs:string"/>
+    <xsl:if test="exists($names)">
+      <f:array key="{$outputKey}">
+        <xsl:for-each select="$names">
+          <f:map>
+            <f:string key="@type">Person</f:string>
+            <f:string key="name"><xsl:value-of select="normalize-space(.)"/></f:string>
+          </f:map>
+        </xsl:for-each>
+      </f:array>
+    </xsl:if>
+  </xsl:function>
+
+  <!-- schema.org type labels derived from the record's object type ($type: VideoObject / AudioObject / other). -->
+  <xsl:function name="my:episodeType" as="xs:string">
+    <xsl:param name="type" as="xs:string?"/>
+    <xsl:sequence select="if ($type = 'VideoObject') then 'TVEpisode'
+                          else if ($type = 'AudioObject') then 'RadioEpisode'
+                          else 'Episode'"/>
+  </xsl:function>
+  <xsl:function name="my:seasonType" as="xs:string">
+    <xsl:param name="type" as="xs:string?"/>
+    <xsl:sequence select="if ($type = 'VideoObject') then 'TVSeason'
+                          else if ($type = 'AudioObject') then 'RadioSeason'
+                          else 'CreativeWorkSeason'"/>
+  </xsl:function>
+  <!-- The 'rodekasse' catch-all genre bucket; empty for non tv/radio types, matching the original choose. -->
+  <xsl:function name="my:rodekasse" as="xs:string">
+    <xsl:param name="type" as="xs:string?"/>
+    <xsl:sequence select="if ($type = 'VideoObject') then 'TV-rodekasse'
+                          else if ($type = 'AudioObject') then 'Radio-rodekasse'
+                          else ''"/>
+  </xsl:function>
+
+  <!-- The encodesCreativeWork/partOfSeason map. $numberOfEpisodes is emitted verbatim as numberOfEpisodes,
+       but only when it parses to a number (matching the original guard). Used for both the combined
+       'episodenr:N:M' form and the separate 'antalepisoder:M' form. -->
+  <xsl:function name="my:partOfSeason">
+    <xsl:param name="numberOfEpisodes" as="xs:string?"/>
+    <xsl:param name="type" as="xs:string?"/>
+    <f:map key="partOfSeason">
+      <f:string key="@type"><xsl:value-of select="my:seasonType($type)"/></f:string>
+      <xsl:if test="string(number(normalize-space($numberOfEpisodes))) != 'NaN'">
+        <f:number key="numberOfEpisodes"><xsl:value-of select="$numberOfEpisodes"/></f:number>
+      </xsl:if>
+    </f:map>
+  </xsl:function>
+
 
   <!-- TEMPLATE FOR EXTRACTING INTERNAL VALUES WHICH DON'T HAVE A SCHEMA.ORG DATA REPRESENTATION.
        These values can be almost anything ranging from identifiers to acces conditions.
@@ -1075,14 +940,7 @@
     
     <!-- Boolean value which determins if the record has a stream available at Kaltura.-->
     <f:boolean key="kb:has_kaltura_id">
-      <xsl:choose>
-        <xsl:when test="$kalturaID != ''">
-          <xsl:value-of select="true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="$kalturaID != ''"/>
     </f:boolean>
 
     <!-- Extration of migration details if present. Implemented as a choose statement. -->
@@ -1103,15 +961,13 @@
     <!-- If record originates from DOMS, we have to check if an access copy has been created by DOMS. That's whats happening inside this if-statement.
           This is done in the same way as mediestream did it.-->
     <xsl:if test="normalize-space($migrationSource) = 'Radio/tv DOMS - prod'">
-      <xsl:variable name="maxMissingSeconds">
-        <xsl:value-of select="90"/>
-      </xsl:variable>
+      <xsl:variable name="maxMissingSeconds" select="90"/>
 
       <f:string key="kb:has_doms_access_copy">
         <xsl:choose>
           <!-- When access/defekt is Ja, then there is no access copy for the DOMS record -->
           <xsl:when test="/XIP/Metadata/Content/access/defekt = 'Ja'">
-            <xsl:value-of select="false"/>
+            <xsl:value-of select="false()"/>
           </xsl:when>
           <!-- When there is a progam structure object present, there is a presentation copy present, however it might be so bad, that it cannot be shown.
                 The default configuration for missing seconds from the old transcoder was 120 for not generating the access copy. Mediestream set the value to 90, which
@@ -1124,7 +980,6 @@
                 <xsl:when test="holes/hole/holeLength[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
                 <xsl:when test="missingStart/missingSeconds[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
                 <xsl:when test="missingEnd/missingSeconds[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
-                <xsl:when test="holes/hole/holeLength[text() &gt; $maxMissingSeconds]"><xsl:value-of select="false()"/></xsl:when>
                 <!-- A program exists and there is not more than 90 seconds missing from each element above. -->
                 <xsl:otherwise><xsl:value-of select="true()"/></xsl:otherwise>
               </xsl:choose>
@@ -1176,11 +1031,14 @@
           </f:boolean>
       </xsl:if>
 
-    <!-- Extract subgenre if present -->
+    <!-- Extract subgenre if present
+        <pbcoreGenre>
+          <genre>undergenre: Alle</genre>
+        </pbcoreGenre> -->
     <xsl:for-each select="$pbCore/pbcoreGenre/genre">
-      <xsl:if test="contains(., 'undergenre:') and substring-after(., 'undergenre:') != ''">
+      <xsl:if test="my:valueFromPBCoreExtensionString(., 'undergenre')">
         <f:string key="kb:genre_sub">
-          <xsl:value-of select="normalize-space(substring-after(., 'undergenre:'))"/>
+          <xsl:value-of select="normalize-space(my:valueFromPBCoreExtensionString(., 'undergenre'))"/>
         </f:string>
       </xsl:if>
     </xsl:for-each>
@@ -1194,18 +1052,7 @@
       </xsl:when>
     </xsl:choose>
     <!-- Create boolean for premiere-->
-    <xsl:choose>
-      <xsl:when test="$pbcExtensions[f:contains(., 'premiere:ikke premiere')]">
-        <f:boolean key="kb:premiere">
-          <xsl:value-of select="false()"/>
-        </f:boolean>
-      </xsl:when>
-      <xsl:when test="$pbcExtensions[f:contains(., 'premiere:premiere')]">
-        <f:boolean key="kb:premiere">
-          <xsl:value-of select="true()"/>
-        </f:boolean>
-      </xsl:when>
-    </xsl:choose>
+    <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'premiere', 'premiere', 'ikke premiere', 'kb:premiere')"/>
     <!-- Extract format identifiers -->
     <xsl:for-each select="$pbCore/pbcoreInstantiation/pbcoreFormatID">
       <xsl:choose>
@@ -1228,25 +1075,36 @@
     </xsl:for-each>
     <!--TODO: Figure if retransmission can fit into real schema.org -->
     <!-- Create boolean for retransmission-->
-    <xsl:choose>
-      <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:ikke genudsendelse')]">
-        <f:boolean key="kb:retransmission">
-          <xsl:value-of select="false()"/>
-        </f:boolean>
-      </xsl:when>
-      <xsl:when test="$pbcExtensions[f:contains(., 'genudsendelse:genudsendelse')]">
-        <f:boolean key="kb:retransmission">
-          <xsl:value-of select="true()"/>
-        </f:boolean>
-      </xsl:when>
-    </xsl:choose>
-    <!-- Extracts multiple extensions to the internal KB map. These extensions can contain many different values.
-         Some have external value, while others primarily are for internal usage.-->
-    <xsl:for-each select="$pbCore/pbcoreExtension">
-      <xsl:call-template name="extension-extractor">
-      <xsl:with-param name="type" select="$type"/>
-      </xsl:call-template>
+    <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'genudsendelse', 'genudsendelse', 'ikke genudsendelse', 'kb:retransmission')"/>
+    <!-- Boolean for whether there was a stop in the transmission -->
+    <xsl:sequence select="my:extensionBooleanField($pbcExtensions, 'program_ophold', 'program ophold', 'ikke program ophold', 'kb:program_ophold')"/>
+    <!-- Extension-derived KB id fields. Each is the value of its "prefix:value" extension, found in the
+         whole extension set. kanalid is the exception: it emits a number resolved against the sibling
+         extensionAuthorityUsed, so it needs the pbcoreExtension node, not just the extension text. It is
+         placed between maingenre and program to keep the order the (order-sensitive) Java assertions pin. -->
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'hovedgenre_id', 'kb:maingenre_id')"/>
+    <xsl:for-each select="$pbCore/pbcoreExtension[f:starts-with(extension , 'kanalid:') and f:string-length(normalize-space(substring-after(extension , 'kanalid:'))) > 0]">
+      <xsl:variable name="channelId">
+        <xsl:value-of select="number(normalize-space(substring-after(extension , 'kanalid:')))"/>
+      </xsl:variable>
+      <xsl:choose>
+        <xsl:when test="extensionAuthorityUsed = 'ritzau' and string($channelId) != 'NaN'">
+          <f:number key="kb:ritzau_channel_id">
+            <xsl:value-of select="$channelId"/>
+          </f:number>
+        </xsl:when>
+        <xsl:when test="extensionAuthorityUsed = 'nielsen' and string($channelId) != 'NaN'">
+          <f:number key="kb:nielsen_channel_id">
+            <xsl:value-of select="$channelId"/>
+          </f:number>
+        </xsl:when>
+      </xsl:choose>
     </xsl:for-each>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'program_id', 'kb:ritzau_program_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'undergenre_id', 'kb:subgenre_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'afsnit_id', 'kb:episode_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'saeson_id', 'kb:season_id')"/>
+    <xsl:sequence select="my:extensionStringField($pbcExtensions, 'serie_id', 'kb:series_id')"/>
 
     <!-- Extracts information on video padding. -->
     <xsl:for-each select="/XIP/Metadata/Content/padding:padding/paddingSeconds">
@@ -1291,50 +1149,22 @@
 
     <!-- Create a field with a boolean value representing if the record has the extra dr_archive_supplementary_rights_metadata fragment -->
     <f:boolean key="kb:contains_dr_archive_supplementary_rights_metadata">
-      <xsl:choose>
-        <xsl:when test="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata']">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="exists(/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata'])"/>
     </f:boolean>
 
     <!-- Create a field with a boolean value representing if the record has the extra tvmeter fragment -->
     <f:boolean key="kb:contains_tvmeter">
-      <xsl:choose>
-        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_tvmeter_metadata']">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="exists(//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_tvmeter_metadata'])"/>
     </f:boolean>
 
     <!-- Create a field with a boolean value representing if the record has the extra nielsen fragment -->
     <f:boolean key="kb:contains_nielsen">
-      <xsl:choose>
-        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_nielsen_metadata']">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="f:false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="exists(//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_nielsen_metadata'])"/>
     </f:boolean>
 
     <!-- Create a field with a boolean value representing if the record has the extra ritzau fragment -->
     <f:boolean key="kb:contains_ritzau">
-      <xsl:choose>
-        <xsl:when test="//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_ritzau_metadata']">
-          <xsl:value-of select="f:true()"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="f:false()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="exists(//*[namespace-uri() = 'http://id.kb.dk/schemas/supplementary_ritzau_metadata'])"/>
     </f:boolean>
 
     <!-- Holdback date included here. Holdback purpose is only included for video objects, therefor it is done in the
@@ -1352,19 +1182,19 @@
   <xsl:template name="internal-video-fields">
     <xsl:param name="pbCore"/>
 
-    <xsl:if test="$holdbackPurposeName != null or $holdbackPurposeName != ''">
+    <xsl:if test="$holdbackPurposeName != ''">
       <f:string key="kb:holdback_name">
         <xsl:value-of select="$holdbackPurposeName"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="$holdbackFormValue != null or $holdbackFormValue != ''">
+    <xsl:if test="$holdbackFormValue != ''">
       <f:string key="kb:holdback_form_value">
         <xsl:value-of select="$holdbackFormValue"/>
       </f:string>
     </xsl:if>
 
-    <xsl:if test="$holdbackContentValue != null or $holdbackContentValue != ''">
+    <xsl:if test="$holdbackContentValue != ''">
       <f:string key="kb:holdback_content_value">
         <xsl:value-of select="$holdbackContentValue"/>
       </f:string>
@@ -1373,152 +1203,54 @@
 
 
     <!-- Create boolean for color for tv resources-->
-    <xsl:choose>
-      <xsl:when test="$pbCore/pbcoreInstantiation/formatColors = 'farve'">
-        <f:boolean key="kb:color"><xsl:value-of select="true()"/></f:boolean>
-      </xsl:when>
-      <xsl:otherwise>
-        <f:boolean key="kb:color"><xsl:value-of select="false()"/></f:boolean>
-      </xsl:otherwise>
-    </xsl:choose>
+    <f:boolean key="kb:color">
+      <xsl:value-of select="$pbCore/pbcoreInstantiation/formatColors = 'farve'"/>
+    </f:boolean>
   </xsl:template>
 
-  <!-- EXTRACT VALUES FROM PBCORE EXTENSIONS TO KB:INTERNAL MAP. These extensions can contain many different values.
-       Some might be relevant in relation to schema.org and can be elevated to the correct structure.-->
-  <xsl:template name="extension-extractor">
-    <xsl:param name="type"/>
-    <!-- Extracts multiple internal ids. -->
+  <!-- EMIT A BOOLEAN FIELD FROM A  PBCore extension.
+       Many extensions encode a boolean as an affirmative phrase or its negation, e.g.
+       'tekstet:tekstet' (true) / 'tekstet:ikke tekstet' (false). Given the whole extension set, this
+       emits <f:boolean key="{outputKey}"> true when the affirmative form is present, false when the
+       negative form is present, and nothing otherwise. It tests the full set with an existential '=',
+       so callers pass $pbcExtensions directly - no per-extension loop and no pre-filtering needed. The
+       phrases are not derivable from the prefix (e.g. ttv -> 'tekst-tv'), so all three are passed in. -->
+  <xsl:function name="my:extensionBooleanField" visibility="public">
+    <xsl:param name="extensions" as="xs:string*"/>
+    <xsl:param name="prefix" as="xs:string"/>
+    <xsl:param name="affirmative" as="xs:string"/>
+    <xsl:param name="nonAffirmative" as="xs:string"/>
+    <xsl:param name="outputKey" as="xs:string"/>
     <xsl:choose>
-      <xsl:when test="f:starts-with(extension, 'hovedgenre_id:')">
-        <f:string key="kb:maingenre_id">
-          <xsl:value-of select="substring-after(extension , 'hovedgenre_id:')"/>
-        </f:string>
+      <xsl:when test="$extensions = $prefix || ':' || $nonAffirmative">
+        <f:boolean key="{$outputKey}"><xsl:value-of select="false()"/></f:boolean>
       </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'kanalid:') and f:string-length(normalize-space(substring-after(extension , 'kanalid:'))) > 0">
-        <xsl:variable name="channelId">
-          <xsl:value-of select="number(normalize-space(substring-after(extension , 'kanalid:')))"/>
-        </xsl:variable>
-
-        <xsl:choose>
-          <xsl:when test="extensionAuthorityUsed = 'ritzau' and string($channelId) != 'NaN'">
-            <f:number key="kb:ritzau_channel_id">
-              <xsl:value-of select="$channelId"/>
-            </f:number>
-          </xsl:when>
-          <xsl:when test="extensionAuthorityUsed = 'nielsen' and string($channelId) != 'NaN'">
-            <f:number key="kb:nielsen_channel_id">
-              <xsl:value-of select="$channelId"/>
-            </f:number>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'program_id:')">
-        <f:string key="kb:ritzau_program_id">
-          <xsl:value-of select="f:substring-after(extension , 'program_id:')"/>
-        </f:string>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'undergenre_id:')">
-        <f:string key="kb:subgenre_id">
-          <xsl:value-of select="f:substring-after(extension , 'undergenre_id:')"/>
-        </f:string>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'afsnit_id:')">
-        <f:string key="kb:episode_id">
-          <xsl:value-of select="f:substring-after(extension , 'afsnit_id:')"/>
-        </f:string>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'saeson_id:')">
-        <f:string key="kb:season_id">
-          <xsl:value-of select="f:substring-after(extension , 'saeson_id:')"/>
-        </f:string>
-      </xsl:when>
-      <xsl:when test="f:starts-with(extension , 'serie_id:')">
-        <f:string key="kb:series_id">
-          <xsl:value-of select="f:substring-after(extension , 'serie_id:')"/>
-        </f:string>
-      </xsl:when>
-      <!-- Check if there has been a stop in the transmission-->
-      <xsl:when test="f:starts-with(extension , 'program_ophold:')">
-        <!-- inner XSLT Choose which determines if program_ophold is false or true -->
-        <xsl:choose>
-          <xsl:when test="extension = 'program_ophold:ikke program ophold'">
-            <f:boolean key="kb:program_ophold">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test="extension = 'program_ophold:program ophold'">
-            <f:boolean key="kb:program_ophold">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
+      <xsl:when test="$extensions = $prefix || ':' || $affirmative">
+        <f:boolean key="{$outputKey}"><xsl:value-of select="true()"/></f:boolean>
       </xsl:when>
     </xsl:choose>
-  </xsl:template>
+  </xsl:function>
 
-  <!-- Extracts extensions that are only applicable for video objects. -->
-  <xsl:template name="video-extension-extractor">
-    <xsl:choose>
-      <!--Extract internal showviewcode -->
-      <xsl:when test="f:starts-with(. , 'showviewcode:')">
-        <f:string key="kb:showviewcode">
-          <xsl:value-of select="f:substring-after(. , 'showviewcode:')"/>
-        </f:string>
-      </xsl:when>
-      <!-- TODO: Check if has_subtitles fits in schema.org-->
-      <!-- Boolean for if the program contains subtitles.-->
-      <xsl:when test="f:starts-with(. , 'tekstet:')">
-        <!-- Inner XSLT  choose to determine value of boolean -->
-        <xsl:choose>
-          <xsl:when test=". = 'tekstet:ikke tekstet'">
-            <f:boolean key="kb:has_subtitles">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test=". = 'tekstet:tekstet'">
-            <f:boolean key="kb:has_subtitles">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:when>
-      <!-- Is the resource teletext?-->
-      <xsl:when test="f:starts-with(. , 'ttv:')">
-        <!-- Inner XSLT  choose to determine value of boolean -->
-        <xsl:choose>
-          <xsl:when test=". = 'ttv:ikke tekst-tv'">
-            <f:boolean key="kb:is_teletext">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test=". = 'ttv:tekst-tv'">
-            <f:boolean key="kb:is_teletext">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:when>
-      <!--TODO: Check if subtitles for hearing impaired can be described in schema.org'-->
-      <!-- Boolean value - does the resource contain subtitles for hearing impaired?-->
-      <xsl:when test="f:starts-with(. , 'th:')">
-        <!-- Inner XSLT  choose to determine value of boolean -->
-        <xsl:choose>
-          <xsl:when test=". = 'th:ikke tekstet for hørehæmmede'">
-            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
-              <xsl:value-of select="false()"/>
-            </f:boolean>
-          </xsl:when>
-          <xsl:when test=". = 'th:tekstet for hørehæmmede'">
-            <f:boolean key="kb:has_subtitles_for_hearing_impaired">
-              <xsl:value-of select="true()"/>
-            </f:boolean>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
+  <!-- Emit <f:string key="{outputKey}"> from a PBCoreExtension carrying the value of the first "prefix:value"
+       extension in the set,
+       or nothing if none is present. Given the whole extension set (existential match), so callers pass
+       $pbcExtensions directly - the mirror of my:extensionBooleanField for value-bearing fields. Preserves
+       the old substring-after semantics: an empty value (e.g. "serie_id:") still produces an empty field. -->
+  <xsl:function name="my:extensionStringField" visibility="public">
+    <xsl:param name="extensions" as="xs:string*"/>
+    <xsl:param name="prefix" as="xs:string"/>
+    <xsl:param name="outputKey" as="xs:string"/>
+    <xsl:variable name="marker" select="$prefix || ':'"/>
+    <xsl:variable name="matching" select="$extensions[f:starts-with(., $marker)]"/>
+    <xsl:if test="exists($matching)">
+      <f:string key="{$outputKey}">
+        <xsl:value-of select="f:substring-after($matching[1], $marker)"/>
+      </f:string>
+    </xsl:if>
+  </xsl:function>
 
-  <!-- TEMPLATE FOR ACCESSING ACCESS METADATA.-->
+
+  <!-- Template for access metadata.-->
   <xsl:template name="access-template">
     <xsl:if test="individuelt_forbud">
       <f:string key="kb:access_individual_prohibition">
@@ -1563,7 +1295,7 @@
     <xsl:choose>
       <xsl:when test="overlaps != ''">
         <f:string key="kb:program_structure_overlaps">
-          <xsl:value-of select="f:true()"/>
+          <xsl:value-of select="true()"/>
         </f:string>
         <f:array key="kb:program_structure_overlap">
           <xsl:for-each select="overlaps/overlap">
@@ -1589,7 +1321,7 @@
       </xsl:when>
       <xsl:otherwise>
         <f:string key="kb:program_structure_overlaps">
-          <xsl:value-of select="f:false()"/>
+          <xsl:value-of select="false()"/>
         </f:string>
       </xsl:otherwise>
     </xsl:choose>

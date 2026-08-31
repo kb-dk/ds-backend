@@ -111,8 +111,9 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    public void testNoCreatorAffiliation() {
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"creator_affiliation\"");
+    public void testCreatorAffiliationFallback() {
+        assertPvicaContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"creator_affiliation\":\"tvkolding\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"creator_affiliation_length\":\"9\"");
     }
 
     @Test

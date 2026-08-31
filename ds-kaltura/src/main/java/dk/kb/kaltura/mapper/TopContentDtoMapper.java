@@ -1,6 +1,7 @@
 package dk.kb.kaltura.mapper;
 
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import dk.kb.kaltura.domain.ReportTableDto;
@@ -33,6 +34,7 @@ public class TopContentDtoMapper {
 
         CsvSchema schema =
                 CsvSchema.emptySchema().withHeader().withColumnSeparator(',').withoutQuoteChar();
+        csvMapper.enable(CsvParser.Feature.FAIL_ON_MISSING_COLUMNS);
 
         Class<TopContentDto> clazz = TopContentDto.class;
         try {

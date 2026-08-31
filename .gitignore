@@ -40,3 +40,9 @@ hs_err_pid*
 .openapi-generator/
 .classpath
 .openapi-generator-ignore
+
+# mvn release:prepare
+release.properties
+pom.xml.releaseBackup
+pom.xml.tag
+pom.xml.next
