@@ -1,9 +1,0 @@
-SKIP_create_ds_datahandler_db.ddl
-SKIP_licensemodule_create_db.ddl
-SKIP_audit_log_module_create_db.ddl
-SKIP_rightsmodule_create.ddl
-SKIP_create_ds_storage.ddl
-SKIP_rightsmodule_create_db.ddl
-SKIP_rightsmodule_default_dr_holdback_categories_data.sql
-SKIP_rightsmodule_default_dr_holdback_ranges_data.sql
-SKIP_licensemodule_create_devel_license.sql
