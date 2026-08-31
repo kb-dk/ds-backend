@@ -7,8 +7,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added `TopContentDtoMappperTest`
+
 ### Changed
 
+- Changed `TopContentDto` so it now have a couple of extra fields. Future unexpected fields will now be ignored.
 - Changed `uploadFile` method to split data into smaller chunks enable to enhance upload job stability.
 
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
