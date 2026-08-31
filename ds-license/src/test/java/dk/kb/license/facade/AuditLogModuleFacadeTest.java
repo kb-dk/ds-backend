@@ -54,7 +54,7 @@ public class AuditLogModuleFacadeTest extends DsLicenseUnitTestUtil {
         tables.add("LICENSECONTENT");    
         tables.add("PRESENTATION");
         tables.add("AUDITLOG");    
-        //storage.clearTableRecords(tables);
+        auditStorage.clearTableRecords(tables);
     }
 
     @Test

@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
 /**
- * Unittest class for the H2Storage.
- * All tests create and use H2 database in the directory: target/h2
+ * Unittest class for thestorage.
+ * All tests create and usePostgres database in the directory: target/h2
  * The directory will be deleted before the first test-method is called.
  * Each test-method will delete all entries in the database, but keep the database tables.
  * Currently, the directory is not deleted after the tests have run. This is useful as you can

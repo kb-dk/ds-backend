@@ -11,7 +11,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
  * Setup for the environment for unittest the same way as done in the InitialContext loader in the web container.
- * 1) Create a h2 database for unittests with schema defined
+ * 1) Create aPostgres database for unittests with schema defined
  * 2) Load the Yaml property files.
  */
 public abstract class DsLicenseUnitTestUtil {

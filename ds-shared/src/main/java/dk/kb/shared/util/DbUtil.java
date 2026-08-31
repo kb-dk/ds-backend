@@ -38,7 +38,7 @@ public class DbUtil {
                     .cleanDisabled(false)
                     .load();
 
-            log.info("Wiping existing schema completely: {}", schema);
+            log.info("Wiping existing schema: {}", schema);
             flyway.clean();
             log.info("Applying Flyway migrations...");
             flyway.migrate();

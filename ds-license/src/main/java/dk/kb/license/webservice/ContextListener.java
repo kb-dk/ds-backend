@@ -102,11 +102,11 @@ public class ContextListener implements ServletContextListener {
 
 //    private void createLocalH2ForJettyEnvironment(String driver, String url, String user, String password) {
 //        try {
-//         log.info("Setting up H2 database under jetty in development mode");
+//         log.info("Setting upPostgres database under jetty in development mode");
 //         DbUtil.runFlywayMigrations(url, driver,  user, password, 'public');
 //       }
 //       catch(Exception e) {
-//         log.error("Unable to create local h2 database for jetty environment",e);
+//         log.error("Unable to create localPostgres database for jetty environment",e);
 //       }
 //    }
 

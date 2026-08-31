@@ -105,7 +105,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -129,7 +129,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -153,7 +153,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -177,7 +177,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -201,7 +201,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -224,7 +224,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -247,7 +247,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -272,7 +272,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         RestrictedIdOutputDto restrictedIdOutputDto = RightsModuleFacade.createRestrictedId(false, restrictedIdInputDto);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(restrictedIdOutputDto);
@@ -308,7 +308,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(invalidId, false, restrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -345,7 +345,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(restrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -383,7 +383,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(restrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -421,7 +421,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(restrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -459,7 +459,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(restrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -496,7 +496,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(restrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -533,7 +533,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InvalidArgumentServiceException.class, () -> RightsModuleFacade.updateRestrictedId(restrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertEquals(expectedMessage, exception.getMessage());
@@ -562,7 +562,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.updateRestrictedId(notExistingId, false, updateRestrictedIdInputDto));
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertTrue(exception.getMessage().contains(expectedMessage));
@@ -598,7 +598,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         RestrictedIdOutputDto updatedRestrictedIdOutputDto = RightsModuleFacade.updateRestrictedId(createdRestrictedIdOutputDto.getId(), false, updateRestrictedIdInputDto);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(updatedRestrictedIdOutputDto);
@@ -718,7 +718,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -753,7 +753,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -787,7 +787,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -821,7 +821,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -855,7 +855,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -889,7 +889,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -923,7 +923,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -970,7 +970,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1035,7 +1035,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1094,7 +1094,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1147,7 +1147,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1182,7 +1182,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1216,7 +1216,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1250,7 +1250,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1284,7 +1284,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1318,7 +1318,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1352,7 +1352,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         // Act
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1400,7 +1400,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         // Act
         ProcessedRestrictedIdsOutputDto createdProcessedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1466,7 +1466,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         // Act
         ProcessedRestrictedIdsOutputDto createdProcessedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
@@ -1526,7 +1526,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         // Act
         ProcessedRestrictedIdsOutputDto createdProcessedRestrictedIdsOutputDto = RightsModuleFacade.createOrUpdateRestrictedIds(false, restrictedIds);
         ProcessedRestrictedIdsOutputDto processedRestrictedIdsOutputDto = RightsModuleFacade.deleteRestrictedIds(false, restrictedIds);
-        auditLogEntriesForObject =rightsStorage.getAllAudit();
+        auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
         assertNotNull(processedRestrictedIdsOutputDto);
