@@ -7,15 +7,18 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added endpoint `POST /rerun_clusters` that calls ds-storage via DsStorageClient that fetch new rows from remote
+  `p3rerun` database in table `clusters` table, save it to our `rerun_clusters` table, update `mtime` in `ds_records`
+  table and return number of rows inserted or updated in `rerun_clusters` table in a `RecordsCountDto` object.
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
 
 - Added line break before `@param` in Javadocs
 - Added line break before `@return` in Javadocs
-- Added endpoint `POST /rerun_clusters` that calls ds-storage via DsStorageClient that fetch new rows from remote 
-  `p3rerun` database in table `clusters` table, save it to our `rerun_clusters` table, update `mtime` in `ds_records` 
-  table and return number of rows inserted or updated in `rerun_clusters` table in a `RecordsCountDto` object.
 
 ### Changed
 
@@ -311,13 +314,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.7.3](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-1.7.3) - 2024-05-28
 
-###   
+### Changed
 
 - Changed how to enrich preservica 7 records with manifestations. [DRA-685](https://kb-dk.atlassian.net/browse/DRA-685)
 
 ## [1.7.2](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-1.7.2) - 2024-05-27
 
-###
+### Added
 
 - Added endpoint for enriching preservica 7 records with manifestations extracted through the preservica 7 REST
   API. [DRA-500](https://kb-dk.atlassian.net/browse/DRA-503)

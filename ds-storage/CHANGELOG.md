@@ -7,15 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
-
 ### Added
 
-- Added line break before `@param` in Javadocs
-- Added line break before `@return` in Javadocs
 - Added support for OffsetDateTime with OpenAPI generation.
-- Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found
-  in `create_rerun_clusters.ddl`*).
+- Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found in
+  `create_rerun_clusters.ddl`*).
 - Added endpoint `POST /rerun_clusters` that fetch new rows from remote `p3rerun` database in table `clusters` table,
   save it to our `rerun_clusters` table, update `mtime` in `ds_records` table and return number of rows inserted or
   updated in `rerun_clusters` table.
@@ -28,27 +24,38 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `ds-license``ds-datahandler`.
 - Refactored method `performStorageAction` to dynamically take storageClass from what class is calling the method, so it
   is possible to have multiple storage classes.
-- Refactored mapping of inserted/updated/deleted database row(s) into own mapping class.
+- Refactored mapping of inserted/updated/deleted database rows into own mapping class.
 - Refactored method `createEmptyH2DBFromDDL` to dynamically take multiple ddl scripts instead of hardcoded ddl.
 - Refactored `@InInterceptors(interceptors` in `apiServiceImpl.mustache` to add the correct path to
   `KBAuthorizationInterceptor`.
 - Renamed class `DsStorageUnitTestUtil` to `UnitTestUtil` and refactored the class so it is possible to have multiple
   unit test storage classes.
+
+### Removed
+
+- Removed deprecated `description` from `@Api` in `api.mustache` file.
+- Removed deprecated `servers.description` from `ds-storage-openapi_v1.yaml`.
+
+## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
+
+### Added
+
+- Added line break before `@param` in Javadocs
+- Added line break before `@return` in Javadocs
+
+### Changed
+
 - Formatted `openapi` file.
 - Moved OpenAPI description from `pom.xml` into `openapi` file.
 - Added `name` in `pom.xml`.
 - Formatted `pom.xml`.
 
-### Deleted
+### Removed
 
-- Removed deprecated `description` from `@Api` in `api.mustache` file.
-- Removed deprecated `servers.description` from `ds-storage-openapi_v1.yaml`.
 - Removed excessive line breaks.
 - Removed `<p>` tag in Javadoc.
 - Removed `<p/>` tag in Javadoc.
 - Removed `<br>` tag in Javadoc.
-
-### Fixed
 
 ## [5.0.0](https://github.com/kb-dk/ds-storage/releases/tag/ds-storage-5.0.0) - 2026-06-10
 
