@@ -392,10 +392,11 @@ services:
   flyway-license:
     image: redgate/flyway:13.2.0
     container_name: local-license-flyway
-    command: -url=jdbc:postgresql://postgres-license:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-license/flyway/sql,filesystem:/ds-license/flyway/test-sql -connectRetries=60 migrate
+    command: -url=jdbc:postgresql://postgres-license:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-license/flyway/sql,filesystem:/ds-license/flyway/test-sql,filesystem:/ds-license/flyway/devel-sql  -connectRetries=60 migrate
     volumes:
       - ./ds-license/src/main/resources/db/migration:/ds-license/flyway/sql
       - ./ds-license/src/test/resources/db/testdata:/ds-license/flyway/test-sql
+      - ./ds-license/src/test/resources/db/devel:/ds-license/flyway/devel-sql
     networks:
       - postgres_network
     depends_on:
