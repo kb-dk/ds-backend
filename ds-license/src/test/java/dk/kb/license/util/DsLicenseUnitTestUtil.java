@@ -7,29 +7,22 @@ import dk.kb.license.storage.*;
 import dk.kb.shared.util.DbUtil;
 import org.junit.jupiter.api.AfterAll;
 
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Setup for the environment for unittest the same way as done in the InitialContext loader in the web container.
  * 1) Create aPostgres database for unittests with schema defined
  * 2) Load the Yaml property files.
  */
+
+@Testcontainers
 public abstract class DsLicenseUnitTestUtil {
-    private static final PostgreSQLContainer<?> postgres;
-
-    static {
-        System.setProperty("DOCKER_HOST", "unix:///var/run/docker.sock");
-        System.setProperty("api.version", "1.40");
-
-        postgres = new PostgreSQLContainer<>("postgres:13.23-alpine3.21")
-                .withDatabaseName("digisam")
-                .withUsername("digisam")
-                .withPassword("p0stgr3s")
-                .withCommand("postgres", "-c", "datestyle=ISO,DMY");
-
-        postgres.start();
-
-    }
+    @Container
+    static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:13.23")
+            .withDatabaseName("digisam")
+            .withEnv("PGDATESTYLE", "ISO,DMY");
 
     public static String getJdbcUrlForSchema(String schemaName) {
         String baseUrl = postgres.getJdbcUrl();
@@ -40,7 +33,7 @@ public abstract class DsLicenseUnitTestUtil {
     protected static String URL;
     protected static String schemaName;
 
-    protected static final String DRIVER = "org.postgresql.Driver";
+    protected static final String DRIVER = postgres.getDriverClassName();
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
 
