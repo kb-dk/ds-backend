@@ -1,12 +1,10 @@
 package dk.kb.license.facade;
 
-import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.storage.*;
-import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
@@ -20,27 +18,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-public class LicenseModuleFacadeTest extends UnitTestUtil {
-    protected static LicenseModuleStorageForUnitTest storage = null;
+public class LicenseModuleFacadeTest extends DsLicenseUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
 
     @BeforeAll
-    public static void beforeClass() throws IOException, SQLException {
-        ServiceConfig.initialize("conf/ds-license*.yaml", "ds-license-integration-test.yaml");
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/licensemodule_create_h2_unittest.ddl", "ddl/audit_log_module_create_h2_unittest.ddl"));
-        storage = new LicenseModuleStorageForUnitTest();
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
     }
-   
+
     /**
      * Delete all records between each unittest. The clearTableRecords is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
@@ -58,7 +50,7 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
         tables.add("LICENSECONTENT");    
         tables.add("PRESENTATION");
         tables.add("AUDITLOG");    
-        storage.clearTableRecords(tables);
+        licenseStorage.clearTableRecords(tables);
     }
     
     @Test
@@ -87,7 +79,7 @@ public class LicenseModuleFacadeTest extends UnitTestUtil {
             LicenseModuleFacade.updatePresentationType(presentationTypeId, valueUpdated, valueEnglishUpdated, mockedSession);
             LicenseModuleFacade.deletePresentationType(key, mockedSession, deleteReasonDto);
 
-            ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject = storage.getAuditLogByObjectId(presentationTypeId);
+            ArrayList<AuditLogEntryOutputDto> auditLogEntriesForObject = licenseStorage.getAuditLogByObjectId(presentationTypeId);
 
             assertEquals(3, auditLogEntriesForObject.size());
             AuditLogEntryOutputDto createAuditLog = auditLogEntriesForObject.get(2);

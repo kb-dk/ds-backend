@@ -14,6 +14,8 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
+      flyway-storage:
+        condition: service_completed_successfully
     environment:
       TZ: UTC
     healthcheck:
@@ -47,6 +49,8 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
+      flyway-license:
+        condition: service_completed_successfully
     environment:
       TZ: UTC
     healthcheck:
@@ -115,6 +119,8 @@ services:
         condition: service_healthy
       solr:
         condition: service_healthy
+      flyway-datahandler:
+        condition: service_completed_successfully
     environment:
       TZ: UTC
     healthcheck:
@@ -266,7 +272,7 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  postgres:
+  postgres-license:
     image: postgres:13.23-alpine3.21
     cap_drop:
       - ALL
@@ -276,7 +282,7 @@ services:
       - FOWNER
       - SETGID
       - SETUID
-    container_name: ds-postgres
+    container_name: ds-postgres-license
     environment:
       TZ: UTC
       POSTGRES_DB: digisam
@@ -291,23 +297,111 @@ services:
     ports:
       - "8088:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./conf/postgres/apply-ordered-sql.sh:/docker-entrypoint-initdb.d/apply-ordered-sql.sh:ro
-      - ./conf/postgres/order.txt:/init-scripts/order.txt:ro
-      - ./ds-datahandler/src/test/resources/ddl/create_ds_datahandler_db.ddl:/init-scripts/create_ds_datahandler_db.ddl:ro
-      - ./ds-license/src/test/resources/ddl/licensemodule_create_db.ddl:/init-scripts/licensemodule_create_db.ddl:ro
-      - ./ds-license/src/test/resources/ddl/audit_log_module_create_db.ddl:/init-scripts/audit_log_module_create_db.ddl:ro
-      - ./ds-license/src/test/resources/ddl/rightsmodule_create.ddl:/init-scripts/rightsmodule_create.ddl:ro
-      - ./ds-storage/src/test/resources/ddl/create_ds_storage.ddl:/init-scripts/create_ds_storage.ddl:ro
-      - ./ds-license/src/test/resources/ddl/licensemodule_default_configuration.ddl:/init-scripts/licensemodule_default_configuration.ddl:ro
-      - ./ds-license/src/test/resources/ddl/rightsmodule_create_db.ddl:/init-scripts/rightsmodule_create_db.ddl:ro
-      - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_categories_data.sql:/init-scripts/rightsmodule_default_dr_holdback_categories_data.sql:ro
-      - ./ds-license/src/test/resources/ddl/rightsmodule_default_dr_holdback_ranges_data.sql:/init-scripts/rightsmodule_default_dr_holdback_ranges_data.sql:ro
-      - ./ds-license/src/test/resources/ddl/licensemodule_create_devel_license.sql:/init-scripts/licensemodule_create_devel_license.sql:ro
+      - postgres_license_data:/var/lib/postgresql/data
     networks:
       - postgres_network
     security_opt:
       - no-new-privileges:true
+
+  postgres-storage:
+    image: postgres:13.23-alpine3.21
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    container_name: ds-postgres-storage
+    environment:
+      TZ: UTC
+      POSTGRES_DB: digisam
+      POSTGRES_USER: digisam
+      POSTGRES_PASSWORD: p0stgr3s
+    healthcheck:
+      test: [ "CMD", "pg_isready", "--username=digisam" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    ports:
+      - "8092:5432"
+    volumes:
+      - postgres_storage_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+    security_opt:
+      - no-new-privileges:true
+
+  postgres-datahandler:
+    image: postgres:13.23-alpine3.21
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    container_name: ds-postgres-datahandler
+    environment:
+      TZ: UTC
+      POSTGRES_DB: digisam
+      POSTGRES_USER: digisam
+      POSTGRES_PASSWORD: p0stgr3s
+    healthcheck:
+      test: [ "CMD", "pg_isready", "--username=digisam" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    ports:
+      - "8093:5432"
+    volumes:
+      - postgres_datahandler_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+    security_opt:
+      - no-new-privileges:true
+
+  flyway-storage:
+    image: redgate/flyway:13.2.0
+    container_name: local-storage-flyway
+    command: -url=jdbc:postgresql://postgres-storage:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-storage/flyway/sql -connectRetries=60 migrate
+    volumes:
+      - ./ds-storage/src/main/resources/db/migration:/ds-storage/flyway/sql
+    networks:
+      - postgres_network
+    depends_on:
+      postgres-storage:
+        condition: service_healthy
+
+  flyway-datahandler:
+    image: redgate/flyway:13.2.0
+    container_name: local-datahandler-flyway
+    command: -url=jdbc:postgresql://postgres-datahandler:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-datahandler/flyway/sql -connectRetries=60 migrate
+    volumes:
+      - ./ds-datahandler/src/main/resources/db/migration:/ds-datahandler/flyway/sql
+    networks:
+      - postgres_network
+    depends_on:
+      postgres-datahandler:
+        condition: service_healthy
+
+  flyway-license:
+    image: redgate/flyway:13.2.0
+    container_name: local-license-flyway
+    command: -url=jdbc:postgresql://postgres-license:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-license/flyway/sql,filesystem:/ds-license/flyway/test-sql,filesystem:/ds-license/flyway/devel-sql  -connectRetries=60 migrate
+    volumes:
+      - ./ds-license/src/main/resources/db/migration:/ds-license/flyway/sql
+      - ./ds-license/src/test/resources/db/testdata:/ds-license/flyway/test-sql
+      - ./ds-license/src/test/resources/db/devel:/ds-license/flyway/devel-sql
+    networks:
+      - postgres_network
+    depends_on:
+      postgres-license:
+        condition: service_healthy
 
   solr:
     image: solr-image/master:latest
@@ -343,7 +437,9 @@ services:
 volumes:
   solr_data:
   keycloak_data:
-  postgres_data:
+  postgres_datahandler_data:
+  postgres_storage_data:
+  postgres_license_data:
 
 secrets:
   maven_settings:

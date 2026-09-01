@@ -6,14 +6,23 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.storage.DsStorageUnitTestUtil;
+import dk.kb.storage.util.DsStorageUnitTestUtil;
 import dk.kb.util.webservice.exception.InternalServiceException;
 
+import java.lang.invoke.MethodHandles;
+
 public class DsStorageFacadeTest extends DsStorageUnitTestUtil{
+
+    @BeforeAll
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    }
 
     //THIS UNITTEST MUST BE UPDATED WHEN VALIDATION RULES ARE MORE CLEAR!
     @Test
@@ -317,6 +326,19 @@ public class DsStorageFacadeTest extends DsStorageUnitTestUtil{
         }
     }
 
+    /**
+     * Tests the retrieval and hierarchical loading of record trees at various depths.
+     * This unit test verifies that DsStorageFacade.getRecordTree correctly loads
+     * parent-child relationships, nested children, and reference objects when
+     * querying records at the root, intermediate, and leaf levels.
+     *
+     * The test setup creates a tree structure with a root parent containing two
+     * direct children. One of these children further contains two grandchildren.
+     * The test validates three scenarios: loading the root parent, loading a
+     * depth-1 child, and loading a depth-2 grandchild. Each scenario asserts
+     * that parent references, child collections, and ID lists are accurately
+     * populated and accessible.
+     */
     @Test
     public void testRecordTree() throws Exception {        
         //Data structure is a tree with 5 nodes and depth=2. (See method for visualization)
@@ -342,18 +364,18 @@ public class DsStorageFacadeTest extends DsStorageUnitTestUtil{
         assertNull(record.getParent());
       
         //Check children loaded as records
-        assertEquals(record.getChildren().size(), 2);               
-        assertEquals(record.getChildren().get(0).getId(), child1Id);
-        assertEquals(record.getChildren().get(1).getId(), child2Id);
+        assertEquals(record.getChildren().size(), 2);
+        assertEquals(record.getChildren().get(1).getId(), child1Id);
+        assertEquals(record.getChildren().get(0).getId(), child2Id);
        
         //Check child has parent loaded, both in ID list and as object
-        assertEquals(record.getChildren().get(0).getParentId(), record.getId());
-        assertEquals(record.getChildren().get(0).getParent().getId(), record.getId());
+        assertEquals(record.getChildren().get(1).getParentId(), record.getId());
+        assertEquals(record.getChildren().get(1).getParent().getId(), record.getId());
         
        // Check depth=2
-        assertEquals(record.getChildren().get(0).getChildren().get(0).getId(), child1_1Id);
-        assertEquals(record.getChildren().get(0).getChildren().get(0).getParent().getId(), child1Id);
-        assertEquals(record.getChildren().get(0).getChildren().get(1).getId(), child1_2Id);
+        assertEquals(record.getChildren().get(1).getChildren().get(0).getId(), child1_1Id);
+        assertEquals(record.getChildren().get(1).getChildren().get(0).getParent().getId(), child1Id);
+        assertEquals(record.getChildren().get(1).getChildren().get(1).getId(), child1_2Id);
         
         //Test2, load depth=1 record      
         DsRecordDto child1 = DsStorageFacade.getRecordTree(child1Id);        
@@ -366,7 +388,7 @@ public class DsStorageFacadeTest extends DsStorageUnitTestUtil{
         assertEquals(2,parent.getChildren().size()); //Record objects               
 
         //Go from parent down to other child
-        DsRecordDto child2 =parent.getChildren().get(1);
+        DsRecordDto child2 =parent.getChildren().get(0);
         assertEquals(child2Id,child2.getId());
         DsRecordDto parentFromChild2 = child2.getParent();
         assertEquals(parentId,parentFromChild2.getId());

@@ -3,16 +3,14 @@ package dk.kb.datahandler.facade;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.model.v1.*;
 import dk.kb.datahandler.storage.BasicStorage;
+import dk.kb.datahandler.util.DsDatahandlerUnitTestUtil;
 import dk.kb.datahandler.storage.JobStorage;
-import dk.kb.datahandler.storage.JobStorageForUnitTests;
-import dk.kb.datahandler.util.H2DbUtil;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -20,26 +18,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DsDatahandlerFacadeTest {
-    protected static final String TEST_CLASSES_PATH = new File(Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()).getParentFile().getAbsolutePath();
-    protected static final String DB_URL = "jdbc:h2:" + TEST_CLASSES_PATH + "/h2/ds_datahandler;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
-    private static final String DRIVER = "org.h2.Driver";
-    private static final String USERNAME = "";
-    private static final String PASSWORD = "";
-    private static JobStorageForUnitTests storage = null;
+public class DsDatahandlerFacadeTest extends DsDatahandlerUnitTestUtil {
 
     @BeforeAll
     public static void beforeClass() throws Exception {
-        ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(DB_URL, DRIVER, USERNAME, PASSWORD);
-        JobStorage.initialize(DRIVER, DB_URL, USERNAME, PASSWORD);
-
-        storage = new JobStorageForUnitTests();
-    }
-
-    @BeforeEach
-    public void beforeEach() throws Exception {
-        storage.clearTables();
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
     }
 
     @Test

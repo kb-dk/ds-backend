@@ -19,7 +19,7 @@ import javax.servlet.ServletContextListener;
 
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.storage.DsStorage;
-import dk.kb.storage.util.H2DbUtil;
+import dk.kb.shared.util.DbUtil;
 
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
@@ -95,22 +95,17 @@ public class ContextListener implements ServletContextListener {
       	String url = ServiceConfig.getDBUrl();
       	String user = ServiceConfig.getDBUserName();
       	String password = ServiceConfig.getDBPassword();
-      	      	      	
-      	//If running jetty for development
-      	if ("org.h2.Driver".equals(driver)) { //Would be slightly better if we can detect it is jetty in local environment
-        	createLocalH2ForJettyEnvironment(driver, url, user, password);
-      	}
       	
        DsStorage.initialize(driver,url,user,password);                        
     }
 
-    private void createLocalH2ForJettyEnvironment(String driver, String url, String user, String password) {
+    private void createLocalPostgresForJettyEnvironment(String driver, String url, String user, String password) {
         try {
-         log.info("Setting up H2 database under jetty in development mode");          
-      	  H2DbUtil.createEmptyH2DBFromDDL(url, driver,  user, password);
+         log.info("Setting up Postgres database under jetty in development mode");
+      	  DbUtil.runFlywayMigrations(url, driver,  user, password, "public");
       	}
       	catch(Exception e) {
-      	  log.error("Unable to create local h2 database for jetty environment",e);        	    
+      	  log.error("Unable to create local Postgres database for jetty environment",e);
      	 }
     }
     

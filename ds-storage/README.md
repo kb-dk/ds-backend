@@ -22,7 +22,7 @@ Developed and maintained by the Royal Danish Library.
 * Java 11
 * Tomcat 9
 * PostGreSql recommended (or any JDBC compliant database implementation). 
-* For local unittest as development it uses a file base H2 java database that does not require any software installation.
+* For local unittest as development it uses a file base Postgres java database that does not require any software installation.
 
 ## Build & run
 
@@ -34,9 +34,9 @@ mvn package
 ## Setup required to run the project local 
 Create local yaml-file: Take a copy of 'ds-storage-behaviour.yaml'  and name it'ds-storage-environment.yaml'
 
-Update the dbURL for the h2-database file to your environment. I.e. replace XXX with your user.
+Update the dbURL for the postgres-database file to your environment. I.e. replace XXX with your user.
 
-The H2 will be created if it does not exist and data will be persistent between sessions. Delete the h2-file if you want to reset the database.
+The Postgres will be created if it does not exist and data will be persistent between sessions.
 
 
 ## Test the webservice with

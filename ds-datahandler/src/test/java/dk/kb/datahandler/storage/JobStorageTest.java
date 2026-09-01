@@ -1,17 +1,16 @@
 package dk.kb.datahandler.storage;
 
-import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.model.v1.CategoryDto;
 import dk.kb.datahandler.model.v1.JobDto;
 import dk.kb.datahandler.model.v1.JobStatusDto;
 import dk.kb.datahandler.model.v1.TypeDto;
-import dk.kb.datahandler.util.H2DbUtil;
+import dk.kb.datahandler.util.DsDatahandlerUnitTestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -21,27 +20,12 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JobStorageTest {
+public class JobStorageTest extends DsDatahandlerUnitTestUtil {
     protected static final String TEST_CLASSES_PATH = new File(Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()).getParentFile().getAbsolutePath();
-    protected static final String DB_URL = "jdbc:h2:" + TEST_CLASSES_PATH + "/ds_datahandler;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
-    private static final String DRIVER = "org.h2.Driver";
-    private static final String USERNAME = "";
-    private static final String PASSWORD = "";
-    private static JobStorageForUnitTests storage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
-        ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
-
-        H2DbUtil.createEmptyH2DBFromDDL(DB_URL, DRIVER, USERNAME, PASSWORD);
-        JobStorage.initialize(DRIVER, DB_URL, USERNAME, PASSWORD);
-
-        storage = new JobStorageForUnitTests();
-    }
-
-    @BeforeEach
-    public void beforeTest() throws SQLException {
-        storage.clearTables();
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
     }
 
     @Test

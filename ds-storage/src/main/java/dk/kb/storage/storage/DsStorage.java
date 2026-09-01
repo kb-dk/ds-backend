@@ -185,7 +185,7 @@ public class DsStorage implements AutoCloseable {
      //SELECT * FROM  ds_records  WHERE origin= 'test_origin' AND mtime  > 1637237120476001 AND PARENTID IS NOT NULL ORDER BY mtime ASC LIMIT 100
     private static String recordsModifiedAfterChildrenOnlyStatement =
             "SELECT * FROM " + RECORDS_TABLE +
-            " WHERE +"+ORIGIN_COLUMN +"= ?" +
+            " WHERE "+ORIGIN_COLUMN +"= ?" +
             " AND "+MTIME_COLUMN+" > ?" +
             " AND "+PARENT_ID_COLUMN+" IS NOT NULL"+
             " ORDER BY "+MTIME_COLUMN+ " ASC LIMIT ?";
@@ -193,7 +193,7 @@ public class DsStorage implements AutoCloseable {
     //SELECT * FROM  ds_records  WHERE origin= 'test_origin' AND mtime  > 1637237120476001 AND parentId IS NULL ORDER BY mtime ASC LIMIT 100    
     private static String recordsModifiedAfterParentsOnlyStatement =
             "SELECT * FROM " + RECORDS_TABLE +
-            " WHERE +"+ORIGIN_COLUMN +"= ?" +
+            " WHERE "+ORIGIN_COLUMN +"= ?" +
             " AND "+MTIME_COLUMN+" > ?" +
             " AND "+PARENT_ID_COLUMN+" IS NULL"+
             " ORDER BY "+MTIME_COLUMN+ " ASC LIMIT ?";

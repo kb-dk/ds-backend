@@ -36,4 +36,8 @@ public class RightsModuleStorageForUnitTest extends RightsModuleStorage {
             stmt.execute();
         }
     }
+
+    public void rollbackQuietly() throws SQLException {
+        connection.rollback();
+    }
 }

@@ -10,16 +10,6 @@
       <outputDirectory>/</outputDirectory>
       <destName>ds-license.xml.SAMPLE</destName>
     </file>
-    <file>
-      <source>src/test/resources/ddl/licensemodule_create_db.ddl</source>
-      <outputDirectory>/</outputDirectory>
-      <destName>licensemodule_create_db.ddl</destName>
-    </file>
-    <file>
-      <source>src/test/resources/ddl/licensemodule_default_configuration.ddl</source>
-      <outputDirectory>/</outputDirectory>
-      <destName>licensemodule_default_configuration.ddl</destName>
-    </file>
   </files>
 
   <dependencySets>
