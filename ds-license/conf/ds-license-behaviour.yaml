@@ -45,6 +45,7 @@ rights:
       # An amount of days used to specify, when the holdback logic changes from being calculated from the start date of the record to the following January 1st
       holdbackLogicChangeDays: 365
       holdbackYearsForRadio: 3
+	  holdbackCutOffYearForTV: 1973 # All TV before this year included will get production_code allowed and holdback date equal to startTime for program.
 
 # KeyCloakClientSecret can be seen in the KeyCloak server admin page for the AD realm configuration
 # The rsaPublic key can also be seen at the KeyCloak server admin page

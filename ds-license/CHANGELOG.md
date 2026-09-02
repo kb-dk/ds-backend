@@ -13,9 +13,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Added line break before `@param` in Javadocs
 - Added line break before `@return` in Javadocs
+- new property in ds-license-behaviour.yaml for cutoff year for TV. All TV before this year will bypass holdback rules.
 
 ### Changed
-
+- Allow all TV before 1973 (year defined in property file). ProductionCodeAllowed will be true and holdbackExpired will be start time for program.
 - Formatted `openapi` file.
 - Moved OpenAPI description from `pom.xml` into `openapi` file.
 - Added `name` in `pom.xml`.
