@@ -102,7 +102,7 @@ public class ContextListener implements ServletContextListener {
     private void createLocalPostgresForJettyEnvironment(String driver, String url, String user, String password) {
         try {
          log.info("Setting up Postgres database under jetty in development mode");
-      	  DbUtil.runFlywayMigrations(url, driver,  user, password, "public");
+      	  DbUtil.runFlywayMigrations(url, driver,  user, password, "public", "ds-storage");
       	}
       	catch(Exception e) {
       	  log.error("Unable to create local Postgres database for jetty environment",e);

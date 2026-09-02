@@ -50,7 +50,7 @@ public abstract class DsDatahandlerUnitTestUtil {
         URL = getJdbcUrlForSchema(schemaName);
 
         ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, "ds-datahandler");
         JobStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         storage = new JobStorageForUnitTests();

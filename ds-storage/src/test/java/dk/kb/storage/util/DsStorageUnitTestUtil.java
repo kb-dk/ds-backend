@@ -50,7 +50,7 @@ public abstract class DsStorageUnitTestUtil {
         URL = getJdbcUrlForSchema(schemaName);
 
         ServiceConfig.initialize("conf/ds-storage*.yaml");
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, "ds-storage");
         DsStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         storage = new DsStorageForUnitTest();

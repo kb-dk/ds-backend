@@ -47,7 +47,7 @@ public abstract class DsLicenseUnitTestUtil {
 
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, "ds-license");
 
         auditStorage = new AuditLogModuleStorageForUnitTest();
         licenseStorage = new LicenseModuleStorageForUnitTest();
