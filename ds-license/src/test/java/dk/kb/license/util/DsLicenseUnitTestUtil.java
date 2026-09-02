@@ -36,6 +36,7 @@ public abstract class DsLicenseUnitTestUtil {
     protected static final String DRIVER = postgres.getDriverClassName();
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
+    protected static final String MODULE = "ds-license";
 
     protected static AuditLogModuleStorageForUnitTest auditStorage = null;
     protected static LicenseModuleStorageForUnitTest licenseStorage = null;
@@ -47,7 +48,7 @@ public abstract class DsLicenseUnitTestUtil {
 
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, "ds-license");
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
 
         auditStorage = new AuditLogModuleStorageForUnitTest();
         licenseStorage = new LicenseModuleStorageForUnitTest();
