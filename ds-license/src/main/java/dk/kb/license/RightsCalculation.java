@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 public class RightsCalculation {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculation.class);
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXX");
     /**
      * Check if a given DS id is restricted.
      *
@@ -199,8 +200,9 @@ public class RightsCalculation {
     private static boolean isBeforeCutOffDate(String startTime) {
         int cutoffYearForTV = ServiceConfig.getHoldbackCutOffYearForTV();
         if (startTime != null) {
-            OffsetDateTime odt = OffsetDateTime.parse(startTime);
-             int startYear = odt.getYear();
+
+        OffsetDateTime odt = OffsetDateTime.parse(startTime, DATE_FORMATTER);
+        int startYear = odt.getYear();
              if (startYear <= cutoffYearForTV) {
               return true;
              }
