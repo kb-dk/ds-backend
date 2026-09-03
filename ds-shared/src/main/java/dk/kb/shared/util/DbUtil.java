@@ -22,8 +22,8 @@ public class DbUtil {
      */
     public static void runFlywayMigrations(String url, String driver, String username, String password, String schema, String moduleName) throws Exception {
 
-        String migrationLocation = MIGRATION_BASE_PATH + moduleName;
-        String testDataLocation = TEST_DATA_BASE_PATH + moduleName;
+        String migrationPath = MIGRATION_BASE_PATH + moduleName;
+        String testDataPath = TEST_DATA_BASE_PATH + moduleName;
 
         log.info("Initializing fresh test database via Flyway for target: {}", url);
 
@@ -37,7 +37,7 @@ public class DbUtil {
             // Programmatically invoke Flyway against the Postgres target
             Flyway flyway = Flyway.configure()
                     .dataSource(url, username, password)
-                    .locations(migrationLocation, testDataLocation)
+                    .locations(migrationPath, testDataPath)
                     .connectRetries(30)
                     .schemas(schema)
                     .createSchemas(true)
