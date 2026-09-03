@@ -3,6 +3,7 @@ package dk.kb.license.facade;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mockStatic;
 
+import dk.kb.license.storage.AuditLogModuleStorageForUnitTest;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.ArrayList;

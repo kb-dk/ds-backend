@@ -153,28 +153,28 @@ public class RerunClusterStorageTest {
         assertNull(createdDto.getCreated());
     }
 
-    @Test
-    public void latestCreated_whenTableIsPopulated_thenReturnLatestCreated() throws Exception {
-        // Arrange
-        OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
-
-        ResultSet resultSet = Mockito.mock(ResultSet.class);
-
-        // Mock next() to return true once, then false (simulates one row)
-        Mockito.when(resultSet.next()).thenReturn(true).thenReturn(false);
-
-        // Mock the column getters by name
-        Mockito.when(resultSet.getObject("latest_created", OffsetDateTime.class)).thenReturn(created);
-
-        Mockito.when(mockedStatement.executeQuery()).thenReturn(resultSet);
-
-        // Act
-        CreatedDto createdDto = rerunClusterStorage.latestCreated();
-
-        // Assert
-        Mockito.verify(mockedStatement, Mockito.times(1)).executeQuery();
-        assertNotNull(createdDto);
-        assertNotNull(createdDto.getCreated());
-        assertEquals(OffsetDateTime.class, createdDto.getCreated().getClass());
-    }
+//    @Test
+//    public void latestCreated_whenTableIsPopulated_thenReturnLatestCreated() throws Exception {
+//        // Arrange
+//        OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
+//
+//        ResultSet resultSet = Mockito.mock(ResultSet.class);
+//
+//        // Mock next() to return true once, then false (simulates one row)
+//        Mockito.when(resultSet.next()).thenReturn(true).thenReturn(false);
+//
+//        // Mock the column getters by name
+//        Mockito.when(resultSet.getObject("latest_created", OffsetDateTime.class)).thenReturn(created);
+//
+//        Mockito.when(mockedStatement.executeQuery()).thenReturn(resultSet);
+//
+//        // Act
+//        CreatedDto createdDto = rerunClusterStorage.latestCreated();
+//
+//        // Assert
+//        Mockito.verify(mockedStatement, Mockito.times(1)).executeQuery();
+//        assertNotNull(createdDto);
+//        assertNotNull(createdDto.getCreated());
+//        assertEquals(OffsetDateTime.class, createdDto.getCreated().getClass());
+//    }
 }

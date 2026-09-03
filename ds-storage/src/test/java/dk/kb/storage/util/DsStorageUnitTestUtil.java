@@ -44,8 +44,6 @@ public abstract class DsStorageUnitTestUtil {
             Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()
     ).getParentFile().getAbsolutePath();
 
-    protected static DsStorageForUnitTest storage = null;
-
     protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
         URL = getJdbcUrlForSchema(schemaName);
@@ -53,25 +51,5 @@ public abstract class DsStorageUnitTestUtil {
         ServiceConfig.initialize("conf/ds-storage*.yaml");
         DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
         DsStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-
-        storage = new DsStorageForUnitTest();
-    }
-
-    /**
-     * Delete all records between each unittest. The clearTableRecords is only called from here.
-     * The facade class is responsible for committing transactions. So clean up between unittests.
-     */
-    @BeforeEach
-    public void beforeEach() throws Exception {
-        storage.clearMappingAndRecordTable();
-        storage.commit();
-    }
-
-    @AfterAll
-    public static void afterClass() {
-        // No reason to delete DB data file after test, since we clear table it before each test.
-        // This way you can open the DB in a DB-browser after the unittest and see the result.
-        // Just run that single test and look in the DB
-        DsStorage.shutdown();
     }
 }

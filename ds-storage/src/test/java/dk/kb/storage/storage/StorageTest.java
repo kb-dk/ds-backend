@@ -3,11 +3,12 @@ package dk.kb.storage.storage;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.UniqueTimestampGenerator;
 import dk.kb.storage.util.DsStorageUnitTestUtil;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,15 +25,33 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class DsStorageTest extends DsStorageUnitTestUtil {
-    private static final Logger log = LoggerFactory.getLogger(DsStorageTest.class);
+public class StorageTest extends DsStorageUnitTestUtil {
+    private static final Logger log = LoggerFactory.getLogger(StorageTest.class);
 
     private static DsStorageForUnitTest storage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
-        torage = new DsStorageForUnitTest();
+        storage = new DsStorageForUnitTest();
+    }
+
+    /**
+     * Delete all records between each unittest. The clearTableRecords is only called from here.
+     * The facade class is responsible for committing transactions. So clean up between unittests.
+     */
+    @BeforeEach
+    public void beforeEach() throws Exception {
+        storage.clearTableRecords();
+        storage.commit();
+    }
+
+    @AfterAll
+    public static void afterClass() {
+        // No reason to delete DB data file after test, since we clear table it before each test.
+        // This way you can open the DB in a DB-browser after the unittest and see the result.
+        // Just run that single test and look in the DB
+        DsStorage.shutdown();
     }
 
     @Test

@@ -1,5 +1,6 @@
 package dk.kb.storage.webservice;
 
+import dk.kb.storage.storage.BaseModuleStorage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

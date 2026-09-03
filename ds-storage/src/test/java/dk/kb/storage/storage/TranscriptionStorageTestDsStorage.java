@@ -1,16 +1,14 @@
 package dk.kb.storage.storage;
 
-import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.model.v1.TranscriptionDto;
-import dk.kb.storage.util.H2DbUtil;
 import dk.kb.storage.util.DsStorageUnitTestUtil;
+import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,9 +26,7 @@ public class TranscriptionStorageTestDsStorage extends DsStorageUnitTestUtil {
 
     @BeforeAll
     public static void beforeClass() throws Exception {
-        ServiceConfig.initialize("conf/ds-storage*.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/create_ds_storage_h2_unittest.ddl"));
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
         storage = new TranscriptionStorageForUnitTest();
     }
 
