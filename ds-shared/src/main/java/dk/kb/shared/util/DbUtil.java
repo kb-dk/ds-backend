@@ -14,7 +14,7 @@ public class DbUtil {
 
     private static final Logger log = LoggerFactory.getLogger(DbUtil.class);
     private static final String MIGRATION_BASE_PATH = "classpath:db/migration/";
-    private static final String TESTDATA_BASE_PATH = "classpath:db/testdata/";
+    private static final String TEST_DATA_BASE_PATH = "classpath:db/testdata/";
 
     /**
      * Cleans (wipes) the target database and executes Flyway migrations
@@ -23,7 +23,7 @@ public class DbUtil {
     public static void runFlywayMigrations(String url, String driver, String username, String password, String schema, String moduleName) throws Exception {
 
         String migrationLocation = MIGRATION_BASE_PATH + moduleName;
-        String testDataLocation = TESTDATA_BASE_PATH + moduleName;
+        String testDataLocation = TEST_DATA_BASE_PATH + moduleName;
 
         log.info("Initializing fresh test database via Flyway for target: {}", url);
 
