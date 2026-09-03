@@ -162,7 +162,7 @@ public class ServiceConfig {
             throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
         }
 
-        return drPlatform.getInteger("holdbackCutOffYearForTV", 1973);
+        return drPlatform.getInteger("holdbackCutOffYearForTV", 1974);
     }
 
     public static int getCacheRefreshTimeInSeconds() {

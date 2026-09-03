@@ -271,7 +271,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         } else if (origin.equals("ds.radio")) {
             metadataMap.put("productionCodeAllowed", "true");      
         }
-        else if(rightsOutput.getDr().getProductionCodeAllowed() == true) { // even with no production code, it can still be allowed if before cutoff date
+        else if(rightsOutput.getDr().getProductionCodeAllowed() == true) { // CalculateRights call can overrule produductionCodeAllowed, even if there is no production code.
             metadataMap.put("productionCodeAllowed", "true");
             log.debug("Production code allowed without production code due to cutoff date");
         }

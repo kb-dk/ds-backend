@@ -174,7 +174,7 @@ public class RightsCalculation {
             drOutput.setHoldbackName(drHoldbackCategoryOutputDto.getName());
         }
 
-        //Allow all TV <=1973
+        //Allow all TV < 1943
         
         boolean beforeCutOffDate=isBeforeCutOffDate(startDate);
         if (beforeCutOffDate) { //Bypass all holdback checks
@@ -193,9 +193,9 @@ public class RightsCalculation {
     
     
     /**     
-     * Check if startTime is before holdbackCutoffYear for TV (default 1973)
+     * Check if startTime is before holdbackCutoffYear for TV (default 1974)
      *
-     * @param startTime UTC format. Example: 1973-01-13T18:05:00Z        
+     * @param startTime UTC format. Example: 1974-01-13T18:05:00Z        
      * @return boolean if startTime is before cutoff year         
      */  
     private static boolean isBeforeCutOffDate(String startTime) {
@@ -204,7 +204,7 @@ public class RightsCalculation {
 
         OffsetDateTime odt = OffsetDateTime.parse(startTime, DATE_FORMATTER);
         int startYear = odt.getYear();
-             if (startYear <= cutoffYearForTV) {
+             if (startYear < cutoffYearForTV) {
               return true;
              }
         }

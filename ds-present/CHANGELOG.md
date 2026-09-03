@@ -15,7 +15,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added line break before `@return` in Javadocs
 
 ### Changed
-- Ds-license rights calculation can allowed programs without a production code (productionCodeAllowed) if start time is before cutoff year (1973).
+- Ds-license rights calculation can allowed programs without a production code (productionCodeAllowed) if start time is before cutoff year (default 1974, year not included)
 - Formatted `openapi` file.
 - Moved OpenAPI description from `pom.xml` into `openapi` file.
 - Added `name` in `pom.xml`.
