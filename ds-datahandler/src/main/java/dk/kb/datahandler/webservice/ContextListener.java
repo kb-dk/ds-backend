@@ -92,23 +92,8 @@ public class ContextListener implements ServletContextListener {
         String user = ServiceConfig.getDBUserName();
         String password = ServiceConfig.getDBPassword();
 
-        //If running jetty for development
-        if ("org.h2.Driver".equals(driver)) { //Would be slightly better if we can detect it is jetty in local environment
-            createLocalH2ForJettyEnvironment(driver, url, user, password);
-        }
-
         JobStorage.initialize(driver,url,user,password);
         handleRunningJobs(JobStatusDto.FAILED, "Marked as failed on startup.");
-    }
-
-    private void createLocalH2ForJettyEnvironment(String driver, String url, String user, String password) {
-        try {
-            log.info("Setting up postgres database under jetty in development mode");
-            DbUtil.runFlywayMigrations(url, driver, user, password, "public", "ds-datahandler");
-        }
-        catch(Exception e) {
-            log.error("Unable to create local postgres database for jetty environment", e);
-        }
     }
 
     /**
