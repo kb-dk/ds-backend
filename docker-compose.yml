@@ -366,7 +366,7 @@ services:
       - no-new-privileges:true
 
   flyway-storage:
-    image: redgate/flyway:13.2.0
+    image: redgate/flyway:13.5.0-alpine
     container_name: local-storage-flyway
     command: -url=jdbc:postgresql://postgres-storage:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-storage/flyway/sql -connectRetries=60 migrate
     volumes:
@@ -378,7 +378,7 @@ services:
         condition: service_healthy
 
   flyway-datahandler:
-    image: redgate/flyway:13.2.0
+    image: redgate/flyway:13.5.0-alpine
     container_name: local-datahandler-flyway
     command: -url=jdbc:postgresql://postgres-datahandler:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-datahandler/flyway/sql -connectRetries=60 migrate
     volumes:
@@ -390,7 +390,7 @@ services:
         condition: service_healthy
 
   flyway-license:
-    image: redgate/flyway:13.2.0
+    image: redgate/flyway:13.5.0-alpine
     container_name: local-license-flyway
     command: -url=jdbc:postgresql://postgres-license:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-license/flyway/sql,filesystem:/ds-license/flyway/test-sql,filesystem:/ds-license/flyway/devel-sql  -connectRetries=60 migrate
     volumes:
