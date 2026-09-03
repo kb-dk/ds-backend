@@ -38,6 +38,7 @@ public abstract class DsDatahandlerUnitTestUtil {
     protected static final String DRIVER = "org.postgresql.Driver";
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
+    protected static final String MODULE = "ds-datahandler";
 
     protected static final String TEST_CLASSES_PATH = new File(
             Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()
@@ -50,7 +51,7 @@ public abstract class DsDatahandlerUnitTestUtil {
         URL = getJdbcUrlForSchema(schemaName);
 
         ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
         JobStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
         storage = new JobStorageForUnitTests();

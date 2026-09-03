@@ -1037,6 +1037,6 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
      * @throws SQLException
      */
     public static void insertDefaultConfigurationTypes() throws Exception {
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName);
+        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
     }
 }
