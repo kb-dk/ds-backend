@@ -10,7 +10,7 @@ openapi:
   serverurl: "${storage_url}"
 
 db:
-  url: "jdbc:postgresql://postgres:5432/${storage_database}"
+  url: "jdbc:postgresql://postgres-storage:5432/${storage_database}"
   driver: org.postgresql.Driver
   username: "${storage_database_username}"
   password: "${storage_database_password}"

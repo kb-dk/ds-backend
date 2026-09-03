@@ -1,20 +1,15 @@
 package dk.kb.storage.facade;
 
-import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.storage.BaseModuleStorage;
 import dk.kb.storage.storage.DsStorage;
 import dk.kb.storage.storage.DsStorageForUnitTest;
 import dk.kb.storage.util.DsStorageUnitTestUtil;
-import dk.kb.storage.util.H2DbUtil;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,20 +22,8 @@ public class DsStorageFacadeTestDsStorage extends DsStorageUnitTestUtil {
 
     @BeforeAll
     public static void beforeClass() throws Exception {
-        ServiceConfig.initialize("conf/ds-storage*.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/create_ds_storage_h2_unittest.ddl"));
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
         storage = new DsStorageForUnitTest();
-    }
-
-    /**
-     * Delete all records between each unittest. The clearTableRecords is only called from here.
-     * The facade class is responsible for committing transactions. So clean up between unittests.
-     */
-    @BeforeEach
-    public void beforeEach() throws Exception {
-        storage.clearTableRecords();
-        storage.commit();
     }
 
     /**
@@ -355,6 +338,19 @@ public class DsStorageFacadeTestDsStorage extends DsStorageUnitTestUtil {
         }
     }
 
+    /**
+     * Tests the retrieval and hierarchical loading of record trees at various depths.
+     * This unit test verifies that DsStorageFacade.getRecordTree correctly loads
+     * parent-child relationships, nested children, and reference objects when
+     * querying records at the root, intermediate, and leaf levels.
+     *
+     * The test setup creates a tree structure with a root parent containing two
+     * direct children. One of these children further contains two grandchildren.
+     * The test validates three scenarios: loading the root parent, loading a
+     * depth-1 child, and loading a depth-2 grandchild. Each scenario asserts
+     * that parent references, child collections, and ID lists are accurately
+     * populated and accessible.
+     */
     @Test
     public void testRecordTree() throws Exception {        
         //Data structure is a tree with 5 nodes and depth=2. (See method for visualization)
@@ -380,18 +376,18 @@ public class DsStorageFacadeTestDsStorage extends DsStorageUnitTestUtil {
         assertNull(record.getParent());
       
         //Check children loaded as records
-        assertEquals(record.getChildren().size(), 2);               
-        assertEquals(record.getChildren().get(0).getId(), child1Id);
-        assertEquals(record.getChildren().get(1).getId(), child2Id);
+        assertEquals(record.getChildren().size(), 2);
+        assertEquals(record.getChildren().get(1).getId(), child1Id);
+        assertEquals(record.getChildren().get(0).getId(), child2Id);
        
         //Check child has parent loaded, both in ID list and as object
-        assertEquals(record.getChildren().get(0).getParentId(), record.getId());
-        assertEquals(record.getChildren().get(0).getParent().getId(), record.getId());
+        assertEquals(record.getChildren().get(1).getParentId(), record.getId());
+        assertEquals(record.getChildren().get(1).getParent().getId(), record.getId());
         
        // Check depth=2
-        assertEquals(record.getChildren().get(0).getChildren().get(0).getId(), child1_1Id);
-        assertEquals(record.getChildren().get(0).getChildren().get(0).getParent().getId(), child1Id);
-        assertEquals(record.getChildren().get(0).getChildren().get(1).getId(), child1_2Id);
+        assertEquals(record.getChildren().get(1).getChildren().get(0).getId(), child1_1Id);
+        assertEquals(record.getChildren().get(1).getChildren().get(0).getParent().getId(), child1Id);
+        assertEquals(record.getChildren().get(1).getChildren().get(1).getId(), child1_2Id);
         
         //Test2, load depth=1 record      
         DsRecordDto child1 = DsStorageFacade.getRecordTree(child1Id);        
@@ -404,7 +400,7 @@ public class DsStorageFacadeTestDsStorage extends DsStorageUnitTestUtil {
         assertEquals(2,parent.getChildren().size()); //Record objects               
 
         //Go from parent down to other child
-        DsRecordDto child2 =parent.getChildren().get(1);
+        DsRecordDto child2 =parent.getChildren().get(0);
         assertEquals(child2Id,child2.getId());
         DsRecordDto parentFromChild2 = child2.getParent();
         assertEquals(parentId,parentFromChild2.getId());

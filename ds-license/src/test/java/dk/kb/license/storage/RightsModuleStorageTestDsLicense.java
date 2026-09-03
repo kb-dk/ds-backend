@@ -1,14 +1,13 @@
 package dk.kb.license.storage;
 
-import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.util.H2DbUtil;
-import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,22 +15,20 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unittest class for the H2Storage.
- * All tests create and use H2 database in the directory: target/h2
+ * Unittest class for thestorage.
+ * All tests create and usePostgres database in the directory: target/h2
  * The directory will be deleted before the first test-method is called.
  * Each test-method will delete all entries in the database, but keep the database tables.
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
+public class RightsModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     protected static RightsModuleStorageForUnitTest storage = null;
 
     @BeforeAll
-    public static void beforeClass() throws IOException, SQLException {
-        ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl", "ddl/audit_log_module_create_h2_unittest.ddl"));
-        storage = new RightsModuleStorageForUnitTest();
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+        rightsStorage = new RightsModuleStorageForUnitTest();
     }
 
     /**
@@ -44,7 +41,12 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         tables.add("RESTRICTED_IDS");
         tables.add("DR_HOLDBACK_RANGES");
         tables.add("DR_HOLDBACK_CATEGORIES");
-        storage.clearTableRecords(tables);
+        rightsStorage.clearTableRecords(tables);
+    }
+
+    @AfterEach
+    public void cleanupConnection() throws SQLException {
+        rightsStorage.rollbackQuietly();
     }
 
     @Test
@@ -57,8 +59,8 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         String comment = "a comment";
 
         // Act
-        long id = storage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
-        RestrictedIdOutputDto restrictedIdOutputDto = storage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+        long id = rightsStorage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
+        RestrictedIdOutputDto restrictedIdOutputDto = rightsStorage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
 
         // Assert
         assertNotNull(restrictedIdOutputDto);
@@ -78,12 +80,12 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         String platform = "dr";
         String title = "Test title";
         String comment = "a comment";
-        String expectedMessage = "Unique index or primary key violation";
+        String expectedMessage = "ERROR: duplicate key value violates unique constraint";
 
-        storage.createRestrictedId(idValue, idType, platform, title, comment);
+        rightsStorage.createRestrictedId(idValue, idType, platform, title, comment);
 
         // Act
-        Exception exception = assertThrows(SQLException.class, () -> storage.createRestrictedId(idValue, idType, platform, title, comment));
+        Exception exception = assertThrows(SQLException.class, () -> rightsStorage.createRestrictedId(idValue, idType, platform, title, comment));
 
         // Assert
         assertTrue(exception.getMessage().startsWith(expectedMessage));
@@ -98,14 +100,14 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         String title = "Test title";
         String comment = "a comment";
 
-        long id = storage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
+        long id = rightsStorage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
 
         String newTitle = "new title";
         String newComment = "another comment";
 
         // Act
-        storage.updateRestrictedId(id, newTitle, newComment);
-        RestrictedIdOutputDto restrictedIdOutputDto = storage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+        rightsStorage.updateRestrictedId(id, newTitle, newComment);
+        RestrictedIdOutputDto restrictedIdOutputDto = rightsStorage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
 
         // Assert
         assertNotNull(restrictedIdOutputDto);
@@ -126,8 +128,8 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         String title = "Test title";
         String comment = "a comment";
 
-        long id = storage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
-        RestrictedIdOutputDto restrictedIdOutputDto = storage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+        long id = rightsStorage.createRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name(), title, comment);
+        RestrictedIdOutputDto restrictedIdOutputDto = rightsStorage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
 
         assertNotNull(restrictedIdOutputDto);
         assertEquals(id, restrictedIdOutputDto.getId());
@@ -138,8 +140,8 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         assertEquals(comment, restrictedIdOutputDto.getComment());
 
         // Act
-        storage.deleteRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
-        RestrictedIdOutputDto deletedRestrictedIdOutputDto = storage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+        rightsStorage.deleteRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
+        RestrictedIdOutputDto deletedRestrictedIdOutputDto = rightsStorage.getRestrictedId(idValue, idTypeEnumDto.name(), platformEnumDto.name());
 
         // Assert
         assertNull(deletedRestrictedIdOutputDto);
@@ -152,10 +154,10 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         String title = "Damages";
         String expectedComment = "Test comment";
 
-        storage.createRestrictedId(dsId, IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), title, expectedComment);
+        rightsStorage.createRestrictedId(dsId, IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), title, expectedComment);
 
         // Act
-        String actualComment = storage.getRestrictedIdCommentByIdValue(dsId);
+        String actualComment = rightsStorage.getRestrictedIdCommentByIdValue(dsId);
 
         // Assert
         assertEquals(expectedComment, actualComment);
@@ -164,7 +166,7 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
     @Test
     public void getRestrictedIdCommentByIdValue_whenNotFoundDsId_thenReturnNull() throws SQLException {
         // Act
-        String actualComment = storage.getRestrictedIdCommentByIdValue("1");
+        String actualComment = rightsStorage.getRestrictedIdCommentByIdValue("1");
 
         // Assert
         assertNull(actualComment);
@@ -173,14 +175,14 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
     @Test
     public void getAllRestrictedIds_whenSearchingForIdTypeDsIdAndPlatformDrArkiv_thenReturnOnlyMatchingRestrictedIds() throws SQLException {
         // Act
-        storage.createRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title1", "Comment1");
-        storage.createRestrictedId("test2", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title2", "Comment2");
-        storage.createRestrictedId("test3", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.GENERIC.getValue(), "Title3", "Comment3");
-        storage.createRestrictedId("test4", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title4", "Comment4");
-        storage.createRestrictedId("test5", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.GENERIC.getValue(), "Title5", "Comment5");
+        rightsStorage.createRestrictedId("test1", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title1", "Comment1");
+        rightsStorage.createRestrictedId("test2", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title2", "Comment2");
+        rightsStorage.createRestrictedId("test3", IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.GENERIC.getValue(), "Title3", "Comment3");
+        rightsStorage.createRestrictedId("test4", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.DRARKIV.getValue(), "Title4", "Comment4");
+        rightsStorage.createRestrictedId("test5", IdTypeEnumDto.STRICT_TITLE.getValue(), PlatformEnumDto.GENERIC.getValue(), "Title5", "Comment5");
 
         // Act
-        List<RestrictedIdOutputDto> restrictedIdOutputDtoList = storage.getAllRestrictedIds(IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue());
+        List<RestrictedIdOutputDto> restrictedIdOutputDtoList = rightsStorage.getAllRestrictedIds(IdTypeEnumDto.DS_ID.getValue(), PlatformEnumDto.DRARKIV.getValue());
 
         // Assert
         assertEquals(2, restrictedIdOutputDtoList.size());
@@ -206,9 +208,9 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         int days = 100;
 
         // Act
-        long id = storage.createDrHoldbackCategory(key, name, days);
-        DrHoldbackCategoryOutputDto drHoldbackCategoryById = storage.getDrHoldbackCategoryById(id);
-        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = storage.getDrHoldbackCategoryByKey(key);
+        long id = rightsStorage.createDrHoldbackCategory(key, name, days);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryById = rightsStorage.getDrHoldbackCategoryById(id);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = rightsStorage.getDrHoldbackCategoryByKey(key);
 
         // Assert
         assertEquals(id, drHoldbackCategoryById.getId());
@@ -228,12 +230,12 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
-        String expectedMessage = "Unique index or primary key violation";
+        String expectedMessage = "ERROR: duplicate key value violates unique constraint";
 
-        storage.createDrHoldbackCategory(key, name, days);
+        rightsStorage.createDrHoldbackCategory(key, name, days);
 
         // Act
-        Exception exception = assertThrows(SQLException.class, () -> storage.createDrHoldbackCategory(key, name, days));
+        Exception exception = assertThrows(SQLException.class, () -> rightsStorage.createDrHoldbackCategory(key, name, days));
 
         // Assert
         assertTrue(exception.getMessage().startsWith(expectedMessage));
@@ -247,12 +249,12 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         int days = 100;
         int newDays = 200;
 
-        long id = storage.createDrHoldbackCategory(key, name, days);
+        long id = rightsStorage.createDrHoldbackCategory(key, name, days);
 
         // Act
-        storage.updateDrHoldbackCategory(id, newDays);
-        DrHoldbackCategoryOutputDto drHoldbackCategoryById = storage.getDrHoldbackCategoryById(id);
-        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = storage.getDrHoldbackCategoryByKey(key);
+        rightsStorage.updateDrHoldbackCategory(id, newDays);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryById = rightsStorage.getDrHoldbackCategoryById(id);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = rightsStorage.getDrHoldbackCategoryByKey(key);
 
         // Assert
         assertEquals(id, drHoldbackCategoryById.getId());
@@ -273,9 +275,9 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         String name = "Aktualitet & Debat";
         int days = 100;
 
-        long id = storage.createDrHoldbackCategory(key, name, days);
-        DrHoldbackCategoryOutputDto drHoldbackCategoryById = storage.getDrHoldbackCategoryById(id);
-        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = storage.getDrHoldbackCategoryByKey(key);
+        long id = rightsStorage.createDrHoldbackCategory(key, name, days);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryById = rightsStorage.getDrHoldbackCategoryById(id);
+        DrHoldbackCategoryOutputDto drHoldbackCategoryByKey = rightsStorage.getDrHoldbackCategoryByKey(key);
 
         assertEquals(id, drHoldbackCategoryById.getId());
         assertEquals(key, drHoldbackCategoryById.getKey());
@@ -288,9 +290,9 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         assertEquals(days, drHoldbackCategoryByKey.getDays());
 
         // Act
-        int deleteDrHoldbackCategory = storage.deleteDrHoldbackCategory(id);
-        DrHoldbackCategoryOutputDto deletedDrHoldbackCategoryById = storage.getDrHoldbackCategoryById(id);
-        DrHoldbackCategoryOutputDto deletedDrHoldbackCategoryByKey = storage.getDrHoldbackCategoryByKey(key);
+        int deleteDrHoldbackCategory = rightsStorage.deleteDrHoldbackCategory(id);
+        DrHoldbackCategoryOutputDto deletedDrHoldbackCategoryById = rightsStorage.getDrHoldbackCategoryById(id);
+        DrHoldbackCategoryOutputDto deletedDrHoldbackCategoryByKey = rightsStorage.getDrHoldbackCategoryByKey(key);
 
         // Assert
         assertEquals(1, deleteDrHoldbackCategory);
@@ -303,14 +305,14 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         String key = "2.02";
         String name = "Aktualitet & Debat";
         int days = 100;
-        String expectedMessage = "Referential integrity constraint violation:";
+        String expectedMessage = "ERROR: update or delete on table";
 
-        long id = storage.createDrHoldbackCategory(key, name, days);
+        long id = rightsStorage.createDrHoldbackCategory(key, name, days);
 
-        storage.createDrHoldbackRange(1000, 1000, 1200, 1900, key);
+        rightsStorage.createDrHoldbackRange(1000, 1000, 1200, 1900, key);
 
         // Act
-        Exception exception = assertThrows(JdbcSQLIntegrityConstraintViolationException.class, () -> storage.deleteDrHoldbackCategory(id));
+        Exception exception = assertThrows(org.postgresql.util.PSQLException.class, () -> rightsStorage.deleteDrHoldbackCategory(id));
 
         // Assert
         assertTrue(exception.getMessage().startsWith(expectedMessage));
@@ -324,8 +326,8 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         int days = 100;
 
         // Act
-        long id = storage.createDrHoldbackCategory(key, name, days);
-        List<DrHoldbackCategoryOutputDto> drHoldbackCategoryOutputDtoList = storage.getDrHoldbackCategories();
+        long id = rightsStorage.createDrHoldbackCategory(key, name, days);
+        List<DrHoldbackCategoryOutputDto> drHoldbackCategoryOutputDtoList = rightsStorage.getDrHoldbackCategories();
 
         // Assert
         assertEquals(1, drHoldbackCategoryOutputDtoList.size());
@@ -347,12 +349,12 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         int formRangeFrom = 1200;
         int formRangeTo = 1900;
 
-        storage.createDrHoldbackCategory(drHoldbackCategoryKey, name, days);
+        rightsStorage.createDrHoldbackCategory(drHoldbackCategoryKey, name, days);
 
         // Act
-        long id = storage.createDrHoldbackRange(contentRangeFrom, contentRangeTo, formRangeFrom, formRangeTo, drHoldbackCategoryKey);
-        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
-        String returnedDrHoldbackCategoryKeyByContentAndForm = storage.getDrHoldbackCategoryKeyByContentAndForm(contentRangeFrom, formRangeFrom);
+        long id = rightsStorage.createDrHoldbackRange(contentRangeFrom, contentRangeTo, formRangeFrom, formRangeTo, drHoldbackCategoryKey);
+        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = rightsStorage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
+        String returnedDrHoldbackCategoryKeyByContentAndForm = rightsStorage.getDrHoldbackCategoryKeyByContentAndForm(contentRangeFrom, formRangeFrom);
 
         // Assert
         assertEquals(1, drHoldbackRangeOutputDtoList.size());
@@ -377,10 +379,10 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         int formRangeFrom = 1200;
         int formRangeTo = 1900;
 
-        storage.createDrHoldbackCategory(drHoldbackCategoryKey, name, days);
+        rightsStorage.createDrHoldbackCategory(drHoldbackCategoryKey, name, days);
 
-        long id = storage.createDrHoldbackRange(contentRangeFrom, contentRangeTo, formRangeFrom, formRangeTo, drHoldbackCategoryKey);
-        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
+        long id = rightsStorage.createDrHoldbackRange(contentRangeFrom, contentRangeTo, formRangeFrom, formRangeTo, drHoldbackCategoryKey);
+        List<DrHoldbackRangeOutputDto> drHoldbackRangeOutputDtoList = rightsStorage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
 
         assertEquals(1, drHoldbackRangeOutputDtoList.size());
         assertEquals(id, drHoldbackRangeOutputDtoList.get(0).getId());
@@ -391,8 +393,8 @@ public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
         assertEquals(formRangeTo, drHoldbackRangeOutputDtoList.get(0).getFormRangeTo());
 
         // Act
-        int deleteDrHoldbackRangesByDrHoldbackCategoryKey = storage.deleteDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
-        List<DrHoldbackRangeOutputDto> deletedDrHoldbackRangeOutputDtoList = storage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
+        int deleteDrHoldbackRangesByDrHoldbackCategoryKey = rightsStorage.deleteDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
+        List<DrHoldbackRangeOutputDto> deletedDrHoldbackRangeOutputDtoList = rightsStorage.getDrHoldbackRangesByDrHoldbackCategoryKey(drHoldbackCategoryKey);
 
         // Assert
         assertEquals(1, deleteDrHoldbackRangesByDrHoldbackCategoryKey);

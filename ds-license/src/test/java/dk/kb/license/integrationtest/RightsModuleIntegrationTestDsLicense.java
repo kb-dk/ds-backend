@@ -3,10 +3,8 @@ package dk.kb.license.integrationtest;
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.DsStorageUnitTestUtil;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
-import dk.kb.license.util.H2DbUtil;
 import dk.kb.util.oauth2.KeycloakUtil;
 import dk.kb.util.webservice.OAuthConstants;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,18 +28,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mockStatic;
 
-public class RightsModuleIntegrationTest extends DsStorageUnitTestUtil {
-    private static final Logger log = LoggerFactory.getLogger( RightsModuleIntegrationTest.class);
+public class RightsModuleIntegrationTestDsLicense extends DsLicenseUnitTestUtil {
+    private static final Logger log = LoggerFactory.getLogger( RightsModuleIntegrationTestDsLicense.class);
 
     private static RightsModuleStorage storage;
 
     @BeforeAll
-    static void setup() {
+    static void setup() throws Exception {
         try {
             ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");
-
-            BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-            H2DbUtil.createEmptyH2DBFromDDL(URL,DRIVER,USERNAME,PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
 
             // Instantiate the RightsModuleStorage without it being able to touch records in a backing DS-storage
             storage = new RightsModuleStorage();
@@ -82,7 +76,7 @@ public class RightsModuleIntegrationTest extends DsStorageUnitTestUtil {
     @Test
     @Tag("integration")
     public void testQueryLookupForId() throws SolrServerException, IOException {
-        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("ds.tv:oai:io:5a888d7d-3c0d-4375-9e67-343d88d1dbd9", IdTypeEnumDto.DS_ID);
+        int touchedRecords = RightsModuleFacade.touchRelatedStorageRecords("ds.tv:oai:io:b1a557d6-f505-445c-ae71-5e593b5fabe2", IdTypeEnumDto.DS_ID);
 
         assertEquals(1, touchedRecords);
     }

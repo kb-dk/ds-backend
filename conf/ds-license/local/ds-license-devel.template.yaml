@@ -24,7 +24,7 @@ solr:
   resourceField: "resource_id"
 
 db:
-  url: "jdbc:postgresql://postgres:5432/${license_database}"
+  url: "jdbc:postgresql://postgres-license:5432/${license_database}"
   driver: org.postgresql.Driver
   username: "${license_database_username}"
   password: "${license_database_password}"

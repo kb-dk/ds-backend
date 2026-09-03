@@ -25,12 +25,6 @@ solr:
 openapi:
   serverurl: http://localhost:9076/ds-license/v1
 
-# Change URL path to local h2 storage for unittest
-db:
-  url: jdbc:h2:${env:TMPDIR:-/tmp}/h2_ds_license;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
-  driver: org.h2.Driver
-  username: ''
-  password: ''
 
 # Will disable all access to admin GUI jsp pages and instead show a info page that it has been disabled.
 gui:

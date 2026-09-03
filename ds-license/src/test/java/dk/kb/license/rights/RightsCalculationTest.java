@@ -1,48 +1,24 @@
 package dk.kb.license.rights;
 
-import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
-import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
-import dk.kb.license.storage.DsStorageUnitTestUtil;
-import dk.kb.license.util.H2DbUtil;
+import dk.kb.license.util.DsLicenseUnitTestUtil;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RightsCalculationTest extends DsStorageUnitTestUtil {
+public class RightsCalculationTest extends DsLicenseUnitTestUtil {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculationTest.class);
-
     @BeforeAll
-    public static void beforeClass() throws IOException, SQLException {
-        ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_create_h2_unittest.ddl"));
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-    }
-
-    @BeforeEach
-    public void beforeEach() throws SQLException {
-        try (RightsModuleStorageForUnitTest storage = new RightsModuleStorageForUnitTest()) {
-            List<String> tables = new ArrayList<String>();
-            tables.add("RESTRICTED_IDS");
-            tables.add("DR_HOLDBACK_RANGES");
-            tables.add("DR_HOLDBACK_CATEGORIES");
-
-            storage.clearTableRecords(tables);
-        } catch (Exception e) {
-            throw e;
-        }
-        H2DbUtil.createEmptyH2DBFromDDL(URL, DRIVER, USERNAME, PASSWORD, List.of("ddl/rightsmodule_default_dr_holdback_categories_data.sql", "ddl/rightsmodule_default_dr_holdback_ranges_data.sql"));
+    public static void beforeClass() throws Exception {
+        setupDatabaseForClass(MethodHandles.lookup().lookupClass());
     }
 
     public RightsCalculationInputDto map(String recordId, PlatformEnumDto platform, String startTime,
