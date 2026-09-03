@@ -1,12 +1,8 @@
 package dk.kb.storage.util;
 
-import java.io.File;
 import java.util.Locale;
 
 import dk.kb.storage.storage.DsStorage;
-import dk.kb.storage.storage.DsStorageForUnitTest;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
 
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.shared.util.DbUtil;
@@ -39,10 +35,6 @@ public abstract class DsStorageUnitTestUtil {
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
     protected static final String MODULE = "ds-storage";
-
-    protected static final String TEST_CLASSES_PATH = new File(
-            Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()
-    ).getParentFile().getAbsolutePath();
 
     protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);

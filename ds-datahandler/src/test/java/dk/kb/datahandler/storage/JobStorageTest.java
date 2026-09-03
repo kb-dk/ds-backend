@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -21,7 +20,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JobStorageTest extends DsDatahandlerUnitTestUtil {
-    protected static final String TEST_CLASSES_PATH = new File(Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()).getParentFile().getAbsolutePath();
 
     @BeforeAll
     public static void beforeClass() throws Exception {
