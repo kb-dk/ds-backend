@@ -2,11 +2,13 @@ package dk.kb.license.facade;
 
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
+import dk.kb.license.storage.RightsModuleStorageForUnitTest;
 import dk.kb.license.util.DsLicenseUnitTestUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import java.time.Instant;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -25,12 +27,10 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -87,8 +87,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
      */
     private Date parseStringToDate(String dateString) throws ParseException {
         // The format date Solr client from dependency returns
-        final String parseDateFormat = "EEEE MMM dd HH:mm:ss z yyyy";
-        return new SimpleDateFormat(parseDateFormat, Locale.ROOT).parse(dateString);
+        return Date.from(Instant.parse(dateString));
     }
 
     @Test
@@ -1667,8 +1666,8 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
-        String startTime = "Thu Sep 29 21:55:00 CET 1966";
-        String endTime = "Thu Sep 29 22:05:00 CET 1966";
+        String startTime = "1966-09-29T20:55:00Z";
+        String endTime = "1966-09-29T21:05:00Z";
 
         String queryDsId = "id:\"" + dsId + "\"";
         String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
@@ -1718,8 +1717,8 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
-        String startTime = "Thu Sep 29 21:55:00 CET 1966";
-        String endTime = "Thu Sep 29 22:05:00 CET 1966";
+        String startTime = "1966-09-29T20:55:00Z";
+        String endTime = "1966-09-29T21:05:00Z";
 
         Date startTimeDate = parseStringToDate(startTime);
         Date endTimeDate = parseStringToDate(endTime);
@@ -1768,8 +1767,8 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
-        String startTime = "Thu Sep 29 21:55:00 CET 1966";
-        String endTime = "Thu Sep 29 22:05:00 CET 1966";
+        String startTime = "1966-09-29T20:55:00Z";
+        String endTime = "1966-09-29T21:05:00Z";
         String restrictedCommentOne = "Brugeren har trukket deres samtykke tilbage";
 
         Date startTimeDate = parseStringToDate(startTime);
@@ -1824,14 +1823,14 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         String dsIdOne = "ds.tv:oai:io:5c6ef540-9aa6-47cd-837e-7c488f8176f0";
         String titleOne = "P2 Radioavis";
-        String startTimeOne = "Thu Apr 04 08:00:00 CEST 2018";
-        String endTimeOne = "Thu Apr 04 08:06:00 CEST 2018";
+        String startTimeOne = "2018-04-04T06:00:00Z";
+        String endTimeOne = "2018-04-04T06:06:00Z";
         String restrictedCommentOne = "Brugeren har trukket deres samtykke tilbage";
 
         String dsIdTwo = "ds.tv:oai:io:d5ec7b20-c1f2-491e-a2cb-f143683a40f8";
         String titleTwo = "P2 Radioavis";
-        String startTimeTwo = "Thu Apr 05 08:00:00 CEST 2018";
-        String endTimeTwo = "Thu Apr 05 08:06:00 CEST 2018";
+        String startTimeTwo = "2018-04-05T06:00:00Z";
+        String endTimeTwo = "2018-04-05T06:06:00Z";
 
         Date startTimeDateOne = parseStringToDate(startTimeOne);
         Date endTimeDateOne = parseStringToDate(endTimeOne);
