@@ -160,7 +160,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jaxrs</artifactId>
-        </dependency>        <!-- Logging dependencies -->
+        </dependency>
         <!-- To get client generation to work -->
         <!-- https://mvnrepository.com/artifact/org.openapitools/openapi-generator -->
         <dependency>
@@ -174,6 +174,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
