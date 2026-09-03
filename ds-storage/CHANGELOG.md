@@ -28,7 +28,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Refactored method `createEmptyH2DBFromDDL` to dynamically take multiple ddl scripts instead of hardcoded ddl.
 - Refactored `@InInterceptors(interceptors` in `apiServiceImpl.mustache` to add the correct path to
   `KBAuthorizationInterceptor`.
-- Renamed class `DsStorageUnitTestUtil` to `UnitTestUtil` and refactored the class so it is possible to have multiple
+- Renamed class `DsStorageUnitTestUtil` to `DsStorageUnitTestUtil` and refactored the class so it is possible to have multiple
   unit test storage classes.
 
 ### Removed

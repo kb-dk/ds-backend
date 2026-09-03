@@ -1,4 +1,4 @@
-package dk.kb.storage.storage;
+package dk.kb.storage.util;
 
 import java.io.File;
 
@@ -7,7 +7,7 @@ import java.io.File;
  * 1) Create a h2 database for unittests with schema defined
  * 2) Load the Yaml property files.
  */
-public abstract class UnitTestUtil {
+public abstract class DsStorageUnitTestUtil {
     protected static final String DRIVER = "org.h2.Driver";
 
     //We need the relative location. This works both in IDE's and Maven.

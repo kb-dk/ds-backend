@@ -4,7 +4,7 @@ import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.UnitTestUtil;
+import dk.kb.license.storage.DsStorageUnitTestUtil;
 import dk.kb.license.storage.RightsModuleStorage;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.util.oauth2.KeycloakUtil;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mockStatic;
 
-public class RightsModuleIntegrationTest extends UnitTestUtil {
+public class RightsModuleIntegrationTest extends DsStorageUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger( RightsModuleIntegrationTest.class);
 
     private static RightsModuleStorage storage;

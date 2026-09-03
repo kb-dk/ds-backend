@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS rerun_clusters (
+-- V7.0.0.20260903080825__rerun_clusters.sql
+
+CREATE TABLE rerun_clusters (
     id UUID PRIMARY KEY,
     file_id UUID UNIQUE NOT NULL,
     rerun_cluster_id UUID NOT NULL,
@@ -8,9 +10,9 @@ CREATE TABLE IF NOT EXISTS rerun_clusters (
     updated TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS rerun_clusters_file_id_idx ON rerun_clusters(file_id);
-CREATE INDEX IF NOT EXISTS rerun_clusters_rerun_cluster_id_idx ON rerun_clusters(rerun_cluster_id);
-CREATE INDEX IF NOT EXISTS rerun_clusters_created_idx ON rerun_clusters(created);
+CREATE INDEX rerun_clusters_file_id_idx ON rerun_clusters(file_id);
+CREATE INDEX rerun_clusters_rerun_cluster_id_idx ON rerun_clusters(rerun_cluster_id);
+CREATE INDEX rerun_clusters_created_idx ON rerun_clusters(created);
 
 COMMENT ON TABLE rerun_clusters IS 'Table of rerun clusters data';
 COMMENT ON COLUMN rerun_clusters.id IS 'Unique UUID id';

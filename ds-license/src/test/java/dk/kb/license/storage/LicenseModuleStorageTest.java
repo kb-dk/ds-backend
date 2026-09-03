@@ -36,7 +36,7 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class LicenseModuleStorageTest extends UnitTestUtil {
+public class LicenseModuleStorageTest extends DsStorageUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleStorageTest.class);
 
     private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";

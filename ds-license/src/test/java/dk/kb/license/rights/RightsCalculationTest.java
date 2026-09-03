@@ -5,7 +5,7 @@ import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.BaseModuleStorage;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
-import dk.kb.license.storage.UnitTestUtil;
+import dk.kb.license.storage.DsStorageUnitTestUtil;
 import dk.kb.license.util.H2DbUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RightsCalculationTest extends UnitTestUtil {
+public class RightsCalculationTest extends DsStorageUnitTestUtil {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculationTest.class);
 
     @BeforeAll

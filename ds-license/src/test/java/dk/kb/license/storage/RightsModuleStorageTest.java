@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class RightsModuleStorageTest extends UnitTestUtil {
+public class RightsModuleStorageTest extends DsStorageUnitTestUtil {
     protected static RightsModuleStorageForUnitTest storage = null;
 
     @BeforeAll

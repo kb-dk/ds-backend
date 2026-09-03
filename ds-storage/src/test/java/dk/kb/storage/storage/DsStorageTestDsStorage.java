@@ -4,9 +4,9 @@ import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.H2DbUtil;
 import dk.kb.storage.util.UniqueTimestampGenerator;
+import dk.kb.storage.util.DsStorageUnitTestUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class DsStorageTest extends UnitTestUtil {
-    private static final Logger log = LoggerFactory.getLogger(DsStorageTest.class);
+public class DsStorageTestDsStorage extends DsStorageUnitTestUtil {
+    private static final Logger log = LoggerFactory.getLogger(DsStorageTestDsStorage.class);
 
     private static DsStorageForUnitTest storage = null;
 

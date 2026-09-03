@@ -28,7 +28,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-public class LicenseModuleFacadeTest extends UnitTestUtil {
+public class LicenseModuleFacadeTest extends DsStorageUnitTestUtil {
     protected static LicenseModuleStorageForUnitTest storage = null;
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
 

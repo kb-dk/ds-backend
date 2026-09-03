@@ -28,11 +28,11 @@ import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.AuditLogModuleStorageForUnitTest;
 import dk.kb.license.storage.BaseModuleStorage;
-import dk.kb.license.storage.UnitTestUtil;
+import dk.kb.license.storage.DsStorageUnitTestUtil;
 import dk.kb.license.util.H2DbUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 
-public class AuditLogModuleFacadeTest extends UnitTestUtil {
+public class AuditLogModuleFacadeTest extends DsStorageUnitTestUtil {
     protected static AuditLogModuleStorageForUnitTest storage = null;
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleFacadeTest.class);
     static MockedStatic<JAXRSUtils> mocked;

@@ -4,7 +4,7 @@ import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.storage.BaseModuleStorage;
 import dk.kb.storage.storage.DsStorage;
 import dk.kb.storage.storage.TranscriptionStorageForUnitTest;
-import dk.kb.storage.storage.UnitTestUtil;
+import dk.kb.storage.util.DsStorageUnitTestUtil;
 import dk.kb.storage.util.H2DbUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
 
-public class TranscriptionFacadeTest extends UnitTestUtil {
+public class TranscriptionFacadeTestDsStorage extends DsStorageUnitTestUtil {
     protected static TranscriptionStorageForUnitTest storage = null;
 
     @BeforeAll

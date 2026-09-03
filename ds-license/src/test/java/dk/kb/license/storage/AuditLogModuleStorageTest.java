@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mockStatic;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class AuditLogModuleStorageTest extends UnitTestUtil {
+public class AuditLogModuleStorageTest extends DsStorageUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageTest.class);
 
     protected static AuditLogModuleStorageForUnitTest storage = null;
