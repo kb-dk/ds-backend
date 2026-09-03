@@ -10,11 +10,6 @@
       <outputDirectory>/</outputDirectory>
       <destName>ds-storage.xml.SAMPLE</destName>
     </file>
-    <file>
-      <source>src/test/resources/ddl/create_ds_storage.ddl</source>
-      <outputDirectory>/</outputDirectory>
-      <destName>create_ds_storage.ddl</destName>
-    </file>
   </files>
 
   <dependencySets>
