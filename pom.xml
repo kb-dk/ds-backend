@@ -58,23 +58,7 @@
         </repository>
     </repositories>
     <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>dk.kb.util</groupId>
-                <artifactId>kb-util</artifactId>
-                <version>1.6.10</version>
-                <exclusions>
-                    <exclusion>
-                        <!-- kb-util has 2.3.3, but transitive resolving has 2.4.0 somewhere-->
-                        <groupId>jakarta.xml.bind</groupId>
-                        <artifactId>jakarta.xml.bind-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+        <dependencies>         
             <dependency>
                 <groupId>org.apache.solr</groupId>
                 <artifactId>solr-solrj</artifactId>

@@ -10,7 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
-
+- Removed kb-util dependency and moved classes to ds-shared
 - Added line break before `@param` in Javadocs
 - Added line break before `@return` in Javadocs
 - new property in ds-license-behaviour.yaml for cutoff year for TV. All TV before this year will bypass holdback rules.

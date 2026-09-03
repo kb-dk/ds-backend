@@ -14,10 +14,7 @@
     <packaging>jar</packaging>
     <description>ds-shared by the Royal Danish Library</description>
     <dependencies>
-        <dependency>
-            <groupId>dk.kb.util</groupId>
-            <artifactId>kb-util</artifactId>
-        </dependency>
+         
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
@@ -32,5 +29,182 @@
             <artifactId>flyway-core</artifactId>
             <version>10.10.0</version>
         </dependency>
-    </dependencies>
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+    
+            <!-- Previously io.swagger / swagger-jaxrs -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2</artifactId>
+            <version>2.2.19</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.swagger</groupId>-->
+<!--            <artifactId>swagger-jaxrs</artifactId>-->
+<!--            <version>1.6.9</version>-->
+<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.2.19</version>
+        </dependency>
+
+
+        <!-- Only used for Iterators in ExtractionUtils. Could we do without? -->
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>32.1.3-jre</version>
+        </dependency>
+
+        <!-- Needed fsupressing ForbiddenAPI where needed -->
+        <!-- https://mvnrepository.com/artifact/de.thetaphi/forbiddenapis -->
+        <dependency>
+            <groupId>de.thetaphi</groupId>
+            <artifactId>forbiddenapis</artifactId>
+            <version>3.6</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+
+
+
+     <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.13.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.11.0</version>
+        </dependency>
+
+ <!-- Webservice -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <!-- Latest major version is 6. Has not been investigated -->
+            <version>4.0.4</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <!-- Latest major version is 4. Has not been investigated -->
+            <version>3.6.7</version>
+        </dependency>
+
+
+      <!--Included utilities-->
+        <!--Not all of these are used, but you would want to use them, so include them here-->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.15.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
+
+    
+       <!-- Provides @javax.annotation.Nullable needed by OpenAPI -->
+        <!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable
+             Used for OpenAPI client generation -->
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>            
+        </dependency>
+        
+
+        <!--YAML-->
+        <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <!--YAML end-->    
+    
+        <!--Logging-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <!--Logging end-->
+
+   <!--JSON-->
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <!--Only for our incomplete JSONWrapper; this dependency will probably be removed in kb-util 2.0.0 -->
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.16.0</version>
+        </dependency>
+        <dependency>
+            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.16.0</version>
+        </dependency>
+      
+        <!--JSON end-->
+
+    
+    
+        <!--XML-->
+        <!--Nessesary for jaxb-xml with java 11-->
+        <!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <!-- Latest version is 4.0.1. Has not been investigated -->
+            <version>2.3.3</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api -->
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <!-- Latest version is 2.1.2. Has not been investigated -->
+            <version>1.2.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <!-- Latest version is 4.0.4. Has not been investigated -->
+            <version>2.3.9</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <!-- This is imported directly above.-->
+                <exclusion>
+                    <groupId>com.sun.activation</groupId>
+                    <artifactId>jakarta.activation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--XML end-->
+    
+    </dependencies>    
+    
 </project>

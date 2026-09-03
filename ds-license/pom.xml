@@ -45,10 +45,6 @@
             <version>100.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>dk.kb.util</groupId>
-            <artifactId>kb-util</artifactId>
-        </dependency>
-        <dependency>
             <groupId>dk.kb.storage</groupId>
             <artifactId>ds-storage</artifactId>
             <version>100.0.0-SNAPSHOT</version>
@@ -62,9 +58,12 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
+           <groupId>javax.servlet</groupId>
+           <artifactId>javax.servlet-api</artifactId>
+           <version>3.0.1</version>
+           <scope>provided</scope>
         </dependency>
+      
         <!-- https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine -->
         <!-- Used for DsLicenseClient -->
         <dependency>
@@ -132,7 +131,7 @@
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
-            <version>9.10.1</version>
+            <version>9.10.1</version> <!-- We really need to use another version here?-->
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>

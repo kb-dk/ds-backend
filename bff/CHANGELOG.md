@@ -15,7 +15,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added line break before `@return` in Javadocs
 
 ### Changed
-
+- Removed kb-util dependency and moved classes to ds-shared
 - Formatted `openapi` file.
 - Added hyphen between `human-readable` in `pom.xml`.
 - Formatted `pom.xml`.

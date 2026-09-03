@@ -12,7 +12,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added `TopContentDtoMappperTest`
 
 ### Changed
-
+- Removed kb-util dependency and moved classes to ds-shared
 - Changed `TopContentDto` so it now have a couple of extra fields. Future unexpected fields will now be ignored.
 - Changed `uploadFile` method to split data into smaller chunks enable to enhance upload job stability.
 
