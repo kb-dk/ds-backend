@@ -269,9 +269,14 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
             metadataMap.put("productionCodeValue", productionCode);
         } else if (origin.equals("ds.radio")) {
+            metadataMap.put("productionCodeAllowed", "true");      
+        }
+        else if(rightsOutput.getDr().getProductionCodeAllowed() == true) { // CalculateRights call can overrule produductionCodeAllowed, even if there is no production code.
             metadataMap.put("productionCodeAllowed", "true");
-        } else if (origin.equals("ds.tv")) {
-            log.debug("Record {} is tv record with no production code");
+            log.debug("Production code allowed without production code due to cutoff date");
+        }
+        else if (origin.equals("ds.tv") ) { 
+            log.debug("Record is tv record with no production code and not production code not allowed.");
             metadataMap.put("productionCodeAllowed", "false");
         }
     }

@@ -10,12 +10,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
-
+- Removed kb-util dependency and moved classes to ds-shared
 - Added line break before `@param` in Javadocs
 - Added line break before `@return` in Javadocs
 
 ### Changed
-
+- Ds-license rights calculation can allowed programs without a production code (productionCodeAllowed) if start time is before cutoff year (default 1974, year not included)
 - Formatted `openapi` file.
 - Moved OpenAPI description from `pom.xml` into `openapi` file.
 - Added `name` in `pom.xml`.
