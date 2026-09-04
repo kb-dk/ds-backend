@@ -12,8 +12,8 @@ import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class BasicStorage implements AutoCloseable {
-    private static Logger log = LoggerFactory.getLogger(BasicStorage.class);
+public abstract class BaseModuleStorage implements AutoCloseable {
+    private static Logger log = LoggerFactory.getLogger(BaseModuleStorage.class);
 
     protected Connection connection;
     private static BasicDataSource dataSource;
@@ -33,7 +33,7 @@ public abstract class BasicStorage implements AutoCloseable {
         log.info("DsStorage initialized with driverName='{}', driverURL='{}', connectionPoolSize='{}'", driverName, driverUrl,connectionPoolSize);
     }
 
-    public BasicStorage() throws SQLException {
+    public BaseModuleStorage() throws SQLException {
         connection = dataSource.getConnection();
     }
 
@@ -60,11 +60,11 @@ public abstract class BasicStorage implements AutoCloseable {
     }
 
     @FunctionalInterface
-    public interface StorageAction<T, S extends BasicStorage> {
+    public interface StorageAction<T, S extends BaseModuleStorage> {
         T process(S storage) throws Exception;
     }
 
-    public static <T, S extends BasicStorage> T performStorageAction(
+    public static <T, S extends BaseModuleStorage> T performStorageAction(
             String actionID,
             Callable<S> storageFactory,
             StorageAction<T, S> action

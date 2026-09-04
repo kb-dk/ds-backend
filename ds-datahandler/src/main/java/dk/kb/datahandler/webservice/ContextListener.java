@@ -18,7 +18,7 @@ import javax.servlet.ServletContextListener;
 
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.model.v1.JobStatusDto;
-import dk.kb.datahandler.storage.BasicStorage;
+import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
@@ -196,7 +196,7 @@ public class ContextListener implements ServletContextListener {
      * @param message why the job was marked stopped/failed
      */
     private void handleRunningJobs(JobStatusDto jobStatus, String message) {
-        BasicStorage.performStorageAction("Stop all running jobs", JobStorage::new, (JobStorage storage) -> {
+        BaseModuleStorage.performStorageAction("Stop all running jobs", JobStorage::new, (JobStorage storage) -> {
            storage.getJobs(null, JobStatusDto.RUNNING).forEach(jobDto -> {
                jobDto.setJobStatus(jobStatus);
                jobDto.setEndTime(OffsetDateTime.now(ZoneOffset.UTC));

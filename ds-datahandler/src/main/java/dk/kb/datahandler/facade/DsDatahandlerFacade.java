@@ -17,10 +17,9 @@ import dk.kb.datahandler.model.v1.*;
 import dk.kb.datahandler.oai.OaiResponseFilterDrArchive;
 import dk.kb.datahandler.oai.OaiResponseFilterPreservicaSeven;
 import dk.kb.datahandler.solr.SolrIndexResponse;
-import dk.kb.datahandler.storage.BasicStorage;
+import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.transcriptions.TranscriptionJob;
-import dk.kb.storage.model.v1.DsRecordMinimalDto;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -317,7 +316,7 @@ public class DsDatahandlerFacade {
      * @return List of jobs with status
      */    
     public static List<JobDto> getJobs(CategoryDto categoryDto, JobStatusDto jobStatusDto) {
-        return BasicStorage.performStorageAction("Get all jobs", JobStorage::new, (JobStorage storage) -> storage.getJobs(categoryDto, jobStatusDto));
+        return BaseModuleStorage.performStorageAction("Get all jobs", JobStorage::new, (JobStorage storage) -> storage.getJobs(categoryDto, jobStatusDto));
     }
 
     /**
@@ -497,7 +496,7 @@ public class DsDatahandlerFacade {
 
         String databaseMessage = jobDto.getJobStatus().getValue() + " " + jobDto.getType().getValue() + " " + jobDto.getCategory().getValue();
 
-        UUID jobId = BasicStorage.performStorageAction(databaseMessage, JobStorage::new, (JobStorage storage) -> {
+        UUID jobId = BaseModuleStorage.performStorageAction(databaseMessage, JobStorage::new, (JobStorage storage) -> {
             if (storage.hasRunningJob(categoryDto, source)) {
                 throw new InvalidArgumentServiceException("There is already a/an " + categoryDto + " job running");
             }
@@ -526,7 +525,7 @@ public class DsDatahandlerFacade {
 
         String databaseMessage = jobDto.getJobStatus().getValue() + " " + jobDto.getType().getValue() + " " + jobDto.getCategory().getValue();
 
-        BasicStorage.performStorageAction(databaseMessage, JobStorage::new, (JobStorage storage) -> {
+        BaseModuleStorage.performStorageAction(databaseMessage, JobStorage::new, (JobStorage storage) -> {
             storage.updateJob(jobDto);
             return null;
         });

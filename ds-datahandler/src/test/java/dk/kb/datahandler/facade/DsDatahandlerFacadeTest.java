@@ -2,7 +2,7 @@ package dk.kb.datahandler.facade;
 
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.model.v1.*;
-import dk.kb.datahandler.storage.BasicStorage;
+import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.util.TestcontainersUtil;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.storage.JobStorageForUnitTests;
@@ -99,7 +99,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
         jobDto.setJobStatus(JobStatusDto.RUNNING);
         jobDto.setStartTime(OffsetDateTime.now(ZoneOffset.UTC));
 
-        BasicStorage.performStorageAction("Create job for OAITest", JobStorage::new, (JobStorage storage) -> {
+        BaseModuleStorage.performStorageAction("Create job for OAITest", JobStorage::new, (JobStorage storage) -> {
             storage.createJob(jobDto);
             return null;
         });
@@ -148,7 +148,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
         jobDto.setJobStatus(JobStatusDto.RUNNING);
         jobDto.setStartTime(OffsetDateTime.now(ZoneOffset.UTC));
 
-        BasicStorage.performStorageAction("Create job for kaltura upload test", JobStorage::new, (JobStorage storage) -> {
+        BaseModuleStorage.performStorageAction("Create job for kaltura upload test", JobStorage::new, (JobStorage storage) -> {
             storage.createJob(jobDto);
             return null;
         });
