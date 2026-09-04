@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import dk.kb.license.config.ServiceConfig;
 import dk.kb.license.storage.*;
-import dk.kb.shared.util.DbUtil;
+import dk.kb.shared.util.DatabaseUnitTestUtil;
 import org.junit.jupiter.api.AfterAll;
 
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -38,21 +38,13 @@ public abstract class DsLicenseUnitTestUtil {
     protected static final String PASSWORD = postgres.getPassword();
     protected static final String MODULE = "ds-license";
 
-    protected static AuditLogModuleStorageForUnitTest auditStorage = null;
-    protected static LicenseModuleStorageForUnitTest licenseStorage = null;
-    protected static RightsModuleStorageForUnitTest rightsStorage = null;
-
     protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
         URL = getJdbcUrlForSchema(schemaName);
 
         ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
-
-        auditStorage = new AuditLogModuleStorageForUnitTest();
-        licenseStorage = new LicenseModuleStorageForUnitTest();
-        rightsStorage = new RightsModuleStorageForUnitTest();
+        DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
     }
 
     @AfterAll

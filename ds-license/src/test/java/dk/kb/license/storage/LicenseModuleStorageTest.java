@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dk.kb.license.util.DsLicenseUnitTestUtil;
-import dk.kb.shared.util.DbUtil;
+import dk.kb.shared.util.DatabaseUnitTestUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,14 +36,14 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
  * open and open the database and see what the unit-tests did.
  */
 public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
-
-    private static final String INSERT_DEFAULT_CONFIGURATION_DDL_FILE = "src/test/resources/ddl/licensemodule_default_configuration.ddl";
     private static PresentationType DOWNLOAD = new PresentationType("Download", "Download_dk", "Download_en");
     private static PresentationType THUMBNAILS = new PresentationType("Thumbnails", "Thumbnails_dk", "Thumbnails_en");
+    private static LicenseModuleStorageForUnitTest licenseStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+        licenseStorage = new LicenseModuleStorageForUnitTest();
     }
 
     /**
@@ -1037,6 +1037,6 @@ public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
      * @throws SQLException
      */
     public static void insertDefaultConfigurationTypes() throws Exception {
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
+        DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
     }
 }

@@ -2,15 +2,13 @@ package dk.kb.datahandler.util;
 
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.storage.JobStorage;
-import dk.kb.datahandler.storage.JobStorageForUnitTests;
-import dk.kb.shared.util.DbUtil;
+import dk.kb.shared.util.DatabaseUnitTestUtil;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.sql.SQLException;
 import java.util.Locale;
 
 /**
@@ -39,22 +37,12 @@ public abstract class DsDatahandlerUnitTestUtil {
     protected static final String PASSWORD = postgres.getPassword();
     protected static final String MODULE = "ds-datahandler";
 
-    protected static JobStorageForUnitTests storage = null;
-
     protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
         URL = getJdbcUrlForSchema(schemaName);
 
         ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
+        DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
         JobStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
-
-        storage = new JobStorageForUnitTests();
     }
-
-    @BeforeEach
-    public void beforeTest() throws SQLException {
-        storage.clearTables();
-    }
-
 }

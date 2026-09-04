@@ -5,6 +5,7 @@ import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.util.UniqueTimestampGenerator;
 import dk.kb.storage.util.DsStorageUnitTestUtil;
+import java.sql.SQLException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,7 +42,7 @@ public class StorageTest extends DsStorageUnitTestUtil {
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
-    public void beforeEach() throws Exception {
+    public void beforeEach() throws SQLException {
         storage.clearTableRecords();
         storage.commit();
     }

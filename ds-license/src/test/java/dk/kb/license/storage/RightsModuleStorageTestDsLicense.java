@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * open and open the database and see what the unit-tests did.
  */
 public class RightsModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
-    protected static RightsModuleStorageForUnitTest storage = null;
+    private static RightsModuleStorageForUnitTest rightsStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {

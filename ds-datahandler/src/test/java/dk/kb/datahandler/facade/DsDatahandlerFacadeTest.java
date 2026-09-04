@@ -9,8 +9,10 @@ import dk.kb.datahandler.storage.JobStorageForUnitTests;
 
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import java.sql.SQLException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -25,12 +27,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
 public class DsDatahandlerFacadeTest extends DsDatahandlerUnitTestUtil {
-    private static JobStorageForUnitTests storage = null;
+    private static JobStorageForUnitTests jobStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
-        storage = new JobStorageForUnitTests();
+        jobStorage = new JobStorageForUnitTests();
+    }
+
+    @BeforeEach
+    public void beforeEach() throws SQLException {
+        jobStorage.clearTables();
     }
 
     @Test

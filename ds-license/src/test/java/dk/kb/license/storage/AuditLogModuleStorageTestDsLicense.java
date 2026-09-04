@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mockStatic;
  */
 public class AuditLogModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageTestDsLicense.class);
-    protected static AuditLogModuleStorageForUnitTest auditStorage = null;
+    private static AuditLogModuleStorageForUnitTest auditStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {

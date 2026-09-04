@@ -1,11 +1,12 @@
 package dk.kb.storage.util;
 
+import dk.kb.storage.storage.BaseModuleStorage;
+import java.sql.SQLException;
 import java.util.Locale;
 
-import dk.kb.storage.storage.DsStorage;
-
 import dk.kb.storage.config.ServiceConfig;
-import dk.kb.shared.util.DbUtil;
+import dk.kb.shared.util.DatabaseUnitTestUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -41,7 +42,7 @@ public abstract class DsStorageUnitTestUtil {
         URL = getJdbcUrlForSchema(schemaName);
 
         ServiceConfig.initialize("conf/ds-storage*.yaml");
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
-        DsStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
+        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
     }
 }

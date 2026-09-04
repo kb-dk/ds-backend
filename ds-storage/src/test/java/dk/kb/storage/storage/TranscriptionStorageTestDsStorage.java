@@ -35,7 +35,7 @@ public class TranscriptionStorageTestDsStorage extends DsStorageUnitTestUtil {
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
-    public void beforeEach() throws Exception {
+    public void beforeEach() throws SQLException {
         storage.clearTableRecords();
         storage.commit();
     }
