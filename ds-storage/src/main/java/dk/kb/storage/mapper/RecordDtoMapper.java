@@ -11,7 +11,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class DsRecordDtoMapper {
+public class RecordDtoMapper {
 
     /**
      * Create a {@link DsRecordDto} from a ResultSet

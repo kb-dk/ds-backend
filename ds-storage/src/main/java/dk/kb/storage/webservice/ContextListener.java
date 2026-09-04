@@ -19,7 +19,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import dk.kb.storage.config.ServiceConfig;
-import dk.kb.storage.storage.DsStorage;
+import dk.kb.storage.storage.RecordStorage;
 
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
@@ -96,7 +96,7 @@ public class ContextListener implements ServletContextListener {
       	String user = ServiceConfig.getDBUserName();
       	String password = ServiceConfig.getDBPassword();
       	
-       DsStorage.initialize(driver,url,user,password);                        
+       RecordStorage.initialize(driver,url,user,password);
     }
     
     /**

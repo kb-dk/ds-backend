@@ -1,7 +1,6 @@
 package dk.kb.storage.api.v1.impl;
 
 import dk.kb.storage.api.v1.TranscriptionApi;
-import dk.kb.storage.facade.DsStorageFacade;
 import dk.kb.storage.facade.TranscriptionFacade;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.ImplBase;

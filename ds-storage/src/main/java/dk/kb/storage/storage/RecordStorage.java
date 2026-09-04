@@ -1,7 +1,7 @@
 package dk.kb.storage.storage;
 
-import dk.kb.storage.mapper.DsRecordDtoMapper;
-import dk.kb.storage.mapper.DsRecordMinimalDtoMapper;
+import dk.kb.storage.mapper.RecordDtoMapper;
+import dk.kb.storage.mapper.RecordMinimalDtoMapper;
 import dk.kb.storage.mapper.OriginCountDtoMapper;
 import dk.kb.storage.mapper.RecordsCountDtoMapper;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -15,7 +15,6 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,12 +24,13 @@ import java.util.Objects;
 /**
  * This class will be called by the facade class. The facade class is also responsible for commit or rollback.
  */
-public class DsStorage extends BaseModuleStorage {
-    private static final Logger log = LoggerFactory.getLogger(DsStorage.class);
+public class RecordStorage extends BaseModuleStorage {
+    private static final Logger log = LoggerFactory.getLogger(RecordStorage.class);
 
     private final static RecordsCountDtoMapper recordsCountDtoMapper = new RecordsCountDtoMapper();
-    private final static DsRecordDtoMapper dsRecordDtoMapper = new DsRecordDtoMapper();
-    private final static DsRecordMinimalDtoMapper dsRecordMinimalDtoMapper = new DsRecordMinimalDtoMapper();
+    private final static RecordDtoMapper RECORD_DTO_MAPPER = new RecordDtoMapper();
+    private final static RecordMinimalDtoMapper
+        RECORD_MINIMAL_DTO_MAPPER = new RecordMinimalDtoMapper();
     private final static OriginCountDtoMapper originCountDtoMapper = new OriginCountDtoMapper();
 
     private static final String RECORDS_TABLE = "ds_records";
@@ -339,7 +339,7 @@ public class DsStorage extends BaseModuleStorage {
     private static String recordIdExistsStatement = "SELECT COUNT(*) AS COUNT FROM " + RECORDS_TABLE + " WHERE " + ID_COLUMN + " = ?";
     private static String countRecordsInOriginStatement = "SELECT COUNT(*) FROM " + RECORDS_TABLE + " WHERE " + ORIGIN_COLUMN + " = ? AND " + MTIME_COLUMN + " > ?";
 
-    public DsStorage() throws SQLException {
+    public RecordStorage() throws SQLException {
         super();
     }
 
@@ -354,7 +354,7 @@ public class DsStorage extends BaseModuleStorage {
                 if (!resultSet.next()) {
                     return null;// Or throw exception?
                 }
-                DsRecordDto record = dsRecordDtoMapper.map(resultSet);
+                DsRecordDto record = RECORD_DTO_MAPPER.map(resultSet);
                 return record;
             }
         }
@@ -372,7 +372,7 @@ public class DsStorage extends BaseModuleStorage {
                 if (!resultSet.next()) {
                     return null;
                 }
-                DsRecordDto record = dsRecordDtoMapper.map(resultSet);
+                DsRecordDto record = RECORD_DTO_MAPPER.map(resultSet);
 
                 //load children                
                 record.setChildrenIds(getChildrenIds(id));
@@ -467,7 +467,7 @@ public class DsStorage extends BaseModuleStorage {
 
         try (ResultSet resultSet = stmt.executeQuery()) {
             while (resultSet.next()) {
-                DsRecordDto record = dsRecordDtoMapper.map(resultSet);
+                DsRecordDto record = RECORD_DTO_MAPPER.map(resultSet);
                 records.add(record);
             }
         }
@@ -495,7 +495,7 @@ public class DsStorage extends BaseModuleStorage {
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 while (resultSet.next()) {
-                    DsRecordMinimalDto record = dsRecordMinimalDtoMapper.map(resultSet);
+                    DsRecordMinimalDto record = RECORD_MINIMAL_DTO_MAPPER.map(resultSet);
                     records.add(record);
                 }
             }

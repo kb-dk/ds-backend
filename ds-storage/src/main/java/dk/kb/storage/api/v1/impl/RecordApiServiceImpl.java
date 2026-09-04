@@ -2,7 +2,7 @@ package dk.kb.storage.api.v1.impl;
 
 import dk.kb.storage.api.v1.DsStorageApi;
 import dk.kb.storage.config.ServiceConfig;
-import dk.kb.storage.facade.DsStorageFacade;
+import dk.kb.storage.facade.RecordFacade;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.OriginDto;
@@ -33,8 +33,8 @@ import java.util.List;
  * ds-storage by the Royal Danish Library
  */
 @InInterceptors(interceptors = "dk.kb.storage.webservice.KBAuthorizationInterceptor")
-public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
-    private static final Logger log = LoggerFactory.getLogger(DsStorageApiServiceImpl.class);
+public class RecordApiServiceImpl extends ImplBase implements DsStorageApi {
+    private static final Logger log = LoggerFactory.getLogger(RecordApiServiceImpl.class);
 
     /**
      * How to access the various web contexts. See
@@ -113,13 +113,13 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
 
             // Count records in the origin we are extracting from
-            long recordsInOrigin = DsStorageFacade.countRecordsInOrigin(origin, finalMTime);
-            setHeaders(finalMTime, finalMaxRecords, DsStorageFacade.getMaxMtimeAfter(origin, finalMTime, finalMaxRecords), recordsInOrigin);
+            long recordsInOrigin = RecordFacade.countRecordsInOrigin(origin, finalMTime);
+            setHeaders(finalMTime, finalMaxRecords, RecordFacade.getMaxMtimeAfter(origin, finalMTime, finalMaxRecords), recordsInOrigin);
 
             return output -> {
                 try (ExportWriter writer = ExportWriterFactory.wrap(
                         output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records")) {
-                    DsStorageFacade.getRecordsModifiedAfter(writer, origin, finalMTime, finalMaxRecords, ServiceConfig.getDBBatchSize());
+                    RecordFacade.getRecordsModifiedAfter(writer, origin, finalMTime, finalMaxRecords, ServiceConfig.getDBBatchSize());
                 }
             };
         } catch (Exception e){
@@ -137,13 +137,13 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
             long finalMTime = mTime == null ? 0L : mTime;
             long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
 
-            long recordsInOrigin = DsStorageFacade.countRecordsInOrigin(origin, finalMTime); //TODO Victor. Shouldn't this also use recordType when counting?
-            setHeaders(finalMTime, finalMaxRecords, DsStorageFacade.getMaxMtimeAfter(origin, finalMTime, finalMaxRecords), recordsInOrigin);
+            long recordsInOrigin = RecordFacade.countRecordsInOrigin(origin, finalMTime); //TODO Victor. Shouldn't this also use recordType when counting?
+            setHeaders(finalMTime, finalMaxRecords, RecordFacade.getMaxMtimeAfter(origin, finalMTime, finalMaxRecords), recordsInOrigin);
 
             return output -> {
                 try (ExportWriter writer = ExportWriterFactory.wrap(
                         output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records")) {
-                    DsStorageFacade.getRecordsByRecordTypeModifiedAfterWithLocalTree(writer, origin, recordType, finalMTime, finalMaxRecords, ServiceConfig.getDBBatchSize());
+                    RecordFacade.getRecordsByRecordTypeModifiedAfterWithLocalTree(writer, origin, recordType, finalMTime, finalMaxRecords, ServiceConfig.getDBBatchSize());
                 }
             };
         } catch (Exception e){
@@ -158,8 +158,8 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
      * @param finalMTime is used to determine how to set the Content-Disposition header.
      * @param finalMaxRecords is used to determine how to set the Content-Disposition header.
      * @param continuationPair contains the values for the Paging-Continuation-Token and Paging-Has-More headers.
-     *                         See {@link DsStorageFacade#getMaxMtimeAfter(String, long, long)} and
-     *                         {@link DsStorageFacade#getMaxMtimeAfter(String, RecordTypeDto, long, long)} for explanation.
+     *                         See {@link RecordFacade#getMaxMtimeAfter(String, long, long)} and
+     *                         {@link RecordFacade#getMaxMtimeAfter(String, RecordTypeDto, long, long)} for explanation.
      * @param recordsInOrigin the amount of records available from the backing DsStorage during the call.
      */
     private void setHeaders(long finalMTime, long finalMaxRecords, Pair<Long, Boolean> continuationPair, long recordsInOrigin) {
@@ -201,7 +201,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         try {
             log.debug("createOrUpdateRecord(Origin='{}', record.id='{}', ...) called with call details: {}",
                       dsRecordDto.getOrigin(), dsRecordDto.getId(), getCallDetails());
-            DsStorageFacade.createOrUpdateRecord(dsRecordDto);
+            RecordFacade.createOrUpdateRecord(dsRecordDto);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -211,7 +211,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     public RecordsCountDto touchRecord(String recordId) {
         try {
             log.debug("touchRecord(id='{}') called with call details: {}", recordId, getCallDetails());
-            return DsStorageFacade.touchRecord(recordId);
+            return RecordFacade.touchRecord(recordId);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -221,7 +221,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     public DsRecordDto getRecord(String id, Boolean includeLocalTree) {
         try {
             log.debug("getRecord(id='{}') called with call details: {}", id, getCallDetails());
-            DsRecordDto record= DsStorageFacade.getRecord(id,includeLocalTree);                      
+            DsRecordDto record= RecordFacade.getRecord(id,includeLocalTree);
             return record;
         } catch (Exception e) {
             throw handleException(e);
@@ -246,7 +246,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     public RecordsCountDto markRecordForDelete(String id) {
         try {
             log.debug("markRecordForDelete(id='{}') called with call details: {}", id, getCallDetails());
-            return DsStorageFacade.markRecordForDelete(id);
+            return RecordFacade.markRecordForDelete(id);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -257,7 +257,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         try {
             log.debug("deleteMarkedForDelete(origin'{}') called with call details: {}",
                       origin, getCallDetails());
-            return DsStorageFacade.deleteMarkedForDelete(origin);
+            return RecordFacade.deleteMarkedForDelete(origin);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -267,7 +267,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     public  List<OriginCountDto> getOriginStatistics() {
         try {
             log.debug("getOriginStatistics() called with call details: {}", getCallDetails());
-            return DsStorageFacade.getOriginStatistics();
+            return RecordFacade.getOriginStatistics();
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -277,7 +277,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     public RecordsCountDto deleteRecordsForOrigin(String origin, Long mTimeFrom, Long mTimeTo) {
         try {
 	    log.debug("deleteRecordsForOrigin() called with call details: {}", getCallDetails());
-	    return DsStorageFacade.deleteRecordsForOrigin(origin,mTimeFrom,mTimeTo);
+	    return RecordFacade.deleteRecordsForOrigin(origin,mTimeFrom,mTimeTo);
         } catch (Exception e) {
 	    throw handleException(e);
         }
@@ -287,7 +287,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     public void updateKalturaIdForRecord(String referenceId, String kalturaId) {
         try {
             log.debug("updateKalturaId() called with call details: {}", getCallDetails());
-            DsStorageFacade.updateKalturaIdForRecord(referenceId, kalturaId);               
+            RecordFacade.updateKalturaIdForRecord(referenceId, kalturaId);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -297,7 +297,7 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     public void updateReferenceIdForRecord(String recordId, String referenceId) {
         try {
             log.debug("updateReferenceIdForRecord() called with call details: {}", getCallDetails());
-            DsStorageFacade.updateReferenceIdForRecord(recordId,referenceId);               
+            RecordFacade.updateReferenceIdForRecord(recordId,referenceId);
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -321,13 +321,13 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
         long finalMTime = mTime == null ? 0L : mTime;
         long finalMaxRecords = maxRecords == null ? 1000L : maxRecords;
 
-        long recordsInOrigin = DsStorageFacade.countRecordsInOrigin(origin, finalMTime); //TODO Victor. Shouldn't this also use recordType when counting?
-        setHeaders(finalMTime, finalMaxRecords, DsStorageFacade.getMaxMtimeAfter(origin, finalMTime, finalMaxRecords), recordsInOrigin);
+        long recordsInOrigin = RecordFacade.countRecordsInOrigin(origin, finalMTime); //TODO Victor. Shouldn't this also use recordType when counting?
+        setHeaders(finalMTime, finalMaxRecords, RecordFacade.getMaxMtimeAfter(origin, finalMTime, finalMaxRecords), recordsInOrigin);
 
         return output -> {
             try (ExportWriter writer = ExportWriterFactory.wrap(
                     output, httpServletResponse, ExportWriterFactory.FORMAT.json, false, "records")) {
-                DsStorageFacade.getMinimalRecordsModifiedAfter(writer, origin, finalMTime, finalMaxRecords, ServiceConfig.getDBBatchSize());
+                RecordFacade.getMinimalRecordsModifiedAfter(writer, origin, finalMTime, finalMaxRecords, ServiceConfig.getDBBatchSize());
             }
         };
     }

@@ -54,8 +54,8 @@ import static org.mockito.Mockito.mockStatic;
  * Call 'kb init' to fetch YAML property file with server urls
  */
 @Tag("integration")
-public class DsStorageClientTest {
-    private static final Logger log =  LoggerFactory.getLogger(DsStorageClientTest.class);
+public class RecordStorageClientTest {
+    private static final Logger log =  LoggerFactory.getLogger(RecordStorageClientTest.class);
 
     private static DsStorageClient remote = null;
     private static String dsStorageDevel=null;  

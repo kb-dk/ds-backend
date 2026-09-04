@@ -76,7 +76,7 @@ paths:
   /origin/config:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Retrieve a list of configured origins with their respective update strategy'
       security:
         - KBOAuth:
@@ -98,7 +98,7 @@ paths:
   /origin/stats:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Show amount of records in each origin'
       security:
         - KBOAuth:
@@ -115,7 +115,7 @@ paths:
   /origin/cleanup:
     delete:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: Delete all records for an origin that has deleted flag set.
       security:
         - KBOAuth:
@@ -143,7 +143,7 @@ paths:
   /origin/records:
     delete:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: Delete records from the storage for the origin within the timeframe.
       security:
         - KBOAuth:
@@ -184,7 +184,7 @@ paths:
   /record/{id}:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Read a specific record by ID.'
       security:
         - KBOAuth:
@@ -223,7 +223,7 @@ paths:
                   $ref: '#/components/examples/GetDSRecord'
     delete:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Mark a record with delete flag.'
       security:
         - KBOAuth:
@@ -250,7 +250,7 @@ paths:
   #  /recordTree/{id}:
   #    get:
   #      tags:
-  #        - '${project.name}'
+  #        - 'Record'
   #      summary: 'Return the record with the full record tree loaded as parent/child object. Will return throw exception if no record with the given ID exists. A record marked with delete flag will also be returned.'
   #      operationId: getRecordTree
   #      parameters:
@@ -272,7 +272,7 @@ paths:
   /record:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Create a new record or update an existing record.'
       security:
         - KBOAuth:
@@ -294,7 +294,7 @@ paths:
   /record/updateKalturaId:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Update a record with the Kaltura id. '
 
       security:
@@ -320,7 +320,7 @@ paths:
   /record/updateReferenceId:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Update a record with referenceId '
       security:
         - KBOAuth:
@@ -345,7 +345,7 @@ paths:
   /record/touch/{id}:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Touch a record, changing its mTime to the current time.'
       operationId: touchRecord
       security:
@@ -370,7 +370,7 @@ paths:
   /records:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Extract X records from a origin.'
       security:
         - KBOAuth:
@@ -427,7 +427,7 @@ paths:
   /records/minimal:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Get a stream of minimal records having a referenceId after a given lastModified time'
       security:
         - KBOAuth:

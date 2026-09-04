@@ -26,15 +26,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class StorageTest extends TestcontainersUtil {
-    private static final Logger log = LoggerFactory.getLogger(StorageTest.class);
+public class RecordStorageTest extends TestcontainersUtil {
+    private static final Logger log = LoggerFactory.getLogger(RecordStorageTest.class);
 
-    private static DsStorageForUnitTest storage = null;
+    private static RecordStorageForUnitTest storage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
-        storage = new DsStorageForUnitTest();
+        storage = new RecordStorageForUnitTest();
     }
 
     /**
@@ -52,7 +52,7 @@ public class StorageTest extends TestcontainersUtil {
         // No reason to delete DB data file after test, since we clear table it before each test.
         // This way you can open the DB in a DB-browser after the unittest and see the result.
         // Just run that single test and look in the DB
-        DsStorage.shutdown();
+        RecordStorage.shutdown();
     }
 
     @Test

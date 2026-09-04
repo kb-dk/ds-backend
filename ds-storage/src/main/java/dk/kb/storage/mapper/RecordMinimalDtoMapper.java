@@ -5,7 +5,7 @@ import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DsRecordMinimalDtoMapper {
+public class RecordMinimalDtoMapper {
 
     /**
      * Create a {@link DsRecordMinimalDto} from a ResultSet

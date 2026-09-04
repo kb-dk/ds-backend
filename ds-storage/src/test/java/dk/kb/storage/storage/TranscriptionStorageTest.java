@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TranscriptionStorageTestDsStorage extends TestcontainersUtil {
+public class TranscriptionStorageTest extends TestcontainersUtil {
 
     private static TranscriptionStorageForUnitTest storage = null;
 
