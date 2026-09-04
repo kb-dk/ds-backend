@@ -2,13 +2,13 @@ package dk.kb.storage.facade;
 
 import dk.kb.storage.storage.DsStorage;
 import dk.kb.storage.storage.TranscriptionStorageForUnitTest;
-import dk.kb.storage.util.DsStorageUnitTestUtil;
+import dk.kb.storage.util.TestcontainersUtil;
 import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-public class TranscriptionFacadeTestDsStorage extends DsStorageUnitTestUtil {
+public class TranscriptionFacadeTestDsStorage extends TestcontainersUtil {
     protected static TranscriptionStorageForUnitTest storage = null;
 
     @BeforeAll

@@ -3,7 +3,7 @@ package dk.kb.license.storage;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mockStatic;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class AuditLogModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
+public class AuditLogModuleStorageTestDsLicense extends TestcontainersUtil {
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageTestDsLicense.class);
     private static AuditLogModuleStorageForUnitTest auditStorage = null;
 

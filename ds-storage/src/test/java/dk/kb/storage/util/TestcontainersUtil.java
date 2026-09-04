@@ -1,15 +1,13 @@
-package dk.kb.datahandler.util;
+package dk.kb.storage.util;
 
-import dk.kb.datahandler.config.ServiceConfig;
-import dk.kb.datahandler.storage.JobStorage;
+import dk.kb.storage.storage.BaseModuleStorage;
+import java.util.Locale;
+
+import dk.kb.storage.config.ServiceConfig;
 import dk.kb.shared.util.DatabaseUnitTestUtil;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.util.Locale;
 
 /**
  * Setup for the environment for unittest the same way as done in the InitialContext loader in the web container.
@@ -17,7 +15,7 @@ import java.util.Locale;
  * 2) Load the Yaml property files.
  */
 @Testcontainers
-public abstract class DsDatahandlerUnitTestUtil {
+public abstract class TestcontainersUtil {
     @Container
     static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:13.23")
             .withDatabaseName("digisam")
@@ -35,14 +33,14 @@ public abstract class DsDatahandlerUnitTestUtil {
     protected static final String DRIVER = "org.postgresql.Driver";
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
-    protected static final String MODULE = "ds-datahandler";
+    protected static final String MODULE = "ds-storage";
 
     protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
         URL = getJdbcUrlForSchema(schemaName);
 
-        ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
+        ServiceConfig.initialize("conf/ds-storage*.yaml");
         DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
-        JobStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
     }
 }

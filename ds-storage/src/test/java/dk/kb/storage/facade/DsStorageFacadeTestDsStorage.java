@@ -4,7 +4,7 @@ import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.storage.DsStorage;
 import dk.kb.storage.storage.DsStorageForUnitTest;
-import dk.kb.storage.util.DsStorageUnitTestUtil;
+import dk.kb.storage.util.TestcontainersUtil;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.AfterAll;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class DsStorageFacadeTestDsStorage extends DsStorageUnitTestUtil {
+public class DsStorageFacadeTestDsStorage extends TestcontainersUtil {
     protected static DsStorageForUnitTest storage = null;
 
     @BeforeAll

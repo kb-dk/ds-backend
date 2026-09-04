@@ -4,7 +4,7 @@ import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.util.UniqueTimestampGenerator;
-import dk.kb.storage.util.DsStorageUnitTestUtil;
+import dk.kb.storage.util.TestcontainersUtil;
 import java.sql.SQLException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class StorageTest extends DsStorageUnitTestUtil {
+public class StorageTest extends TestcontainersUtil {
     private static final Logger log = LoggerFactory.getLogger(StorageTest.class);
 
     private static DsStorageForUnitTest storage = null;

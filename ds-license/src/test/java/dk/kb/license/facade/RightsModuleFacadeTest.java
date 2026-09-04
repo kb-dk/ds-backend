@@ -3,7 +3,7 @@ package dk.kb.license.facade;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -35,7 +35,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
+public class RightsModuleFacadeTest extends TestcontainersUtil {
     protected static RightsModuleStorageForUnitTest rightsStorage = null;
     static MockedStatic<JAXRSUtils> mocked;
 

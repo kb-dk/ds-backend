@@ -1,7 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.model.v1.*;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class RightsModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
+public class RightsModuleStorageTestDsLicense extends TestcontainersUtil {
     private static RightsModuleStorageForUnitTest rightsStorage = null;
 
     @BeforeAll

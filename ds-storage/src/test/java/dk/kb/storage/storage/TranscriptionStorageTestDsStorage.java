@@ -1,7 +1,7 @@
 package dk.kb.storage.storage;
 
 import dk.kb.storage.model.v1.TranscriptionDto;
-import dk.kb.storage.util.DsStorageUnitTestUtil;
+import dk.kb.storage.util.TestcontainersUtil;
 import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TranscriptionStorageTestDsStorage extends DsStorageUnitTestUtil {
+public class TranscriptionStorageTestDsStorage extends TestcontainersUtil {
 
     private static TranscriptionStorageForUnitTest storage = null;
 

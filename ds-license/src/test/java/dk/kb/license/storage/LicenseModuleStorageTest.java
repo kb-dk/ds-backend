@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import dk.kb.shared.util.DatabaseUnitTestUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +35,7 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
  * Currently, the directory is not deleted after the tests have run. This is useful as you can
  * open and open the database and see what the unit-tests did.
  */
-public class LicenseModuleStorageTest extends DsLicenseUnitTestUtil {
+public class LicenseModuleStorageTest extends TestcontainersUtil {
     private static PresentationType DOWNLOAD = new PresentationType("Download", "Download_dk", "Download_en");
     private static PresentationType THUMBNAILS = new PresentationType("Thumbnails", "Thumbnails_dk", "Thumbnails_en");
     private static LicenseModuleStorageForUnitTest licenseStorage = null;

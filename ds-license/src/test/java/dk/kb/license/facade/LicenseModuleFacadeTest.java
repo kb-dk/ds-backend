@@ -5,7 +5,7 @@ import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
 import dk.kb.license.storage.LicenseModuleStorageForUnitTest;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-public class LicenseModuleFacadeTest extends DsLicenseUnitTestUtil {
+public class LicenseModuleFacadeTest extends TestcontainersUtil {
     private static final Logger log = LoggerFactory.getLogger(LicenseModuleFacadeTest.class);
     protected static LicenseModuleStorageForUnitTest licenseStorage = null;
 

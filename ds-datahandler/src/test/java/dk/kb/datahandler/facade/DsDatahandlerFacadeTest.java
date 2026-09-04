@@ -3,7 +3,7 @@ package dk.kb.datahandler.facade;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.model.v1.*;
 import dk.kb.datahandler.storage.BasicStorage;
-import dk.kb.datahandler.util.DsDatahandlerUnitTestUtil;
+import dk.kb.datahandler.util.TestcontainersUtil;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.storage.JobStorageForUnitTests;
 
@@ -26,7 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-public class DsDatahandlerFacadeTest extends DsDatahandlerUnitTestUtil {
+public class DsDatahandlerFacadeTest extends TestcontainersUtil {
     private static JobStorageForUnitTests jobStorage = null;
 
     @BeforeAll

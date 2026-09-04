@@ -4,7 +4,7 @@ import dk.kb.datahandler.model.v1.CategoryDto;
 import dk.kb.datahandler.model.v1.JobDto;
 import dk.kb.datahandler.model.v1.JobStatusDto;
 import dk.kb.datahandler.model.v1.TypeDto;
-import dk.kb.datahandler.util.DsDatahandlerUnitTestUtil;
+import dk.kb.datahandler.util.TestcontainersUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JobStorageTest extends DsDatahandlerUnitTestUtil {
+public class JobStorageTest extends TestcontainersUtil {
     private static JobStorageForUnitTests jobStorage = null;
 
     @BeforeAll
