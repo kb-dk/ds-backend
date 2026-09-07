@@ -315,4 +315,17 @@ public class RightsCalculationTest extends DsLicenseUnitTestUtil {
 
         assertTrue(allowedOwnProduction.getDr().getProductionCodeAllowed());
     }
+
+    @Test
+    public void calculateRightsForRecordThatIsBeforeCutoffYear() throws SQLException {
+        // Arrange
+        RightsCalculationInputDto tenYearHoldbackRecord = map("testRecord1", PlatformEnumDto.DRARKIV,
+                "1973-01-13T18:05:00Z", null, 1000, null,null, 0, "ds.tv", "1000","9283748300", "Program 1");
+        RightsCalculationOutputDto output = RightsModuleFacade.calculateRightsForRecord(tenYearHoldbackRecord);
+
+        assertNull( output.getDr().getHoldbackName()); //No holdback
+        assertEquals("1973-01-13T18:05:00Z", output.getDr().getHoldbackExpiredDate()); //holdback expire same as program start time
+        assertEquals(true, output.getDr().getProductionCodeAllowed()); //production code still allowed
+    }
+
 }

@@ -154,6 +154,16 @@ public class ServiceConfig {
 
         return drPlatform.getInteger("holdbackYearsForRadio", 3);
     }
+    
+    public static int getHoldbackCutOffYearForTV() {
+        YAML drPlatform = getRightsPlatformConfig(PlatformEnumDto.DRARKIV.getValue());
+
+        if (drPlatform.isEmpty()) {
+            throw new IllegalStateException("The DR platform config should have been loaded, but was not. Holdback cannot be calculated correctly.");
+        }
+
+        return drPlatform.getInteger("holdbackCutOffYearForTV", 1974);
+    }
 
     public static int getCacheRefreshTimeInSeconds() {
         return serviceConfig.getInteger("cache.reloadInSeconds", 300);
