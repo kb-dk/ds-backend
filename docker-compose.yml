@@ -370,7 +370,7 @@ services:
     container_name: local-storage-flyway
     command: -url=jdbc:postgresql://postgres-storage:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-storage/flyway/sql -connectRetries=60 migrate
     volumes:
-      - ./ds-storage/src/main/resources/db/migration:/ds-storage/flyway/sql
+      - ./ds-storage/src/main/resources/db/migration/ds-storage:/ds-storage/flyway/sql
     networks:
       - postgres_network
     depends_on:
@@ -382,7 +382,7 @@ services:
     container_name: local-datahandler-flyway
     command: -url=jdbc:postgresql://postgres-datahandler:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-datahandler/flyway/sql -connectRetries=60 migrate
     volumes:
-      - ./ds-datahandler/src/main/resources/db/migration:/ds-datahandler/flyway/sql
+      - ./ds-datahandler/src/main/resources/db/migration/ds-datahandler:/ds-datahandler/flyway/sql
     networks:
       - postgres_network
     depends_on:
@@ -394,9 +394,9 @@ services:
     container_name: local-license-flyway
     command: -url=jdbc:postgresql://postgres-license:5432/digisam -user=digisam -password=p0stgr3s -locations=filesystem:/ds-license/flyway/sql,filesystem:/ds-license/flyway/test-sql,filesystem:/ds-license/flyway/devel-sql  -connectRetries=60 migrate
     volumes:
-      - ./ds-license/src/main/resources/db/migration:/ds-license/flyway/sql
-      - ./ds-license/src/test/resources/db/testdata:/ds-license/flyway/test-sql
-      - ./ds-license/src/test/resources/db/devel:/ds-license/flyway/devel-sql
+      - ./ds-license/src/main/resources/db/migration/ds-license:/ds-license/flyway/sql
+      - ./ds-license/src/test/resources/db/testdata/ds-license:/ds-license/flyway/test-sql
+      - ./ds-license/src/test/resources/db/devel/ds-license:/ds-license/flyway/devel-sql
     networks:
       - postgres_network
     depends_on:
