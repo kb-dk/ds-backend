@@ -1,5 +1,6 @@
 package dk.kb.datahandler.storage;
 
+import dk.kb.datahandler.mapper.JobDtoMapper;
 import dk.kb.datahandler.model.v1.CategoryDto;
 import dk.kb.datahandler.model.v1.JobDto;
 import dk.kb.datahandler.model.v1.JobStatusDto;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class JobStorage extends BaseModuleStorage {
+    private final static JobDtoMapper jobDtoMapper = new JobDtoMapper();
+
     private static final String INSERT_JOB_QUERY = """
         INSERT INTO jobs (
             id,
@@ -149,7 +152,7 @@ public class JobStorage extends BaseModuleStorage {
 
             try (ResultSet result = stmt.executeQuery()) {
                 while (result.next()) {
-                    jobs.add(createJobDtoFromResult(result));
+                    jobs.add(jobDtoMapper.map(result));
                 }
             }
         }
@@ -174,25 +177,5 @@ public class JobStorage extends BaseModuleStorage {
 
             return stmt.executeUpdate();
         }
-    }
-
-    private JobDto createJobDtoFromResult(ResultSet result) throws SQLException {
-        JobDto jobDto = new JobDto();
-
-        jobDto.setId(result.getObject("id", UUID.class));
-        jobDto.setType(TypeDto.valueOf(result.getString("type")));
-        jobDto.setCategory(CategoryDto.valueOf(result.getString("category")));
-        jobDto.setSource(result.getString("source"));
-        jobDto.setJobStatus(JobStatusDto.valueOf(result.getString("status")));
-        jobDto.setCreatedBy(result.getString("created_by"));
-        jobDto.setErrorCorrelationId(result.getObject("error_correlation_id", UUID.class));
-        jobDto.setMessage(result.getString("message"));
-        jobDto.setModifiedTimeFrom(result.getObject("modified_time_from", OffsetDateTime.class));
-        jobDto.setStartTime(result.getObject("start_time", OffsetDateTime.class));
-        jobDto.setEndTime(result.getObject("end_time", OffsetDateTime.class));
-        jobDto.setNumberOfRecords(result.getObject("number_of_records", Integer.class));
-        jobDto.setRestartValue(result.getObject("restart_value", OffsetDateTime.class));
-
-        return jobDto;
     }
 }
