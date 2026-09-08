@@ -196,14 +196,14 @@ public class ContextListener implements ServletContextListener {
      * @param message why the job was marked stopped/failed
      */
     private void handleRunningJobs(JobStatusDto jobStatus, String message) {
-        BaseModuleStorage.performStorageAction("Stop all running jobs", JobStorage::new, (JobStorage storage) -> {
-           storage.getJobs(null, JobStatusDto.RUNNING).forEach(jobDto -> {
+        BaseModuleStorage.performStorageAction("Stop all running jobs", JobStorage.class, storage -> {
+            ((JobStorage) storage).getJobs(null, JobStatusDto.RUNNING).forEach(jobDto -> {
                jobDto.setJobStatus(jobStatus);
                jobDto.setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
                jobDto.setMessage(message);
 
                try {
-                   storage.updateJob(jobDto);
+                   ((JobStorage) storage).updateJob(jobDto);
                } catch (SQLException e) {
                    throw new RuntimeException(e);
                }

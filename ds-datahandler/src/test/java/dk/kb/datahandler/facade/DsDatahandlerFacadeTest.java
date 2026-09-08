@@ -56,7 +56,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
             Mockito.when(dsStorageClient.updateRerunClustersTable()).thenReturn(recordsCountDto);
 
             // Act
-            RecordsCountDto returnedRecordsCountDto = DsDatahandlerFacade.updateRerunClustersTable(username);
+            RecordsCountDto returnedRecordsCountDto = DsDatahandlerFacade.getRerunClusters(username);
 
             // Assert
             assertNotNull(returnedRecordsCountDto);
@@ -99,8 +99,8 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
         jobDto.setJobStatus(JobStatusDto.RUNNING);
         jobDto.setStartTime(OffsetDateTime.now(ZoneOffset.UTC));
 
-        BaseModuleStorage.performStorageAction("Create job for OAITest", JobStorage::new, (JobStorage storage) -> {
-            storage.createJob(jobDto);
+        BaseModuleStorage.performStorageAction("Create job for OAITest", JobStorage.class, storage -> {
+            ((JobStorage) storage).createJob(jobDto);
             return null;
         });
 
@@ -148,8 +148,8 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
         jobDto.setJobStatus(JobStatusDto.RUNNING);
         jobDto.setStartTime(OffsetDateTime.now(ZoneOffset.UTC));
 
-        BaseModuleStorage.performStorageAction("Create job for kaltura upload test", JobStorage::new, (JobStorage storage) -> {
-            storage.createJob(jobDto);
+        BaseModuleStorage.performStorageAction("Create job for kaltura upload test", JobStorage.class, storage -> {
+            ((JobStorage) storage).createJob(jobDto);
             return null;
         });
 

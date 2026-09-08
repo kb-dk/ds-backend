@@ -316,7 +316,7 @@ public class DsDatahandlerFacade {
      * @return List of jobs with status
      */    
     public static List<JobDto> getJobs(CategoryDto categoryDto, JobStatusDto jobStatusDto) {
-        return BaseModuleStorage.performStorageAction("Get all jobs", JobStorage::new, (JobStorage storage) -> storage.getJobs(categoryDto, jobStatusDto));
+        return BaseModuleStorage.performStorageAction("Get all jobs", JobStorage.class, storage -> ((JobStorage) storage).getJobs(categoryDto, jobStatusDto));
     }
 
     /**
@@ -496,11 +496,11 @@ public class DsDatahandlerFacade {
 
         String databaseMessage = jobDto.getJobStatus().getValue() + " " + jobDto.getType().getValue() + " " + jobDto.getCategory().getValue();
 
-        UUID jobId = BaseModuleStorage.performStorageAction(databaseMessage, JobStorage::new, (JobStorage storage) -> {
-            if (storage.hasRunningJob(categoryDto, source)) {
+        UUID jobId = BaseModuleStorage.performStorageAction(databaseMessage, JobStorage.class, storage -> {
+            if (((JobStorage) storage).hasRunningJob(categoryDto, source)) {
                 throw new InvalidArgumentServiceException("There is already a/an " + categoryDto + " job running");
             }
-            return storage.createJob(jobDto);
+            return ((JobStorage) storage).createJob(jobDto);
         });
 
         jobDto.setId(jobId);
@@ -525,8 +525,8 @@ public class DsDatahandlerFacade {
 
         String databaseMessage = jobDto.getJobStatus().getValue() + " " + jobDto.getType().getValue() + " " + jobDto.getCategory().getValue();
 
-        BaseModuleStorage.performStorageAction(databaseMessage, JobStorage::new, (JobStorage storage) -> {
-            storage.updateJob(jobDto);
+        BaseModuleStorage.performStorageAction(databaseMessage, JobStorage.class, storage -> {
+            ((JobStorage) storage).updateJob(jobDto);
             return null;
         });
     }
