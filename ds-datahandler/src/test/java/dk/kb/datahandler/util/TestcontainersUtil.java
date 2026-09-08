@@ -1,7 +1,7 @@
 package dk.kb.datahandler.util;
 
 import dk.kb.datahandler.config.ServiceConfig;
-import dk.kb.datahandler.storage.JobStorage;
+import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.shared.util.DatabaseUnitTestUtil;
 
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -42,6 +42,6 @@ public abstract class TestcontainersUtil {
 
         ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
         DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
-        JobStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
     }
 }
