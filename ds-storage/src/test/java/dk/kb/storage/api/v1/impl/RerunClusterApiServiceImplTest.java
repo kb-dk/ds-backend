@@ -48,7 +48,7 @@ public class RerunClusterApiServiceImplTest {
         UUID rerunClusterId = UUID.fromString("9c79bde1-9030-47a8-bb5f-3abaf2bb4ecf");
         Integer rerunClusterIdCount = 2;
         OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
-        UUID jobId = UUID.fromString("0033e17f-2fa0-454f-98d2-f1c690de2df1");
+        String jobId = "test run";
         OffsetDateTime inserted = OffsetDateTime.parse("2026-06-01T12:26:57.570Z");
         OffsetDateTime updated = OffsetDateTime.parse("2026-06-04T12:26:57.570Z");
 

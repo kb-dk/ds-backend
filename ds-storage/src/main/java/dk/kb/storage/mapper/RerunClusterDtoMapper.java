@@ -24,7 +24,7 @@ public class RerunClusterDtoMapper {
         output.setRerunClusterId(resultSet.getObject("rerun_cluster_id", UUID.class));
         output.setRerunClusterIdCount(resultSet.getInt("rerun_cluster_id_count"));
         output.setCreated(resultSet.getObject("created", OffsetDateTime.class));
-        output.setJobId(resultSet.getObject("job_id", UUID.class));
+        output.setJobId(resultSet.getString("job_id"));
         output.setInserted(resultSet.getObject("inserted", OffsetDateTime.class));
         output.setUpdated(resultSet.getObject("updated", OffsetDateTime.class));
 

@@ -821,7 +821,6 @@ components:
           description: 'When was this identified as a rerun by AI team?'
         jobId:
           type: string
-          format: uuid
           description: 'Unique UUID of what job created this rerun cluster.'
         inserted:
           type: string
