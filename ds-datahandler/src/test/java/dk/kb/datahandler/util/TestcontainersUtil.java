@@ -31,7 +31,7 @@ public abstract class TestcontainersUtil {
     protected static String URL;
     protected static String schemaName;
 
-    protected static final String DRIVER = "org.postgresql.Driver";
+    protected static final String DRIVER = postgres.getDriverClassName();
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
     protected static final String MODULE = "ds-datahandler";
