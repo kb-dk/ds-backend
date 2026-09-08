@@ -1,6 +1,6 @@
 package dk.kb.storage.api.v1.impl;
 
-import dk.kb.storage.api.v1.DsStorageApi;
+import dk.kb.storage.api.v1.RecordApi;
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.facade.RecordFacade;
 import dk.kb.storage.model.v1.DsRecordDto;
@@ -33,7 +33,7 @@ import java.util.List;
  * ds-storage by the Royal Danish Library
  */
 @InInterceptors(interceptors = "dk.kb.storage.webservice.KBAuthorizationInterceptor")
-public class RecordApiServiceImpl extends ImplBase implements DsStorageApi {
+public class RecordApiServiceImpl extends ImplBase implements RecordApi {
     private static final Logger log = LoggerFactory.getLogger(RecordApiServiceImpl.class);
 
     /**
