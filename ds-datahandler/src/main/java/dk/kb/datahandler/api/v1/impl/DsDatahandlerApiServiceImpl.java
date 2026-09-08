@@ -3,7 +3,6 @@ package dk.kb.datahandler.api.v1.impl;
 import dk.kb.datahandler.api.v1.DsDatahandlerApi;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.facade.DsDatahandlerFacade;
-import dk.kb.datahandler.model.v1.CreatedDto;
 import dk.kb.datahandler.model.v1.RecordsCountDto;
 import dk.kb.datahandler.model.v1.TypeDto;
 import dk.kb.datahandler.model.v1.OaiTargetDto;
@@ -175,22 +174,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     @Override
     public RecordsCountDto updateRerunClustersTable() {
         try {
-            return DsDatahandlerFacade.updateRerunClustersTable(getCurrentUsername());
-        } catch (Exception e) {
-            throw handleException(e);
-        }
-    }
-
-    /**
-     * Calls ds-storage via DsStorageClient that return latest created datetime from rerun_clusters
-     * table. Can be null.
-     *
-     * @return RecordsCountDto number of rows inserted or updated
-     */
-    @Override
-    public CreatedDto latestCreated() {
-        try {
-            return DsDatahandlerFacade.latestCreated();
+            return DsDatahandlerFacade.getRerunClusters(getCurrentUsername());
         } catch (Exception e) {
             throw handleException(e);
         }

@@ -288,23 +288,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/RecordsCount'
 
-  /rerun-cluster/created/latest:
-    get:
-      tags:
-        - '${project.name}'
-      summary: 'Calls ds-storage via DsStorageClient that returns latest created datetime from rerun_clusters table. Can be null.'
-      security:
-        - KBOAuth:
-            - any
-      operationId: latestCreated
-      responses:
-        '200':
-          description: 'Latest created datetime from rerun_clusters table. Can be null.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Created'
-
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
   #
