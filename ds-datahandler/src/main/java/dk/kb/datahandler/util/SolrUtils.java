@@ -25,9 +25,19 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class SolrUtils {
+    
+    
+    /**
+     * Tracks whether a suggest index build is currently running in the background.
+     * Used to prevent {@link #buildSuggestIndex()} from starting a second build
+     * while one is already in progress.
+     */
+    private static volatile boolean suggestIndexBuildRunning = false;
+    
     private static final Logger log = LoggerFactory.getLogger(SolrUtils.class);
 
     /**
@@ -145,20 +155,15 @@ public class SolrUtils {
                 throw new InternalServiceException(e);
             }
         }
-        log.info("Solr index completed for origin: '{}', mTime: {}, #docs: {}",
-                origin, sinceTime, documents);
-        
-        //Build suggest only if there was any new documents.
-        if (finalResponse.getAllDocumentsIndexed() >0) {        
-           try {
-            log.info("Start building solr suggest index because at least 1 documents was indexed. #=:"+finalResponse.getAllDocumentsIndexed());     
+        log.info("Solr index completed for origin: '{}', mTime: {}, #docs: {}", origin, sinceTime, documents);
+                                
+        //Only build suggest for full index
+        if (sinceTime == null  || sinceTime == 0) {
+            log.info("Started building solr suggest-index (full index). Added document#=:"+finalResponse.getAllDocumentsIndexed());                
             buildSuggestIndex();          
-            log.info("Finished building solr suggest index.");
-           }
-           catch (IOException | SolrServerException e) {
-             log.warn("An error occurred when updating the solr suggester index.");
-             throw new InternalServiceException(e);
-           }
+        }
+        else {
+            log.info("Skipping suggest build for delta-index");
         }                
         return finalResponse;
     }
@@ -212,20 +217,46 @@ public class SolrUtils {
         return result;
     }
 
-    /**
-     * Send a request to build the index for the suggest component in the solr write collection
-     */
-    public static QueryResponse buildSuggestIndex() throws SolrServerException, IOException {
-        String solrUrl = ServiceConfig.getSolrWriteCollectionUrl();
-        try (SolrClient solrClient = new HttpJdkSolrClient.Builder(solrUrl).build()) {
-            // Perform a query at suggest handler
-            SolrQuery query = new SolrQuery();
-            query.setRequestHandler("/suggest");
-            query.set("suggest.build", "true");
-            log.info("Starts building suggest index by querying '{}' with this request: '{}'.", solrUrl, query);
 
-            // Fire the query and build the suggest index
-            return solrClient.query(query);
+    /**
+     * Tracks whether a suggest index build is currently running in the background.
+     * Used to prevent {@link #buildSuggestIndex()} from starting a second build
+     * while one is already in progress.
+     * <p>
+     * Declared {@code volatile} so that when the background build thread updates
+     * this flag (e.g. sets it back to {@code false} when the build finishes),
+     * that change is immediately visible to other threads. Without {@code volatile},
+     * a thread could keep reading a stale, cached value and incorrectly think a
+     * build is still running (or not running) after the actual state has changed.
+     */
+    public static synchronized void buildSuggestIndex() {
+        if (suggestIndexBuildRunning) {
+            log.info("Suggest index build already in progress, skipping this request.");
+            return;
         }
+        suggestIndexBuildRunning = true;
+
+        Thread thread = new Thread(() -> {
+            try {
+                String solrUrl = ServiceConfig.getSolrWriteCollectionUrl();
+                try (SolrClient solrClient = new HttpJdkSolrClient.Builder(solrUrl)
+                        .withRequestTimeout(1, TimeUnit.HOURS) // 1 hour should be enough, will avoid getting the exception message.
+                        .build()) {
+                    SolrQuery query = new SolrQuery();
+                    query.setRequestHandler("/suggest");
+                    query.set("suggest.build", "true");
+                    log.info("Starts building suggest index by querying '{}' with this request: '{}'.", solrUrl, query);
+
+                    solrClient.query(query);
+                    log.info("Suggest index build completed.");
+                }
+            } catch (Exception e) {
+                log.warn("1 Hour was not enough to build suggest index. This is not expected", e);
+            } finally {
+                suggestIndexBuildRunning = false;
+            }
+        }, "suggest-index-builder");
+        thread.setDaemon(true);
+        thread.start();
     }
 }

@@ -21,9 +21,6 @@ public class SuggestIntegrationTest {
         YAML config = YAML.resolveLayeredConfigs("ds-datahandler-integration-test.yaml");
         ServiceConfig.setSolrWriteCollectionUrl(config.getString("solr.update.url"));
 
-        QueryResponse response = buildSuggestIndex();
-        // No methods in QueryResponse to extract the command-part.
-        String responseString = response.toString();
-        assertTrue(responseString.contains("command=build"));
+         buildSuggestIndex(); //Can not validate response any more. It is fire and forget.        
     }
 }
