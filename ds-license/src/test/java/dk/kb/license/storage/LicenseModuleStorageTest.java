@@ -28,12 +28,10 @@ import dk.kb.license.validation.LicenseValidator;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 /**
- * Unittest class for the licenseStorage.
- * All tests create and usePostgres database in the directory: target/h2
+ * Unittest class for LicenseStorage.
+ * All tests create and use Postgres database.
  * The directory will be deleted before the first test-method is called.
  * Each test-method will delete all entries in the database, but keep the database tables.
- * Currently, the directory is not deleted after the tests have run. This is useful as you can
- * open and open the database and see what the unit-tests did.
  */
 public class LicenseModuleStorageTest extends TestcontainersUtil {
     private static PresentationType DOWNLOAD = new PresentationType("Download", "Download_dk", "Download_en");
