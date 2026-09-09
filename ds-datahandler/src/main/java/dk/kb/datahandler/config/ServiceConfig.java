@@ -334,28 +334,53 @@ public class ServiceConfig {
         return streamPathPreservicaRadio;
     }
 
-    public static  String getDBDriver() {
-        String dbDriver= serviceConfig.getString("db.driver");
+    public static  String getDatabaseDriver() {
+        String dbDriver = serviceConfig.getString("db.driver");
         return dbDriver;
     }
 
-    public static  String getDBUrl() {
-        String dbUrl= serviceConfig.getString("db.url");
+    public static  String getJdbcUrl() {
+        String dbUrl = serviceConfig.getString("db.url");
         return dbUrl;
     }
 
-    public static  String getDBUserName() {
-        String dbUserName= serviceConfig.getString("db.username");
+    public static  String getDatabaseUsername() {
+        String dbUserName = serviceConfig.getString("db.username");
         return dbUserName;
     }
 
-    public static  String getDBPassword() {
-        String dbPassword= serviceConfig.getString("db.password");
+    public static  String getDatabasePassword() {
+        String dbPassword = serviceConfig.getString("db.password");
         return dbPassword;
     }
 
-    public static int getConnectionPoolSize() {
-        int connectionPoolSize= serviceConfig.getInteger("db.connectionPoolSize",10); //Default 10
+    public static int getDatabaseConnectionPoolSize() {
+        int connectionPoolSize = serviceConfig.getInteger("db.connectionPoolSize");
+        return connectionPoolSize;
+    }
+
+    public static  String getP3RerunDatabaseDriver() {
+        String dbDriver = serviceConfig.getString("db.p3rerun.driver");
+        return dbDriver;
+    }
+
+    public static  String getP3RerunJdbcUrl() {
+        String dbUrl = serviceConfig.getString("db.p3rerun.url");
+        return dbUrl;
+    }
+
+    public static  String getP3RerunDatabaseUsername() {
+        String dbUserName = serviceConfig.getString("db.p3rerun.username");
+        return dbUserName;
+    }
+
+    public static  String getP3RerunDatabasePassword() {
+        String dbPassword = serviceConfig.getString("db.p3rerun.password");
+        return dbPassword;
+    }
+
+    public static int getP3RerunDatabaseConnectionPoolSize() {
+        int connectionPoolSize = serviceConfig.getInteger("db.p3rerun.connectionPoolSize");
         return connectionPoolSize;
     }
 }

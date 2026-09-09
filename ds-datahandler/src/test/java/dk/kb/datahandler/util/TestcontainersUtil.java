@@ -35,6 +35,7 @@ public abstract class TestcontainersUtil {
     protected static final String USERNAME = postgres.getUsername();
     protected static final String PASSWORD = postgres.getPassword();
     protected static final String MODULE = "ds-datahandler";
+    protected static final int CONNECTION_POOL_SIZE = 10;
 
     protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
@@ -42,6 +43,6 @@ public abstract class TestcontainersUtil {
 
         ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
         DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
-        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD, CONNECTION_POOL_SIZE);
     }
 }

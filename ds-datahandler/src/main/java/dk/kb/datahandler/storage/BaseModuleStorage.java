@@ -17,19 +17,19 @@ public abstract class BaseModuleStorage implements AutoCloseable {
     protected Connection connection;
     private static BasicDataSource dataSource;
 
-    public static void initialize(String driverName, String driverUrl, String userName, String password) {
-        int connectionPoolSize = ServiceConfig.getConnectionPoolSize();
+    public static void initialize(String driver, String url, String username,
+                                  String password, int connectionPoolSize) {
 
         dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(driverName);
-        dataSource.setUsername(userName);
+        dataSource.setDriverClassName(driver);
+        dataSource.setUsername(username);
         dataSource.setPassword(password);
-        dataSource.setUrl(driverUrl);
+        dataSource.setUrl(url);
         dataSource.setDefaultReadOnly(false);
         dataSource.setDefaultAutoCommit(false);
         dataSource.setMaxOpenPreparedStatements(connectionPoolSize);
 
-        log.info("DsStorage initialized with driverName='{}', driverURL='{}', connectionPoolSize='{}'", driverName, driverUrl,connectionPoolSize);
+        log.info("BaseModuleStorage initialized with driver='{}', url='{}', connectionPoolSize='{}'", driver, url, connectionPoolSize);
     }
 
     public BaseModuleStorage() throws SQLException {

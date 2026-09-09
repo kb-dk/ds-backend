@@ -54,6 +54,13 @@ db:
   password: "${datahandler_datanase_password}"
   connectionPoolSize: 50
 
+db.p3rerun:
+    url: "jdbc:postgresql://{p3rerun_host}:5432/${p3rerun_database}"
+    driver: org.postgresql.Driver
+    username: "${p3rerun_database_username}"
+    password: "${p3rerun_datanase_password}"
+    connectionPoolSize: 50
+
 # The ds-present server used for xslt
 present:
   url: "${present_url}"

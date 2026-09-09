@@ -1,5 +1,6 @@
 package dk.kb.datahandler.webservice;
 
+import dk.kb.datahandler.storage.RerunClusterStorage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class ContextListener implements ServletContextListener {
             String configFile = (String) ctx.lookup("java:/comp/env/application-config");
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
             ServiceConfig.initialize(configFile);
-            initializeStorage();
+            initializeStorages();
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {
@@ -83,15 +84,19 @@ public class ContextListener implements ServletContextListener {
         log.info("Service initialized.");
     }
 
-    public void initializeStorage() {
+    public void initializeStorages() {
         log.info("Initializing storage");
 
-        String driver = ServiceConfig.getDBDriver();
-        String url = ServiceConfig.getDBUrl();
-        String user = ServiceConfig.getDBUserName();
-        String password = ServiceConfig.getDBPassword();
+        JobStorage.initialize(
+            ServiceConfig.getDatabaseDriver(), ServiceConfig.getJdbcUrl(),
+            ServiceConfig.getDatabaseUsername(), ServiceConfig.getDatabasePassword(),
+            ServiceConfig.getDatabaseConnectionPoolSize());
 
-        JobStorage.initialize(driver,url,user,password);
+        RerunClusterStorage.initialize(
+            ServiceConfig.getP3RerunDatabaseDriver(), ServiceConfig.getP3RerunJdbcUrl(),
+            ServiceConfig.getP3RerunDatabaseUsername(), ServiceConfig.getP3RerunDatabasePassword(),
+            ServiceConfig.getP3RerunDatabaseConnectionPoolSize());
+
         handleRunningJobs(JobStatusDto.FAILED, "Marked as failed on startup.");
     }
 
