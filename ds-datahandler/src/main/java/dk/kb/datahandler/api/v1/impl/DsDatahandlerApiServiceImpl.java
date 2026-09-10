@@ -163,6 +163,12 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
          }                       
      }
     
+    @Override
+    public void buildSuggest() {
+      DsDatahandlerFacade.buildSuggest(getCurrentUsername());
+        
+    }
+    
     /**
      * Gets the name of the current user from the OAuth token.
      * @return
@@ -180,4 +186,5 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
         }
         return UNKNOWN;
     }
+    
 }

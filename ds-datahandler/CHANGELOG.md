@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- Build suggest only trigger on full index. 
+- Build suggest is fire-and-forget call to solr. This will fix job that shows jobs as failed due to timeout.
+- Only one build suggest can run at same time. Any calls to build suggest when it is running will be ignored.
+- New CategoryDto created for the job log: CategoryDto.SOLR_BUILD_SUGGEST
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
