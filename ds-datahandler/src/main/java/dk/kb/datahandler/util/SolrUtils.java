@@ -31,11 +31,17 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SolrUtils {
     
     
-    /**
-     * Tracks whether a suggest index build is currently running in the background.
-     * Used to prevent {@link #buildSuggestIndex()} from starting a second build
-     * while one is already in progress.
-     */
+   /**
+    * Tracks whether a suggest index build is currently running in the background.
+    * Used to prevent {@link #buildSuggestIndex()} from starting a second build
+    * while one is already in progress.
+    * 
+    * Declared {@code volatile} so that when the background build thread updates
+    * this flag (e.g. sets it back to {@code false} when the build finishes),
+    * that change is immediately visible to other threads. Without {@code volatile},
+    * a thread could keep reading a stale, cached value and incorrectly think a
+    * build is still running (or not running) after the actual state has changed.
+    */
     private static volatile boolean suggestIndexBuildRunning = false;
     
     private static final Logger log = LoggerFactory.getLogger(SolrUtils.class);
