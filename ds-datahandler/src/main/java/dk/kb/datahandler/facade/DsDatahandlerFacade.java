@@ -161,6 +161,20 @@ public class DsDatahandlerFacade {
         return SolrUtils.solrIndexObjectAsJSON(solrIndexResponse);
     }
 
+    /**  
+     * Force build suggest index. This is only required if a large amount of new documents has been indexes.
+     * Full index will automatic call suggest.
+     * Method call will not wait for solr response since this can take 15 minutes.
+     * 
+     * @exception InternalServiceException Will throw exception if 
+     */                   
+     public static void buildSuggest(String user) throws InternalServiceException {  
+         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.SOLR_BUILD_SUGGEST, "", null, user);
+         
+         SolrUtils.buildSuggestIndex();
+         updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC), null, null); //Can not fail. It is running on solr
+     }
+    
     /**
      * Start job that uploading streams to kaltura that does not have an kaltura_id.
      * Will only extract records from Solr with access_malfunction:false and production_code_allowed:true
