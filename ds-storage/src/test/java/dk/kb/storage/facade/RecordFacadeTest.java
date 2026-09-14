@@ -7,8 +7,10 @@ import dk.kb.storage.storage.RecordStorageForUnitTest;
 import dk.kb.storage.util.TestcontainersUtil;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import java.lang.invoke.MethodHandles;
+import java.sql.SQLException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,13 +30,12 @@ public class RecordFacadeTest extends TestcontainersUtil {
     }
 
     /**
-     * No reason to delete DB data file after test, since we clear table it before each test.
-     * This way you can open the DB in a DB-browser after the unittest and see the result.
-     * Just run that single test and look in the DB
+     * Delete all records between each unittest. The clearTableRecords is only called from here.
+     * The facade class is responsible for committing transactions. So clean up between unittests.
      */
-    @AfterAll
-    public static void afterClass() {
-        RecordStorage.shutdown();
+    @BeforeEach
+    public void beforeEach() throws SQLException {
+        storage.clearTableRecords();
     }
 
     //THIS UNITTEST MUST BE UPDATED WHEN VALIDATION RULES ARE MORE CLEAR!

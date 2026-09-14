@@ -22,12 +22,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class RecordStorageTest extends TestcontainersUtil {
-    private static final Logger log = LoggerFactory.getLogger(RecordStorageTest.class);
 
     private static RecordStorageForUnitTest storage = null;
 
@@ -44,7 +41,6 @@ public class RecordStorageTest extends TestcontainersUtil {
     @BeforeEach
     public void beforeEach() throws SQLException {
         storage.clearTableRecords();
-        storage.commit();
     }
 
     @AfterAll

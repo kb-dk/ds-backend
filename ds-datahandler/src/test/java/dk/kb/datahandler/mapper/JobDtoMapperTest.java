@@ -23,13 +23,13 @@ public class JobDtoMapperTest {
     // Assert
     JobDtoMapper jobDtoMapper = new JobDtoMapper();
 
-    UUID id = UUID.fromString("0000a00a-0aa0-000a-00a0-a0a000aa0aa0");
+    UUID id = UUID.randomUUID();
     String type = "DELTA";
     String category = "SOLR_INDEX";
     String source = "ds.tv";
     String createdBy = "Unit test user";
     String status = "RUNNING";
-    UUID errorCorrelationId = UUID.fromString("0000b00b-0aa0-000a-00a0-a0a000aa0aa0");
+    UUID errorCorrelationId = UUID.randomUUID();
     String message = "The job has ended";
     OffsetDateTime modifiedTimeFrom = OffsetDateTime.now(ZoneOffset.UTC);
     OffsetDateTime startTime = OffsetDateTime.now(ZoneOffset.UTC);
@@ -46,7 +46,8 @@ public class JobDtoMapperTest {
     when(resultSet.getString("status")).thenReturn(status);
     when(resultSet.getObject("error_correlation_id", UUID.class)).thenReturn(errorCorrelationId);
     when(resultSet.getString("message")).thenReturn(message);
-    when(resultSet.getObject("modified_time_from", OffsetDateTime.class)).thenReturn(modifiedTimeFrom);
+    when(resultSet.getObject("modified_time_from", OffsetDateTime.class)).thenReturn(
+        modifiedTimeFrom);
     when(resultSet.getObject("start_time", OffsetDateTime.class)).thenReturn(startTime);
     when(resultSet.getObject("end_time", OffsetDateTime.class)).thenReturn(endTime);
     when(resultSet.getObject("number_of_records", Integer.class)).thenReturn(numberOfRecords);
