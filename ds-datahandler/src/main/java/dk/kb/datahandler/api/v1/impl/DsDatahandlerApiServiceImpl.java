@@ -165,14 +165,15 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
      }
 
     /**
-     * Calls ds-storage via DsStorageClient that return new rows from remote p3rerun database in table clusters table,
-     * save it to our rerun_clusters table, update mtime in ds_records table and
-     * return number of rows inserted or updated in rerun_clusters table in a `RecordsCountDto` object.
+     * Calls ds-storage via DsStorageClient that return new rows from remote p3rerun database in
+     * table clusters table, save it to our rerun_clusters table, update mtime in ds_records table
+     * and return number of rows inserted or updated in rerun_clusters table in a `RecordsCountDto`
+     * object.
      *
      * @return RecordsCountDto number of rows inserted or updated
      */
     @Override
-    public RecordsCountDto updateRerunClustersTable() {
+    public RecordsCountDto updateRerunClusters() {
         try {
             return DsDatahandlerFacade.getRerunClusters(getCurrentUsername());
         } catch (Exception e) {

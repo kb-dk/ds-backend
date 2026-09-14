@@ -6,6 +6,7 @@ import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
 import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.util.webservice.ImplBase;
+import java.util.List;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,17 +67,18 @@ public class RerunClusterApiServiceImpl extends ImplBase implements RerunCluster
    * rerun_clusters table, update mtime in ds_records table and return number of rows inserted or
    * updated in rerun_clusters table.
    *
+   * @param rerunClusterDtoList
    * @return RecordsCountDto number of rows inserted or updated
    */
   @Override
-  public RecordsCountDto updateRerunClustersTable() {
-    return RerunClusterFacade.updateRerunClustersTable();
+  public RecordsCountDto updateRerunClusters(List<RerunClusterDto> rerunClusterDtoList) {
+    return RerunClusterFacade.updateRerunClusters(rerunClusterDtoList);
   }
 
   /**
    * Return a rerun cluster by fileId
    *
-   * @param fileId:
+   * @param fileId
    * @return RerunClusterDto
    */
   @Override

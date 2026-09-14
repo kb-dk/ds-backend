@@ -1,107 +1,194 @@
 package dk.kb.storage.api.v1.impl;
 
-import dk.kb.storage.model.v1.RecordsCountDto;
-import dk.kb.storage.model.v1.RerunClusterDto;
-import dk.kb.storage.storage.BaseModuleStorage;
-import dk.kb.util.webservice.exception.InternalServiceException;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RerunClusterApiServiceImplTest {
+import dk.kb.storage.facade.RecordFacade;
+import dk.kb.storage.model.v1.CreatedDto;
+import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RecordsCountDto;
+import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.storage.RecordStorageForUnitTest;
+import dk.kb.storage.storage.RerunClusterStorageForUnitTest;
+import dk.kb.storage.util.TestcontainersUtil;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import java.lang.invoke.MethodHandles;
+import java.sql.SQLException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-    @Test
-    public void updateRerunClustersTable_whenNewRowsIsPresent_thenReturnHowManyRowsWasInsertedOrUpdated() {
-        // Arrange
-        RecordsCountDto recordsCountDto = new RecordsCountDto();
-        recordsCountDto.setCount(1);
+public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
 
-        try (MockedStatic<BaseModuleStorage> mockedStatic = Mockito.mockStatic(BaseModuleStorage.class)) {
-            // Mock the static method to return your test data directly
-            mockedStatic.when(() -> BaseModuleStorage.performStorageAction(anyString(), any(), any())).thenReturn(recordsCountDto);
+  private static RecordStorageForUnitTest recordStorage = null;
+  private static RerunClusterStorageForUnitTest rerunClusterStorage = null;
+  RerunClusterApiServiceImpl rerunClusterApiServiceImpl = new RerunClusterApiServiceImpl();
 
-            RerunClusterApiServiceImpl rerunClusterApiServiceImpl = new RerunClusterApiServiceImpl();
+  @BeforeAll
+  public static void beforeClass() throws Exception {
+    setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+    recordStorage = new RecordStorageForUnitTest();
+    rerunClusterStorage = new RerunClusterStorageForUnitTest();
+  }
 
-            // Act
-            RecordsCountDto returnedRecordsCountDto = rerunClusterApiServiceImpl.updateRerunClustersTable();
+  /**
+   * Delete all records between each unittest. The clearTableRecords is only called from here. The
+   * facade class is responsible for committing transactions. So clean up between unittests.
+   */
+  @BeforeEach
+  public void beforeEach() throws SQLException {
+    recordStorage.clearTableRecords();
+    rerunClusterStorage.clearTableRecords();
+  }
 
-            // Assert
-            assertNotNull(returnedRecordsCountDto);
-            assertEquals(1, returnedRecordsCountDto.getCount());
-        }
-    }
+  @Test
+  public void updateRerunClusters_whenGivenListOfRerunCluster_thenReturnHowManyRowsWasInsertedOrUpdated() {
+    // Arrange
+    String recordId = "doms.radio:id1";
+    String origin = "doms.radio"; //Must be defined in YAML properties as allowed origin
+    String data = "Hello";
+    UUID fileId = UUID.randomUUID();
+    String kalturaId = "kalturaId1";
 
-    @Test
-    public void getRerunClusterByFileId_whenFileIdExists_thenReturnRerunClusterDto() {
-        // Arrange
-        UUID id = UUID.fromString("0011e17f-2fa0-454f-98d2-f1c690de2df1");
-        UUID fileId = UUID.fromString("0022e17f-2fa0-454f-98d2-f1c690de2df1");
-        UUID rerunClusterId = UUID.fromString("9c79bde1-9030-47a8-bb5f-3abaf2bb4ecf");
-        Integer rerunClusterIdCount = 2;
-        OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
-        String jobId = "test run";
-        OffsetDateTime inserted = OffsetDateTime.parse("2026-06-01T12:26:57.570Z");
-        OffsetDateTime updated = OffsetDateTime.parse("2026-06-04T12:26:57.570Z");
+    UUID id = UUID.randomUUID();
+    UUID rerunClusterId = UUID.randomUUID();
+    OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
+    String jobId = "test run 1";
 
-        RerunClusterDto rerunClusterDto = new RerunClusterDto();
-        rerunClusterDto.setId(id);
-        rerunClusterDto.setFileId(fileId);
-        rerunClusterDto.setRerunClusterId(rerunClusterId);
-        rerunClusterDto.setRerunClusterIdCount(rerunClusterIdCount);
-        rerunClusterDto.setCreated(created);
-        rerunClusterDto.setJobId(jobId);
-        rerunClusterDto.setInserted(inserted);
-        rerunClusterDto.setUpdated(updated);
+    DsRecordDto record = new DsRecordDto();
+    record.setId(recordId);
+    record.setOrigin(origin);
+    record.setData(data);
+    record.setKalturaId(kalturaId);
+    record.setReferenceId(fileId.toString());
+    record.setRecordType(RecordTypeDto.MANIFESTATION);
 
-        try (MockedStatic<BaseModuleStorage> mockedStatic = Mockito.mockStatic(BaseModuleStorage.class)) {
-            // Mock the static method to return your test data directly
-            mockedStatic.when(() -> BaseModuleStorage.performStorageAction(anyString(), any(), any())).thenReturn(rerunClusterDto);
+    RerunClusterDto rerunClusterDto = new RerunClusterDto();
+    rerunClusterDto.setId(id);
+    rerunClusterDto.setFileId(fileId);
+    rerunClusterDto.setRerunClusterId(rerunClusterId);
+    rerunClusterDto.setCreated(created);
+    rerunClusterDto.setJobId(jobId);
 
-            RerunClusterApiServiceImpl rerunClusterApiServiceImpl = new RerunClusterApiServiceImpl();
+    List<RerunClusterDto> rerunClusterDtoList = List.of(rerunClusterDto);
 
-            // Act
-            RerunClusterDto returnedRerunClusterDto = rerunClusterApiServiceImpl.getRerunClusterByFileId(fileId);
+    RecordFacade.createOrUpdateRecord(record);
+    DsRecordDto insertedRecord = RecordFacade.getRecord(recordId, false);
 
-            // Assert
-            assertNotNull(returnedRerunClusterDto);
-            assertEquals(id, returnedRerunClusterDto.getId());
-            assertEquals(fileId, returnedRerunClusterDto.getFileId());
-            assertEquals(rerunClusterId, returnedRerunClusterDto.getRerunClusterId());
-            assertEquals(rerunClusterIdCount, returnedRerunClusterDto.getRerunClusterIdCount());
-            assertEquals(created, returnedRerunClusterDto.getCreated());
-            assertEquals(jobId, returnedRerunClusterDto.getJobId());
-            assertEquals(inserted, returnedRerunClusterDto.getInserted());
-            assertEquals(updated, returnedRerunClusterDto.getUpdated());
-        }
-    }
+    // Act
+    RecordsCountDto returnedRecordsCountDto =
+        rerunClusterApiServiceImpl.updateRerunClusters(rerunClusterDtoList);
 
-    @Test
-    public void getRerunClusterByFileId_whenFileIdDoNotExists_thenThrowNotFoundException() {
-        // Arrange
-        UUID fileId = UUID.fromString("0022e17f-2fa0-454f-98d2-f1c690de2df1");
+    DsRecordDto updatedRecord = RecordFacade.getRecord(recordId, false);
 
-        String expectedMessage = "dk.kb.util.webservice.exception.InternalServiceException: javax.ws.rs.NotFoundException: rerunCluster fileId='" + fileId + "' not found";
+    // Assert
+    assertNotNull(returnedRecordsCountDto);
+    assertEquals(1, returnedRecordsCountDto.getCount());
+    assertTrue(insertedRecord.getmTime() < updatedRecord.getmTime());
+  }
 
-        try (MockedStatic<BaseModuleStorage> mockedStatic = Mockito.mockStatic(BaseModuleStorage.class)) {
-            // Mock the static method to return your test data directly
-            mockedStatic.when(() -> BaseModuleStorage.performStorageAction(anyString(), any(), any())).thenThrow(new InternalServiceException("dk.kb.util.webservice.exception.InternalServiceException: javax.ws.rs.NotFoundException: rerunCluster fileId='" + fileId + "' not found"));
+  @Test
+  public void getRerunClusterByFileId_whenFileIdExists_thenReturnRerunClusterDto() {
+    // Arrange
+    UUID id = UUID.randomUUID();
+    UUID fileId = UUID.randomUUID();
+    UUID rerunClusterId = UUID.randomUUID();
+    OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
+    String jobId = "test run 1";
 
-            RerunClusterApiServiceImpl rerunClusterApiServiceImpl = new RerunClusterApiServiceImpl();
+    RerunClusterDto rerunClusterDto = new RerunClusterDto();
+    rerunClusterDto.setId(id);
+    rerunClusterDto.setFileId(fileId);
+    rerunClusterDto.setRerunClusterId(rerunClusterId);
+    rerunClusterDto.setCreated(created);
+    rerunClusterDto.setJobId(jobId);
 
-            // Act
-            Exception exception = assertThrows(InternalServiceException.class, () -> rerunClusterApiServiceImpl.getRerunClusterByFileId(fileId));
+    List<RerunClusterDto> rerunClusterDtoList = List.of(rerunClusterDto);
 
-            // Assert
-            assertEquals(expectedMessage, exception.getMessage());
-        }
-    }
+    // Act
+    RecordsCountDto recordsCountDto =
+        rerunClusterApiServiceImpl.updateRerunClusters(rerunClusterDtoList);
+    RerunClusterDto returnedRerunClusterDto =
+        rerunClusterApiServiceImpl.getRerunClusterByFileId(fileId);
+
+    // Assert
+    assertNotNull(recordsCountDto);
+    assertEquals(1, recordsCountDto.getCount());
+
+    assertEquals(id, returnedRerunClusterDto.getId());
+    assertEquals(fileId, returnedRerunClusterDto.getFileId());
+    assertEquals(rerunClusterId, returnedRerunClusterDto.getRerunClusterId());
+    assertEquals(1, returnedRerunClusterDto.getRerunClusterIdCount());
+    assertEquals(created, returnedRerunClusterDto.getCreated());
+    assertEquals(jobId, returnedRerunClusterDto.getJobId());
+    assertEquals(returnedRerunClusterDto.getInserted(), returnedRerunClusterDto.getUpdated());
+  }
+
+  @Test
+  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenThrowNotFoundException() {
+    // Arrange
+    UUID fileId = UUID.randomUUID();
+
+    String expectedMessage =
+        "dk.kb.util.webservice.exception.InternalServiceException: javax.ws.rs.NotFoundException: rerunCluster fileId='" +
+            fileId + "' not found";
+
+    // Act
+    Exception exception = assertThrows(InternalServiceException.class,
+        () -> rerunClusterApiServiceImpl.getRerunClusterByFileId(fileId));
+
+    // Assert
+    assertEquals(expectedMessage, exception.getMessage());
+  }
+
+  @Test
+  public void latestCreated_whenTableIsPopulated_thenReturnLatestCreated() {
+    // Arrange
+    OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
+    OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
+
+    RerunClusterDto firstRerunClusterDto = new RerunClusterDto();
+    firstRerunClusterDto.setId(UUID.randomUUID());
+    firstRerunClusterDto.setFileId(UUID.randomUUID());
+    firstRerunClusterDto.setRerunClusterId(UUID.randomUUID());
+    firstRerunClusterDto.setCreated(firstCreated);
+    firstRerunClusterDto.setJobId("test run 1");
+
+    RerunClusterDto secondRerunClusterDto = new RerunClusterDto();
+    secondRerunClusterDto.setId(UUID.randomUUID());
+    secondRerunClusterDto.setFileId(UUID.randomUUID());
+    secondRerunClusterDto.setRerunClusterId(UUID.randomUUID());
+    secondRerunClusterDto.setCreated(secondCreated);
+    secondRerunClusterDto.setJobId("test run 2");
+
+    List<RerunClusterDto> rerunClusterDtoList =
+        List.of(firstRerunClusterDto, secondRerunClusterDto);
+
+    RecordsCountDto recordsCountDto =
+        rerunClusterApiServiceImpl.updateRerunClusters(rerunClusterDtoList);
+
+    // Act
+    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreated();
+
+    // Assert
+    assertNotNull(createdDto);
+    assertEquals(secondCreated, createdDto.getCreated());
+  }
+
+  @Test
+  public void latestCreated_whenTableIsEmpty_thenReturnNull() {
+    // Act
+    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreated();
+
+    // Assert
+    assertNotNull(createdDto);
+    assertNull(createdDto.getCreated());
+  }
 }

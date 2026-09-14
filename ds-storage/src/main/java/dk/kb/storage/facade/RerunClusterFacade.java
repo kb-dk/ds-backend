@@ -5,11 +5,11 @@ import dk.kb.storage.model.v1.RecordsCountDto;
 import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.storage.storage.BaseModuleStorage;
 import dk.kb.storage.storage.RerunClusterStorage;
+import java.util.List;
+import java.util.UUID;
+import javax.ws.rs.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.NotFoundException;
-import java.util.UUID;
 
 public class RerunClusterFacade {
 
@@ -20,15 +20,30 @@ public class RerunClusterFacade {
    * rerun_clusters table, update mtime in ds_records table and return number of rows inserted or
    * updated in rerun_clusters table.
    *
+   * @param rerunClusterDtoList
    * @return RecordsCountDto number of rows inserted or updated
    */
-  public static RecordsCountDto updateRerunClustersTable() {
-    return BaseModuleStorage.performStorageAction("updateRerunClustersTable()",
-        RerunClusterStorage.class, storage -> {
-          RecordsCountDto recordsCountDto =
-              ((RerunClusterStorage) storage).updateRerunClustersTable();
-          return recordsCountDto;
-        });
+  public static RecordsCountDto updateRerunClusters(List<RerunClusterDto> rerunClusterDtoList) {
+    RecordsCountDto allRecordsCountDto = new RecordsCountDto();
+    // Start the count on 0
+    allRecordsCountDto.setCount(0);
+
+    for (RerunClusterDto rerunClusterDto : rerunClusterDtoList) {
+      BaseModuleStorage.performStorageAction(
+          "updateRerunClusters() with fileId:" + rerunClusterDto.getFileId(),
+          RerunClusterStorage.class, storage -> {
+            RecordsCountDto recordsCountDto =
+                ((RerunClusterStorage) storage).updateRerunClusters(rerunClusterDto);
+
+            int touched = storage.updateMTimeForRecordByFileId(
+                rerunClusterDto.getFileId().toString());
+
+            allRecordsCountDto.setCount(allRecordsCountDto.getCount() + recordsCountDto.getCount());
+
+            return allRecordsCountDto;
+          });
+    }
+    return allRecordsCountDto;
   }
 
   /**
@@ -59,8 +74,8 @@ public class RerunClusterFacade {
    * @return CreatedDto with latest created datetime
    */
   public static CreatedDto latestCreated() {
-    return BaseModuleStorage.performStorageAction("latestCreated()",
-        RerunClusterStorage.class, storage -> {
+    return BaseModuleStorage.performStorageAction("latestCreated()", RerunClusterStorage.class,
+        storage -> {
           CreatedDto createdDto = ((RerunClusterStorage) storage).latestCreated();
           return createdDto;
         });

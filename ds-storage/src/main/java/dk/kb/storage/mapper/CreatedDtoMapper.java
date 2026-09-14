@@ -17,7 +17,7 @@ public class CreatedDtoMapper {
   public CreatedDto map(ResultSet resultSet) throws SQLException {
     CreatedDto createdDto = new CreatedDto();
 
-    createdDto.setCreated((OffsetDateTime) resultSet.getObject("latest_created"));
+    createdDto.setCreated(resultSet.getObject("latest_created", OffsetDateTime.class));
 
     return createdDto;
   }

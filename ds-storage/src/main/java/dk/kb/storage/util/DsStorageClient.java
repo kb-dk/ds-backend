@@ -468,13 +468,37 @@ public class DsStorageClient {
      *
      * @throws ServiceException if fails to make API call
      */
-    public RecordsCountDto updateRerunClustersTable() throws ServiceException {
+    public RecordsCountDto updateRerunClusters(List<RerunClusterDto> rerunClusterDtoList)
+        throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
                 .appendPathSegments("rerun-cluster")
                 .build();
 
             return Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST", new RecordsCountDto(),
+                rerunClusterDtoList);
+
+        } catch (URISyntaxException uriSyntaxException) {
+            log.error("Invalid url: " + uriSyntaxException.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Get a Rerun Cluster from fileId.
+     *
+     * @param fileId (required)
+     * @return RerunClusterDto
+     * @throws ServiceException if fails to make API call
+     */
+    public RerunClusterDto getRerunClusterByFileId(UUID fileId) throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                .appendPathSegments("rerun-cluster")
+                .addParameter("fileId", fileId.toString())
+                .build();
+
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET", new RerunClusterDto(),
                 null);
 
         } catch (URISyntaxException uriSyntaxException) {
@@ -496,28 +520,6 @@ public class DsStorageClient {
 
             return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET", new CreatedDto(),
                 null);
-
-        } catch (URISyntaxException uriSyntaxException) {
-            log.error("Invalid url: " + uriSyntaxException.getMessage());
-            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
-        }
-    }
-
-    /**
-     * Get a Rerun Cluster from fileId.
-     *
-     * @param fileId (required)
-     * @return RerunClusterDto
-     * @throws ServiceException if fails to make API call
-     */
-    public RerunClusterDto getRerunClusterByFileId(UUID fileId) throws ServiceException {
-        try {
-            URI uri = new URIBuilder(serviceURI)
-                    .appendPathSegments("rerun-cluster")
-                    .addParameter("fileId", fileId.toString())
-                    .build();
-
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET", new RerunClusterDto(), null);
 
         } catch (URISyntaxException uriSyntaxException) {
             log.error("Invalid url: " + uriSyntaxException.getMessage());

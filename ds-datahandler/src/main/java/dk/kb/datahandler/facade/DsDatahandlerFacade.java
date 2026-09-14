@@ -1,5 +1,7 @@
 package dk.kb.datahandler.facade;
 
+import dk.kb.storage.model.v1.RerunClusterDto;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +21,7 @@ import dk.kb.datahandler.oai.OaiResponseFilterPreservicaSeven;
 import dk.kb.datahandler.solr.SolrIndexResponse;
 import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.storage.JobStorage;
+import dk.kb.datahandler.storage.RerunClusterStorage;
 import dk.kb.datahandler.transcriptions.TranscriptionJob;
 
 import org.apache.commons.io.IOUtils;
@@ -328,12 +331,21 @@ public class DsDatahandlerFacade {
      * @param user
      * @return RecordsCountDto number of rows inserted or updated
      */
-    public static RecordsCountDto updateRerunClustersTable(String user) {
+    public static RecordsCountDto getRerunClusters(String user) {
         JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, null, user);
         try {
             DsStorageClient dsStorageApiClient = getDsStorageApiClient();
+
+            CreatedDto latestCreated = latestCreated();
+            List<RerunClusterDto> rerunClusterDtoList =
+                BaseModuleStorage.performStorageAction("getRerunClusters()",
+                    RerunClusterStorage.class, storage -> {
+                        return ((RerunClusterStorage) storage).getRerunClusters(
+                            latestCreated.getCreated());
+                    });
+
             dk.kb.storage.model.v1.RecordsCountDto returnedRrecordsCountDto =
-                dsStorageApiClient.updateRerunClustersTable();
+                dsStorageApiClient.updateRerunClusters(rerunClusterDtoList);
 
             RecordsCountDto recordsCountDto = new RecordsCountDto();
             recordsCountDto.setCount(returnedRrecordsCountDto.getCount());
