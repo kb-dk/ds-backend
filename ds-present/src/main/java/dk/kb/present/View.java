@@ -210,22 +210,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
 
-        boolean useTranscriptions=  ServiceConfig.getConfig().getBoolean("index.useTransriptions");
-        boolean hasTranscription=false;
-        //Transcription text.
-        String refrenceId = record.getReferenceId();        
-        if (refrenceId != null && useTranscriptions) {
-           String transcriptionText=getTranscriptionText(record.getReferenceId());
-           if (transcriptionText != null) {
-              log.debug("Found transcription text for fileId:"+refrenceId);
-              metadata.put("has_transcription", "true");
-              metadata.put("transcription", transcriptionText);
-              hasTranscription=true;
-           }                           
-        }        
-        metadata.put("has_transcription", ""+hasTranscription);               
         String referenceId = record.getReferenceId();
+
         updateMetadataMapWithRerunClusterId(metadata, referenceId);
+
+        updateMetadataMapWithTranscription(metadata, referenceId);
+
         metadata.put("platform", "DRARKIV");
 
         metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
@@ -349,9 +339,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
     }
 
-   private String getTranscriptionText(String fileId) {      
-      TranscriptionDto transcription = getStorage().getTranscription(fileId);
-      return transcription.getTranscription(); // can not be null. Will be empty DTO
     /**
      * Updates the provided metadata map with rerunClusterId.
      *
@@ -366,6 +353,28 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
     }
 
+    /**
+     * Updates the provided metadata map with transcriptions.
+     *
+     * @param metadata the map of metadata
+     * @param fileId   the fileId to find transcription
+     */
+    private void updateMetadataMapWithTranscription(Map<String, String> metadata, String fileId) {
+        boolean useTranscriptions = ServiceConfig.getConfig().getBoolean("index.useTransriptions");
+        boolean hasTranscription = false;
+
+        if (fileId != null && useTranscriptions) {
+            // Can not be null. Will be empty DTO;
+            TranscriptionDto transcription = getStorage().getTranscription(fileId);
+            if (transcription.getTranscription() != null) {
+                log.debug("Found transcription text for fileId:" + fileId);
+
+                metadata.put("transcription", transcription.getTranscription());
+                hasTranscription = true;
+            }
+        }
+        metadata.put("has_transcription", String.valueOf(hasTranscription));
+    }
     
    private Storage getStorage() {
        if (storage != null) {

@@ -104,6 +104,35 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
+    void getTransformedWithAccessFieldsAdded_whenTranscriptionExists_thenTranscriptionFieldIsPopulatedAndHasTranscriptionIsTrue() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+        map.put("transcription", "Dette er en transcription");
+        map.put("has_transcription", "true");
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertTrue(transformedJSON.contains("\"kb:transcription\":\"Dette er en transcription\""));
+        assertTrue(transformedJSON.contains("\"kb:has_transcription\":\"true\""));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenTranscriptionDoesNotExists_thenTranscriptionFieldDoesNotExistAndHasTranscriptionIsFalse() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+        map.put("has_transcription", "false");
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertFalse(transformedJSON.contains("\"kb:transcription\""));
+        assertTrue(transformedJSON.contains("\"kb:has_transcription\":\"false\""));
+    }
+
+    @Test
     void testName() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_4b18d02d);
         Assertions.assertTrue(transformedJSON.contains("\"name\":\"Ibens\""));

@@ -327,18 +327,37 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void platformField() throws IOException {
         Map<String, String > platformMap = Map.of("platform", "DRARKIV");
         String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, platformMap);
-        System.out.println(solrDocument);
         assertTrue(solrDocument.contains("\"platform\":\"DRARKIV\""));
     }
 
     @Test
-    void transcriptionsFields() throws IOException {
-        Map<String, String> map =  new HashMap<String,String>();
+    void transformWithInjections_whenTranscriptionExists_thenTranscriptionFieldIsPopulatedAndHasTranscriptionIsTrue() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
         map.put("transcription", "Dette er en transcription");
         map.put("has_transcription", "true");
+
+        // Act
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+
+        // Assert
+        assertTrue(solrDocument.contains("\"transcription\":\"Dette er en transcription\""));
+        assertTrue(solrDocument.contains("\"has_transcription\":\"true\""));
+    }
+
+    @Test
+    void transformWithInjections_whenTranscriptionDoesNotExists_thenTranscriptionFieldDoesNotExistAndHasTranscriptionIsFalse() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+        map.put("has_transcription", "false");
+
+        // Act
         String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
         System.out.println(solrDocument);
-        assertTrue(solrDocument.contains("\"transcription\":\"Dette er en transcription\""));
+
+        // Assert
+        assertFalse(solrDocument.contains("\"transcription\""));
+        assertTrue(solrDocument.contains("\"has_transcription\":\"false\""));
     }
 
     @Test
