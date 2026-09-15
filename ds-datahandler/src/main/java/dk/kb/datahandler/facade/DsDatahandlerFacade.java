@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl;
 import dk.kb.datahandler.config.ServiceConfig;
 
 import dk.kb.datahandler.oai.OaiHarvestClient;
@@ -112,9 +113,9 @@ public class DsDatahandlerFacade {
      * @param origin Origin must be defined on the ds-present server.
      * @exception InternalServiceException Will throw exception is the dsPresentCollectionName is not known, or if server communication fails.
      */    
-    public static String indexSolrFull(String origin, String user) throws InternalServiceException {
+    public static String indexSolrFull(String origin) throws InternalServiceException {
         SolrIndexResponse solrIndexResponse;
-
+        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.SOLR_INDEX, origin, null, user);
 
         try {
@@ -139,7 +140,8 @@ public class DsDatahandlerFacade {
      * @throws SolrServerException
      * @throws IOException
      */
-    public static String indexSolrDelta(String origin, String user) throws InternalServiceException, SolrServerException, IOException {
+    public static String indexSolrDelta(String origin) throws InternalServiceException, SolrServerException, IOException {
+        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
         Long lastStorageModifiedTime = SolrUtils.getLatestMTimeForOrigin(origin);
         SolrIndexResponse solrIndexResponse;
 
@@ -168,11 +170,8 @@ public class DsDatahandlerFacade {
      * 
      * @exception InternalServiceException Will throw exception if 
      */                   
-     public static void buildSuggest(String user) throws InternalServiceException {  
-         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.SOLR_BUILD_SUGGEST, "", null, user);
-         
-         SolrUtils.buildSuggestIndex();
-         updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC), null, null); //Can not fail. It is running on solr
+     public static void buildSuggest() throws InternalServiceException {                    
+         SolrUtils.buildSuggestIndex();         
      }
     
     /**
@@ -191,11 +190,12 @@ public class DsDatahandlerFacade {
      * @throws SolrServerException
      * @throws IOException
      */
-    public static void kalturaDeltaUpload(String user) throws InternalServiceException, SolrServerException, IOException {
+    public static void kalturaDeltaUpload() throws InternalServiceException, SolrServerException, IOException {
         // mTimeFrom is in microseconds
+        
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
-
-        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom, user);
+        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom,user);
 
         log.info("Starting kaltura delta upload");
         try {
@@ -209,8 +209,8 @@ public class DsDatahandlerFacade {
             //Index the records that has mTime modified due to kalturaId was set on record.
             if (numberStreamsUploaded > 0) {
                 log.info("Starting solr delta index job");
-                indexSolrDelta("ds.tv", user);
-                indexSolrDelta("ds.radio", user);
+                indexSolrDelta("ds.tv");
+                indexSolrDelta("ds.radio");
             }
         }
         catch (Exception e) {
@@ -229,8 +229,8 @@ public class DsDatahandlerFacade {
      *
      * @return Number of successful transcriptions loaded
      */        
-    public static Integer transcriptionsLoad(String user) throws Exception { 
-        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.TRANSCRIPTIONS, null, null, user);        
+    public static Integer transcriptionsLoad() throws Exception { 
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.TRANSCRIPTIONS, null, null,  DsDatahandlerApiServiceImpl.getCurrentUsername());        
         try {
           String dropFolder=ServiceConfig.getTranscriptionsDropFolder();
           String completedFolder=ServiceConfig.getTranscriptionsCompletedFolder();
@@ -254,7 +254,8 @@ public class DsDatahandlerFacade {
      * @param oaiTargetName the location of the image, relative to the url argument
      * @return Number of harvested records.
      */        
-    public static Integer oaiIngestFull(String oaiTargetName, String user) throws Exception {
+    public static Integer oaiIngestFull(String oaiTargetName) throws Exception {
+        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);
 
         String modifiedTimeFrom = HarvestTimeUtil.generateFrom(oaiTargetDto, null); // from == null, use default start day for OAI target instead
@@ -274,7 +275,8 @@ public class DsDatahandlerFacade {
      * @param oaiTargetName The name for the OAI target in the configuration
      * @return Number of harvested records.
      */
-    public static Integer oaiIngestDelta(String oaiTargetName, String user) throws Exception {
+    public static Integer oaiIngestDelta(String oaiTargetName) throws Exception {
+        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);       
         String lastHarvestTime = HarvestTimeUtil.loadLastHarvestTime(oaiTargetDto);
 
@@ -436,7 +438,7 @@ public class DsDatahandlerFacade {
      * @param user
      * @return jobDto JobDto that is running
      */
-    private static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user) {
+    public static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user) {
         JobDto jobDto = new JobDto();
 
         jobDto.setId(UUID.randomUUID());
@@ -470,7 +472,7 @@ public class DsDatahandlerFacade {
      * @param endTime if the job is set to FAILED, STOPPED or COMPLETED
      * @param numberOfRecords number of records created or updated by the job
      */
-    private static void updateJob(JobDto jobDto, JobStatusDto jobStatusDto, String message, OffsetDateTime endTime, Integer numberOfRecords, OffsetDateTime restartValue) {
+   public static void updateJob(JobDto jobDto, JobStatusDto jobStatusDto, String message, OffsetDateTime endTime, Integer numberOfRecords, OffsetDateTime restartValue) {
         jobDto.setJobStatus(jobStatusDto);
         jobDto.setMessage(message);
         jobDto.setEndTime(endTime);

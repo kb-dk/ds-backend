@@ -91,7 +91,7 @@ public class DsDatahandlerFacadeTest extends DsDatahandlerUnitTestUtil {
 
         // Act/Assert
         InvalidArgumentServiceException exception = Assertions.assertThrows(InvalidArgumentServiceException.class,
-                () -> DsDatahandlerFacade.kalturaDeltaUpload(user)
+                () -> DsDatahandlerFacade.kalturaDeltaUpload()
         );
 
         Assertions.assertEquals("There is already a/an kaltura upload job running", exception.getMessage());

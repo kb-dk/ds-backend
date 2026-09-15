@@ -3,7 +3,13 @@ package dk.kb.datahandler.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl;
 import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.datahandler.facade.DsDatahandlerFacade;
+import dk.kb.datahandler.model.v1.CategoryDto;
+import dk.kb.datahandler.model.v1.JobDto;
+import dk.kb.datahandler.model.v1.JobStatusDto;
 import dk.kb.datahandler.model.v1.TypeDto;
 import dk.kb.datahandler.solr.SolrIndexResponse;
 import dk.kb.datahandler.solr.SolrResponseHeader;
@@ -25,6 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -241,12 +249,13 @@ public class SolrUtils {
             return;
         }
         suggestIndexBuildRunning = true;
-
+        JobDto jobDto = DsDatahandlerFacade.startJob(TypeDto.FULL, CategoryDto.SOLR_BUILD_SUGGEST, "", null, DsDatahandlerApiServiceImpl.getCurrentUsername());
+        
         Thread thread = new Thread(() -> {
             try {
                 String solrUrl = ServiceConfig.getSolrWriteCollectionUrl();
                 try (SolrClient solrClient = new HttpJdkSolrClient.Builder(solrUrl)
-                        .withRequestTimeout(1, TimeUnit.HOURS) // 1 hour should be enough, will avoid getting the exception message.
+                        .withRequestTimeout(24, TimeUnit.HOURS) // 24 hour is overkill, should be enough
                         .build()) {
                     SolrQuery query = new SolrQuery();
                     query.setRequestHandler("/suggest");
@@ -255,9 +264,11 @@ public class SolrUtils {
 
                     solrClient.query(query);
                     log.info("Suggest index build completed.");
+                    DsDatahandlerFacade.updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC), null, null); 
                 }
             } catch (Exception e) {
                 log.warn("1 Hour was not enough to build suggest index. This is not expected", e);
+                DsDatahandlerFacade.updateJob(jobDto, JobStatusDto.FAILED, null, OffsetDateTime.now(ZoneOffset.UTC), null, null); 
             } finally {
                 suggestIndexBuildRunning = false;
             }
