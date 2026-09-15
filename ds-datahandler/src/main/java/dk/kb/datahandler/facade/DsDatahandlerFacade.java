@@ -357,7 +357,7 @@ public class DsDatahandlerFacade {
 
             return recordsCountDto;
         } catch (Exception exception) {
-            log.error("Updating rerun clusters failed with jobId='{}'. Exception: ", jobDto.getId(),
+            log.error("Inserting/updating rerun_clusters table failed with jobId='{}'. Exception: ", jobDto.getId(),
                 exception);
             updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(),
                 OffsetDateTime.now(ZoneOffset.UTC), null, null);

@@ -74,7 +74,7 @@ public class RerunClusterApiServiceImpl extends ImplBase implements RerunCluster
   }
 
   /**
-   * Return a rerun cluster by fileId.
+   * Return a RerunCluster by fileId.
    *
    * @param fileId
    * @return RerunClusterDto

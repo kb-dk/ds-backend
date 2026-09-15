@@ -46,7 +46,7 @@ public class RerunClusterFacade {
   }
 
   /**
-   * Return a rerun cluster by fileId.
+   * Return a RerunCluster by fileId.
    *
    * @param fileId UUID of fileId.
    * @return RerunClusterDto

@@ -120,7 +120,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
   }
 
   /**
-   * Return a rerun cluster by fileId.
+   * Return a RerunCluster by fileId.
    *
    * @param fileId
    * @return RerunClusterDto

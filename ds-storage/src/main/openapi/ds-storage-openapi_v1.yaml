@@ -544,7 +544,7 @@ paths:
     get:
       tags:
         - 'RerunCluster'
-      summary: 'Return a rerun cluster from fileId.'
+      summary: 'Return a RerunCluster from fileId.'
       security:
         - KBOAuth:
             - any
@@ -564,7 +564,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RerunCluster'
         '404':
-          description: "Rerun Cluster fileId not found."
+          description: "Could not find rerunCluster with fileId."
 
   /rerun-cluster/created/latest:
     get:
@@ -822,14 +822,14 @@ components:
         rerunClusterIdCount:
           type: integer
           format: int32
-          description: 'How many rerun clusters has the same rerun cluster id.'
+          description: 'How many rerunClusters has the same rerunClusterId.'
         created:
           type: string
           format: date-time
           description: 'When was this identified as a rerun?'
         jobId:
           type: string
-          description: 'Unique UUID of what job created this rerun cluster.'
+          description: 'Id of rerunClusters matching job. Only useful for logging and debugging.'
         inserted:
           type: string
           format: date-time

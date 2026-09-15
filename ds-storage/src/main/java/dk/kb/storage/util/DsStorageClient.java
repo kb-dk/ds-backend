@@ -485,7 +485,7 @@ public class DsStorageClient {
     }
 
     /**
-     * Get a Rerun Cluster from fileId.
+     * Return a RerunCluster from fileId.
      *
      * @param fileId (required)
      * @return RerunClusterDto
