@@ -20,8 +20,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
   private final static RecordsCountDtoMapper recordsCountDtoMapper = new RecordsCountDtoMapper();
   private final static RerunClusterDtoMapper rerunClusterDtoMapper = new RerunClusterDtoMapper();
 
-  private static final String updateRerunClustersStatement =
-    """
+  private static final String updateRerunClustersStatement = """
     WITH insert_update_rerun_clusters AS (
         INSERT INTO rerun_clusters (
             id,
@@ -64,8 +63,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
         inserted_updated_rerun_clusters udr
     """;
 
-  private static final String getRerunClusterByFileIdStatement =
-    """
+  private static final String getRerunClusterByFileIdStatement = """
     SELECT
         rc.id,
         rc.file_id,
@@ -81,8 +79,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
         file_id = ?
     """;
 
-  private static final String latestCreatedStatement =
-    """
+  private static final String latestCreatedStatement = """
     SELECT
         max(rc.created) AS latest_created -- find the latest created datetime
     FROM
