@@ -5,11 +5,9 @@
   </formats>
 
   <files>
-    <!-- The Flyway migrations for this exact build, byte-identical to the
-         ds-storage-<version>-flyway.zip published to Nexus. Embedded here so the
-         migrations travel with the war they were built alongside and cannot be
-         paired with the wrong release by accident. Built by the 'flyway-sql'
-         assembly execution, which must run before this one. -->
+    <!-- This build's flyway zip, identical to the one published to Nexus, so the
+         migrations ship with the war they were built against. Produced by the
+         'flyway-sql' execution, which must run before this one. -->
     <file>
       <source>target/${project.build.finalName}-flyway.zip</source>
       <outputDirectory>/</outputDirectory>

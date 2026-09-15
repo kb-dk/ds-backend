@@ -19,10 +19,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Removed
 
-- `create_ds_storage.ddl` is no longer shipped in the distribution tarball, and both it and
-  `create_ds_storage_h2_unittest.ddl` have been deleted. Neither was referenced anywhere in the
-  source tree; both predated the move to Testcontainers + Flyway. The migrations under
-  `src/main/resources/db/migration/ds-storage/` are the single source of truth for the schema.
+- Deleted the unused `create_ds_storage.ddl` and `create_ds_storage_h2_unittest.ddl`, and
+  dropped the former from the distribution tarball.
 
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
