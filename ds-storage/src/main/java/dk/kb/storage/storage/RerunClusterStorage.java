@@ -94,10 +94,9 @@ public class RerunClusterStorage extends BaseModuleStorage {
   }
 
   /**
-   * return new rows from remote p3rerun database in table clusters table, save it to our
-   * rerun_clusters table, update mtime in ds_records table and return number of rows inserted or
-   * updated in rerun_clusters table.
+   * Insert row in rerun_cluster table, or update row if the fileId exists.
    *
+   * @param rerunClusterDto
    * @return RecordsCountDto number of rows inserted or updated
    * @throws Exception
    */

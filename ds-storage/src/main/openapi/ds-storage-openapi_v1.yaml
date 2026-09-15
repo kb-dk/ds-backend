@@ -519,7 +519,7 @@ paths:
     post:
       tags:
         - 'RerunCluster'
-      summary: 'Save list of RerunCluster in rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table'
+      summary: 'Save list of RerunCluster in rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table.'
       operationId: updateRerunClusters
       security:
         - KBOAuth:
@@ -534,7 +534,7 @@ paths:
                 $ref: '#/components/schemas/RerunCluster'
       responses:
         '201':
-          description: 'Return the number of rows inserted or updated in rerun_clusters table'
+          description: 'Return the number of rows inserted or updated in rerun_clusters table.'
           content:
             application/json:
               schema:

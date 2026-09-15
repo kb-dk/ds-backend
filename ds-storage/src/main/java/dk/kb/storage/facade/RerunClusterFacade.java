@@ -16,9 +16,8 @@ public class RerunClusterFacade {
   private static final Logger log = LoggerFactory.getLogger(RerunClusterFacade.class);
 
   /**
-   * Return new rows from remote p3rerun database in table clusters table, save it to our
-   * rerun_clusters table, update mtime in ds_records table and return number of rows inserted or
-   * updated in rerun_clusters table.
+   * Save list of RerunCluster in rerun_clusters table, update mtime in ds_records table and return
+   * number of rows inserted or updated in rerun_clusters table.
    *
    * @param rerunClusterDtoList
    * @return RecordsCountDto number of rows inserted or updated
@@ -47,7 +46,7 @@ public class RerunClusterFacade {
   }
 
   /**
-   * Return a rerun cluster by fileId
+   * Return a rerun cluster by fileId.
    *
    * @param fileId UUID of fileId.
    * @return RerunClusterDto
