@@ -28,316 +28,361 @@ public class RecordStorage extends BaseModuleStorage {
     private static final Logger log = LoggerFactory.getLogger(RecordStorage.class);
 
     private final static RecordsCountDtoMapper recordsCountDtoMapper = new RecordsCountDtoMapper();
-    private final static RecordDtoMapper RECORD_DTO_MAPPER = new RecordDtoMapper();
-    private final static RecordMinimalDtoMapper
-        RECORD_MINIMAL_DTO_MAPPER = new RecordMinimalDtoMapper();
+    private final static RecordDtoMapper recordDtoMapper = new RecordDtoMapper();
+    private final static RecordMinimalDtoMapper recordMinimalDtoMapper = new RecordMinimalDtoMapper();
     private final static OriginCountDtoMapper originCountDtoMapper = new OriginCountDtoMapper();
 
-    private static final String RECORDS_TABLE = "ds_records";
-    private static final String ID_COLUMN = "id";
-    private static final String ORIGIN_COLUMN = "origin";
-    private static final String RECORDTYPE_COLUMN = "recordtype";
-    private static final String DELETED_COLUMN = "deleted";
-    private static final String MTIME_COLUMN = "mtime";
-
     private static String createRecordStatement = """
-            INSERT INTO ds_records (
-                id,
-                origin,
-                orgid,
-                id_error,
-                deleted,
-                data,
-                ctime,
-                mtime,
-                parentid,
-                recordtype,
-                referenceid,
-                kalturaid
-            )
-            VALUES (
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
-                ?
-            )
-            """;
+        INSERT INTO ds_records (
+            id,
+            origin,
+            orgid,
+            id_error,
+            deleted,
+            data,
+            ctime,
+            mtime,
+            parentid,
+            recordtype,
+            referenceid,
+            kalturaid
+        )
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        """;
 
     private static String updateRecordStatement = """
-            UPDATE ds_records SET
-                deleted = ?,
-                data = ?,
-                mtime = ?,
-                parentid = ?,
-                recordtype = ?,
-                referenceid = ?,
-                kalturaid = ?
-            WHERE
-                id = ?
-            """;
+        UPDATE ds_records SET
+            deleted = ?,
+            data = ?,
+            mtime = ?,
+            parentid = ?,
+            recordtype = ?,
+            referenceid = ?,
+            kalturaid = ?
+        WHERE
+            id = ?
+        """;
 
     private static String updateKalturaIdStatement = """
-            UPDATE ds_records SET
-                mtime = ?,
-                kalturaid = ?
-            WHERE
-                id = ?
-            """;
+        UPDATE ds_records SET
+            mtime = ?,
+            kalturaid = ?
+        WHERE
+            id = ?
+        """;
 
     private static String getRecordsByReferenceId = """
-            SELECT
-                id
-            FROM
-                ds_records
-            WHERE
-                referenceid = ?
-            """;
+        SELECT
+            id
+        FROM
+            ds_records
+        WHERE
+            referenceid = ?
+        """;
 
     private static String updateReferenceIdStatement = """
-            UPDATE ds_records SET
-                mtime = ?,
-                referenceid = ?
-            WHERE
-                id = ?
-            """;
+        UPDATE ds_records SET
+            mtime = ?,
+            referenceid = ?
+        WHERE
+            id = ?
+        """;
 
     private static String markRecordForDeleteStatement = """
-            UPDATE ds_records SET
-                deleted = ?,
-                mtime = ?
-            WHERE
-                id = ?
-            """;
+        UPDATE ds_records SET
+            deleted = ?,
+            mtime = ?
+        WHERE
+            id = ?
+        """;
 
     private static String deleteRecordsForOriginStatement = """
-            DELETE FROM
-                ds_records
-            WHERE
-                origin = ? 
-                AND
-                mtime >=  ?
-                AND
-                mtime <=  ?
-            """;
+        DELETE FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            mtime >=  ?
+            AND
+            mtime <=  ?
+        """;
 
     private static String updateMTimeForRecordStatement = """
-            UPDATE ds_records SET
-                mtime = ?
-            WHERE
-                id = ?
-            """;
+        UPDATE ds_records SET
+            mtime = ?
+        WHERE
+            id = ?
+        """;
 
     private static String childrenIdsStatement = """            
-            SELECT
-                id
-            FROM
-                ds_records
-            WHERE
-                parentid = ?
-            """;
+        SELECT
+            id
+        FROM
+            ds_records
+        WHERE
+            parentid = ?
+        """;
 
     private static String recordByIdStatement = """
-            SELECT
-                id,
-                origin,
-                orgid,
-                id_error,
-                deleted,
-                data,
-                ctime,
-                mtime,
-                parentid,
-                recordtype,
-                referenceid,
-                kalturaid
-            FROM
-                ds_records
-            WHERE
-                id = ?
-            """;
+        SELECT
+            id,
+            origin,
+            orgid,
+            id_error,
+            deleted,
+            data,
+            ctime,
+            mtime,
+            parentid,
+            recordtype,
+            referenceid,
+            kalturaid
+        FROM
+            ds_records
+        WHERE
+            id = ?
+        """;
+
     // SELECT mtime FROM ds_records WHERE origin= 'test_base' ORDER BY mtime DESC
     private static final String maxMtimeStatement = """
-            SELECT
-                mtime
-            FROM
-                ds_records
-            WHERE
-                origin = ?
-            ORDER BY
-                mtime DESC
-            """;
+        SELECT
+            mtime
+        FROM
+            ds_records
+        WHERE
+            origin = ?
+        ORDER BY
+            mtime DESC
+        """;
 
     // SELECT mtime FROM ds_records WHERE origin= 'test_base' AND recordtype='record type' ORDER BY mtime DESC
     private static final String maxMtimeTypeStatement = """
-            SELECT
-                mtime
-            FROM
-                ds_records
-            WHERE
-                origin = ?
-                AND
-                recordtype = ?
-            ORDER BY
-                mtime DESC
-            """;
+        SELECT
+            mtime
+        FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            recordtype = ?
+        ORDER BY
+            mtime DESC
+        """;
 
     // SELECT ID FROM  ds_records  WHERE origin= 'test_base' AND recordtype = 'MANIFESTATION' AND mtime  > 1637237120476001 ORDER BY mtime ASC LIMIT 100
     private static final String recordsIDByRecordTypeModifiedAfterStatement = """
-            SELECT
-                id
-            FROM
-                ds_records
-            WHERE
-                origin = ?
-                AND
-                mtime > ?
-                AND
-                recordtype = ?
-            ORDER BY
-                mtime ASC
-            LIMIT ?
-            """;
+        SELECT
+            id
+        FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            mtime > ?
+            AND
+            recordtype = ?
+        ORDER BY
+            mtime ASC
+        LIMIT ?
+        """;
 
     // SELECT * FROM  ds_records  WHERE origin= 'test_origin' AND mtime  > 1637237120476001 AND PARENTID IS NOT NULL ORDER BY mtime ASC LIMIT 100
     private static String recordsModifiedAfterChildrenOnlyStatement = """
-            SELECT
-                id,
-                origin,
-                orgid,
-                id_error,
-                deleted,
-                data,
-                ctime,
-                mtime,
-                parentid,
-                recordtype,
-                referenceid,
-                kalturaid
-            FROM
-                ds_records
-            WHERE
-                origin = ?
-                AND
-                mtime > ?
-                AND
-                parentid IS NOT NULL
-            ORDER BY
-                mtime ASC
-            LIMIT ?
-            """;
+        SELECT
+            id,
+            origin,
+            orgid,
+            id_error,
+            deleted,
+            data,
+            ctime,
+            mtime,
+            parentid,
+            recordtype,
+            referenceid,
+            kalturaid
+        FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            mtime > ?
+            AND
+            parentid IS NOT NULL
+        ORDER BY
+            mtime ASC
+        LIMIT ?
+        """;
 
     // SELECT * FROM  ds_records  WHERE origin= 'test_origin' AND mtime  > 1637237120476001 AND parentId IS NULL ORDER BY mtime ASC LIMIT 100
     private static String recordsModifiedAfterParentsOnlyStatement = """
-            SELECT
-                id,
-                origin,
-                orgid,
-                id_error,
-                deleted,
-                data,
-                ctime,
-                mtime,
-                parentid,
-                recordtype,
-                referenceid,
-                kalturaid
-            FROM
-                ds_records
-            WHERE
-                origin = ?
-                AND
-                mtime > ?
-                AND
-                parentid IS NULL
-            ORDER BY
-                mtime ASC
-            LIMIT ?
-            """;
+        SELECT
+            id,
+            origin,
+            orgid,
+            id_error,
+            deleted,
+            data,
+            ctime,
+            mtime,
+            parentid,
+            recordtype,
+            referenceid,
+            kalturaid
+        FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            mtime > ?
+            AND
+            parentid IS NULL
+        ORDER BY
+            mtime ASC
+        LIMIT ?
+        """;
 
     // SELECT id,mTime,referenceId,kalturaId FROM ds_records WHERE origin= 'ds.tv' and mTime > 0 ORDER BY mtime ASC LIMIT 50
     private static String referenceIdsStatement = """
-            SELECT
-                id,
-                mtime,
-                referenceid,
-                kalturaid
-            FROM
-                ds_records
-            WHERE
-                origin = ?
-                AND
-                mtime > ?
-            ORDER BY
-                mtime ASC
-            LIMIT ?
-            """;
+        SELECT
+            id,
+            mtime,
+            referenceid,
+            kalturaid
+        FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            mtime > ?
+        ORDER BY
+            mtime ASC
+        LIMIT ?
+        """;
 
     // SELECT * FROM  ds_records  WHERE origin= 'test_base' AND mtime  > 1637237120476001 ORDER BY mtime ASC LIMIT 100
     private static String recordsModifiedAfterStatement = """
-            SELECT
-                id,
-                origin,
-                orgid,
-                id_error,
-                deleted,
-                data,
-                ctime,
-                mtime,
-                parentid,
-                recordtype,
-                referenceid,
-                kalturaid
-            FROM
-                ds_records
-            WHERE
-                origin = ?
-                AND
-                mtime > ?
-            ORDER BY
-                mtime ASC
-            LIMIT ?
-            """;
+        SELECT
+            id,
+            origin,
+            orgid,
+            id_error,
+            deleted,
+            data,
+            ctime,
+            mtime,
+            parentid,
+            recordtype,
+            referenceid,
+            kalturaid
+        FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            mtime > ?
+        ORDER BY
+            mtime ASC
+        LIMIT ?
+        """;
+
     // TODO: Optimise this
     // The current implementation creates a temporary table
     // Alternative 1: Make a plain select and step through to the end
     // Alternative 2: First count the number of "hits", then use that as OFFSET
-    private static final String maxMtimeAfterWithLimitStatement =
-            "SELECT MAX (" + MTIME_COLUMN + ") AS max_mtime, " +
-                    "       COUNT (*) AS limit_count " +
-                    "FROM " +
-                    "( SELECT " + MTIME_COLUMN +
-                    "  FROM " + RECORDS_TABLE +
-                    "  WHERE " + ORIGIN_COLUMN + "= ?" +
-                    "  AND " + MTIME_COLUMN + " > ?" +
-                    "  ORDER BY " + MTIME_COLUMN + " ASC" +
-                    "  LIMIT ?) AS max_mtime_sub";
+    private static final String maxMtimeAfterWithLimitStatement = """
+        SELECT
+            MAX(mtime) AS max_mtime,
+            COUNT(*) AS limit_count
+        FROM (
+            SELECT
+                mtime
+            FROM
+                ds_records
+            WHERE
+                origin = ?
+                AND
+                mtime > ?
+            ORDER BY
+                mtime ASC
+            LIMIT ?
+        ) AS max_mtime_sub
+    """;
 
     // TODO: Optimise this after maxMtimeAfterWithLimitStatement has been optimised
-    private static final String maxMtimeAfterWithLimitTypeStatement =
-            "SELECT MAX (" + MTIME_COLUMN + ") AS max_mtime, " +
-                    "       COUNT (*) AS limit_count " +
-                    "FROM " +
-                    "( SELECT " + MTIME_COLUMN +
-                    "  FROM " + RECORDS_TABLE +
-                    "  WHERE " + ORIGIN_COLUMN + "= ?" +
-                    "  AND " + RECORDTYPE_COLUMN + "= ?" +
-                    "  AND " + MTIME_COLUMN + " > ?" +
-                    "  ORDER BY " + MTIME_COLUMN + " ASC" +
-                    "  LIMIT ?) AS max_mtime_sub";
+    private static final String maxMtimeAfterWithLimitTypeStatement = """
+        SELECT
+            MAX(mtime) AS max_mtime,
+            COUNT(*) AS limit_count
+        FROM (
+            SELECT
+                mtime
+            FROM
+                ds_records
+            WHERE
+                origin = ?
+                AND
+                recordtype = ?
+                AND
+                mtime > ?
+            ORDER BY
+                mtime ASC
+            LIMIT ?) AS max_mtime_sub
+    """;
 
-    private static String originsStatisticsStatement = "SELECT " + ORIGIN_COLUMN + " ,COUNT(*) AS COUNT , SUM(" + DELETED_COLUMN + ") AS deleted,  max(" + MTIME_COLUMN + ") AS MAX FROM " + RECORDS_TABLE + " group by " + ORIGIN_COLUMN;
+    private static String originsStatisticsStatement = """
+        SELECT
+            origin,
+            COUNT(*) AS count,
+            SUM(deleted) AS deleted,
+            MAX(mtime) AS max
+        FROM
+            ds_records
+        GROUP BY
+            origin
+    """;
 
-    private static String deleteMarkedForDeleteStatement = "DELETE FROM " + RECORDS_TABLE + " WHERE " + ORIGIN_COLUMN + " = ? AND " + DELETED_COLUMN + " = 1";
-    private static String recordIdExistsStatement = "SELECT COUNT(*) AS COUNT FROM " + RECORDS_TABLE + " WHERE " + ID_COLUMN + " = ?";
-    private static String countRecordsInOriginStatement = "SELECT COUNT(*) FROM " + RECORDS_TABLE + " WHERE " + ORIGIN_COLUMN + " = ? AND " + MTIME_COLUMN + " > ?";
+    private static String deleteMarkedForDeleteStatement = """
+        DELETE FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            deleted = 1
+    """;
+
+    private static String recordIdExistsStatement = """
+        SELECT
+            COUNT(*) AS count
+        FROM
+            ds_records
+        WHERE
+            id = ?
+    """;
+
+    private static String countRecordsInOriginStatement = """
+        SELECT
+            COUNT(*) AS count
+        FROM
+            ds_records
+        WHERE
+            origin = ?
+            AND
+            mtime > ?
+    """;
 
     public RecordStorage() throws SQLException {
         super();
@@ -354,7 +399,7 @@ public class RecordStorage extends BaseModuleStorage {
                 if (!resultSet.next()) {
                     return null;// Or throw exception?
                 }
-                DsRecordDto record = RECORD_DTO_MAPPER.map(resultSet);
+                DsRecordDto record = recordDtoMapper.map(resultSet);
                 return record;
             }
         }
@@ -372,9 +417,9 @@ public class RecordStorage extends BaseModuleStorage {
                 if (!resultSet.next()) {
                     return null;
                 }
-                DsRecordDto record = RECORD_DTO_MAPPER.map(resultSet);
+                DsRecordDto record = recordDtoMapper.map(resultSet);
 
-                //load children                
+                //load children
                 record.setChildrenIds(getChildrenIds(id));
                 return record;
             }
@@ -467,7 +512,7 @@ public class RecordStorage extends BaseModuleStorage {
 
         try (ResultSet resultSet = stmt.executeQuery()) {
             while (resultSet.next()) {
-                DsRecordDto record = RECORD_DTO_MAPPER.map(resultSet);
+                DsRecordDto record = recordDtoMapper.map(resultSet);
                 records.add(record);
             }
         }
@@ -495,7 +540,7 @@ public class RecordStorage extends BaseModuleStorage {
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 while (resultSet.next()) {
-                    DsRecordMinimalDto record = RECORD_MINIMAL_DTO_MAPPER.map(resultSet);
+                    DsRecordMinimalDto record = recordMinimalDtoMapper.map(resultSet);
                     records.add(record);
                 }
             }
@@ -684,7 +729,7 @@ public class RecordStorage extends BaseModuleStorage {
     }
 
     /**
-     * Will only extract ID. 
+     * Will only extract ID.
      * Will be sorted by mTime. Latest is last.
      * Will extract all no matter of parent or child ids.
      */
@@ -785,7 +830,7 @@ public class RecordStorage extends BaseModuleStorage {
             throw new Exception("Record with id has itself as parent:" + record.getId());
         }
         if (record.getIdError() == null) {
-            record.setIdError(false); // can not make default to work in open API.            
+            record.setIdError(false); // can not make default to work in open API.
         }
 
         long nowStamp = UniqueTimestampGenerator.next();
@@ -803,7 +848,7 @@ public class RecordStorage extends BaseModuleStorage {
             stmt.setString(9, record.getParentId());
             stmt.setString(10, record.getRecordType().getValue());
             stmt.setString(11, record.getReferenceId());
-            stmt.setString(12, record.getKalturaId()); //This value is probably null. It will be updated by a batch job later. 
+            stmt.setString(12, record.getKalturaId()); //This value is probably null. It will be updated by a batch job later.
             stmt.executeUpdate();
         } catch (SQLException e) {
             String message = "SQL Exception in createNewRecord with id:" + record.getId() + " error:" + e.getMessage();
