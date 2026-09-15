@@ -329,6 +329,12 @@
             </f:string>
         </xsl:if>
 
+      <!-- Extract rerun_cluster_id -->
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:rerun_cluster_id') != ''">
+            <f:string key="rerun_cluster_id">
+                <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:rerun_cluster_id') "/>
+            </f:string>
+        </xsl:if>
 
       <!-- Extract data on the encoded creative work, if present-->
       <xsl:if test="map:contains($schemaorg-xml, 'encodesCreativeWork')">

@@ -137,7 +137,7 @@ public class DSStorage implements Storage {
     }
 
     /**
-     * Return rerunCluster from fileId
+     * Return a RerunCluster from fileId.
      *
      * @param fileId UUID of fileId.
      * @return RerunClusterDto
@@ -148,7 +148,7 @@ public class DSStorage implements Storage {
         try {
             return storageClient.getRerunClusterByFileId(fileId);
         } catch (ServiceException e) {
-            log.warn("Unable to retrieve rerun cluster with fileId: '{}'. URL: '{}'. Exception: ", fileId, storageUrl, e);
+            log.warn("Could not find rerunCluster with fileId: '{}'. URL: '{}'. Exception: ", fileId, storageUrl, e);
             throw e;
         }
     }

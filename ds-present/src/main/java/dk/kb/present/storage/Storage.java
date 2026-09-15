@@ -88,7 +88,7 @@ public interface Storage {
     ContinuationStream<DsRecordDto, Long> getDSRecordsByRecordTypeLocalTree(String origin, RecordTypeDto recordType, long mTime, long maxRecords);
 
     /**
-     * Return rerunCluster from fileId
+     * Return a RerunCluster from fileId.
      *
      * @param fileId UUID of fileId.
      * @return RerunClusterDto

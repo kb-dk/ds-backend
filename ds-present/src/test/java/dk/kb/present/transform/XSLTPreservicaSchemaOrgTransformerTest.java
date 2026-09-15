@@ -3,6 +3,8 @@ package dk.kb.present.transform;
 import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;
+import java.util.HashMap;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -73,6 +75,32 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"kb:file_id\":\"b557f9dd-197c-47f6-b481-785d5f7accd2\""));
         assertTrue(transformedJSON.contains("\"kb:file_path\":\"b5\\/57\\/b557f9dd-197c-47f6-b481-785d5f7accd2\""));
         assertTrue(transformedJSON.contains("\"kb:file_extension\":\"mp3\""));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenRerunClusterIdExists_thenRerunClusterIdFieldIsPopulated() throws IOException {
+        // Arrange
+        UUID rerunClusterId = UUID.randomUUID();
+        Map<String, String> map = new HashMap<>();
+        map.put("rerun_cluster_id", rerunClusterId.toString());
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertTrue(transformedJSON.contains("\"kb:rerun_cluster_id\":\"" + rerunClusterId + "\""));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenRerunClusterIdDoesNotExists_thenRerunClusterIdFieldDoesNotExits() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertFalse(transformedJSON.contains("\"kb:rerun_cluster_id\""));
     }
 
     @Test

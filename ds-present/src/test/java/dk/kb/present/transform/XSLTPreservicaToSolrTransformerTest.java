@@ -4,7 +4,7 @@ import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
 import dk.kb.util.Resolver;
-import org.junit.jupiter.api.Assertions;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -470,6 +470,32 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_id\":\"b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_path\":\"b5\\/57\\/b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_extension\":\"mp3\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
+    }
+
+    @Test
+    void transformWithInjections_whenRerunClusterIdExists_thenRerunClusterIdFieldIsPopulated() throws IOException {
+        // Arrange
+        UUID rerunClusterId = UUID.randomUUID();
+        Map<String, String> map = new HashMap<>();
+        map.put("rerun_cluster_id", rerunClusterId.toString());
+
+        // Act
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+
+        // Assert
+        assertTrue(solrDocument.contains("\"rerun_cluster_id\":\"" + rerunClusterId + "\""));
+    }
+
+    @Test
+    void transformWithInjections_whenRerunClusterIdDoesNotExists_thenRerunClusterIdFieldDoesNotExit() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+
+        // Act
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+
+        // Assert
+        assertFalse(solrDocument.contains("\"rerun_cluster_id\""));
     }
 
     @Test

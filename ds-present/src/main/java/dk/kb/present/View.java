@@ -25,10 +25,12 @@ import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,6 +224,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
            }                           
         }        
         metadata.put("has_transcription", ""+hasTranscription);               
+        String referenceId = record.getReferenceId();
+        updateMetadataMapWithRerunClusterId(metadata, referenceId);
         metadata.put("platform", "DRARKIV");
 
         metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
@@ -348,7 +352,20 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
    private String getTranscriptionText(String fileId) {      
       TranscriptionDto transcription = getStorage().getTranscription(fileId);
       return transcription.getTranscription(); // can not be null. Will be empty DTO
+    /**
+     * Updates the provided metadata map with rerunClusterId.
+     *
+     * @param metadata the map of metadata
+     * @param fileId   the fileId to find rerunClusterId
+     */
+    private void updateMetadataMapWithRerunClusterId(Map<String, String> metadata, String fileId) {
+        if (fileId != null) {
+            RerunClusterDto rerunClusterId = getStorage().getRerunClusterByFileId(
+                UUID.fromString(fileId));
+            metadata.put("rerun_cluster_id", rerunClusterId.getRerunClusterId().toString());
+        }
     }
+
     
    private Storage getStorage() {
        if (storage != null) {
