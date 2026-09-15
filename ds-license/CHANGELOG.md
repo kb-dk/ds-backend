@@ -7,6 +7,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- The Flyway migrations are now published as a separate release artifact,
+  `ds-license-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and
+  embedded at the root of the distribution tarball. OPS and Jenkins can obtain the SQL for a
+  given release without unpacking the war, and the copy inside the tarball keeps the migrations
+  bound to the war they were built alongside. Fetch a single release with
+  `mvn dependency:copy -Dartifact=dk.kb.license:ds-license:<version>:zip:flyway`. The zip contains the
+  migrations and `ds-license.build.properties` for provenance.
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added

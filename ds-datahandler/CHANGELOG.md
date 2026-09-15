@@ -7,6 +7,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- The Flyway migrations are now published as a separate release artifact,
+  `ds-datahandler-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and
+  embedded at the root of the distribution tarball. OPS and Jenkins can obtain the SQL for a
+  given release without unpacking the war, and the copy inside the tarball keeps the migrations
+  bound to the war they were built alongside. Fetch a single release with
+  `mvn dependency:copy -Dartifact=dk.kb.datahandler:ds-datahandler:<version>:zip:flyway`. The zip contains the
+  migrations and `ds-datahandler.build.properties` for provenance.
+
 ### Changed
 - Build suggest only trigger on full index. 
 - Build suggest is fire-and-forget call to solr. This will fix job that shows jobs as failed due to timeout.
@@ -34,7 +44,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Removed `<p>` tag in Javadoc.
 - Removed `<p/>` tag in Javadoc.
 - Removed `<br>` tag in Javadoc.
-
 
 ## [5.0.0](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-5.0.0) - 2026-06-10
 

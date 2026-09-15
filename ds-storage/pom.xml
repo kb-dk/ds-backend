@@ -439,16 +439,36 @@
                 <version>3.6.0</version>
                 <configuration>
                     <tarLongFileMode>posix</tarLongFileMode>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
                 </configuration>
+                <!-- ORDER MATTERS: same-phase executions run in declaration order, and
+                     the tarball embeds the flyway zip, so flyway-sql must stay first. -->
                 <executions>
+                    <!-- ${project.artifactId}-${project.version}-flyway.zip, attached with
+                         classifier 'flyway'. -->
                     <execution>
+                        <id>flyway-sql</id>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <phase>package</phase>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/flyway.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                    <!-- The distribution tarball, now also carrying the flyway zip. -->
+                    <execution>
+                        <id>distribution</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
