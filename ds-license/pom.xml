@@ -503,16 +503,44 @@
                 <version>3.6.0</version>
                 <configuration>
                     <tarLongFileMode>posix</tarLongFileMode>
-                    <descriptors>
-                        <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    </descriptors>
                 </configuration>
+                <!-- ORDER MATTERS. Maven runs executions of the same plugin bound to the
+                     same phase in the order they are declared here, and the distribution
+                     tarball embeds the flyway zip, so 'flyway-sql' must stay first.
+                     Swapping these two makes the distribution build fail with a missing
+                     source file. -->
                 <executions>
+                    <!-- The Flyway migrations as a standalone, separately fetchable artifact:
+                         ${project.artifactId}-${project.version}-flyway.zip. Attached to this
+                         module's GAV with classifier 'flyway', so 'mvn deploy' and the release
+                         plugin carry it in lockstep with the war, and Jenkins can fetch just
+                         the SQL for a release without pulling the whole distribution. -->
                     <execution>
+                        <id>flyway-sql</id>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <phase>package</phase>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/flyway.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                    <!-- The distribution tarball: war + conf as before, now also carrying the
+                         flyway zip built immediately above, so the migrations cannot be
+                         separated from the war they were built alongside. -->
+                    <execution>
+                        <id>distribution</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

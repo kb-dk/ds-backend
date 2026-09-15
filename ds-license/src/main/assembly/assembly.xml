@@ -5,6 +5,16 @@
   </formats>
 
   <files>
+    <!-- The Flyway migrations for this exact build, byte-identical to the
+         ds-license-<version>-flyway.zip published to Nexus. Embedded here so the
+         migrations travel with the war they were built alongside and cannot be
+         paired with the wrong release by accident. Built by the 'flyway-sql'
+         assembly execution, which must run before this one. -->
+    <file>
+      <source>target/${project.build.finalName}-flyway.zip</source>
+      <outputDirectory>/</outputDirectory>
+      <fileMode>0644</fileMode>
+    </file>
     <file>
       <source>conf/ocp/ds-license.xml</source>
       <outputDirectory>/</outputDirectory>

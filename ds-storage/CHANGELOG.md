@@ -7,6 +7,23 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- The Flyway migrations are now published as a separate release artifact,
+  `ds-storage-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and
+  embedded at the root of the distribution tarball. OPS and Jenkins can obtain the SQL for a
+  given release without unpacking the war, and the copy inside the tarball keeps the migrations
+  bound to the war they were built alongside. Fetch a single release with
+  `mvn dependency:copy -Dartifact=dk.kb.storage:ds-storage:<version>:zip:flyway`. The zip contains the
+  migrations and `ds-storage.build.properties` for provenance.
+
+### Removed
+
+- `create_ds_storage.ddl` is no longer shipped in the distribution tarball, and both it and
+  `create_ds_storage_h2_unittest.ddl` have been deleted. Neither was referenced anywhere in the
+  source tree; both predated the move to Testcontainers + Flyway. The migrations under
+  `src/main/resources/db/migration/ds-storage/` are the single source of truth for the schema.
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added

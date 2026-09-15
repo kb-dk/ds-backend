@@ -1,0 +1,41 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+  <!-- Produces ds-datahandler-${version}-flyway.zip: the Flyway migrations for this release
+       plus their provenance, deployed to Nexus alongside the war so OPS and Jenkins can
+       fetch the SQL without unpacking the war or the distribution tarball.
+
+       Fetch with:
+         mvn dependency:copy -Dartifact=dk.kb.datahandler:ds-datahandler:<version>:zip:flyway
+  -->
+  <id>flyway</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <!-- Keep the base dir so unzipping does not spray files into the cwd. -->
+  <includeBaseDirectory>true</includeBaseDirectory>
+
+  <fileSets>
+    <!-- The migrations, at the same relative path they occupy on the classpath in
+         the war, so the two can be diffed without mental arithmetic. -->
+    <fileSet>
+      <directory>src/main/resources/db</directory>
+      <outputDirectory>db</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>migration/**/*.sql</include>
+      </includes>
+    </fileSet>
+    <!-- Version + git sha of the build this zip came from. -->
+    <fileSet>
+      <directory>target/ds-datahandler-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>ds-datahandler.build.properties</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>
