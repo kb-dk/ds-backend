@@ -80,7 +80,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     public Integer oaiIngestFull(String oaiTarget) {
         log.debug("oaiIngestFull(oaiTarget='{}') called with call details: {}", oaiTarget, getCallDetails());
         try {
-            int numberIngested = DsDatahandlerFacade.oaiIngestFull(oaiTarget, getCurrentUsername());
+            int numberIngested = DsDatahandlerFacade.oaiIngestFull(oaiTarget);
             return numberIngested;
         } catch (Exception e){
             throw handleException(e);
@@ -91,7 +91,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     public Integer oaiIngestDelta(String oaiTarget) {
         log.debug("oaiIngestDelta(oaiTarget='{}') called with call details: {}", oaiTarget, getCallDetails());
         try {
-            int numberIngested = DsDatahandlerFacade.oaiIngestDelta(oaiTarget, getCurrentUsername());
+            int numberIngested = DsDatahandlerFacade.oaiIngestDelta(oaiTarget);
             return numberIngested;
         } catch (Exception e){
             throw handleException(e);
@@ -131,9 +131,9 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
         try {
             switch (typeDto){
                 case FULL:                                      
-                    return DsDatahandlerFacade.indexSolrFull(origin, getCurrentUsername());
+                    return DsDatahandlerFacade.indexSolrFull(origin);
                 case DELTA:
-                    return DsDatahandlerFacade.indexSolrDelta(origin, getCurrentUsername());
+                    return DsDatahandlerFacade.indexSolrDelta(origin);
                 default:
                     log.error("No indexing type has been selected. Indexing cannot continue without knowing which records to index.");
                     return "No indexing type has been selected. Indexing cannot continue without knowing which records to index.";
@@ -146,7 +146,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     @Override
     public void kalturaDeltaUpload() {    
         try {
-           DsDatahandlerFacade.kalturaDeltaUpload(getCurrentUsername());
+           DsDatahandlerFacade.kalturaDeltaUpload();
         }
         catch(Exception e) {
             throw handleException(e);
@@ -156,7 +156,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     @Override
     public void transcriptionsLoad() {
         try {
-            DsDatahandlerFacade.transcriptionsLoad(getCurrentUsername());
+            DsDatahandlerFacade.transcriptionsLoad();
          }
          catch(Exception e) {
              throw handleException(e);
@@ -165,7 +165,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     
     @Override
     public void buildSuggest() {
-      DsDatahandlerFacade.buildSuggest(getCurrentUsername());
+      DsDatahandlerFacade.buildSuggest();
         
     }
     
@@ -173,7 +173,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
      * Gets the name of the current user from the OAuth token.
      * @return
      */
-    private static String getCurrentUsername() {
+    public static String getCurrentUsername() {
         final String UNKNOWN = "Unknown";
 
         Message message = JAXRSUtils.getCurrentMessage();
@@ -185,6 +185,5 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
             return token.getName();
         }
         return UNKNOWN;
-    }
-    
+    }    
 }
