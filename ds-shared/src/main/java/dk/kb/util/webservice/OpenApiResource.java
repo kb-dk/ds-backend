@@ -9,7 +9,7 @@ import dk.kb.util.string.CallbackReplacer;
 import dk.kb.util.string.Strings;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
-import dk.kb.util.yaml.YAML;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -24,16 +24,21 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Handle serving of OpenAPI specification for a webapp. This class handles dynamic updates of the API specification.
  * Through this class it gets possible to use syntax as the following {@code ${config:yaml.path}} to access values from
- * config files in API specifications.
+ * config files in API specifications. A wildcard segment is also supported, e.g. {@code ${config:origins[*].name}},
+ * which is expanded to every matching indexed property (see {@link #resolveWildcard(String)}).
  * <p>
  * JAX-RS uses the empty constructor for serving the webapp. To configure the {@link OpenApiResource} call the
- * {@link #setConfig(YAML)}-method inside the given implementation of {@link Application#getClasses()} before
+ * {@link #setConfig(Config)}-method inside the given implementation of {@link Application#getClasses()} before
  * returning all classes that are part of the application. An example is provided here:
  *
  * <pre>
@@ -55,8 +60,12 @@ public class OpenApiResource extends ImplBase {
 
     /**
      * The config where values are substituted from.
+     * <p>
+     * This is a standard MicroProfile Config {@link Config}, not tied to any specific implementation (the
+     * concrete implementation, e.g. SmallRye Config, is chosen and wired by whichever project calls
+     * {@link #setConfig(Config)}).
      */
-    static private YAML config;
+    static private Config config;
 
     public static final String APPLICATION_YAML = "application/yaml";
 
@@ -76,7 +85,7 @@ public class OpenApiResource extends ImplBase {
 
     /**
      * JAX-RS uses the empty constructor for serving the webapp. To configure the {@link OpenApiResource} call the
-     * {@link #setConfig(YAML)}-method inside the given implementation of {@link Application#getClasses()} before
+     * {@link #setConfig(Config)}-method inside the given implementation of {@link Application#getClasses()} before
      * returning all classes that are part of the application. An example is provided here:
      *
      * <pre>
@@ -95,8 +104,8 @@ public class OpenApiResource extends ImplBase {
      */
     public OpenApiResource(){}
 
-    public static void setConfig(YAML configYAML){
-        config = configYAML;
+    public static void setConfig(Config configSource){
+        config = configSource;
     }
 
     /**
@@ -190,16 +199,26 @@ public class OpenApiResource extends ImplBase {
     }
 
     /**
-     * Resolve the value for the given YAML path in the configuration files for the project.
-     * @param yPath to extract value from.
-     * @return the value at the given path in the configuration files.
+     * Resolve the value(s) for the given path in the configuration for the project.
+     * <p>
+     * Two forms are supported:
+     * <ul>
+     *     <li>A plain (or comma-list) property, e.g. {@code openapi.serverurl} or {@code security.realms}.</li>
+     *     <li>A single wildcard segment, e.g. {@code origins[*].name}, which is expanded to every matching
+     *     indexed property, in ascending index order. See {@link #resolveWildcard(String)}.</li>
+     * </ul>
+     *
+     * @param yPath to extract value(s) from.
+     * @return the value(s) at the given path in the configuration, joined the same way {@link #getYamlSpec} expects.
      */
     private static String getReplacementForMatch(String yPath) {
         if (config == null){
             throw new IllegalStateException("Config must be initialized before using the class. See JavaDoc for OpenApiResource for further details.");
         }
 
-        List<Object> result = config.getMultiple(yPath);
+        List<String> result = yPath.contains("[*]") ?
+                resolveWildcard(yPath) :
+                config.getOptionalValues(yPath, String.class).orElse(List.of());
 
         if (result.isEmpty()){
             log.error("No entry has been found for yPath: '{}'.", yPath);
@@ -210,6 +229,32 @@ public class OpenApiResource extends ImplBase {
         // All entries are seperated by ", " to make the openAPI generator see the input ["${config:yaml.string}"] as an
         // actual array resolved as ["foo", "bar", "zoo"]
         return Strings.join(result, "\", \"");
+    }
+
+    /**
+     * Resolves a path containing a single {@code [*]} wildcard segment (e.g. {@code origins[*].name}) against
+     * every configured index for that segment (e.g. the properties {@code origins[0].name}, {@code origins[1].name},
+     * ...), which is how a YAML list-of-objects is flattened into individual configuration properties.
+     * <p>
+     * Note: only a single {@code [*]} occurrence per path is supported, which matches current usage in the
+     * OpenAPI specifications.
+     *
+     * @param yPath a path containing exactly one {@code [*]} segment.
+     * @return the matched values, ordered by ascending index. Empty if nothing matched.
+     */
+    private static List<String> resolveWildcard(String yPath) {
+        String regex = "^" + Pattern.quote(yPath).replace("[*]", "\\E(\\d+)\\Q") + "$";
+        Pattern indexed = Pattern.compile(regex);
+
+        SortedMap<Integer, String> byIndex = new TreeMap<>();
+        for (String name : config.getPropertyNames()) {
+            Matcher m = indexed.matcher(name);
+            if (m.matches()) {
+                config.getOptionalValue(name, String.class)
+                        .ifPresent(value -> byIndex.put(Integer.parseInt(m.group(1)), value));
+            }
+        }
+        return new ArrayList<>(byIndex.values());
     }
 
     /**
@@ -224,6 +269,5 @@ public class OpenApiResource extends ImplBase {
         return jsonMapper.enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(yamlObject);
     }
 }
-
 
 

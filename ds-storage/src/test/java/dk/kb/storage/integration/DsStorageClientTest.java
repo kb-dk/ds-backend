@@ -63,8 +63,8 @@ public class DsStorageClientTest {
     @BeforeAll
     static void setUp() throws Exception{
         try {
-            ServiceConfig.initialize("conf/ds-storage-behaviour.yaml","ds-storage-integration-test.yaml"); 
-            dsStorageDevel= ServiceConfig.getConfig().getString("integration.devel.storage");
+            ServiceConfig.initialize("conf/ds-storage-behaviour.yaml","ds-storage-integration-test.yaml");
+            dsStorageDevel= ServiceConfig.getConfig().getValue("integration.devel.storage", String.class);
             remote = new DsStorageClient(dsStorageDevel);
         } catch (IOException e) { 
             e.printStackTrace();
@@ -73,9 +73,9 @@ public class DsStorageClientTest {
         }
         
         try {            
-            String keyCloakRealmUrl= ServiceConfig.getConfig().getString("integration.devel.keycloak.realmUrl");            
-            String clientId=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientId");
-            String clientSecret=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");                
+            String keyCloakRealmUrl= ServiceConfig.getConfig().getValue("integration.devel.keycloak.realmUrl", String.class);
+            String clientId=ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientId", String.class);
+            String clientSecret=ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientSecret", String.class);
             String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
             log.info("Retrieved keycloak access token:"+token);            
             

@@ -139,7 +139,16 @@
             <artifactId>snakeyaml</artifactId>
             <version>2.2</version>
         </dependency>
-        <!--YAML end-->    
+        <!--YAML end-->
+
+        <!-- MicroProfile Config API only (interface, no implementation): OpenApiResource accepts a
+             org.eclipse.microprofile.config.Config instance from whichever project configures it, without
+             ds-shared depending on a concrete implementation such as SmallRye Config. -->
+        <dependency>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
+            <version>3.1</version>
+        </dependency>    
     
         <!--Logging-->
         <dependency>
