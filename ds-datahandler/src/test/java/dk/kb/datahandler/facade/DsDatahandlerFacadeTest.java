@@ -190,7 +190,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
         // Act/Assert
         Exception exception = Assertions.assertThrows(
             InternalServiceException.class,
-                () -> DsDatahandlerFacade.kalturaDeltaUpload(user)
+                () -> DsDatahandlerFacade.kalturaDeltaUpload()
         );
 
         Assertions.assertEquals(expectedMessage, exception.getMessage());

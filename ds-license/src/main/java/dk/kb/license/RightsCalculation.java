@@ -13,13 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class RightsCalculation {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculation.class);
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXX", Locale.ROOT);
     /**
      * Check if a given DS id is restricted.
      *
@@ -86,7 +89,7 @@ public class RightsCalculation {
         setRestrictionsForRecordDrArchive(rightsCalculationInputDto, drOutput);
         switch (rightsCalculationInputDto.getHoldbackInput().getOrigin()) {
             case "ds.tv":
-                setDrHoldbackForTvRecordDrArchive(rightsCalculationInputDto, drOutput);
+                setDrHoldbackForTvRecordDrArchive(rightsCalculationInputDto, drOutput);                
                 return drOutput;
             case "ds.radio":
                 setHoldbackForRadioRecordDrArchive(rightsCalculationInputDto, drOutput);
@@ -150,7 +153,6 @@ public class RightsCalculation {
         HoldbackCalculationInputDto holdbackInput = rightsCalculationInputDto.getHoldbackInput();
         String recordId = rightsCalculationInputDto.getRecordId();
         String startDate = rightsCalculationInputDto.getStartTime();
-
         DrHoldbackCategoryOutputDto drHoldbackCategoryOutputDto;
         String holdbackExpiredDate;
 
@@ -161,7 +163,7 @@ public class RightsCalculation {
                     rightsCalculationInputDto.getHoldbackInput().getProductionCountry() == null) {
                 drHoldbackCategoryOutputDto = new DrHoldbackCategoryOutputDto();
                 drOutput.setHoldbackName(null);
-                log.debug("'holdbackCategory', 'hensigt', 'form', 'indhold', and 'productionCountry' was null by recordId: {}", rightsCalculationInputDto.getRecordId());
+                log.debug("'holdbackCategory', 'hensigt', 'form', 'indhold', and 'productionCountry' was null by recordId: {}", rightsCalculationInputDto.getRecordId());                                      
             } else {
                 drHoldbackCategoryOutputDto = getDrHoldbackCategory(holdbackInput);
                 String holdbackName = getDrHoldbackName(holdbackInput, drHoldbackCategoryOutputDto);
@@ -172,10 +174,43 @@ public class RightsCalculation {
             drOutput.setHoldbackName(drHoldbackCategoryOutputDto.getName());
         }
 
-        holdbackExpiredDate = getDrHoldbackExpiredDate(drHoldbackCategoryOutputDto, recordId, startDate);
-        drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
+        //Allow all TV < 1943
+        
+        boolean beforeCutOffDate=isBeforeCutOffDate(startDate);
+        if (beforeCutOffDate) { //Bypass all holdback checks
+           drOutput.setHoldbackExpiredDate(startDate);
+           drOutput.setProductionCodeAllowed(true);         
+           log.debug("Allow holdback due to cutoff year for:"+recordId +": "+rightsCalculationInputDto);
+           
+        }
+        else {  //Full holdback calculation
+           holdbackExpiredDate = getDrHoldbackExpiredDate(drHoldbackCategoryOutputDto, recordId, startDate);
+           drOutput.setHoldbackExpiredDate(holdbackExpiredDate);
+        }
+        
     }
 
+    
+    
+    /**     
+     * Check if startTime is before holdbackCutoffYear for TV (default 1974)
+     *
+     * @param startTime UTC format. Example: 1974-01-13T18:05:00Z        
+     * @return boolean if startTime is before cutoff year         
+     */  
+    private static boolean isBeforeCutOffDate(String startTime) {
+        int cutoffYearForTV = ServiceConfig.getHoldbackCutOffYearForTV();
+        if (startTime != null) {
+
+        OffsetDateTime odt = OffsetDateTime.parse(startTime, DATE_FORMATTER);
+        int startYear = odt.getYear();
+             if (startYear < cutoffYearForTV) {
+              return true;
+             }
+        }
+        return false;
+    }
+    
     /**
      * Sets the DR holdback information for a radio record in the DR archive.
      * This method calculates the DR holdback expiration date based on the start time provided in the input DTO,

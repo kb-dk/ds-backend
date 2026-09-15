@@ -240,6 +240,19 @@ paths:
                     status: 0
                     QTime: 1200
 
+  /solr/buildsuggest:
+     get:
+       tags:
+         - '${project.name}'
+       summary: 'Will rebuild the suggest index. This is only when large amount of documents has been added. Full index will rebuild automatic'
+       security:
+         - KBOAuth:
+             - any
+       operationId: buildSuggest      
+       responses:
+         '200':
+           description: OK.
+
   /kaltura/deltaupload:
     post:
       tags:
@@ -596,11 +609,13 @@ components:
       enum:
         - oai harvest
         - solr index
+        - solr build suggest
         - kaltura upload
         - transcriptions
         - rerun clusters
       x-enum-varnames:
         - OAI_HARVEST
+        - SOLR_BUILD_SUGGEST
         - SOLR_INDEX
         - KALTURA_UPLOAD
         - TRANSCRIPTIONS
@@ -608,6 +623,7 @@ components:
       x-enum-descriptions:
         - oai harvest
         - solr index
+        - solr build suggest
         - kaltura upload
         - transcriptions
         - rerun clusters

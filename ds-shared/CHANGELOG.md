@@ -10,6 +10,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Changed
-
+- Removed kb-util dependency and moved classes to this ds-shared module
 - Added `description` and `name` in `pom.xml`.
 - Formatted `pom.xml`.

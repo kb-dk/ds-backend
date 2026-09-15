@@ -64,8 +64,9 @@
     </profiles>
     <dependencies>
         <dependency>
-            <groupId>dk.kb.util</groupId>
-            <artifactId>kb-util</artifactId>
+            <groupId>dk.kb.dsshared</groupId>
+            <artifactId>ds-shared</artifactId>
+            <version>100.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -88,11 +89,17 @@
                     <artifactId>javax.annotation-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>     
+        
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-xml-provider</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
         </dependency>
+    
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-client</artifactId>
@@ -101,6 +108,17 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-service-description</artifactId>
         </dependency>
+                
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+        <!-- Apache CXF and servlet stuff -->
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
+               
         <dependency>
             <!--For the openapi endpoint /openapi.json-->
             <groupId>org.apache.cxf</groupId>
