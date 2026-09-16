@@ -356,7 +356,7 @@ public class DsDatahandlerFacade {
             List<RerunClusterDto> rerunClusterDtoList =
                 RerunClusterStorage.performStorageAction("getRerunClusters()",
                     RerunClusterStorage.class, storage -> {
-                        return ((RerunClusterStorage) storage).getRerunClusters(
+                        return storage.getRerunClusters(
                             latestCreated.getCreated());
                     });
 

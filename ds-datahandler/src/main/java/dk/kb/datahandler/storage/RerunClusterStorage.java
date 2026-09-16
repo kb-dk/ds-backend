@@ -15,7 +15,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RerunClusterStorage {
+public class RerunClusterStorage implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(RerunClusterStorage.class);
 
   private final static RerunClusterDtoMapper rerunClusterDtoMapper = new RerunClusterDtoMapper();
@@ -57,7 +57,7 @@ public class RerunClusterStorage {
     dataSource.setDefaultAutoCommit(false);
     dataSource.setMaxOpenPreparedStatements(connectionPoolSize);
 
-    log.info("BaseModuleStorage initialized with driver='{}', url='{}', connectionPoolSize='{}'",
+    log.info("RerunClusterStorage initialized with driver='{}', url='{}', connectionPoolSize='{}'",
         driver, url, connectionPoolSize);
   }
 
@@ -73,6 +73,7 @@ public class RerunClusterStorage {
     }
   }
 
+  @Override
   public void close() {
     // Make sure connection is closed
     try {
@@ -84,8 +85,8 @@ public class RerunClusterStorage {
 
   /**
      * Start a storage transaction and performs the given action on it, returning the result from the action.
-     * If the action throws an exception, a {@link BaseModuleStorage#rollback()} is performed.
-     * If the action passes without exceptions, a {@link BaseModuleStorage#commit()} is performed.
+     * If the action throws an exception, a {@link RerunClusterStorage#rollback()} is performed.
+     * If the action passes without exceptions, a {@link RerunClusterStorage#commit()} is performed.
      *
      * @param actionID     a debug-oriented ID for the action, typically the name of the calling method.
      * @param storageClass what Storage class triggered the method
@@ -94,11 +95,11 @@ public class RerunClusterStorage {
      * @throws InternalServiceException if anything goes wrong.
      */
     public static <T> T performStorageAction(String actionID,
-                                             Class<? extends BaseModuleStorage> storageClass,
-                                             BaseModuleStorage.StorageAction<T> action) {
+                                             Class<? extends RerunClusterStorage> storageClass,
+                                             RerunClusterStorage.StorageAction<T> action) {
         long start = System.currentTimeMillis();
         try (
-            BaseModuleStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
+            RerunClusterStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
             T result;
             try {
                 result = action.process(storage);
@@ -128,22 +129,22 @@ public class RerunClusterStorage {
     }
 
     /**
-     * Callback used with {@link #performStorageAction(String, Class, BaseModuleStorage.StorageAction)}.
+     * Callback used with {@link #performStorageAction(String, Class, RerunClusterStorage.StorageAction)}.
      *
-     * @param <T> the object returned from the {@link BaseModuleStorage.StorageAction#process(BaseModuleStorage)} method.
+     * @param <T> the object returned from the {@link RerunClusterStorage.StorageAction#process(RerunClusterStorage)} method.
      */
     @FunctionalInterface
     public interface StorageAction<T> {
         /**
          * Access or modify the given storage inside a transaction.
-         * If the method throws an exception, it will be logged, a {@link BaseModuleStorage#rollback()} will be performed and
+         * If the method throws an exception, it will be logged, a {@link RerunClusterStorage#rollback()} will be performed and
          * a wrapping {@link dk.kb.util.webservice.exception.ServiceException} will be thrown.
          *
          * @param storage a storage ready for requests and updates.
          * @return custom return value.
          * @throws Exception if something went wrong.
          */
-        T process(BaseModuleStorage storage) throws Exception;
+        T process(RerunClusterStorage storage) throws Exception;
     }
 
   /**
