@@ -117,7 +117,7 @@ public class DsDatahandlerFacade {
      */    
     public static String indexSolrFull(String origin) throws InternalServiceException {
         SolrIndexResponse solrIndexResponse;
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.SOLR_INDEX, origin, null, user);
 
         try {
@@ -143,7 +143,7 @@ public class DsDatahandlerFacade {
      * @throws IOException
      */
     public static String indexSolrDelta(String origin) throws InternalServiceException, SolrServerException, IOException {
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         Long lastStorageModifiedTime = SolrUtils.getLatestMTimeForOrigin(origin);
         SolrIndexResponse solrIndexResponse;
 
@@ -196,7 +196,7 @@ public class DsDatahandlerFacade {
         // mTimeFrom is in microseconds
         
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom,user);
 
         log.info("Starting kaltura delta upload");
@@ -257,7 +257,7 @@ public class DsDatahandlerFacade {
      * @return Number of harvested records.
      */        
     public static Integer oaiIngestFull(String oaiTargetName) throws Exception {
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);
 
         String modifiedTimeFrom = HarvestTimeUtil.generateFrom(oaiTargetDto, null); // from == null, use default start day for OAI target instead
@@ -278,7 +278,7 @@ public class DsDatahandlerFacade {
      * @return Number of harvested records.
      */
     public static Integer oaiIngestDelta(String oaiTargetName) throws Exception {
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);       
         String lastHarvestTime = HarvestTimeUtil.loadLastHarvestTime(oaiTargetDto);
 
@@ -344,10 +344,10 @@ public class DsDatahandlerFacade {
      * and return number of rows inserted or updated in rerun_clusters table in a `RecordsCountDto`
      * object.
      *
-     * @param user
      * @return RecordsCountDto number of rows inserted or updated
      */
-    public static RecordsCountDto getRerunClusters(String user) {
+    public static RecordsCountDto getRerunClusters() {
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, null, user);
         try {
             DsStorageClient dsStorageApiClient = getDsStorageApiClient();
