@@ -51,14 +51,14 @@ db:
   url: "jdbc:postgresql://postgres-datahandler:5432/${datahandler_database}"
   driver: org.postgresql.Driver
   username: "${datahandler_database_username}"
-  password: "${datahandler_datanase_password}"
+  password: "${datahandler_database_password}"
   connectionPoolSize: 50
 
-db.p3rerun:
-    url: "jdbc:postgresql://{p3rerun_host}:5432/${p3rerun_database}"
+db_p3rerun:
+    url: "jdbc:postgresql://${p3rerun_host}:5432/${p3rerun_database}"
     driver: org.postgresql.Driver
     username: "${p3rerun_database_username}"
-    password: "${p3rerun_datanase_password}"
+    password: "${p3rerun_database_password}"
     connectionPoolSize: 50
 
 # The ds-present server used for xslt

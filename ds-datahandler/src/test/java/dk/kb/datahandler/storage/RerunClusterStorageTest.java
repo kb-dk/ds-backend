@@ -31,7 +31,7 @@ public class RerunClusterStorageTest {
   @BeforeAll
   public static void beforeClass() throws Exception {
     ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
-    BaseModuleStorage.initialize(postgres.getDriverClassName(), postgres.getJdbcUrl(),
+    RerunClusterStorage.initialize(postgres.getDriverClassName(), postgres.getJdbcUrl(),
         postgres.getUsername(), postgres.getPassword(), 10);
     rerunClusterStorage = new RerunClusterStorageForUnitTests();
   }

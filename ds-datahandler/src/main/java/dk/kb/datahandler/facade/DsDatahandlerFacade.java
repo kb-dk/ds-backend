@@ -354,7 +354,7 @@ public class DsDatahandlerFacade {
 
             CreatedDto latestCreated = latestCreated();
             List<RerunClusterDto> rerunClusterDtoList =
-                BaseModuleStorage.performStorageAction("getRerunClusters()",
+                RerunClusterStorage.performStorageAction("getRerunClusters()",
                     RerunClusterStorage.class, storage -> {
                         return ((RerunClusterStorage) storage).getRerunClusters(
                             latestCreated.getCreated());
