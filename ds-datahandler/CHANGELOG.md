@@ -9,12 +9,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- The Flyway migrations are now published as a separate release artifact,
-  `ds-datahandler-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and embedded at the 
-  root of the distribution tarball. OPS and Jenkins can obtain the SQL for a given release without unpacking the war, 
-  and the copy inside the tarball keeps the migrations bound to the war they were built alongside. Fetch a single 
-  release with `mvn dependency:copy -Dartifact=dk.kb.datahandler:ds-datahandler:<version>:zip:flyway`. The zip contains 
-  the migrations and `ds-datahandler.build.properties` for provenance.
+- The Flyway migrations are now published as a separate release artifact, `ds-datahandler-<version>-flyway.zip` 
+  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball. 
+  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball 
+  keeps the migrations bound to the war they were built alongside. Fetch a single release with 
+  `mvn dependency:copy -Dartifact=dk.kb.datahandler:ds-datahandler:<version>:zip:flyway`. The zip contains the 
+  migrations and `ds-datahandler.build.properties` for provenance.
 - Added endpoint `POST /rerun_clusters` that calls `ds-storage` via DsStorageClient that fetch `latestCreated` timestamp
   (can be null) in our `rerun_cluster` table, then `ds-datahandler` uses the fetched `latestCreated` timestamp to fetch
   all new rows (unique `file_id`) from remote `p3rerun` database in table `clusters` table and convert it to a list of

@@ -11,13 +11,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - New property in `ds-license-behaviour.yaml` for cutoff year for TV. All TV before this year will bypass holdback
   rules.
-- The Flyway migrations are now published as a separate release artifact,
-  `ds-license-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and
-  embedded at the root of the distribution tarball. OPS and Jenkins can obtain the SQL for a
-  given release without unpacking the war, and the copy inside the tarball keeps the migrations
-  bound to the war they were built alongside. Fetch a single release with
-  `mvn dependency:copy -Dartifact=dk.kb.license:ds-license:<version>:zip:flyway`. The zip contains the
-  migrations and `ds-license.build.properties` for provenance.
+- The Flyway migrations are now published as a separate release artifact, `ds-license-<version>-flyway.zip` 
+  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball. 
+  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball 
+  keeps the migrations bound to the war they were built alongside. Fetch a single release with
+  `mvn dependency:copy -Dartifact=dk.kb.license:ds-license:<version>:zip:flyway`. The zip contains the migrations and
+  `ds-license.build.properties` for provenance.
 
 ### Changed
 
