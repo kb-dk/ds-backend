@@ -9,6 +9,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- New property in `ds-license-behaviour.yaml` for cutoff year for TV. All TV before this year will bypass holdback
+  rules.
 - The Flyway migrations are now published as a separate release artifact,
   `ds-license-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and
   embedded at the root of the distribution tarball. OPS and Jenkins can obtain the SQL for a
@@ -17,16 +19,21 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `mvn dependency:copy -Dartifact=dk.kb.license:ds-license:<version>:zip:flyway`. The zip contains the
   migrations and `ds-license.build.properties` for provenance.
 
+### Changed
+
+- Allow all TV before 1974 (not included). The cutoff year can be configured in the yaml-file. ProductionCodeAllowed
+  will be true and holdbackExpired will be start time for program.
+- Removed `kb-util` dependency and moved classes to `ds-shared`.
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
-- Removed kb-util dependency and moved classes to ds-shared
-- Added line break before `@param` in Javadocs
-- Added line break before `@return` in Javadocs
-- new property in ds-license-behaviour.yaml for cutoff year for TV. All TV before this year will bypass holdback rules.
+
+- Added line break before `@param` in Javadocs.
+- Added line break before `@return` in Javadocs.
 
 ### Changed
-- Allow all TV before 1974(not included). The cutoff year can be configured in the yaml-file. ProductionCodeAllowed will be true and holdbackExpired will be start time for program.
+
 - Formatted `openapi` file.
 - Moved OpenAPI description from `pom.xml` into `openapi` file.
 - Added `name` in `pom.xml`.

@@ -12,15 +12,21 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add `rerun_cluster_id` to `schema.org` and `solr schema`.
 - Update solr schema version to 1.8.10.
 
+### Changed
+
+- `ds-license rights calculation` can allowed programs without a production code (productionCodeAllowed) if start time
+  is before cutoff year (default 1974, year not included).
+- Removed `kb-util` dependency and moved classes to `ds-shared`.
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
-- Removed kb-util dependency and moved classes to ds-shared
+
 - Added line break before `@param` in Javadocs
 - Added line break before `@return` in Javadocs
 
 ### Changed
-- Ds-license rights calculation can allowed programs without a production code (productionCodeAllowed) if start time is before cutoff year (default 1974, year not included)
+
 - Formatted `openapi` file.
 - Moved OpenAPI description from `pom.xml` into `openapi` file.
 - Added `name` in `pom.xml`.
@@ -41,7 +47,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Marked unittest with @Tag ("integration") so it can build without aegis.
 - Bumb solr schema version to 1.8.9
 - Create minimum client jar. Cross module dependencies uses this new jar instead of the full classes jar.
-- Marked unittest with @Tag("integration") so it can build without aegis.
+- Marked unittest with @Tag ("integration") so it can build without aegis.
 - Only allow formatMediaTypes 'Moving Image' and 'Sound' (casesensitive)
 
 ## [4.0.2](https://github.com/kb-dk/ds-present/releases/tag/ds-present-4.0.2) 2026-04-07
