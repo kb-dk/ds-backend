@@ -1,5 +1,7 @@
 package dk.kb.storage.webservice;
 
+import dk.kb.storage.api.v1.impl.RerunClusterApiServiceImpl;
+import dk.kb.storage.api.v1.impl.TranscriptionApiServiceImpl;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +22,9 @@ public class Application_v1 extends javax.ws.rs.core.Application {
         return new HashSet<>(Arrays.asList(
                 JacksonJsonProvider.class,
                 RecordApiServiceImpl.class,
+                RerunClusterApiServiceImpl.class,
                 ServiceApiServiceImpl.class,
+                TranscriptionApiServiceImpl.class,
                 ServiceExceptionMapper.class,
                 OpenApiResource.class
         ));
