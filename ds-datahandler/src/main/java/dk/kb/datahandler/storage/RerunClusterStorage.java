@@ -27,7 +27,7 @@ public class RerunClusterStorage implements AutoCloseable {
           c.created,
           c.job_id
       FROM
-          cluster c
+          clusters c
       WHERE
           (
               CAST(? AS TIMESTAMP WITH TIME ZONE) IS NULL -- takes care if the rerun_clusters table is empty
