@@ -1,5 +1,7 @@
 package dk.kb.util.webservice;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -90,6 +92,9 @@ public class Service2ServiceRequest {
             
             if (objectClass != null) { //Convert to DTO
                ObjectMapper mapper = new ObjectMapper();
+               mapper.registerModule(new JavaTimeModule());
+               mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
                @SuppressWarnings("unchecked")
                T dto = (T) mapper.readValue(json, objectClass.getClass()); //Need to return an object of type <T>.            
                return dto;
@@ -148,6 +153,9 @@ public class Service2ServiceRequest {
              }             
              String json = IOUtils.toString(con.getInputStream(), StandardCharsets.UTF_8);                       
              ObjectMapper mapper = new ObjectMapper();
+             mapper.registerModule(new JavaTimeModule());
+             mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
              CollectionType listType = mapper.getTypeFactory().constructCollectionType(ArrayList.class,  objectClass.getClass());
              List<T> dtoList = mapper.readValue(json, listType);                                                              
              return dtoList;                                                           
@@ -181,6 +189,8 @@ public class Service2ServiceRequest {
          //Make a new ObjectMapper each time.  Reports that it can deadlock if static.
          //Performance hardly an issue since it is only used for service2service calls
          ObjectMapper memberVarObjectMapper = new ObjectMapper();
+         memberVarObjectMapper.registerModule(new JavaTimeModule());
+         memberVarObjectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
          String localVarPostBody = memberVarObjectMapper.writeValueAsString( postJsonDto);
          if (postJsonDto !=  null) {
              con.setDoOutput(true); //Required if we post data
@@ -224,5 +234,4 @@ public class Service2ServiceRequest {
             return new InternalServiceException();
         }         
      }
-     
 }
