@@ -53,7 +53,7 @@ public class RerunClusterStorage implements AutoCloseable {
     dataSource.setUsername(username);
     dataSource.setPassword(password);
     dataSource.setUrl(url);
-    dataSource.setDefaultReadOnly(false);
+    dataSource.setDefaultReadOnly(true);
     dataSource.setDefaultAutoCommit(false);
     dataSource.setMaxOpenPreparedStatements(connectionPoolSize);
 

@@ -59,7 +59,7 @@ db_p3rerun:
     driver: org.postgresql.Driver
     username: "${p3rerun_database_username}"
     password: "${p3rerun_database_password}"
-    connectionPoolSize: 50
+    connectionPoolSize: 3
 
 # The ds-present server used for xslt
 present:
