@@ -368,8 +368,6 @@ public class DsDatahandlerFacade {
 
             updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
                 recordsCountDto.getCount(), null);
-            log.info("Inserted/updated rows in rerun_clusters table:'{}'",
-                recordsCountDto.getCount());
 
             return recordsCountDto;
         } catch (Exception exception) {
