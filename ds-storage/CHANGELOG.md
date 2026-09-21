@@ -18,11 +18,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added support for OffsetDateTime with OpenAPI generation.
 - Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found in
   `create_rerun_clusters.ddl`*).
-- Added endpoint `POST /rerun_clusters` that fetch new rows from remote `p3rerun` database in table `clusters` table,
-  save it to our `rerun_clusters` table, update `mtime` in `ds_records` table and return number of rows inserted or
-  updated in `rerun_clusters` table.
+- Added endpoint `POST /rerun_clusters` that takes a List of `RerunClusterDto` and save it to our `rerun_clusters` 
+  table, update `mtime` in `ds_records` table and return number of rows inserted or updated in `rerun_clusters` table.
 - Added endpoint `GET /rerun_clusters/{fileId}` that returns a `RerunCluster` matching the fileId. Returns a `HTTP 404`
   if no match was found.
+- Added endpoint `GET /rerun-cluster/created/latest` that return latest `created` datetime from `rerun_clusters` table. 
+  It can be null, if `rerun_clusters` table is empty.
 
 
 ### Changed
