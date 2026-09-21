@@ -24,10 +24,8 @@ import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.model.v1.RerunClusterDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
-import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
 import java.util.UUID;
@@ -212,7 +210,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         String referenceId = record.getReferenceId();
 
-        updateMetadataMapWithRerunClusterId(metadata, referenceId);
+        updateMetadataMapWithRerunCluster(metadata, referenceId);
 
         updateMetadataMapWithTranscription(metadata, referenceId);
 
@@ -345,16 +343,17 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Updates the provided metadata map with rerunClusterId.
+     * Updates the provided metadata map with rerunCluster data.
      *
      * @param metadata the map of metadata
-     * @param fileId   the fileId to find rerunClusterId
+     * @param fileId   the fileId to find rerunCluster
      */
-    private void updateMetadataMapWithRerunClusterId(Map<String, String> metadata, String fileId) {
+    private void updateMetadataMapWithRerunCluster(Map<String, String> metadata, String fileId) {
         if (fileId != null) {
-            RerunClusterDto rerunClusterId = getStorage().getRerunClusterByFileId(
+            RerunClusterDto rerunCluster = getStorage().getRerunClusterByFileId(
                 UUID.fromString(fileId));
-            metadata.put("rerun_cluster_id", rerunClusterId.getRerunClusterId().toString());
+            metadata.put("rerun_cluster_id", rerunCluster.getRerunClusterId().toString());
+            metadata.put("rerun_cluster_id_count", rerunCluster.getRerunClusterIdCount().toString());
         }
     }
 

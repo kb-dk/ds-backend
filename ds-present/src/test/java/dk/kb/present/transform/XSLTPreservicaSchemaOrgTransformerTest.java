@@ -78,29 +78,38 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
-    void getTransformedWithAccessFieldsAdded_whenRerunClusterIdExists_thenRerunClusterIdFieldIsPopulated() throws IOException {
+    void getTransformedWithAccessFieldsAdded_whenRerunClusterExists_thenRerunClusterFieldsIsPopulated()
+        throws IOException {
         // Arrange
         UUID rerunClusterId = UUID.randomUUID();
+        Integer rerunClusterIdCount = 2;
         Map<String, String> map = new HashMap<>();
         map.put("rerun_cluster_id", rerunClusterId.toString());
+        map.put("rerun_cluster_id_count", rerunClusterIdCount.toString());
 
         // Act
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
+            TestFiles.PVICA_RECORD_e683b0b8, map);
 
         // Assert
         assertTrue(transformedJSON.contains("\"kb:rerun_cluster_id\":\"" + rerunClusterId + "\""));
+        assertTrue(
+            transformedJSON.contains("\"kb:rerun_cluster_id_count\":" + rerunClusterIdCount));
     }
 
     @Test
-    void getTransformedWithAccessFieldsAdded_whenRerunClusterIdDoesNotExists_thenRerunClusterIdFieldDoesNotExits() throws IOException {
+    void getTransformedWithAccessFieldsAdded_whenRerunClusterDoesNotExists_thenRerunClusterFieldsDoesNotExits()
+        throws IOException {
         // Arrange
         Map<String, String> map = new HashMap<>();
 
         // Act
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
+            TestFiles.PVICA_RECORD_e683b0b8, map);
 
         // Assert
-        assertFalse(transformedJSON.contains("\"kb:rerun_cluster_id\""));
+        assertFalse(transformedJSON.contains("\"kb:rerun_cluster_id\":"));
+        assertFalse(transformedJSON.contains("\"kb:rerun_cluster_id_count\":"));
     }
 
     @Test
@@ -128,7 +137,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
 
         // Assert
-        assertFalse(transformedJSON.contains("\"kb:transcription\""));
+        assertFalse(transformedJSON.contains("\"kb:transcription\":"));
         assertTrue(transformedJSON.contains("\"kb:has_transcription\":\"false\""));
     }
 

@@ -9,7 +9,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Add `rerun_cluster_id` to `schema.org` and `solr schema`.
+- Add `rerun_cluster_id` and `rerun_cluster_id_count` to `schema.org` and `solr schema`.
 - Update solr schema version to 1.8.10.
 
 ### Changed

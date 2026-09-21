@@ -492,21 +492,27 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    void transformWithInjections_whenRerunClusterIdExists_thenRerunClusterIdFieldIsPopulated() throws IOException {
+    void transformWithInjections_whenRerunClusterExists_thenRerunClusterFieldsIsPopulated()
+        throws IOException {
         // Arrange
         UUID rerunClusterId = UUID.randomUUID();
+        Integer rerunClusterIdCount = 2;
         Map<String, String> map = new HashMap<>();
         map.put("rerun_cluster_id", rerunClusterId.toString());
+        map.put("rerun_cluster_id_count", rerunClusterIdCount.toString());
 
         // Act
         String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
-
+        System.out.println(solrDocument);
         // Assert
         assertTrue(solrDocument.contains("\"rerun_cluster_id\":\"" + rerunClusterId + "\""));
+        assertTrue(
+            solrDocument.contains("\"rerun_cluster_id_count\":\"" + rerunClusterIdCount + "\""));
     }
 
     @Test
-    void transformWithInjections_whenRerunClusterIdDoesNotExists_thenRerunClusterIdFieldDoesNotExit() throws IOException {
+    void transformWithInjections_whenRerunClusterDoesNotExists_thenRerunClusterFieldsDoesNotExit()
+        throws IOException {
         // Arrange
         Map<String, String> map = new HashMap<>();
 
@@ -515,6 +521,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
         // Assert
         assertFalse(solrDocument.contains("\"rerun_cluster_id\""));
+        assertFalse(solrDocument.contains("\"rerun_cluster_id_count\""));
     }
 
     @Test
