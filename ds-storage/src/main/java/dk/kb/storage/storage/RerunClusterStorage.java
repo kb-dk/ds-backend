@@ -107,7 +107,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
 
       ResultSet resultSet = stmt.executeQuery();
 
-      while (resultSet.next()) {
+      if (resultSet.next()) {
         return recordsCountDtoMapper.map(resultSet.getInt("rerun_clusters_count"));
       }
 
@@ -131,7 +131,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
       stmt.setObject(1, fileId);
       ResultSet resultSet = stmt.executeQuery();
 
-      while (resultSet.next()) {
+      if (resultSet.next()) {
         return rerunClusterDtoMapper.map(resultSet);
       }
 
@@ -155,7 +155,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
     try (PreparedStatement stmt = connection.prepareStatement(latestCreatedStatement)) {
       ResultSet resultSet = stmt.executeQuery();
 
-      while (resultSet.next()) {
+      if (resultSet.next()) {
         return createdDtoMapper.map(resultSet);
       }
 
