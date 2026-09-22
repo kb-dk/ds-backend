@@ -59,8 +59,8 @@ public class RerunClusterStorageTest {
     try (Connection conn = postgres.createConnection("")) {
       conn.createStatement().execute(
           """
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '1111a11a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '1111a11a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
           """
       );
     }
@@ -80,8 +80,8 @@ public class RerunClusterStorageTest {
     try (Connection conn = postgres.createConnection("")) {
       conn.createStatement().execute(
           """
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '1111a11a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '1111a11a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
           """
       );
     }
@@ -102,9 +102,9 @@ public class RerunClusterStorageTest {
     try (Connection conn = postgres.createConnection("")) {
       conn.createStatement().execute(
           """
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T06:23:40.638Z', 'run 1');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-07T07:23:40.638Z', 'run 2');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-08T08:23:40.638Z', 'run 3');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T06:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-07T07:23:40.638Z', 'run 2');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-08T08:23:40.638Z', 'run 3');
           """
       );
     }
@@ -125,9 +125,9 @@ public class RerunClusterStorageTest {
     try (Connection conn = postgres.createConnection("")) {
       conn.createStatement().execute(
           """
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T06:23:40.638Z', 'run 1');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-07T07:23:40.638Z', 'run 2');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-08T08:23:40.638Z', 'run 3');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T06:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-07T07:23:40.638Z', 'run 2');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-08T08:23:40.638Z', 'run 3');
           """
       );
     }
@@ -148,11 +148,11 @@ public class RerunClusterStorageTest {
     try (Connection conn = postgres.createConnection("")) {
       conn.createStatement().execute(
           """
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '1111a11a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-08-01T00:00:00.001Z', 'run 2');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-08-01T00:00:00.002Z', 'run 2');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('3000a00a-0aa0-000a-00a0-a0a000aa0aa0', '2222a22a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-09-06T09:23:40.638Z', 'run 3');
-          INSERT INTO cluster (id, file_id, rerun_cluster_id, created, job_id) VALUES ('4000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-09-06T09:23:40.638Z', 'run 3');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '1111a11a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-08-01T00:00:00.001Z', 'run 2');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-08-01T00:00:00.002Z', 'run 2');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('3000a00a-0aa0-000a-00a0-a0a000aa0aa0', '2222a22a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-09-06T09:23:40.638Z', 'run 3');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('4000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-09-06T09:23:40.638Z', 'run 3');
           """
       );
     }
