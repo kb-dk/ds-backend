@@ -103,6 +103,13 @@ curl --request GET "http://localhost:8084/ds-datahandler/v1/oai/import/delta?oai
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
+### Fetch rerun clusters from remote database (takes 1,5 hour):
+
+```shell
+curl --request POST "http://localhost:8084/ds-datahandler/v1/rerun-cluster" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
+```
+
 ### Index records in Solr (we only have one collection (read and write in one))
 
 tv
