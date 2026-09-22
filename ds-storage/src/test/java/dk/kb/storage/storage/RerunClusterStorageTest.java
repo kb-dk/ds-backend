@@ -149,7 +149,7 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   }
 
   @Test
-  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnNull() throws Exception {
+  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnEmptyRerunCluster() throws Exception {
     // Arrange
     UUID fileId = UUID.randomUUID();
 
@@ -157,7 +157,14 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     RerunClusterDto rerunClusterDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
 
     // Assert
-    assertNull(rerunClusterDto);
+    assertNotNull(rerunClusterDto);
+    assertNull(rerunClusterDto.getFileId());
+    assertNull(rerunClusterDto.getRerunClusterId());
+    assertNull(rerunClusterDto.getRerunClusterIdCount());
+    assertNull(rerunClusterDto.getCreated());
+    assertNull(rerunClusterDto.getJobId());
+    assertNull(rerunClusterDto.getInserted());
+    assertNull(rerunClusterDto.getUpdated());
   }
 
   @Test

@@ -159,20 +159,21 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
   }
 
   @Test
-  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenThrowNotFoundException() {
+  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnEmptyRerunCluster() {
     // Arrange
     UUID fileId = UUID.randomUUID();
 
-    String expectedMessage =
-        "dk.kb.util.webservice.exception.InternalServiceException: javax.ws.rs.NotFoundException: rerunCluster fileId='" +
-            fileId + "' not found";
-
     // Act
-    Exception exception = assertThrows(InternalServiceException.class,
-        () -> RerunClusterFacade.getRerunClusterByFileId(fileId));
+    RerunClusterDto rerunClusterDto = RerunClusterFacade.getRerunClusterByFileId(fileId);
 
     // Assert
-    assertEquals(expectedMessage, exception.getMessage());
+    assertNull(rerunClusterDto.getFileId());
+    assertNull(rerunClusterDto.getRerunClusterId());
+    assertNull(rerunClusterDto.getRerunClusterIdCount());
+    assertNull(rerunClusterDto.getCreated());
+    assertNull(rerunClusterDto.getJobId());
+    assertNull(rerunClusterDto.getInserted());
+    assertNull(rerunClusterDto.getUpdated());
   }
 
   @Test
