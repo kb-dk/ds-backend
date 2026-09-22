@@ -494,8 +494,7 @@ public class DsStorageClient {
     public RerunClusterDto getRerunClusterByFileId(UUID fileId) throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
-                .appendPathSegments("rerun-cluster")
-                .addParameter("fileId", fileId.toString())
+                .appendPathSegments("rerun-cluster", fileId.toString())
                 .build();
 
             return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET", new RerunClusterDto(),
