@@ -344,6 +344,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
     /**
      * Updates the provided metadata map with rerunCluster data.
+     * You need to return an empty object because the code can not handle anything else. So we are
+     * bound to have null checks this way...
      *
      * @param metadata the map of metadata
      * @param fileId   the fileId to find rerunCluster
@@ -352,8 +354,14 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         if (fileId != null) {
             RerunClusterDto rerunCluster = getStorage().getRerunClusterByFileId(
                 UUID.fromString(fileId));
-            metadata.put("rerun_cluster_id", rerunCluster.getRerunClusterId().toString());
-            metadata.put("rerun_cluster_id_count", rerunCluster.getRerunClusterIdCount().toString());
+
+            if (rerunCluster.getRerunClusterId() != null) {
+                metadata.put("rerun_cluster_id", rerunCluster.getRerunClusterId().toString());
+            }
+
+            if (rerunCluster.getRerunClusterIdCount() != null) {
+                metadata.put("rerun_cluster_id_count", rerunCluster.getRerunClusterIdCount().toString());
+            }
         }
     }
 
