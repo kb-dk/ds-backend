@@ -95,9 +95,9 @@ public class RerunClusterStorage extends BaseModuleStorage {
    *
    * @param rerunClusterDto
    * @return RecordsCountDto number of rows inserted or updated
-   * @throws Exception
+   * @throws SQLException
    */
-  public RecordsCountDto updateRerunClusters(RerunClusterDto rerunClusterDto) throws Exception {
+  public RecordsCountDto updateRerunClusters(RerunClusterDto rerunClusterDto) throws SQLException {
     try (PreparedStatement stmt = connection.prepareStatement(updateRerunClustersStatement)) {
       stmt.setObject(1, rerunClusterDto.getId());
       stmt.setObject(2, rerunClusterDto.getFileId());
@@ -124,9 +124,9 @@ public class RerunClusterStorage extends BaseModuleStorage {
    *
    * @param fileId
    * @return RerunClusterDto
-   * @throws Exception
+   * @throws SQLException
    */
-  public RerunClusterDto getRerunClusterByFileId(UUID fileId) throws Exception {
+  public RerunClusterDto getRerunClusterByFileId(UUID fileId) throws SQLException {
     try (PreparedStatement stmt = connection.prepareStatement(getRerunClusterByFileIdStatement)) {
       stmt.setObject(1, fileId);
       ResultSet resultSet = stmt.executeQuery();
@@ -149,9 +149,9 @@ public class RerunClusterStorage extends BaseModuleStorage {
    * Return latest created datetime from rerun_clusters table. Can be null.
    *
    * @return CreatedDto with latest created datetime
-   * @throws Exception
+   * @throws SQLException
    */
-  public CreatedDto latestCreated() throws Exception {
+  public CreatedDto latestCreated() throws SQLException {
     try (PreparedStatement stmt = connection.prepareStatement(latestCreatedStatement)) {
       ResultSet resultSet = stmt.executeQuery();
 

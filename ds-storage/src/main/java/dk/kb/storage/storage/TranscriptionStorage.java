@@ -112,7 +112,7 @@ public class TranscriptionStorage extends BaseModuleStorage {
      * @return Number of deleted records. Value 1 should be expected but can be higher if several records by mistake have same stream
      * @throws Exception Only if unexpected SQL exception happens.
      */
-    public int deleteTranscriptionByFileId(String fileId) throws Exception {
+    public int deleteTranscriptionByFileId(String fileId) throws SQLException {
         try (PreparedStatement stmt = connection.prepareStatement(deleteTranscriptionByFileIdStatement)) {
             stmt.setString(1, fileId);
             int numberDeleted = stmt.executeUpdate();
@@ -133,7 +133,7 @@ public class TranscriptionStorage extends BaseModuleStorage {
     /**
      * @param transcription fileId must not be full
      */
-    public void createTranscription(TranscriptionDto transcription) throws Exception {
+    public void createTranscription(TranscriptionDto transcription) throws SQLException {
         long nowStamp = UniqueTimestampGenerator.next();
 
         try (PreparedStatement stmt = connection.prepareStatement(createTranscriptionStatement)) {
