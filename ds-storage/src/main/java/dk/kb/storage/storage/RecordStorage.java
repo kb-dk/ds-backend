@@ -798,7 +798,7 @@ public class RecordStorage extends BaseModuleStorage {
     }
 
     /**
-     * Get total amount of records for a specific {@link #ORIGIN_COLUMN}.
+     * Get total amount of records for a specific origin.
      *
      * @param origin the origin to query for in the database.
      * @param mTime  is needed to only deliver the values that are actually extracted.
