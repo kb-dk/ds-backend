@@ -836,7 +836,7 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example 000000a1-0000-111a-a2b4-7488244fcca7?>
   </field>
 
-  <field name="rerun_cluster_id_count" type="docValues">
+  <field name="rerun_cluster_id_count" type="pint">
     <?description Count on how many broadcasts has the same rerun_cluster_id.?>
     <?example 4?>
   </field>
