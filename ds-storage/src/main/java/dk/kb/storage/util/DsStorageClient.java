@@ -475,8 +475,8 @@ public class DsStorageClient {
                 .appendPathSegments("rerun-cluster")
                 .build();
 
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST", new RecordsCountDto(),
-                rerunClusterDtoList);
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST",
+                new RecordsCountDto(), rerunClusterDtoList);
 
         } catch (URISyntaxException uriSyntaxException) {
             log.error("Invalid url: " + uriSyntaxException.getMessage());
@@ -497,9 +497,8 @@ public class DsStorageClient {
                 .appendPathSegments("rerun-cluster", fileId.toString())
                 .build();
 
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET", new RerunClusterDto(),
-                null);
-
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET",
+                new RerunClusterDto(), null);
         } catch (URISyntaxException uriSyntaxException) {
             log.error("Invalid url: " + uriSyntaxException.getMessage());
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);
@@ -517,8 +516,8 @@ public class DsStorageClient {
                 .appendPathSegments("rerun-cluster","created", "latest")
                 .build();
 
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET", new CreatedDto(),
-                null);
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET",
+                new CreatedDto(), null);
 
         } catch (URISyntaxException uriSyntaxException) {
             log.error("Invalid url: " + uriSyntaxException.getMessage());
