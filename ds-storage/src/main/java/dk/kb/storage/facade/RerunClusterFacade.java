@@ -60,12 +60,6 @@ public class RerunClusterFacade {
           RerunClusterDto rerunClusterDto =
               ((RerunClusterStorage) storage).getRerunClusterByFileId(fileId);
 
-          if (rerunClusterDto == null) {
-            final String errorMessage = "rerunCluster fileId='" + fileId + "' not found";
-            log.error(errorMessage);
-            throw new NotFoundException(errorMessage);
-          }
-
           return rerunClusterDto;
         });
   }
