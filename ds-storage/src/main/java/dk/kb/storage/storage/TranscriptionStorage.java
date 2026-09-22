@@ -77,7 +77,8 @@ public class TranscriptionStorage extends BaseModuleStorage {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (!rs.next()) {
-                    TranscriptionDto empty = new TranscriptionDto(); //DsStorageClient can not handle null values when serializing.
+                    // DsStorageClient can not handle null values when serializing.
+                    TranscriptionDto empty = new TranscriptionDto();
                     empty.setFileId(fileId);
                     return empty;
                 }
