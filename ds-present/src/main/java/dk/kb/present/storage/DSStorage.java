@@ -99,8 +99,10 @@ public class DSStorage implements Storage {
         try {
              return storageClient.getTranscription(fileId);
         } catch (ServiceException e) {
-            log.warn("Unable to retrieve transcription with fileId: '{}'. URL: '{}'. Exception: ", fileId, storageUrl, e);
-           throw e;
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve transcription with fileId: '{}'. URL: '{}'. Exception: ",
+                fileId, storageUrl, e);
+            throw e;
         }
     }
 
@@ -148,7 +150,9 @@ public class DSStorage implements Storage {
         try {
             return storageClient.getRerunClusterByFileId(fileId);
         } catch (ServiceException e) {
-            log.warn("Could not find rerunCluster with fileId: '{}'. URL: '{}'. Exception: ", fileId, storageUrl, e);
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve rerunCluster with fileId: '{}'. URL: '{}'. Exception: ",
+                fileId, storageUrl, e);
             throw e;
         }
     }
