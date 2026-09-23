@@ -95,6 +95,29 @@ public class RerunClusterStorageTest {
   }
 
   @Test
+  public void getRerunClusters_whenCreatedMatchLatestInsertedRows_thenReturnAllRowsFromMatchedCreatedAndLaterCreated()
+      throws Exception {
+    // Arrange
+    OffsetDateTime created = OffsetDateTime.parse("2026-07-06T06:23:40.638Z");
+    try (Connection conn = postgres.createConnection("")) {
+      conn.createStatement().execute(
+          """
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T06:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T06:23:40.638Z', 'run 1');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-07T08:23:40.638Z', 'run 2');
+          """
+      );
+    }
+
+    // Act
+    List<RerunClusterDto> rerunClusterDtoList = rerunClusterStorage.getRerunClusters(created);
+
+    // Assert
+    assertNotNull(rerunClusterDtoList);
+    assertEquals(3, rerunClusterDtoList.size());
+  }
+
+  @Test
   public void getRerunClusters_whenMultipleRowsOfSameFileId_thenOnlyReturnTheLatestRerunCluster()
       throws Exception {
     // Arrange

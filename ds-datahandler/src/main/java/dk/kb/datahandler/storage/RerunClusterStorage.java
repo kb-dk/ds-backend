@@ -31,7 +31,7 @@ public class RerunClusterStorage implements AutoCloseable {
       WHERE
           (
               CAST(? AS TIMESTAMP WITH TIME ZONE) IS NULL -- takes care if the rerun_clusters table is empty
-              OR c.created > ?
+              OR c.created >= ? -- match with matching created if job has failed midway in loading rerun cluster data
           )
       ORDER BY
           c.file_id ASC,
