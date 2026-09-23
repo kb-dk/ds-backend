@@ -24,7 +24,7 @@ public class RerunClusterFacade {
    */
   public static RecordsCountDto updateRerunClusters(List<RerunClusterDto> rerunClusterDtoList) {
     RecordsCountDto allRecordsCountDto = new RecordsCountDto();
-    // Start the count on 0
+    // Start the count at 0
     allRecordsCountDto.setCount(0);
 
     for (RerunClusterDto rerunClusterDto : rerunClusterDtoList) {
