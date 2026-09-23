@@ -1,4 +1,3 @@
 # Swagger Codegen Ignore
 ## API generation may never overwrite impl files
 **/impl/*
-

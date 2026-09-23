@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   version: 'v1'
-  title: '${project.name}'
+  title: 'ds-license'
   description: |
     # Ds-license(Digitale Samlinger) by the Royal Danish Library.
 
@@ -190,7 +190,7 @@ paths:
   /checkAccessForIds:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Takes an array of recordIds. Will filter the ids and return only those that the users has access to by the licences granted to the user. Id filter field is defined in the YAML configuration'
       operationId: checkAccessForIds
       security:
@@ -212,7 +212,7 @@ paths:
   /checkAccessForResourceIds:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Takes an array of resource ids. Will filter the ids and return only those that the users has access to by the licences granted to the user. ResourceID filter field is defined in the YAML configuration'
       operationId: checkAccessForResourceIds
       security:
@@ -234,7 +234,7 @@ paths:
   /validateAccess:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Validate if user has access to all groups in input'
       operationId: validateAccess
       security:
@@ -256,7 +256,7 @@ paths:
   /getUserLicenses:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Get a list of all licences that validates from user attributes'
       operationId: getUserLicenses
       security:
@@ -278,7 +278,7 @@ paths:
   /getUserLicenseQuery:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Shows the filter query for Solr generated from the user attributes. PresentationType are defined in configuration. Example: Search'
       operationId: getUserLicenseQuery
       security:
@@ -301,7 +301,7 @@ paths:
   /getUserGroups:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Get the groups that the user has access to'
       operationId: getUserGroups
       security:
@@ -323,7 +323,7 @@ paths:
   /getUserGroupsAndLicenses:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Get all licenses and groups/presentationtypes that the user has access to. Will also list all licenses defined and presentationtypes'
       operationId: getUserGroupsAndLicenses
       security:
@@ -345,7 +345,7 @@ paths:
   /license:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Return the license with the given id'
       operationId: getLicenseById
       security:
@@ -369,7 +369,7 @@ paths:
                 $ref: '#/components/schemas/License'
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Update or if id==0 create license'
       operationId: persistLicenseDto
       security:
@@ -388,7 +388,7 @@ paths:
   /license/delete/{id}:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Delete license by id'
       operationId: deleteLicense
       security:
@@ -419,7 +419,7 @@ paths:
   /licenses:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Return all licenses'
       operationId: getLicenses
       security:
@@ -439,7 +439,7 @@ paths:
   /presentationType:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Return the presentation type with the given id'
       operationId: getPresentationTypeById
       security:
@@ -462,7 +462,7 @@ paths:
                 $ref: '#/components/schemas/PresentationType'
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Update a presentation type or if id==0 creates a new presentation type'
       operationId: persistPresentationType
       security:
@@ -481,7 +481,7 @@ paths:
   /presentationType/delete/{key}:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Delete presentation type with the given key'
       operationId: deletePresentationType
       security:
@@ -511,7 +511,7 @@ paths:
   /presentationTypes:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Return all presentation types'
       operationId: getPresentationTypes
       security:
@@ -531,7 +531,7 @@ paths:
   /attributeType:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Creates a new AttributeType (id is not used)'
       operationId: persistAttributeTypeDto
       security:
@@ -551,7 +551,7 @@ paths:
   /attributeType/delete/{key}:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Delete attribute type with the given key'
       operationId: deleteAttributeType
       security:
@@ -581,7 +581,7 @@ paths:
   /attributeTypes:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Return all attribute types'
       operationId: getAttributeTypesDto
       security:
@@ -601,7 +601,7 @@ paths:
   /groupType:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Return the group type with the given id'
       operationId: getGroupTypeById
       security:
@@ -625,7 +625,7 @@ paths:
                 $ref: '#/components/schemas/GroupType'
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Update a group type or if id == 0 creates a new group type'
       operationId: persistGroupType
       security:
@@ -644,7 +644,7 @@ paths:
   /groupType/delete/{key}:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Delete group type with the given key'
       operationId: deleteGroupType
       security:
@@ -674,7 +674,7 @@ paths:
   /groupTypes:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-license'
       summary: 'Return all group types'
       operationId: getGroupTypes
       security:

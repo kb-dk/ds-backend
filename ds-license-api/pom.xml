@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>dk.kb.dsparent</groupId>
+        <artifactId>ds-parent</artifactId>
+        <version>100.0.0-SNAPSHOT</version>
+    </parent>
+    <!-- Human-readable name, uppercase and spaces welcome -->
+    <name>ds-license-api</name>
+    <groupId>dk.kb.license</groupId>
+    <artifactId>ds-license-api</artifactId>
+    <version>100.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <description>
+        The ds-license contract: the OpenAPI specification, the generated DTOs and DsLicenseClient. This module contains no service implementation and depends on no other
+        ds service, so it builds on its own in seconds. Consumers depend on this, never on the war.
+    </description>
+    <scm>
+        <url>https://github.com/kb-dk/ds-backend</url>
+        <connection>scm:git:git@github.com:kb-dk/ds-backend.git</connection>
+        <developerConnection>scm:git:git@github.com:kb-dk/ds-backend.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    <licenses>
+        <license>
+            <name>${license.name}</name>
+            <url>${license.url}</url>
+        </license>
+    </licenses>
+    <properties>
+        <!-- The generated client and DTOs trip forbiddenapis; the service module still checks its own code. -->
+        <api.check.phase>none</api.check.phase>
+        <license.name>Apache License, Version 2.0</license.name>
+        <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <project.package>dk.kb.license</project.package>
+        <!-- NOTE: the spec's operation tags are now the literal string "ds-license", not a
+             Maven placeholder. Those tags decide the generated interface names (tag "ds-license"
+             -> DsLicenseApi), so when the spec used ${project.name} the Java types silently
+             followed the module's display name: moving the spec into a module called
+             ds-license-api renamed them and orphaned every impl class. The
+             name of an API is a fact about the contract, not about the module that builds it, so
+             it is written out in the spec. -->
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>dk.kb.dsshared</groupId>
+            <artifactId>ds-shared</artifactId>
+            <version>100.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+           <groupId>javax.servlet</groupId>
+           <artifactId>javax.servlet-api</artifactId>
+           <version>3.0.1</version>
+           <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.ws</groupId>
+            <artifactId>jaxws-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-xml-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>dk.statsbiblioteket.sbutil</groupId>
+            <artifactId>sbutil-common</artifactId>
+            <version>0.5.56</version>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>4.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>9.10.1</version> <!-- We really need to use another version here?-->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-service-description</artifactId>
+        </dependency>
+        <dependency>
+            <!--For the openapi endpoint /openapi.json-->
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
+        </dependency>
+        <dependency>
+            <!--For the swagger UI endpoint /api-docs?url=openapi.json-->
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>openapi-generator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <!-- The slf4j-simple logs to stderr and stdout, ignoring logback.xml -->
+                    <artifactId>slf4j-simple</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-junit-jupiter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <!-- The spec is filtered into target/classes, then fed to the generator below and
+                 packaged into this jar so the service module can unpack it. -->
+            <resource>
+                <directory>src/main/openapi</directory>
+                <filtering>true</filtering>
+            </resource>
+            <!-- The mustache templates travel with the contract so the service module does not
+                 need its own copy; they land under openapi-templates/ inside this jar. -->
+            <resource>
+                <directory>src/main/templates</directory>
+                <targetPath>openapi-templates</targetPath>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- Ensure the spec is filtered into target/classes BEFORE the generator runs. -->
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>4.3.1</version>
+                <configuration>
+                    <generatorName>jaxrs-cxf-extended</generatorName>
+                    <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec>
+                    <modelNameSuffix>Dto</modelNameSuffix>
+                    <generateSupportingFiles>false</generateSupportingFiles>
+                    <generateApiTests>false</generateApiTests>
+                    <generateModelDocumentation>false</generateModelDocumentation>
+                    <generateApiDocumentation>false</generateApiDocumentation>
+                    <generateApis>true</generateApis>
+                    <output>${project.basedir}</output>
+                    <templateDirectory>src/main/templates/</templateDirectory>
+                    <!-- ds-license serializes DTOs to XML as well as JSON; this drives the
+                         javax.xml.bind annotations in the generated models. -->
+                    <withXml>true</withXml>
+                    <configOptions>
+                        <sourceFolder>target/generated-sources</sourceFolder>
+                        <useSwaggerFeature>true</useSwaggerFeature>
+                        <useSwaggerUI>true</useSwaggerUI>
+                        <apiPackage>${project.package}.api</apiPackage>
+                        <modelPackage>${project.package}.model.v1</modelPackage>
+                        <!-- java8, not threetenbp: the hand-written mappers in ds-license pass
+                             java.time types to these DTOs. -->
+                        <dateLibrary>java8</dateLibrary>
+                        <implFolder>src/main/java</implFolder>
+                        <invokerPackage>${project.package}</invokerPackage>
+                    </configOptions>
+                    <packageName>${project.package}</packageName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>v1: generate api classes</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
+                            <ignoreFileOverride>
+                                ${project.basedir}/.openapi-codegen-ignore-api
+                            </ignoreFileOverride>
+                            <configOptions>
+                                <apiPackage>${project.package}.api.v1</apiPackage>
+                                <modelPackage>${project.package}.model.v1</modelPackage>
+                                <generateOperationBody>false</generateOperationBody>
+                                <sourceFolder>target/generated-sources</sourceFolder>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/target/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

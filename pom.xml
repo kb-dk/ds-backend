@@ -26,8 +26,12 @@
     </properties>
     <modules>
         <module>ds-shared</module>
+        <!-- Contract modules build first: they are leaves and take seconds. -->
+        <module>ds-storage-api</module>
         <module>ds-storage</module>
+        <module>ds-license-api</module>
         <module>ds-license</module>
+        <module>ds-present-api</module>
         <module>ds-present</module>
         <module>ds-kaltura</module>
         <module>ds-datahandler</module>

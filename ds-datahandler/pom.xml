@@ -43,29 +43,13 @@
         </dependency>
         <dependency>
             <groupId>dk.kb.storage</groupId>
-            <artifactId>ds-storage</artifactId>
+            <artifactId>ds-storage-api</artifactId>
             <version>100.0.0-SNAPSHOT</version>
-            <type>jar</type>
-            <classifier>api</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>dk.kb.present</groupId>
-            <artifactId>ds-present</artifactId>
+            <artifactId>ds-present-api</artifactId>
             <version>100.0.0-SNAPSHOT</version>
-            <type>jar</type>
-            <classifier>api</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>dk.kb.kaltura</groupId>

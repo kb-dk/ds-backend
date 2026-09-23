@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   version: 'v1'
-  title: '${project.name}'
+  title: 'ds-present'
   description: |
     Transforming access layer for metadata, by the Royal Danish Library. Acts as a proxy for 
     [ds-storage](https://github.com/kb-dk/ds-storage) providing multiple views on metadata, such as MODS, JSON-LD
@@ -39,7 +39,7 @@ paths:
   /record/{id}:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-present'
       summary: 'Retrieve metadata for the record with the given ID and in the given format.'
       security:
         - KBOAuth:
@@ -97,7 +97,7 @@ paths:
   /records:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-present'
       summary: 'Extract records from an origin after a given mTime.'
       security:
         - KBOAuth:
@@ -183,7 +183,7 @@ paths:
   /recordsraw:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-present'
       summary: 'Extract raw records from a collection after a given mTime.'
       security:
         - KBOAuth:
@@ -250,7 +250,7 @@ paths:
   /origin/{id}:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-present'
       summary: 'Retrieve a formal description of a single origin.'
       security:
         - KBOAuth:
@@ -282,7 +282,7 @@ paths:
   /origins:
     get:
       tags:
-        - '${project.name}'
+        - 'ds-present'
       summary: 'Retrieve a formal description of all available origins.'
       security:
         - KBOAuth:
@@ -301,7 +301,7 @@ paths:
   /transformsolrschema:
     post:
       tags:
-        - '${project.name}'
+        - 'ds-present'
       summary: 'Transform solr schema to a different format'
       operationId: transformSolrSchema
       parameters:

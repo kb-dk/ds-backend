@@ -1,3 +1,8 @@
+# .git changes on every commit. Without this line the COPY layer in the legacy
+# build stage is invalidated by every single commit, so Maven re-runs every time
+# regardless of what actually changed.
+.git/
+
 .idea/
 aegis/
 *.iml
