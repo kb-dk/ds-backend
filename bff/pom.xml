@@ -4,13 +4,13 @@
     <parent>
         <groupId>dk.kb.dsparent</groupId>
         <artifactId>ds-parent</artifactId>
-        <version>100.0.0-SNAPSHOT</version>
+        <version>7.0.0-SNAPSHOT</version>
     </parent>
     <!-- Human-readable name, uppercase and spaces welcome -->
     <name>bff</name>
     <groupId>dk.kb.oauth</groupId>
     <artifactId>bff</artifactId>
-    <version>100.0.0-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>bff by the Royal Danish Library</description>
     <scm>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>dk.kb.dsshared</groupId>
             <artifactId>ds-shared</artifactId>
-            <version>100.0.0-SNAPSHOT</version>
+            <version>7.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
