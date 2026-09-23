@@ -3,19 +3,14 @@ package dk.kb.storage.api.v1.impl;
 import dk.kb.storage.api.v1.DsStorageApi;
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.facade.DsStorageFacade;
-import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.OriginCountDto;
-import dk.kb.storage.model.v1.OriginDto;
-import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.model.v1.RecordsCountDto;
-import dk.kb.storage.model.v1.TranscriptionDto;
+import dk.kb.storage.model.v1.*;
 import dk.kb.util.Pair;
 import dk.kb.util.webservice.ImplBase;
+import dk.kb.util.webservice.stream.ContinuationUtil;
 import dk.kb.util.webservice.stream.ExportWriter;
 import dk.kb.util.webservice.stream.ExportWriterFactory;
-import dk.kb.util.webservice.stream.ContinuationUtil;
-import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.interceptor.InInterceptors;
+import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -295,7 +290,17 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
             throw handleException(e);
         }
     }
-    
+
+    @Override
+    public void clearKalturaIdForRecord(String referenceId) {
+        try {
+            log.debug("clearKalturaIdForRecord() called with call details: {}", getCallDetails());
+            DsStorageFacade.clearKalturaIdForRecord(referenceId);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
     @Override
     public void updateReferenceIdForRecord(String recordId, String referenceId) {
         try {

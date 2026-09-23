@@ -1,33 +1,23 @@
 package dk.kb.storage.facade;
 
+import dk.kb.storage.config.ServiceConfig;
+import dk.kb.storage.model.v1.*;
+import dk.kb.storage.storage.DsStorage;
+import dk.kb.storage.util.IdNormaliser;
+import dk.kb.util.Pair;
+import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.stream.ExportWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
-
-import dk.kb.util.Pair;
-import dk.kb.util.webservice.stream.ExportWriter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import dk.kb.storage.config.ServiceConfig;
-import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.DsRecordMinimalDto;
-
-import dk.kb.storage.model.v1.OriginCountDto;
-import dk.kb.storage.model.v1.OriginDto;
-import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.model.v1.RecordsCountDto;
-import dk.kb.storage.model.v1.TranscriptionDto;
-import dk.kb.storage.model.v1.UpdateStrategyDto;
-import dk.kb.storage.storage.DsStorage;
-import dk.kb.storage.util.IdNormaliser;
-import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.util.webservice.exception.NotFoundServiceException;
 
 public class DsStorageFacade {
     private static final Logger log = LoggerFactory.getLogger(DsStorageFacade.class);
@@ -155,11 +145,24 @@ public class DsStorageFacade {
      */
     public static void updateKalturaIdForRecord(String referenceId, String kalturaId){
          performStorageAction("updateKalturaIdForRecord(" + referenceId + ")", storage -> {
-         storage.updateKalturaIdForRecords(referenceId, kalturaId);         
+             storage.updateKalturaIdForRecords(referenceId, kalturaId);
         return null;    // Something must be returned
         });
     }
-    
+
+    /**
+     * Clear the kalturaId for a record, setting it to null. Used when the kalturaId no longer points
+     * to a valid Kaltura entry, so the record becomes eligible for re-upload again.
+     *
+     * @param referenceId the referenceId of the record to clear the kalturaId for
+     */
+    public static void clearKalturaIdForRecord(String referenceId) {
+        performStorageAction("clearKalturaIdForRecord(" + referenceId + ")", storage -> {
+            storage.updateKalturaIdForRecords(referenceId, null);
+            return null;    // Something must be returned
+        });
+    }
+
     /**
      * Update reference id for a record. The referenceId is the id value for the record in the external system. For preservica referenceId is the name of the stream file.
      * 

@@ -108,6 +108,25 @@ public class DsKalturaClient extends DsKalturaClientBase {
     }
 
     /**
+     * Get the status of a Kaltura entry.
+     *
+     * @param entryId The internal Kaltura entry id.
+     * @return The {@link EntryStatus} of the entry, or null if no entry with the given id exists in Kaltura.
+     * @throws APIException if the client failed to establish a Kaltura session or if the request itself was
+     *                      unsuccessful.
+     */
+    public EntryStatus getEntryStatus(String entryId) throws APIException {
+        MediaEntryFilter filter = new MediaEntryFilter();
+        filter.setIdIn(entryId);
+        ListResponse<MediaEntry> response = listMediaEntry(filter);
+        if (response.getTotalCount() == 0) {
+            log.info("No entry found at Kaltura for entryId:'{}'", entryId);
+            return null;
+        }
+        return response.getObjects().get(0).getStatus();
+    }
+
+    /**
      * Search Kaltura for a referenceId. The referenceId was given to Kaltura when uploading the record.
      * We use filenames (file_id) as refereceIds. Example: b16bc5cb-1ea9-48d4-8e3c-2a94abae501b
      * The Kaltura response contains a lot more information that is required, so it is not a light weight call against Kaltura.
@@ -309,7 +328,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
                                 randomAccessFile.getFilePointer(), fileLength, finalChunk, resume, thisChunkSize,
                                 result.getId());
                         break; // success, move to next chunk
-                    } catch (APIException e) {
+                    } catch (APIException | IOException e) {
                         log.warn("failed to upload file chunk: {}", e.getMessage());
                         attempt++;
                         if (attempt >= MAX_RETRY_COUNT) {

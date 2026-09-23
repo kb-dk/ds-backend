@@ -10,6 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added `TopContentDtoMappperTest`
+- Added `DsKalturaClient.getEntryStatus`, which looks up the status of a Kaltura entry by its entry id.
 
 ### Changed
 - Removed kb-util dependency and moved classes to ds-shared

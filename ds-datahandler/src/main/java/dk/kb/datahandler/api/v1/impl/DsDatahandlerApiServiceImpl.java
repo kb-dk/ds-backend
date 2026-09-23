@@ -3,11 +3,10 @@ package dk.kb.datahandler.api.v1.impl;
 import dk.kb.datahandler.api.v1.DsDatahandlerApi;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.facade.DsDatahandlerFacade;
-import dk.kb.datahandler.model.v1.TypeDto;
 import dk.kb.datahandler.model.v1.OaiTargetDto;
+import dk.kb.datahandler.model.v1.TypeDto;
 import dk.kb.datahandler.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.ImplBase;
-
 import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -22,11 +21,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Providers;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -144,13 +139,22 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     }
 
     @Override
-    public void kalturaDeltaUpload() {    
+    public void kalturaDeltaUpload() {
         try {
            DsDatahandlerFacade.kalturaDeltaUpload();
         }
         catch(Exception e) {
             throw handleException(e);
-        }                       
+        }
+    }
+
+    @Override
+    public void kalturaValidate() {
+        try {
+            DsDatahandlerFacade.kalturaValidate(getCurrentUsername());
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 
     @Override

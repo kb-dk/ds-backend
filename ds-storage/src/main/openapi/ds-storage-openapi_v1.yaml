@@ -317,6 +317,26 @@ paths:
         '204':
           description: No Content - The request has been executed correct and the server did not deliver any content.
 
+  /record/clearKalturaId:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'Clear the Kaltura id for a record. '
+      security:
+        - KBOAuth:
+            - any
+      description: 'Set the Kaltura id for a record to null. Used when the kalturaId no longer points to a valid Kaltura entry, so the record can be picked up for re-upload.'
+      operationId: clearKalturaIdForRecord
+      parameters:
+        - name: referenceId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content - The request has been executed correct and the server did not deliver any content.
+
   /record/updateReferenceId:
     post:
       tags:

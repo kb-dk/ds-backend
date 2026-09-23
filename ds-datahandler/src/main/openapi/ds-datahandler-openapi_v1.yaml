@@ -268,6 +268,22 @@ paths:
         '204':
           description: No Content - The job finished and the server did not deliver any content.
 
+  /kaltura/validate:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'Start job that validates that kaltura_id values registered on records in ds-storage still point to a Kaltura entry with status READY.
+       This is not a delta job, so all records with a kaltura_id are (re)checked on every run.
+       If a kaltura_id does not exist in Kaltura, or exists but is not READY, the Kaltura entry is deleted (if present) and the kaltura_id is cleared on the storage record.
+       An solr delta index will be started after the job finishes if any records were changed. Also if it finishes unexpected'
+      security:
+        - KBOAuth:
+            - any
+      operationId: kalturaValidate
+      responses:
+        '204':
+          description: No Content - The job finished and the server did not deliver any content.
+
   /transcriptions/load:
     post:
       tags:
@@ -583,18 +599,21 @@ components:
         - solr index
         - solr build suggest
         - kaltura upload
+        - kaltura validation
         - transcriptions
       x-enum-varnames:
         - OAI_HARVEST
         - SOLR_BUILD_SUGGEST
         - SOLR_INDEX
         - KALTURA_UPLOAD
+        - KALTURA_VALIDATION
         - TRANSCRIPTIONS
       x-enum-descriptions:
         - oai harvest
         - solr index
         - solr build suggest
         - kaltura upload
+        - kaltura validation
         - transcriptions
 
     JobStatus:

@@ -1,21 +1,11 @@
 package dk.kb.datahandler.facade;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import com.kaltura.client.types.APIException;
+import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.datahandler.kaltura.KalturaDeltaUploadJob;
+import dk.kb.datahandler.kaltura.KalturaValidationJob;
 import dk.kb.datahandler.model.v1.*;
-import dk.kb.datahandler.oai.OaiResponseFilterDrArchive;
-import dk.kb.datahandler.oai.OaiResponseFilterPreservicaSeven;
+import dk.kb.datahandler.oai.*;
 import dk.kb.datahandler.solr.SolrIndexResponse;
 import dk.kb.datahandler.storage.BasicStorage;
 import dk.kb.datahandler.storage.JobStorage;
@@ -45,6 +35,26 @@ import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
+import org.apache.commons.io.IOUtils;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class DsDatahandlerFacade {
     private static final Logger log = LoggerFactory.getLogger(DsDatahandlerFacade.class);
@@ -216,9 +226,51 @@ public class DsDatahandlerFacade {
         catch (Exception e) {
             log.error("Kaltura delta upload/indexing stopped due to error", e);
 
+            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage(), OffsetDateTime.now(ZoneOffset.UTC), null, null);
+
+            throw e;
+        }
+    }
+
+    /**
+     * Start job that validates that kaltura_id values registered on records in ds-storage still point to a
+     * Kaltura entry with status READY.
+     * This is not a delta job, so all records with a kaltura_id are (re)checked on every run.
+     * If a kaltura_id does not exist in Kaltura, or exists but is not READY, the Kaltura entry is deleted (if
+     * present) and the kaltura_id is cleared on the storage record, making it eligible for kalturaDeltaUpload
+     * again.
+     * A solr delta indexing job will be started if both the job completes succesfully or fails.
+     *
+     * @throws InternalServiceException
+     * @throws SolrServerException
+     * @throws IOException
+     */
+    public static void kalturaValidate(String user) throws InternalServiceException, SolrServerException, IOException {
+        // mTimeFrom is in microseconds
+        OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
+
+        JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION, null, offsetDateModifiedTimeFrom, user);
+
+        log.info("Starting kaltura validation");
+        try {
+            int numberRecordsCleared = KalturaValidationJob.validateKalturaIds();
+
+            log.info("Kaltura validation completed successfully. #records cleared={}", numberRecordsCleared);
+
+            updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC), numberRecordsCleared, null);
+
+            //Index the records that has mTime modified due to kalturaId being cleared.
+            if (numberRecordsCleared > 0) {
+                log.info("Starting solr delta index job");
+                indexSolrDelta("ds.tv", user);
+                indexSolrDelta("ds.radio", user);
+            }
+        } catch (Exception e) {
+            log.error("Kaltura validation/indexing stopped due to error", e);
+
             updateJob(jobDto, JobStatusDto.FAILED, e.getMessage(),  OffsetDateTime.now(ZoneOffset.UTC), null, null);
 
-            throw e; 
+            throw e;
         }
     }
 
