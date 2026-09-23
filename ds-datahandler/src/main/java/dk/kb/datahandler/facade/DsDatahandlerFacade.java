@@ -356,23 +356,38 @@ public class DsDatahandlerFacade {
             List<RerunClusterDto> rerunClusterDtoList =
                 RerunClusterStorage.performStorageAction("getRerunClusters()",
                     RerunClusterStorage.class, storage -> {
-                        return storage.getRerunClusters(
-                            latestCreated.getCreated());
+                        return storage.getRerunClusters(latestCreated.getCreated());
                     });
 
-            dk.kb.storage.model.v1.RecordsCountDto returnedRrecordsCountDto =
-                dsStorageApiClient.updateRerunClusters(rerunClusterDtoList);
+            // tomcat in dev environment could not handle one big request body, so need to split
+            // request in batches of 1000 objects at a time.
+            int partitionSize = 1000;
+            List<List<RerunClusterDto>> partitions = new ArrayList<>();
 
-            RecordsCountDto recordsCountDto = new RecordsCountDto();
-            recordsCountDto.setCount(returnedRrecordsCountDto.getCount());
+            for (int i = 0; i < rerunClusterDtoList.size(); i += partitionSize) {
+                partitions.add(rerunClusterDtoList.subList(i, Math.min(i + partitionSize,
+                    rerunClusterDtoList.size())));
+            }
+
+            RecordsCountDto allRecordsCountDto = new RecordsCountDto();
+            // Start the count at 0
+            allRecordsCountDto.setCount(0);
+
+            for (List<RerunClusterDto> partitionRerunClusterDtoList : partitions) {
+                dk.kb.storage.model.v1.RecordsCountDto returnedRecordsCountDto =
+                    dsStorageApiClient.updateRerunClusters(partitionRerunClusterDtoList);
+
+                allRecordsCountDto.setCount(allRecordsCountDto.getCount() +
+                    returnedRecordsCountDto.getCount());
+            }
 
             updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
-                recordsCountDto.getCount(), null);
+                allRecordsCountDto.getCount(), null);
 
-            return recordsCountDto;
+            return allRecordsCountDto;
         } catch (Exception exception) {
-            log.error("Inserting/updating rerun_clusters table failed with jobId='{}'. Exception: ", jobDto.getId(),
-                exception);
+            log.error("Inserting/updating rerun_clusters table failed with jobId='{}'. Exception: ",
+                jobDto.getId(), exception);
             updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(),
                 OffsetDateTime.now(ZoneOffset.UTC), null, null);
             throw exception;
