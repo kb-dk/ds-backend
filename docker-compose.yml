@@ -20,10 +20,11 @@ services:
       TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-storage/v1/monitor/status" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 120s
     ports:
       - "8081:8080"
     env_file:
@@ -55,10 +56,11 @@ services:
       TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-license/v1/monitor/status" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 120s
     ports:
       - "8082:8080"
     env_file:
@@ -89,10 +91,11 @@ services:
       TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-present/v1/monitor/status" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 120s
     ports:
       - "8083:8080"
     env_file:
@@ -125,10 +128,11 @@ services:
       TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-datahandler/v1/monitor/status" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 120s
     ports:
       - "8084:8080"
     env_file:
@@ -161,10 +165,11 @@ services:
       TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-discover/v1/monitor/status" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 120s
     ports:
       - "8085:8080"
     env_file:
@@ -194,10 +199,11 @@ services:
       TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-image/v1/monitor/status" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 120s
     ports:
       - "8086:8080"
     env_file:
@@ -226,10 +232,11 @@ services:
       TZ: UTC
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/bff/v1/monitor/status" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 25s
+      start_period: 120s
     ports:
       - "8091:8080"
     env_file:
@@ -256,10 +263,11 @@ services:
       KC_HEALTH_ENABLED: true
     healthcheck:
       test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(new java.net.URI(args[0])).build(), java.net.http.HttpResponse.BodyHandlers.discarding()).statusCode() == 200 ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 15s
+      retries: 50
+      start_period: 120s
     ports:
       - "8087:8087"
     networks:
@@ -290,10 +298,11 @@ services:
       POSTGRES_PASSWORD: p0stgr3s
     healthcheck:
       test: [ "CMD", "pg_isready", "--username=digisam" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 5s
+      start_period: 30s
     ports:
       - "8088:5432"
     volumes:
@@ -321,10 +330,11 @@ services:
       POSTGRES_PASSWORD: p0stgr3s
     healthcheck:
       test: [ "CMD", "pg_isready", "--username=digisam" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 5s
+      start_period: 30s
     ports:
       - "8092:5432"
     volumes:
@@ -352,10 +362,11 @@ services:
       POSTGRES_PASSWORD: p0stgr3s
     healthcheck:
       test: [ "CMD", "pg_isready", "--username=digisam" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 5s
+      start_period: 30s
     ports:
       - "8093:5432"
     volumes:
@@ -417,10 +428,11 @@ services:
       SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8983/solr/ds-collection_shard1_replica_n1/admin/ping?wt=json" ]
-      interval: 5s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 15s
+      start_period: 60s
     ports:
       - "8089:8983"
       - "9983:9983"

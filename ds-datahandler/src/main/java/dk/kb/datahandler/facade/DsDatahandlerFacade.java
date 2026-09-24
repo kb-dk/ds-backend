@@ -1,6 +1,7 @@
 package dk.kb.datahandler.facade;
 
 import com.kaltura.client.types.APIException;
+import dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.kaltura.KalturaDeltaUploadJob;
 import dk.kb.datahandler.kaltura.KalturaValidationJob;
@@ -10,23 +11,6 @@ import dk.kb.datahandler.solr.SolrIndexResponse;
 import dk.kb.datahandler.storage.BasicStorage;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.transcriptions.TranscriptionJob;
-import dk.kb.storage.model.v1.DsRecordMinimalDto;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl;
-import dk.kb.datahandler.config.ServiceConfig;
-
-import dk.kb.datahandler.oai.OaiHarvestClient;
-import dk.kb.datahandler.kaltura.KalturaDeltaUploadJob;
-import dk.kb.datahandler.oai.OaiRecord;
-import dk.kb.datahandler.oai.OaiResponse;
-import dk.kb.datahandler.oai.OaiResponseFilter;
 import dk.kb.datahandler.util.HarvestTimeUtil;
 import dk.kb.datahandler.util.SolrUtils;
 import dk.kb.kaltura.client.DsKalturaClient;
@@ -262,8 +246,8 @@ public class DsDatahandlerFacade {
             //Index the records that has mTime modified due to kalturaId being cleared.
             if (numberRecordsCleared > 0) {
                 log.info("Starting solr delta index job");
-                indexSolrDelta("ds.tv", user);
-                indexSolrDelta("ds.radio", user);
+                indexSolrDelta("ds.tv");
+                indexSolrDelta("ds.radio");
             }
         } catch (Exception e) {
             log.error("Kaltura validation/indexing stopped due to error", e);
