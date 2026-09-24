@@ -5,7 +5,7 @@
         <Title>drp1_1991-09-12_23.16_00.16_tada</Title>
         <Description>Tada</Description>
         <SecurityTag>pligtafleveringRadioTvOpenProgram</SecurityTag>
-        <Parent>751477a7-0c2d-47da-ae6f-f8cd5ce33873_1991_09_12</Parent>
+        <Parent>0a000a00-a000-000a-0aaa-00000a0a00aa_1991_09_12</Parent>
     </InformationObject>
     <Metadata schemaUri="http://id.kb.dk/schemas/radiotv_access/access">
         <Ref>0a000a00-a000-000a-0aaa-00000a0a00aa</Ref>
@@ -35,7 +35,7 @@
         <Content>
             <PBCoreDescriptionDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                 <pbcoreIdentifier>
-                    <identifier>4e073f64-b985-454f-9cda-86326a2f85ab</identifier>
+                    <identifier>0a000a00-a000-000a-0aaa-00000a0a00aa</identifier>
                     <identifierSource>Det Kgl. Bibliotek</identifierSource>
                 </pbcoreIdentifier>
                 <pbcoreTitle>
@@ -148,8 +148,8 @@
             <Unstructured xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                 <Blob originalName="drp1_1991-09-12_23.16_00.16_tada_origin.json" source="Det Kgl. Bibliotek"
                       type="origin.json">{
-                    "super_file" : "drp1_drdat.000000000_1991-09-12_20.00.00_684720038_1991-09-13_02.00.38",
-                    "broadcast_file" : [ "drp1_drdat.000000000_1991-09-12_20.00.00_684720038_1991-09-13_02.00.38.mp3" ],
+                    "super_file" : "drp1_drdat.000000000_1991-09-12_20.00.00_000000000_1991-09-13_02.00.00",
+                    "broadcast_file" : [ "drp1_drdat.000000000_1991-09-12_20.00.00_000000000_1991-09-13_02.00.00.mp3" ],
                     "intended_pre_roll" : "15",
                     "intended_post_roll" : "180",
                     "cut_in" : 11745.0,

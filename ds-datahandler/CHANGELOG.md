@@ -32,6 +32,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - New CategoryDto created for the job log: `CategoryDto.SOLR_BUILD_SUGGEST`
 - Removed `kb-util` dependency and moved classes to `ds-shared`.
 
+### Fixed
+
+- Fixed `referenceId` so it now correctly get inserted as `NULL` in `ds_records` table, instead as before where it got
+  inserted as `blank`.
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
