@@ -22,8 +22,8 @@ services:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-storage/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
-      retries: 3
-      start_period: 25s
+      retries: 5
+      start_period: 35s
     ports:
       - "8081:8080"
     env_file:
@@ -57,8 +57,8 @@ services:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-license/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
-      retries: 3
-      start_period: 25s
+      retries: 5
+      start_period: 35s
     ports:
       - "8082:8080"
     env_file:
@@ -91,8 +91,8 @@ services:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-present/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
-      retries: 3
-      start_period: 25s
+      retries: 5
+      start_period: 35s
     ports:
       - "8083:8080"
     env_file:
@@ -127,8 +127,8 @@ services:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-datahandler/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
-      retries: 3
-      start_period: 25s
+      retries: 5
+      start_period: 35s
     ports:
       - "8084:8080"
     env_file:
@@ -163,8 +163,8 @@ services:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-discover/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
-      retries: 3
-      start_period: 25s
+      retries: 5
+      start_period: 35s
     ports:
       - "8085:8080"
     env_file:
@@ -196,8 +196,8 @@ services:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-image/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
-      retries: 3
-      start_period: 25s
+      retries: 5
+      start_period: 35s
     ports:
       - "8086:8080"
     env_file:
@@ -228,8 +228,8 @@ services:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/bff/v1/monitor/status" ]
       interval: 5s
       timeout: 5s
-      retries: 3
-      start_period: 25s
+      retries: 5
+      start_period: 35s
     ports:
       - "8091:8080"
     env_file:
@@ -258,8 +258,8 @@ services:
       test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(new java.net.URI(args[0])).build(), java.net.http.HttpResponse.BodyHandlers.discarding()).statusCode() == 200 ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
       interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 15s
+      retries: 55
+      start_period: 25s
     ports:
       - "8087:8087"
     networks:
@@ -420,7 +420,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 15s
+      start_period: 25s
     ports:
       - "8089:8983"
       - "9983:9983"
