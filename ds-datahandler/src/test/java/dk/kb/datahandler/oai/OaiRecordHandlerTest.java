@@ -13,10 +13,10 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Tag("integration")
 public class OaiRecordHandlerTest {
     private static final SAXParserFactory factory = SAXParserFactory.newInstance();
 
+    @Tag("integration")
     @Test
     public void testTranscodingStatus() throws IOException, SAXException, ParserConfigurationException {
         SAXParser saxParser = factory.newSAXParser();
@@ -28,6 +28,7 @@ public class OaiRecordHandlerTest {
         assertEquals(PreservicaOaiRecordHandler.TranscodingStatus.SUCCESS, handler.lastTranscodingStatus);
     }
 
+    @Tag("integration")
     @Test
     public void testFormatEnum() throws IOException, SAXException, ParserConfigurationException {
         SAXParser saxParser = factory.newSAXParser();
@@ -38,6 +39,7 @@ public class OaiRecordHandlerTest {
         assertEquals(PreservicaOaiRecordHandler.RecordType.TV,handler.getRecordType());
     }
 
+    @Tag("integration")
     @Test
     public void testRecordHasMetadataAndNestedRecord() throws IOException, SAXException, ParserConfigurationException {
         SAXParser saxParser = factory.newSAXParser();
@@ -49,6 +51,7 @@ public class OaiRecordHandlerTest {
         assertTrue(handler.recordContainsMetadata());
     }
 
+    @Tag("integration")
     @Test
     public void testDrChannel() throws IOException, SAXException, ParserConfigurationException {
         SAXParser saxParser = factory.newSAXParser();
@@ -59,6 +62,7 @@ public class OaiRecordHandlerTest {
         assertTrue(handler.isRecordDr());
     }
 
+    @Tag("integration")
     @Test
     public void testFileIdPvicaWithCorrectPresenstaion() throws IOException, SAXException, ParserConfigurationException {
         SAXParser saxParser = factory.newSAXParser();
@@ -67,6 +71,7 @@ public class OaiRecordHandlerTest {
         assertEquals("c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4", handler.fileId);
     }
 
+    @Tag("integration")
     @Test
     public void testFileIdDomsMigWithPresenstation()  throws IOException, SAXException, ParserConfigurationException {
         SAXParser saxParser = factory.newSAXParser();
@@ -75,6 +80,7 @@ public class OaiRecordHandlerTest {
         assertEquals("08909897-cf37-4bd9-a230-1b48c87cea18", handler.fileId);
     }
 
+    @Tag("integration")
     @Test
     public void testFileIdMultipleProfiles() throws IOException, SAXException, ParserConfigurationException {
         SAXParser saxParser = factory.newSAXParser();
@@ -86,6 +92,7 @@ public class OaiRecordHandlerTest {
         assertEquals("ed685674-cc4e-44e3-8556-8d83010482aa", handler.fileId);
     }
 
+    @Tag("integration")
     @Test
     public void testValidFormatMediaType() throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
@@ -94,11 +101,20 @@ public class OaiRecordHandlerTest {
         assertEquals(PreservicaOaiRecordHandler.RecordType.TV, handler.getRecordType());
     }
 
+    @Tag("integration")
     @Test
     public void testInvalidFormatMediaType() throws ParserConfigurationException, SAXException, IOException {
         SAXParser saxParser = factory.newSAXParser();
         PreservicaOaiRecordHandler handler = new PreservicaOaiRecordHandler();
         saxParser.parse(Resolver.resolveStream("xml/dc885d8e-2d11-4067-a2d6-d7df9add8331.xml"),handler);
         assertEquals(PreservicaOaiRecordHandler.RecordType.UNKNOWN, handler.getRecordType());
+    }
+
+    @Test
+    public void parse_whenAccessFilePathDoNotExists_thenFileIdIsNull() throws Exception {
+        SAXParser saxParser = factory.newSAXParser();
+        PreservicaOaiRecordHandler handler = new PreservicaOaiRecordHandler();
+        saxParser.parse(Resolver.resolveStream("xml/no_access_file_path.xml"), handler);
+        assertNull(handler.fileId);
     }
 }
