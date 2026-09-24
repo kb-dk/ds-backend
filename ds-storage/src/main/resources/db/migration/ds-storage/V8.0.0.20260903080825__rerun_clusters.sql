@@ -1,4 +1,4 @@
--- V7.0.0.20260903080825__rerun_clusters.sql
+-- V8.0.0.20260903080825__rerun_clusters.sql
 
 CREATE TABLE rerun_clusters (
     id UUID PRIMARY KEY,
