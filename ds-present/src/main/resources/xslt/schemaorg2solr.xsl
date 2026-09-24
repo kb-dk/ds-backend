@@ -789,6 +789,12 @@
       </f:string>
     </xsl:if>
 
+    <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:ritzau_saesonnr') != ''">
+      <f:string key="ritzau_saesonnr">
+        <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:ritzau_saesonnr')"/>
+      </f:string>
+    </xsl:if>
+
     <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:series_id') != ''">
       <f:string key="internal_series_id">
         <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:series_id')"/>
