@@ -11,6 +11,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Add `rerun_cluster_id` and `rerun_cluster_id_count` to `schema.org` and `solr schema`.
 - Update solr schema version to 1.8.10.
+- Update solr schema version to 1.8.11.
 
 ### Changed
 

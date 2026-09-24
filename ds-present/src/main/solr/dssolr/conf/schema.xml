@@ -76,9 +76,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.8: New field has_transcription boolean to see if a document has a transcription. Since transcription field is not stored this can not be seen directly
 1.8.9: Added field for annotations
 1.8.10: Add rerun_cluster_id and rerun_cluster_id_count field.
+1.8.11: Change rerun_cluster_id from uuid to string because Solr has a bug with UUID in JSON response.
 
   -->
-  <field name="_ds_1.8.10_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.11_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -831,7 +832,7 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example .mp4?>
   </field>
 
-  <field name="rerun_cluster_id" type="uuid">
+  <field name="rerun_cluster_id" type="string">
     <?description UUID id of a RerunCluster. Multiple file_id can share the same rerun_cluster_id.?>
     <?example 000000a1-0000-111a-a2b4-7488244fcca7?>
   </field>
@@ -1239,9 +1240,6 @@ When adding fields to this schema please have the following guidelines in mind:
   <!-- Field is not analysed or tokenized. Used for author names, titles etc.
    This field is not usefull as search field, but good for docValues  -->
   <fieldType name="string" class="solr.StrField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
-
-  <!-- Field used to UUID-->
-  <fieldType name="uuid" class="solr.UUIDField" sortMissingLast="true" indexed="true" required="false" stored="true" multiValued="false" docValues="true"/>
 
   <!-- Functionality wise, this field type almost represents the same as a string, just not being stored,
         however having the name of facet implies, what the idea behind it is. -->
