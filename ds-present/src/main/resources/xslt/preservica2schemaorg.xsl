@@ -1104,6 +1104,15 @@
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'undergenre_id', 'kb:subgenre_id')"/>
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'afsnit_id', 'kb:episode_id')"/>
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'saeson_id', 'kb:season_id')"/>
+    <!-- add ritzu saesonnr to schema.org (is used to generate copydan report) -->
+    <xsl:variable name="seasonNumber"
+                  select="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/supplementary_ritzau_metadata']
+                          /Content/*/source/ritzau/seasonnr"/>
+    <!-- ritzau uses 0 as "no season", same as antalepisoder:0 and afsnit_id:0, so it is dropped
+         rather than indexed as a real season 0. -->
+    <xsl:if test="number(normalize-space($seasonNumber)) > 0">
+      <f:string key="kb:ritzau_saesonnr"><xsl:value-of select="normalize-space($seasonNumber)"/></f:string>
+    </xsl:if>
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'serie_id', 'kb:series_id')"/>
 
     <!-- Extracts information on video padding. -->
