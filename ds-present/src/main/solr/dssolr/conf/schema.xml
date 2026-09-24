@@ -75,9 +75,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.7: New field transcription that contains full description text. Field is not stored.
 1.8.8: New field has_transcription boolean to see if a document has a transcription. Since transcription field is not stored this can not be seen directly
 1.8.9: Added field for annotations
+1.8.10: Added field ritzau_saesonnr
 
   -->
-  <field name="_ds_1.8.9_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.10_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -966,6 +967,11 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="internal_season_id" type="string">
     <?description An ID for the specific season which the resource is part of.?>
     <?example     174278?>
+  </field>
+
+  <field name="ritzau_saesonnr" type="pint">
+    <?description The ordinal number of the season the resource belongs to, from the ritzau metadata. Distinct from internal_season_id, which is an opaque identifier.?>
+    <?example     1?>
   </field>
 
   <field name="internal_series_id" type="string">
