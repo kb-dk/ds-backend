@@ -32,7 +32,6 @@ cd ..
 git clone git@github.com:kb-dk/ds-web.git
 cd ds-web
 git clone git@github.com:kb-dk/aegis.git
-cd ..
 docker compose up --detach --build
 ```
 
