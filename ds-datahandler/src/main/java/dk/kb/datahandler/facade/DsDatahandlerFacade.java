@@ -1,6 +1,6 @@
 package dk.kb.datahandler.facade;
 
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -339,10 +339,9 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * Calls ds-storage via DsStorageClient that return new rows from remote p3rerun database in
-     * table clusters table, save it to our rerun_clusters table, update mtime in ds_records table
-     * and return number of rows inserted or updated in rerun_clusters table in a `RecordsCountDto`
-     * object.
+     * Returns new rows from remote p3rerun database in table clusters table, then calls ds-storage via DsStorageClient
+     * that save the rows in our rerun_clusters table, update mtime in ds_records table and return number of rows
+     * inserted or updated in rerun_clusters table in a `RecordsCountDto` object.
      *
      * @return RecordsCountDto number of rows inserted or updated
      */
@@ -353,7 +352,7 @@ public class DsDatahandlerFacade {
             DsStorageClient dsStorageApiClient = getDsStorageApiClient();
 
             CreatedDto latestCreated = latestCreated();
-            List<RerunClusterDto> rerunClusterDtoList =
+            List<RerunClusterRequestDto> rerunClusterRequestDtoList =
                 RerunClusterStorage.performStorageAction("getRerunClusters()",
                     RerunClusterStorage.class, storage -> {
                         return storage.getRerunClusters(latestCreated.getCreated());
@@ -362,20 +361,20 @@ public class DsDatahandlerFacade {
             // tomcat in dev environment could not handle one big request body, so need to split
             // request in batches of 1000 objects at a time.
             int partitionSize = 1000;
-            List<List<RerunClusterDto>> partitions = new ArrayList<>();
+            List<List<RerunClusterRequestDto>> partitions = new ArrayList<>();
 
-            for (int i = 0; i < rerunClusterDtoList.size(); i += partitionSize) {
-                partitions.add(rerunClusterDtoList.subList(i, Math.min(i + partitionSize,
-                    rerunClusterDtoList.size())));
+            for (int i = 0; i < rerunClusterRequestDtoList.size(); i += partitionSize) {
+                partitions.add(rerunClusterRequestDtoList.subList(i, Math.min(i + partitionSize,
+                    rerunClusterRequestDtoList.size())));
             }
 
             RecordsCountDto allRecordsCountDto = new RecordsCountDto();
             // Start the count at 0
             allRecordsCountDto.setCount(0);
 
-            for (List<RerunClusterDto> partitionRerunClusterDtoList : partitions) {
+            for (List<RerunClusterRequestDto> partitionRerunClusterRequestDtoList : partitions) {
                 dk.kb.storage.model.v1.RecordsCountDto returnedRecordsCountDto =
-                    dsStorageApiClient.updateRerunClusters(partitionRerunClusterDtoList);
+                    dsStorageApiClient.updateRerunClusters(partitionRerunClusterRequestDtoList);
 
                 allRecordsCountDto.setCount(allRecordsCountDto.getCount() +
                     returnedRecordsCountDto.getCount());

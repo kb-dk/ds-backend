@@ -16,7 +16,7 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -139,19 +139,19 @@ public class DSStorage implements Storage {
     }
 
     /**
-     * Return a RerunCluster from fileId.
+     * Return a RerunClusterResponseDto from fileId.
      *
      * @param fileId UUID of fileId.
-     * @return RerunClusterDto
+     * @return RerunClusterResponseDto
      */
     @Override
-    public RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+    public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
         log.debug("getRerunClusterByFileId(fileId='{}') called", fileId);
         try {
             return storageClient.getRerunClusterByFileId(fileId);
         } catch (ServiceException e) {
             log.warn(
-                "Failed calling ds-storage when trying to retrieve rerunCluster with fileId: '{}'. URL: '{}'. Exception: ",
+                "Failed calling ds-storage when trying to retrieve rerunClusterResponseDto with fileId: '{}'. URL: '{}'. Exception: ",
                 fileId, storageUrl, e);
             throw e;
         }

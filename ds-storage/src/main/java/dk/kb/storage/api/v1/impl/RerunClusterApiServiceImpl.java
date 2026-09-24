@@ -4,7 +4,8 @@ import dk.kb.storage.api.v1.RerunClusterApi;
 import dk.kb.storage.facade.RerunClusterFacade;
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.util.webservice.ImplBase;
 import java.util.List;
 import java.util.UUID;
@@ -20,29 +21,29 @@ public class RerunClusterApiServiceImpl extends ImplBase implements RerunCluster
   private static final Logger log = LoggerFactory.getLogger(RerunClusterApiServiceImpl.class);
 
   /**
-   * Save list of RerunCluster in rerun_clusters table, update mtime in ds_records table and return
+   * Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table and return
    * number of rows inserted or updated in rerun_clusters table.
    *
-   * @param rerunClusterDtoList
+   * @param rerunClusterRequestDtoList
    * @return RecordsCountDto number of rows inserted or updated
    */
   @Override
-  public RecordsCountDto updateRerunClusters(List<RerunClusterDto> rerunClusterDtoList) {
+  public RecordsCountDto updateRerunClusters(List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
     try {
-      return RerunClusterFacade.updateRerunClusters(rerunClusterDtoList);
+      return RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
     } catch (Exception exception) {
       throw handleException(exception);
     }
   }
 
   /**
-   * Return a RerunCluster by fileId.
+   * Return a RerunClusterResponseDto by fileId.
    *
    * @param fileId
-   * @return RerunClusterDto
+   * @return RerunClusterResponseDto
    */
   @Override
-  public RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+  public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
     try {
       return RerunClusterFacade.getRerunClusterByFileId(fileId);
     } catch (Exception exception) {

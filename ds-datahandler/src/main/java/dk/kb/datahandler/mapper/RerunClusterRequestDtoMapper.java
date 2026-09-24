@@ -1,22 +1,22 @@
 package dk.kb.datahandler.mapper;
 
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-public class RerunClusterDtoMapper {
+public class RerunClusterRequestDtoMapper {
 
   /**
-   * Create a {@link RerunClusterDto} from a ResultSet.
+   * Create a {@link RerunClusterRequestDto} from a ResultSet.
    *
    * @param resultSet containing values from remote p3rerun database in table clusters table
-   * @return RerunClusterDto populated with data
+   * @return RerunClusterRequestDto populated with data
    * @throws SQLException
    */
-  public RerunClusterDto map(ResultSet resultSet) throws SQLException {
-    RerunClusterDto output = new RerunClusterDto();
+  public RerunClusterRequestDto map(ResultSet resultSet) throws SQLException {
+    RerunClusterRequestDto output = new RerunClusterRequestDto();
 
     output.setId(resultSet.getObject("id", UUID.class));
     output.setFileId(resultSet.getObject("file_id", UUID.class));

@@ -24,7 +24,7 @@ import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
@@ -343,24 +343,24 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Updates the provided metadata map with rerunCluster data.
+     * Updates the provided metadata map with rerunClusterResponseDto data.
      * You need to return an empty object because the code can not handle anything else. So we are
      * bound to have null checks this way...
      *
      * @param metadata the map of metadata
-     * @param fileId   the fileId to find rerunCluster
+     * @param fileId   the fileId to find rerunClusterResponseDto
      */
     private void updateMetadataMapWithRerunCluster(Map<String, String> metadata, String fileId) {
-        if (fileId != null) {
-            RerunClusterDto rerunCluster = getStorage().getRerunClusterByFileId(
+        if (StringUtils.isNotBlank(fileId)) {
+            RerunClusterResponseDto rerunClusterResponseDto = getStorage().getRerunClusterByFileId(
                 UUID.fromString(fileId));
 
-            if (rerunCluster.getRerunClusterId() != null) {
-                metadata.put("rerun_cluster_id", rerunCluster.getRerunClusterId().toString());
+            if (rerunClusterResponseDto.getRerunClusterId() != null) {
+                metadata.put("rerun_cluster_id", rerunClusterResponseDto.getRerunClusterId().toString());
             }
 
-            if (rerunCluster.getRerunClusterIdCount() != null) {
-                metadata.put("rerun_cluster_id_count", rerunCluster.getRerunClusterIdCount().toString());
+            if (rerunClusterResponseDto.getRerunClusterIdCount() != null) {
+                metadata.put("rerun_cluster_id_count", rerunClusterResponseDto.getRerunClusterIdCount().toString());
             }
         }
     }
@@ -375,7 +375,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         boolean useTranscriptions = ServiceConfig.getConfig().getBoolean("index.useTransriptions");
         boolean hasTranscription = false;
 
-        if (fileId != null && useTranscriptions) {
+        if (StringUtils.isNotBlank(fileId) && useTranscriptions) {
             // Can not be null. Will be empty DTO;
             TranscriptionDto transcription = getStorage().getTranscription(fileId);
             if (transcription.getTranscription() != null) {

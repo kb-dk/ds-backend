@@ -2,10 +2,12 @@ package dk.kb.storage.storage;
 
 import dk.kb.storage.mapper.CreatedDtoMapper;
 import dk.kb.storage.mapper.RecordsCountDtoMapper;
-import dk.kb.storage.mapper.RerunClusterDtoMapper;
+import dk.kb.storage.mapper.RerunClusterRequestDtoMapper;
+import dk.kb.storage.mapper.RerunClusterResponseDtoMapper;
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +20,8 @@ public class RerunClusterStorage extends BaseModuleStorage {
 
   private final static CreatedDtoMapper createdDtoMapper = new CreatedDtoMapper();
   private final static RecordsCountDtoMapper recordsCountDtoMapper = new RecordsCountDtoMapper();
-  private final static RerunClusterDtoMapper rerunClusterDtoMapper = new RerunClusterDtoMapper();
+  private final static RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper = new RerunClusterRequestDtoMapper();
+  private final static RerunClusterResponseDtoMapper rerunClusterResponseDtoMapper = new RerunClusterResponseDtoMapper();
 
   private static final String updateRerunClustersStatement = """
     WITH insert_update_rerun_clusters AS (
@@ -68,7 +71,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
         rc.id,
         rc.file_id,
         rc.rerun_cluster_id,
-        (SELECT COUNT(*) FROM rerun_clusters WHERE rerun_cluster_id = rc.rerun_cluster_id) AS rerun_cluster_id_count,
+        (SELECT COUNT(*) FROM rerun_clusters WHERE rerun_cluster_id = rc.rerun_cluster_id)::int AS rerun_cluster_id_count,
         rc.created,
         rc.job_id,
         rc.inserted,
@@ -93,17 +96,17 @@ public class RerunClusterStorage extends BaseModuleStorage {
   /**
    * Insert row in rerun_cluster table, or update row if the fileId exists.
    *
-   * @param rerunClusterDto
+   * @param rerunClusterRequestDto
    * @return RecordsCountDto number of rows inserted or updated
    * @throws SQLException
    */
-  public RecordsCountDto updateRerunClusters(RerunClusterDto rerunClusterDto) throws SQLException {
+  public RecordsCountDto updateRerunClusters(RerunClusterRequestDto rerunClusterRequestDto) throws SQLException {
     try (PreparedStatement stmt = connection.prepareStatement(updateRerunClustersStatement)) {
-      stmt.setObject(1, rerunClusterDto.getId());
-      stmt.setObject(2, rerunClusterDto.getFileId());
-      stmt.setObject(3, rerunClusterDto.getRerunClusterId());
-      stmt.setObject(4, rerunClusterDto.getCreated());
-      stmt.setObject(5, rerunClusterDto.getJobId());
+      stmt.setObject(1, rerunClusterRequestDto.getId());
+      stmt.setObject(2, rerunClusterRequestDto.getFileId());
+      stmt.setObject(3, rerunClusterRequestDto.getRerunClusterId());
+      stmt.setObject(4, rerunClusterRequestDto.getCreated());
+      stmt.setObject(5, rerunClusterRequestDto.getJobId());
 
       ResultSet resultSet = stmt.executeQuery();
 
@@ -120,23 +123,23 @@ public class RerunClusterStorage extends BaseModuleStorage {
   }
 
   /**
-   * Return a RerunCluster by fileId.
+   * Return a RerunClusterResponseDto by fileId.
    *
    * @param fileId
-   * @return RerunClusterDto
+   * @return RerunClusterResponseDto
    * @throws SQLException
    */
-  public RerunClusterDto getRerunClusterByFileId(UUID fileId) throws SQLException {
+  public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) throws SQLException {
     try (PreparedStatement stmt = connection.prepareStatement(getRerunClusterByFileIdStatement)) {
       stmt.setObject(1, fileId);
       ResultSet resultSet = stmt.executeQuery();
 
       if (resultSet.next()) {
-        return rerunClusterDtoMapper.map(resultSet);
+        return rerunClusterResponseDtoMapper.map(resultSet);
       }
 
       // DsStorageClient can not handle null values when serializing.
-      return new RerunClusterDto();
+      return new RerunClusterResponseDto();
     } catch (SQLException e) {
       String message =
           "SQL Exception in getRerunClusterByFileId with fileId:'" + fileId + "' error: " +

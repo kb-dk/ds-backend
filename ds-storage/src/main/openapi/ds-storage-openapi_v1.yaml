@@ -519,7 +519,7 @@ paths:
     post:
       tags:
         - 'RerunCluster'
-      summary: 'Save list of RerunCluster in rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table.'
+      summary: 'Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table.'
       operationId: updateRerunClusters
       security:
         - KBOAuth:
@@ -531,7 +531,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/RerunCluster'
+                $ref: '#/components/schemas/RerunClusterRequest'
       responses:
         '201':
           description: 'Return the number of rows inserted or updated in rerun_clusters table.'
@@ -544,7 +544,7 @@ paths:
     get:
       tags:
         - 'RerunCluster'
-      summary: 'Return a RerunCluster from fileId.'
+      summary: 'Return a RerunClusterResponseDto from fileId. If no match was found, it return an RerunClusterResponseDto with null values in all fields, because the code can not handle null values or HTTP code 404 in a nice way.'
       security:
         - KBOAuth:
             - any
@@ -558,13 +558,13 @@ paths:
             format: uuid
       responses:
         '200':
-          description: 'Return the RerunCluster.'
+          description: 'Return the specific RerunClusterResponseDto. If no match was found, it return an RerunClusterResponseDto with null values in all fields, because the code can not handle null values or HTTP code 404 in a nice way.'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RerunCluster'
+                $ref: '#/components/schemas/RerunClusterResponse'
         '404':
-          description: "Could not find rerunCluster with fileId."
+          description: "Could not find RerunClusterResponseDto with fileId. How it should be, but the code can not handle it well."
 
   /rerun-cluster/created/latest:
     get:
@@ -795,7 +795,36 @@ components:
           type: string
           description: 'Each line from the transcription text.Must start with seconds.mm to and from interval. Line break between each sentence. Example: 27.06 - 32.04  This is a text'
 
-    RerunCluster:
+    RerunClusterRequest:
+      type: object
+      required:
+        - id
+        - fileId
+        - rerunClusterId
+        - created
+        - jobId
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Unique UUID.'
+        fileId:
+          type: string
+          format: uuid
+          description: 'fileId that matches a Preservica.'
+        rerunClusterId:
+          type: string
+          format: uuid
+          description: 'All files with this id, is a rerun of the same broadcast.'
+        created:
+          type: string
+          format: date-time
+          description: 'When was this identified as a rerun?'
+        jobId:
+          type: string
+          description: 'Id of rerunClusters matching job. Only useful for logging and debugging.'
+
+    RerunClusterResponse:
       type: object
       required:
         - id

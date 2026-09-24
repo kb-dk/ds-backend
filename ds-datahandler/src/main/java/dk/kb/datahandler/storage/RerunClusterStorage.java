@@ -1,7 +1,7 @@
 package dk.kb.datahandler.storage;
 
-import dk.kb.datahandler.mapper.RerunClusterDtoMapper;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.datahandler.mapper.RerunClusterRequestDtoMapper;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import java.sql.Connection;
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class RerunClusterStorage implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(RerunClusterStorage.class);
 
-  private final static RerunClusterDtoMapper rerunClusterDtoMapper = new RerunClusterDtoMapper();
+  private final static RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper = new RerunClusterRequestDtoMapper();
   private static final String getRerunClustersStatement = """
       SELECT DISTINCT ON (c.file_id) -- there can be multiple of the same file_id (history) and we want the newest inserted file_id
           c.id,
@@ -152,11 +152,11 @@ public class RerunClusterStorage implements AutoCloseable {
    * Return new rows from remote p3rerun database in table clusters table.
    *
    * @param created latest created time in our database
-   * @return List<RerunClusterDto> of rows
+   * @return List<RerunClusterRequestDto> of rows
    * @throws Exception
    */
-  public List<RerunClusterDto> getRerunClusters(OffsetDateTime created) throws Exception {
-    List<RerunClusterDto> rerunClusterDtoList = new ArrayList<>();
+  public List<RerunClusterRequestDto> getRerunClusters(OffsetDateTime created) throws Exception {
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = new ArrayList<>();
 
     try (PreparedStatement stmt = connection.prepareStatement(getRerunClustersStatement)) {
       stmt.setObject(1, created);
@@ -164,11 +164,11 @@ public class RerunClusterStorage implements AutoCloseable {
       ResultSet resultSet = stmt.executeQuery();
 
       while (resultSet.next()) {
-        RerunClusterDto rerunClusterDto = rerunClusterDtoMapper.map(resultSet);
-        rerunClusterDtoList.add(rerunClusterDto);
+        RerunClusterRequestDto rerunClusterRequestDto = rerunClusterRequestDtoMapper.map(resultSet);
+        rerunClusterRequestDtoList.add(rerunClusterRequestDto);
       }
 
-      return rerunClusterDtoList;
+      return rerunClusterRequestDtoList;
     } catch (SQLException e) {
       String message = "SQL Exception in getRerunClusters: " + e.getMessage();
       log.error(message);

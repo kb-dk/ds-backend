@@ -16,7 +16,7 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
@@ -83,7 +83,7 @@ public class FailStorage implements Storage {
     }
 
     @Override
-    public RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+    public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
         return null;
     }
 

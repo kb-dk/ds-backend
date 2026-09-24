@@ -2,12 +2,12 @@ package dk.kb.storage.facade;
 
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.storage.BaseModuleStorage;
 import dk.kb.storage.storage.RerunClusterStorage;
 import java.util.List;
 import java.util.UUID;
-import javax.ws.rs.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,26 +16,26 @@ public class RerunClusterFacade {
   private static final Logger log = LoggerFactory.getLogger(RerunClusterFacade.class);
 
   /**
-   * Save list of RerunCluster in rerun_clusters table, update mtime in ds_records table and return
+   * Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table and return
    * number of rows inserted or updated in rerun_clusters table.
    *
-   * @param rerunClusterDtoList
+   * @param rerunClusterRequestDtoList
    * @return RecordsCountDto number of rows inserted or updated
    */
-  public static RecordsCountDto updateRerunClusters(List<RerunClusterDto> rerunClusterDtoList) {
+  public static RecordsCountDto updateRerunClusters(List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
     RecordsCountDto allRecordsCountDto = new RecordsCountDto();
     // Start the count at 0
     allRecordsCountDto.setCount(0);
 
-    for (RerunClusterDto rerunClusterDto : rerunClusterDtoList) {
+    for (RerunClusterRequestDto rerunClusterRequestDto : rerunClusterRequestDtoList) {
       BaseModuleStorage.performStorageAction(
-          "updateRerunClusters() with fileId:" + rerunClusterDto.getFileId(),
+          "updateRerunClusters() with fileId:" + rerunClusterRequestDto.getFileId(),
           RerunClusterStorage.class, storage -> {
             RecordsCountDto recordsCountDto =
-                ((RerunClusterStorage) storage).updateRerunClusters(rerunClusterDto);
+                ((RerunClusterStorage) storage).updateRerunClusters(rerunClusterRequestDto);
 
             int touched = storage.updateMTimeForRecordByFileId(
-                rerunClusterDto.getFileId().toString());
+                rerunClusterRequestDto.getFileId().toString());
 
             allRecordsCountDto.setCount(allRecordsCountDto.getCount() + recordsCountDto.getCount());
 
@@ -49,18 +49,18 @@ public class RerunClusterFacade {
   }
 
   /**
-   * Return a RerunCluster by fileId.
+   * Return a RerunClusterResponseDto by fileId.
    *
    * @param fileId UUID of fileId.
-   * @return RerunClusterDto
+   * @return RerunClusterResponseDto
    */
-  public static RerunClusterDto getRerunClusterByFileId(UUID fileId) {
+  public static RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
     return BaseModuleStorage.performStorageAction("getRerunClusterByFileId(" + fileId + ")",
         RerunClusterStorage.class, storage -> {
-          RerunClusterDto rerunClusterDto =
+          RerunClusterResponseDto rerunClusterResponseDto =
               ((RerunClusterStorage) storage).getRerunClusterByFileId(fileId);
 
-          return rerunClusterDto;
+          return rerunClusterResponseDto;
         });
   }
 

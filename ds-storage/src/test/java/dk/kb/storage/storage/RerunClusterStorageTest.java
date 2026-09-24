@@ -7,7 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.util.TestcontainersUtil;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
@@ -45,15 +46,15 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     String jobId = "test run 1";
 
-    RerunClusterDto rerunClusterDto = new RerunClusterDto();
-    rerunClusterDto.setId(id);
-    rerunClusterDto.setFileId(fileId);
-    rerunClusterDto.setRerunClusterId(rerunClusterId);
-    rerunClusterDto.setCreated(created);
-    rerunClusterDto.setJobId(jobId);
+    RerunClusterRequestDto rerunClusterRequestDto = new RerunClusterRequestDto();
+    rerunClusterRequestDto.setId(id);
+    rerunClusterRequestDto.setFileId(fileId);
+    rerunClusterRequestDto.setRerunClusterId(rerunClusterId);
+    rerunClusterRequestDto.setCreated(created);
+    rerunClusterRequestDto.setJobId(jobId);
 
     // Act
-    RecordsCountDto recordsCountDto = rerunClusterStorage.updateRerunClusters(rerunClusterDto);
+    RecordsCountDto recordsCountDto = rerunClusterStorage.updateRerunClusters(rerunClusterRequestDto);
 
     // Assert
     assertNotNull(recordsCountDto);
@@ -73,29 +74,29 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
     String secondJobId = "test run 2";
 
-    RerunClusterDto firstRerunClusterDto = new RerunClusterDto();
-    firstRerunClusterDto.setId(UUID.randomUUID());
-    firstRerunClusterDto.setFileId(fileId);
-    firstRerunClusterDto.setRerunClusterId(UUID.randomUUID());
-    firstRerunClusterDto.setCreated(firstCreated);
-    firstRerunClusterDto.setJobId(firstJobId);
+    RerunClusterRequestDto firstRerunClusterRequestDto = new RerunClusterRequestDto();
+    firstRerunClusterRequestDto.setId(UUID.randomUUID());
+    firstRerunClusterRequestDto.setFileId(fileId);
+    firstRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
+    firstRerunClusterRequestDto.setCreated(firstCreated);
+    firstRerunClusterRequestDto.setJobId(firstJobId);
 
-    RerunClusterDto secondRerunClusterDto = new RerunClusterDto();
-    secondRerunClusterDto.setId(id);
-    secondRerunClusterDto.setFileId(fileId);
-    secondRerunClusterDto.setRerunClusterId(rerunClusterId);
-    secondRerunClusterDto.setCreated(secondCreated);
-    secondRerunClusterDto.setJobId(secondJobId);
+    RerunClusterRequestDto secondRerunClusterRequestDto = new RerunClusterRequestDto();
+    secondRerunClusterRequestDto.setId(id);
+    secondRerunClusterRequestDto.setFileId(fileId);
+    secondRerunClusterRequestDto.setRerunClusterId(rerunClusterId);
+    secondRerunClusterRequestDto.setCreated(secondCreated);
+    secondRerunClusterRequestDto.setJobId(secondJobId);
 
     // Insert row
     RecordsCountDto insertedRecordsCountDto =
-        rerunClusterStorage.updateRerunClusters(firstRerunClusterDto);
-    RerunClusterDto insertedRerunClusterDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
+        rerunClusterStorage.updateRerunClusters(firstRerunClusterRequestDto);
+    RerunClusterResponseDto insertedRerunClusterResponseDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
 
     // Act
     RecordsCountDto updatedRecordsCountDto =
-        rerunClusterStorage.updateRerunClusters(secondRerunClusterDto);
-    RerunClusterDto updatedRerunClusterDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
+        rerunClusterStorage.updateRerunClusters(secondRerunClusterRequestDto);
+    RerunClusterResponseDto updatedRerunClusterResponseDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
 
     // Assert
     assertNotNull(insertedRecordsCountDto);
@@ -104,18 +105,18 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     assertNotNull(updatedRecordsCountDto);
     assertEquals(1, updatedRecordsCountDto.getCount());
 
-    assertEquals(id, updatedRerunClusterDto.getId());
-    assertEquals(fileId, updatedRerunClusterDto.getFileId());
-    assertEquals(rerunClusterId, updatedRerunClusterDto.getRerunClusterId());
-    assertEquals(1, updatedRerunClusterDto.getRerunClusterIdCount());
-    assertEquals(secondCreated, updatedRerunClusterDto.getCreated());
-    assertEquals(secondJobId, updatedRerunClusterDto.getJobId());
-    assertEquals(insertedRerunClusterDto.getInserted(), updatedRerunClusterDto.getInserted());
-    assertTrue(insertedRerunClusterDto.getUpdated().isBefore(updatedRerunClusterDto.getUpdated()));
+    assertEquals(id, updatedRerunClusterResponseDto.getId());
+    assertEquals(fileId, updatedRerunClusterResponseDto.getFileId());
+    assertEquals(rerunClusterId, updatedRerunClusterResponseDto.getRerunClusterId());
+    assertEquals(1, updatedRerunClusterResponseDto.getRerunClusterIdCount());
+    assertEquals(secondCreated, updatedRerunClusterResponseDto.getCreated());
+    assertEquals(secondJobId, updatedRerunClusterResponseDto.getJobId());
+    assertEquals(insertedRerunClusterResponseDto.getInserted(), updatedRerunClusterResponseDto.getInserted());
+    assertTrue(insertedRerunClusterResponseDto.getUpdated().isBefore(updatedRerunClusterResponseDto.getUpdated()));
   }
 
   @Test
-  public void getRerunClusterByFileId_whenFileIdExists_thenReturnRerunClusterDto()
+  public void getRerunClusterByFileId_whenFileIdExists_thenReturnRerunClusterResponseDto()
       throws Exception {
     // Arrange
     UUID id = UUID.randomUUID();
@@ -124,47 +125,47 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     String jobId = "test run 1";
 
-    RerunClusterDto rerunClusterDto = new RerunClusterDto();
-    rerunClusterDto.setId(id);
-    rerunClusterDto.setFileId(fileId);
-    rerunClusterDto.setRerunClusterId(rerunClusterId);
-    rerunClusterDto.setCreated(created);
-    rerunClusterDto.setJobId(jobId);
+    RerunClusterRequestDto rerunClusterRequestDto = new RerunClusterRequestDto();
+    rerunClusterRequestDto.setId(id);
+    rerunClusterRequestDto.setFileId(fileId);
+    rerunClusterRequestDto.setRerunClusterId(rerunClusterId);
+    rerunClusterRequestDto.setCreated(created);
+    rerunClusterRequestDto.setJobId(jobId);
 
     // Act
-    RecordsCountDto recordsCountDto = rerunClusterStorage.updateRerunClusters(rerunClusterDto);
-    RerunClusterDto returnedRerunClusterDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
+    RecordsCountDto recordsCountDto = rerunClusterStorage.updateRerunClusters(rerunClusterRequestDto);
+    RerunClusterResponseDto rerunClusterResponseDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
 
     // Assert
     assertNotNull(recordsCountDto);
     assertEquals(1, recordsCountDto.getCount());
 
-    assertEquals(id, returnedRerunClusterDto.getId());
-    assertEquals(fileId, returnedRerunClusterDto.getFileId());
-    assertEquals(rerunClusterId, returnedRerunClusterDto.getRerunClusterId());
-    assertEquals(1, returnedRerunClusterDto.getRerunClusterIdCount());
-    assertEquals(created, returnedRerunClusterDto.getCreated());
-    assertEquals(jobId, returnedRerunClusterDto.getJobId());
-    assertEquals(returnedRerunClusterDto.getInserted(), returnedRerunClusterDto.getUpdated());
+    assertEquals(id, rerunClusterResponseDto.getId());
+    assertEquals(fileId, rerunClusterResponseDto.getFileId());
+    assertEquals(rerunClusterId, rerunClusterResponseDto.getRerunClusterId());
+    assertEquals(1, rerunClusterResponseDto.getRerunClusterIdCount());
+    assertEquals(created, rerunClusterResponseDto.getCreated());
+    assertEquals(jobId, rerunClusterResponseDto.getJobId());
+    assertEquals(rerunClusterResponseDto.getInserted(), rerunClusterResponseDto.getUpdated());
   }
 
   @Test
-  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnEmptyRerunCluster() throws Exception {
+  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnEmptyRerunClusterResponse() throws Exception {
     // Arrange
     UUID fileId = UUID.randomUUID();
 
     // Act
-    RerunClusterDto rerunClusterDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
+    RerunClusterResponseDto rerunClusterResponseDto = rerunClusterStorage.getRerunClusterByFileId(fileId);
 
     // Assert
-    assertNotNull(rerunClusterDto);
-    assertNull(rerunClusterDto.getFileId());
-    assertNull(rerunClusterDto.getRerunClusterId());
-    assertNull(rerunClusterDto.getRerunClusterIdCount());
-    assertNull(rerunClusterDto.getCreated());
-    assertNull(rerunClusterDto.getJobId());
-    assertNull(rerunClusterDto.getInserted());
-    assertNull(rerunClusterDto.getUpdated());
+    assertNotNull(rerunClusterResponseDto);
+    assertNull(rerunClusterResponseDto.getFileId());
+    assertNull(rerunClusterResponseDto.getRerunClusterId());
+    assertNull(rerunClusterResponseDto.getRerunClusterIdCount());
+    assertNull(rerunClusterResponseDto.getCreated());
+    assertNull(rerunClusterResponseDto.getJobId());
+    assertNull(rerunClusterResponseDto.getInserted());
+    assertNull(rerunClusterResponseDto.getUpdated());
   }
 
   @Test
@@ -173,24 +174,24 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
 
-    RerunClusterDto firstRerunClusterDto = new RerunClusterDto();
-    firstRerunClusterDto.setId(UUID.randomUUID());
-    firstRerunClusterDto.setFileId(UUID.randomUUID());
-    firstRerunClusterDto.setRerunClusterId(UUID.randomUUID());
-    firstRerunClusterDto.setCreated(firstCreated);
-    firstRerunClusterDto.setJobId("test run 1");
+    RerunClusterRequestDto firstRerunClusterRequestDto = new RerunClusterRequestDto();
+    firstRerunClusterRequestDto.setId(UUID.randomUUID());
+    firstRerunClusterRequestDto.setFileId(UUID.randomUUID());
+    firstRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
+    firstRerunClusterRequestDto.setCreated(firstCreated);
+    firstRerunClusterRequestDto.setJobId("test run 1");
 
-    RerunClusterDto secondRerunClusterDto = new RerunClusterDto();
-    secondRerunClusterDto.setId(UUID.randomUUID());
-    secondRerunClusterDto.setFileId(UUID.randomUUID());
-    secondRerunClusterDto.setRerunClusterId(UUID.randomUUID());
-    secondRerunClusterDto.setCreated(secondCreated);
-    secondRerunClusterDto.setJobId("test run 2");
+    RerunClusterRequestDto secondRerunClusterRequestDto = new RerunClusterRequestDto();
+    secondRerunClusterRequestDto.setId(UUID.randomUUID());
+    secondRerunClusterRequestDto.setFileId(UUID.randomUUID());
+    secondRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
+    secondRerunClusterRequestDto.setCreated(secondCreated);
+    secondRerunClusterRequestDto.setJobId("test run 2");
 
     RecordsCountDto firstRecordsCountDto =
-        rerunClusterStorage.updateRerunClusters(firstRerunClusterDto);
+        rerunClusterStorage.updateRerunClusters(firstRerunClusterRequestDto);
     RecordsCountDto secondRecordsCountDto =
-        rerunClusterStorage.updateRerunClusters(secondRerunClusterDto);
+        rerunClusterStorage.updateRerunClusters(secondRerunClusterRequestDto);
 
     // Act
     CreatedDto createdDto = rerunClusterStorage.latestCreated();

@@ -22,7 +22,7 @@ import dk.kb.datahandler.storage.JobStorageForUnitTests;
 import dk.kb.datahandler.storage.RerunClusterStorage;
 import dk.kb.datahandler.util.TestcontainersUtil;
 import dk.kb.datahandler.webservice.KBAuthorizationInterceptor;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import java.lang.invoke.MethodHandles;
@@ -58,7 +58,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
   }
 
   @Test
-  public void updateRerunClusters_whenGivenRerunClusterDtoList_thenReturnHowManyRowsWasInsertedOrUpdated() {
+  public void updateRerunClusters_whenGivenRerunClusterRequestDtoList_thenReturnHowManyRowsWasInsertedOrUpdated() {
     // Arrange
     dk.kb.storage.model.v1.CreatedDto createdDto = new dk.kb.storage.model.v1.CreatedDto();
     createdDto.setCreated(OffsetDateTime.parse("2026-03-20T00:00:00.001Z"));
@@ -69,14 +69,14 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
     OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     String jobId = "test run 1";
 
-    RerunClusterDto rerunClusterDto = new RerunClusterDto();
-    rerunClusterDto.setId(id);
-    rerunClusterDto.setFileId(fileId);
-    rerunClusterDto.setRerunClusterId(rerunClusterId);
-    rerunClusterDto.setCreated(created);
-    rerunClusterDto.setJobId(jobId);
+    RerunClusterRequestDto rerunClusterRequestDto = new RerunClusterRequestDto();
+    rerunClusterRequestDto.setId(id);
+    rerunClusterRequestDto.setFileId(fileId);
+    rerunClusterRequestDto.setRerunClusterId(rerunClusterId);
+    rerunClusterRequestDto.setCreated(created);
+    rerunClusterRequestDto.setJobId(jobId);
 
-    List<RerunClusterDto> rerunClusterDtoList = List.of(rerunClusterDto);
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = List.of(rerunClusterRequestDto);
 
     String username = "unittest";
     Integer count = 1;
@@ -101,10 +101,10 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
         try (MockedConstruction<RerunClusterStorage> mockedConstruction = Mockito.mockConstruction(
                 RerunClusterStorage.class, (mock, context) ->
                     Mockito.when(mock.getRerunClusters(any()))
-                        .thenReturn(rerunClusterDtoList))) {
+                        .thenReturn(rerunClusterRequestDtoList))) {
 
           Mockito.when(dsStorageClient.latestCreated()).thenReturn(createdDto);
-          Mockito.when(dsStorageClient.updateRerunClusters(rerunClusterDtoList))
+          Mockito.when(dsStorageClient.updateRerunClusters(rerunClusterRequestDtoList))
               .thenReturn(recordsCountDto);
 
           // Act

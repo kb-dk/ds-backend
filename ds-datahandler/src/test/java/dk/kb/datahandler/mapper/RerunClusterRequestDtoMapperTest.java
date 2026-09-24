@@ -5,19 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-public class RerunClusterDtoMapperTest {
+public class RerunClusterRequestDtoMapperTest {
 
   @Test
-  public void map_whenResultSet_thenReturnRerunClusterDto() throws SQLException {
+  public void map_whenResultSet_thenReturnRerunClusterRequestDto() throws SQLException {
     // Assert
-    RerunClusterDtoMapper rerunClusterDtoMapper = new RerunClusterDtoMapper();
+    RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper = new RerunClusterRequestDtoMapper();
 
     UUID id = UUID.randomUUID();
     UUID fileId = UUID.randomUUID();
@@ -33,14 +33,14 @@ public class RerunClusterDtoMapperTest {
     when(resultSet.getString("job_id")).thenReturn(jobId);
 
     // Act
-    RerunClusterDto rerunClusterDto = rerunClusterDtoMapper.map(resultSet);
+    RerunClusterRequestDto rerunClusterRequestDto = rerunClusterRequestDtoMapper.map(resultSet);
 
     // Assert
-    assertNotNull(rerunClusterDto);
-    assertEquals(id, rerunClusterDto.getId());
-    assertEquals(fileId, rerunClusterDto.getFileId());
-    assertEquals(rerunClusterId, rerunClusterDto.getRerunClusterId());
-    assertEquals(created, rerunClusterDto.getCreated());
-    assertEquals(jobId, rerunClusterDto.getJobId());
+    assertNotNull(rerunClusterRequestDto);
+    assertEquals(id, rerunClusterRequestDto.getId());
+    assertEquals(fileId, rerunClusterRequestDto.getFileId());
+    assertEquals(rerunClusterId, rerunClusterRequestDto.getRerunClusterId());
+    assertEquals(created, rerunClusterRequestDto.getCreated());
+    assertEquals(jobId, rerunClusterRequestDto.getJobId());
   }
 }

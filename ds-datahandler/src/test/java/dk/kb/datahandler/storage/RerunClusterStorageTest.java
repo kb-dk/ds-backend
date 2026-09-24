@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import dk.kb.datahandler.config.ServiceConfig;
-import dk.kb.storage.model.v1.RerunClusterDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -45,15 +45,15 @@ public class RerunClusterStorageTest {
   public void getRerunClusters_whenCreatedIsNullAndNoRows_thenReturnRerunClusters()
       throws Exception {
     // Act
-    List<RerunClusterDto> rerunClusterDtoList = rerunClusterStorage.getRerunClusters(null);
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = rerunClusterStorage.getRerunClusters(null);
 
     // Assert
-    assertNotNull(rerunClusterDtoList);
-    assertEquals(0, rerunClusterDtoList.size());
+    assertNotNull(rerunClusterRequestDtoList);
+    assertEquals(0, rerunClusterRequestDtoList.size());
   }
 
   @Test
-  public void getRerunClusters_whenCreatedIsNullAndTableIsPopulated_thenReturnRerunClusters()
+  public void getRerunClusters_whenCreatedIsNullAndTableIsPopulated_thenReturnAllRerunClusterRequest()
       throws Exception {
     // Arrange
     try (Connection conn = postgres.createConnection("")) {
@@ -65,15 +65,15 @@ public class RerunClusterStorageTest {
       );
     }
     // Act
-    List<RerunClusterDto> rerunClusterDtoList = rerunClusterStorage.getRerunClusters(null);
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = rerunClusterStorage.getRerunClusters(null);
 
     // Assert
-    assertNotNull(rerunClusterDtoList);
-    assertEquals(2, rerunClusterDtoList.size());
+    assertNotNull(rerunClusterRequestDtoList);
+    assertEquals(2, rerunClusterRequestDtoList.size());
   }
 
   @Test
-  public void getRerunClusters_whenCreatedIsOlderThanLatestInsertedRows_thenReturnRerunClusters()
+  public void getRerunClusters_whenCreatedIsOlderThanLatestInsertedRows_thenReturnAllNewerRerunClusterRequestThanCreated()
       throws Exception {
     // Arrange
     OffsetDateTime created = OffsetDateTime.parse("2026-07-01T00:00:00.000Z");
@@ -87,11 +87,11 @@ public class RerunClusterStorageTest {
     }
 
     // Act
-    List<RerunClusterDto> rerunClusterDtoList = rerunClusterStorage.getRerunClusters(created);
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = rerunClusterStorage.getRerunClusters(created);
 
     // Assert
-    assertNotNull(rerunClusterDtoList);
-    assertEquals(2, rerunClusterDtoList.size());
+    assertNotNull(rerunClusterRequestDtoList);
+    assertEquals(2, rerunClusterRequestDtoList.size());
   }
 
   @Test
@@ -110,11 +110,11 @@ public class RerunClusterStorageTest {
     }
 
     // Act
-    List<RerunClusterDto> rerunClusterDtoList = rerunClusterStorage.getRerunClusters(created);
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = rerunClusterStorage.getRerunClusters(created);
 
     // Assert
-    assertNotNull(rerunClusterDtoList);
-    assertEquals(3, rerunClusterDtoList.size());
+    assertNotNull(rerunClusterRequestDtoList);
+    assertEquals(3, rerunClusterRequestDtoList.size());
   }
 
   @Test
@@ -133,11 +133,11 @@ public class RerunClusterStorageTest {
     }
 
     // Act
-    List<RerunClusterDto> rerunClusterDtoList = rerunClusterStorage.getRerunClusters(created);
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = rerunClusterStorage.getRerunClusters(created);
 
     // Assert
-    assertNotNull(rerunClusterDtoList);
-    assertEquals(1, rerunClusterDtoList.size());
+    assertNotNull(rerunClusterRequestDtoList);
+    assertEquals(1, rerunClusterRequestDtoList.size());
   }
 
   @Test
@@ -156,11 +156,11 @@ public class RerunClusterStorageTest {
     }
 
     // Act
-    List<RerunClusterDto> rerunClusterDtoList = rerunClusterStorage.getRerunClusters(created);
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = rerunClusterStorage.getRerunClusters(created);
 
     // Assert
-    assertNotNull(rerunClusterDtoList);
-    assertEquals(1, rerunClusterDtoList.size());
+    assertNotNull(rerunClusterRequestDtoList);
+    assertEquals(1, rerunClusterRequestDtoList.size());
   }
 
   @Test
@@ -181,31 +181,31 @@ public class RerunClusterStorageTest {
     }
 
     // Act
-    List<RerunClusterDto> rerunClusterDtoList = rerunClusterStorage.getRerunClusters(created);
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = rerunClusterStorage.getRerunClusters(created);
 
     // Assert
-    assertNotNull(rerunClusterDtoList);
-    assertEquals(3, rerunClusterDtoList.size());
+    assertNotNull(rerunClusterRequestDtoList);
+    assertEquals(3, rerunClusterRequestDtoList.size());
 
     assertEquals(UUID.fromString("4000a00a-0aa0-000a-00a0-a0a000aa0aa0"),
-        rerunClusterDtoList.get(0).getId());
+        rerunClusterRequestDtoList.get(0).getId());
     assertEquals(UUID.fromString("0000a00a-0aa0-000a-00a0-a0a000aa0aa0"),
-        rerunClusterDtoList.get(0).getFileId());
+        rerunClusterRequestDtoList.get(0).getFileId());
     assertEquals(OffsetDateTime.parse("2026-09-06T09:23:40.638Z"),
-        rerunClusterDtoList.get(0).getCreated());
+        rerunClusterRequestDtoList.get(0).getCreated());
 
     assertEquals(UUID.fromString("1000a00a-0aa0-000a-00a0-a0a000aa0aa0"),
-        rerunClusterDtoList.get(1).getId());
+        rerunClusterRequestDtoList.get(1).getId());
     assertEquals(UUID.fromString("1111a11a-0aa0-000a-00a0-a0a000aa0aa0"),
-        rerunClusterDtoList.get(1).getFileId());
+        rerunClusterRequestDtoList.get(1).getFileId());
     assertEquals(OffsetDateTime.parse("2026-08-01T00:00:00.001Z"),
-        rerunClusterDtoList.get(1).getCreated());
+        rerunClusterRequestDtoList.get(1).getCreated());
 
     assertEquals(UUID.fromString("3000a00a-0aa0-000a-00a0-a0a000aa0aa0"),
-        rerunClusterDtoList.get(2).getId());
+        rerunClusterRequestDtoList.get(2).getId());
     assertEquals(UUID.fromString("2222a22a-0aa0-000a-00a0-a0a000aa0aa0"),
-        rerunClusterDtoList.get(2).getFileId());
+        rerunClusterRequestDtoList.get(2).getFileId());
     assertEquals(OffsetDateTime.parse("2026-09-06T09:23:40.638Z"),
-        rerunClusterDtoList.get(2).getCreated());
+        rerunClusterRequestDtoList.get(2).getCreated());
   }
 }
