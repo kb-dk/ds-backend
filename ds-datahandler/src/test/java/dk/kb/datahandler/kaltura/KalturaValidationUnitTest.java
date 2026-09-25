@@ -51,7 +51,7 @@ class KalturaValidationUnitTest {
                 .thenReturn(emptySolrDocumentList);
 
         // Act
-        int result = KalturaValidationJob.validateKalturaIds();
+        int result = KalturaValidationJob.validateKalturaIds(false);
 
         // Assert
         service.verify(() -> KalturaValidationJob.getEntryStatuses(any()), never());
@@ -70,7 +70,7 @@ class KalturaValidationUnitTest {
                 .thenReturn(Map.of(KALTURA_ID, EntryStatus.READY));
 
         // Act
-        int result = KalturaValidationJob.validateKalturaIds();
+        int result = KalturaValidationJob.validateKalturaIds(false);
 
         // Assert
         assertEquals(0, result);
@@ -93,7 +93,7 @@ class KalturaValidationUnitTest {
         service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
 
         // Act
-        int result = KalturaValidationJob.validateKalturaIds();
+        int result = KalturaValidationJob.validateKalturaIds(false);
 
         // Assert
         assertEquals(1, result);
@@ -114,7 +114,7 @@ class KalturaValidationUnitTest {
         service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
 
         // Act
-        int result = KalturaValidationJob.validateKalturaIds();
+        int result = KalturaValidationJob.validateKalturaIds(false);
 
         // Assert
         assertEquals(1, result);
@@ -138,7 +138,7 @@ class KalturaValidationUnitTest {
         service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
 
         // Act
-        int result = KalturaValidationJob.validateKalturaIds();
+        int result = KalturaValidationJob.validateKalturaIds(false);
 
         // Assert
         assertEquals(2, result);
@@ -157,7 +157,7 @@ class KalturaValidationUnitTest {
                 .thenThrow(new SolrServerException(expectedMessage));
 
         // Act and Assert
-        Exception exception = assertThrows(InternalServiceException.class, KalturaValidationJob::validateKalturaIds);
+        Exception exception = assertThrows(InternalServiceException.class, () -> KalturaValidationJob.validateKalturaIds(false));
         assertEquals(expectedMessage, exception.getCause().getMessage());
     }
 
@@ -169,7 +169,7 @@ class KalturaValidationUnitTest {
                 .thenThrow(new IOException(expectedMessage));
 
         // Act and Assert
-        Exception exception = assertThrows(InternalServiceException.class, KalturaValidationJob::validateKalturaIds);
+        Exception exception = assertThrows(InternalServiceException.class, () -> KalturaValidationJob.validateKalturaIds(false));
         assertEquals(expectedMessage, exception.getCause().getMessage());
     }
 
@@ -184,7 +184,7 @@ class KalturaValidationUnitTest {
                 .thenThrow(new RuntimeException("Kaltura API error"));
 
         // Act and Assert
-        assertThrows(InternalServiceException.class, KalturaValidationJob::validateKalturaIds);
+        assertThrows(InternalServiceException.class, () -> KalturaValidationJob.validateKalturaIds(false));
         service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
     }
 
@@ -200,7 +200,7 @@ class KalturaValidationUnitTest {
         service.when(() -> KalturaValidationJob.getEntryStatus(KALTURA_ID)).thenReturn(EntryStatus.READY);
 
         // Act
-        int result = KalturaValidationJob.validateKalturaIds();
+        int result = KalturaValidationJob.validateKalturaIds(false);
 
         // Assert
         assertEquals(0, result);
@@ -220,7 +220,50 @@ class KalturaValidationUnitTest {
                 .thenThrow(new RuntimeException("Kaltura API error"));
 
         // Act and Assert
-        assertThrows(InternalServiceException.class, KalturaValidationJob::validateKalturaIds);
+        assertThrows(InternalServiceException.class, () -> KalturaValidationJob.validateKalturaIds(false));
+        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
+    }
+
+    @Test
+    void testValidateKalturaIds_whenDryRun_thenNothingIsDeletedOrCleared() {
+        // Arrange
+        SolrDocument notReady = buildSolrDocument("record-1", "file-1", "kaltura-1");
+        SolrDocument notFound = buildSolrDocument("record-2", "file-2", "kaltura-2");
+        SolrDocumentList solrDocumentList = buildSolrDocumentList(notReady, notFound);
+        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+
+        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
+                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
+                .thenReturn(Map.of("kaltura-1", EntryStatus.ERROR_CONVERTING));
+        service.when(() -> KalturaValidationJob.getEntryStatus("kaltura-2")).thenReturn(null);
+
+        // Act
+        int result = KalturaValidationJob.validateKalturaIds(true);
+
+        // Assert
+        assertEquals(2, result);
+        service.verify(() -> KalturaValidationJob.deleteStream(any()), never());
+        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
+    }
+
+    @Test
+    void testValidateKalturaIds_whenDryRunAndEntryReady_thenNothingWouldBeCleared() {
+        // Arrange
+        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
+        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+
+        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
+                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
+                .thenReturn(Map.of(KALTURA_ID, EntryStatus.READY));
+
+        // Act
+        int result = KalturaValidationJob.validateKalturaIds(true);
+
+        // Assert
+        assertEquals(0, result);
+        service.verify(() -> KalturaValidationJob.deleteStream(any()), never());
         service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
     }
 

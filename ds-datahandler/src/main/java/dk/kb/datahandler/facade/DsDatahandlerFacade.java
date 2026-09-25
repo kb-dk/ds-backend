@@ -225,19 +225,29 @@ public class DsDatahandlerFacade {
      * again.
      * A solr delta indexing job will be started if both the job completes succesfully or fails.
      *
+     * @param dryRun If true, nothing is deleted in Kaltura or cleared in storage, and no solr delta index is started.
+     *               A summary of the kaltura_ids that would be cleared is logged.
      * @throws InternalServiceException
      * @throws SolrServerException
      * @throws IOException
      */
-    public static void kalturaValidate(String user) throws InternalServiceException, SolrServerException, IOException {
+    public static void kalturaValidate(String user, boolean dryRun) throws InternalServiceException, SolrServerException, IOException {
         // mTimeFrom is in microseconds
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
 
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION, null, offsetDateModifiedTimeFrom, user);
 
-        log.info("Starting kaltura validation");
+        log.info("Starting kaltura validation. dryRun={}", dryRun);
         try {
-            int numberRecordsCleared = KalturaValidationJob.validateKalturaIds();
+            int numberRecordsCleared = KalturaValidationJob.validateKalturaIds(dryRun);
+
+            if (dryRun) {
+                log.info("Kaltura validation dry run completed successfully. #records that would be cleared={}", numberRecordsCleared);
+                updateJob(jobDto, JobStatusDto.COMPLETED,
+                        "Dry run: " + numberRecordsCleared + " records would have kaltura_id cleared",
+                        OffsetDateTime.now(ZoneOffset.UTC), 0, null);
+                return;
+            }
 
             log.info("Kaltura validation completed successfully. #records cleared={}", numberRecordsCleared);
 

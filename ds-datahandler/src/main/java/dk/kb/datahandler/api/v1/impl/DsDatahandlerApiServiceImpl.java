@@ -149,9 +149,9 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     }
 
     @Override
-    public void kalturaValidate() {
+    public void kalturaValidate(Boolean dryRun) {
         try {
-            DsDatahandlerFacade.kalturaValidate(getCurrentUsername());
+            DsDatahandlerFacade.kalturaValidate(getCurrentUsername(), Boolean.TRUE.equals(dryRun));
         } catch (Exception e) {
             throw handleException(e);
         }
