@@ -259,6 +259,22 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testRitzauSaesonnr(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_0e89456b, "\"ritzau_saesonnr\":\"7\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_e8c664f9, "\"ritzau_saesonnr\":\"1\"");
+    }
+
+    @Test
+    void testRitzauSaesonnrZeroIsOmitted(){
+        assertPvicaNotContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "ritzau_saesonnr");
+    }
+
+    @Test
+    void testRitzauSaesonnrMissing(){
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_3945e2d1, "ritzau_saesonnr");
+    }
+
+    @Test
     void testSubtitles(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"has_subtitles\":\"false\"");
         // TODO: Create test for has_subtitles:true, with custom test file
