@@ -46,3 +46,7 @@ release.properties
 pom.xml.releaseBackup
 pom.xml.tag
 pom.xml.next
+
+# Runtime logs written by local runs (e.g. ds-datahandler/log4j.log). This repo is
+# public, and logs from the harvesting services can contain record data or tokens.
+*.log

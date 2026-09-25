@@ -47,3 +47,9 @@ hs_err_pid*
 .openapi-generator/
 .classpath
 .openapi-generator-ignore
+
+# Runtime logs from local runs. Each service build stage copies its whole module
+# directory, so without this a log rewritten by a local run would invalidate that
+# service's build cache and end up inside a build layer. `**/` is needed here:
+# unlike .gitignore, a bare `*.log` in .dockerignore only matches the top level.
+**/*.log

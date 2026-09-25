@@ -1,10 +1,38 @@
 services:
+  # ---------------------------------------------------------------------------
+  # Build-only helpers. They exist so the service builds below can reference
+  # them as named build contexts; `scale: 0` means `docker compose up` never
+  # starts a container for them.
+  # ---------------------------------------------------------------------------
+  ds-deps:
+    image: ds-build-deps:local
+    build:
+      context: .
+      dockerfile: docker/deps.Dockerfile
+      secrets:
+        - maven_settings
+        - maven_settings_security
+    scale: 0
+
+  tomcat-base:
+    image: ds-tomcat-base:local
+    build:
+      context: .
+      dockerfile: docker/tomcat.Dockerfile
+    scale: 0
+
   ds-storage:
     image: ds-storage/master:latest
     build:
       context: .
-      dockerfile: Dockerfile
-      target: ds-storage
+      dockerfile: ds-storage/Dockerfile
+      target: runtime
+      # deps and tomcat-base are named build contexts: the service Dockerfile says
+      # `FROM deps` / `FROM tomcat-base`, and Compose supplies the images built by
+      # the helper services below - building each of them once per invocation.
+      additional_contexts:
+        deps: service:ds-deps
+        tomcat-base: service:tomcat-base
       secrets:
         - maven_settings
         - maven_settings_security
@@ -38,8 +66,14 @@ services:
     image: ds-license/master:latest
     build:
       context: .
-      dockerfile: Dockerfile
-      target: ds-license
+      dockerfile: ds-license/Dockerfile
+      target: runtime
+      # deps and tomcat-base are named build contexts: the service Dockerfile says
+      # `FROM deps` / `FROM tomcat-base`, and Compose supplies the images built by
+      # the helper services below - building each of them once per invocation.
+      additional_contexts:
+        deps: service:ds-deps
+        tomcat-base: service:tomcat-base
       secrets:
         - maven_settings
         - maven_settings_security
@@ -74,8 +108,14 @@ services:
     image: ds-present/master:latest
     build:
       context: .
-      dockerfile: Dockerfile
-      target: ds-present
+      dockerfile: ds-present/Dockerfile
+      target: runtime
+      # deps and tomcat-base are named build contexts: the service Dockerfile says
+      # `FROM deps` / `FROM tomcat-base`, and Compose supplies the images built by
+      # the helper services below - building each of them once per invocation.
+      additional_contexts:
+        deps: service:ds-deps
+        tomcat-base: service:tomcat-base
       secrets:
         - maven_settings
         - maven_settings_security
@@ -106,8 +146,14 @@ services:
     image: ds-datahandler/master:latest
     build:
       context: .
-      dockerfile: Dockerfile
-      target: ds-datahandler
+      dockerfile: ds-datahandler/Dockerfile
+      target: runtime
+      # deps and tomcat-base are named build contexts: the service Dockerfile says
+      # `FROM deps` / `FROM tomcat-base`, and Compose supplies the images built by
+      # the helper services below - building each of them once per invocation.
+      additional_contexts:
+        deps: service:ds-deps
+        tomcat-base: service:tomcat-base
       secrets:
         - maven_settings
         - maven_settings_security
@@ -144,8 +190,14 @@ services:
     image: ds-discover/master:latest
     build:
       context: .
-      dockerfile: Dockerfile
-      target: ds-discover
+      dockerfile: ds-discover/Dockerfile
+      target: runtime
+      # deps and tomcat-base are named build contexts: the service Dockerfile says
+      # `FROM deps` / `FROM tomcat-base`, and Compose supplies the images built by
+      # the helper services below - building each of them once per invocation.
+      additional_contexts:
+        deps: service:ds-deps
+        tomcat-base: service:tomcat-base
       secrets:
         - maven_settings
         - maven_settings_security
@@ -179,8 +231,14 @@ services:
     image: ds-image/master:latest
     build:
       context: .
-      dockerfile: Dockerfile
-      target: ds-image
+      dockerfile: ds-image/Dockerfile
+      target: runtime
+      # deps and tomcat-base are named build contexts: the service Dockerfile says
+      # `FROM deps` / `FROM tomcat-base`, and Compose supplies the images built by
+      # the helper services below - building each of them once per invocation.
+      additional_contexts:
+        deps: service:ds-deps
+        tomcat-base: service:tomcat-base
       secrets:
         - maven_settings
         - maven_settings_security
@@ -211,8 +269,14 @@ services:
     image: bff/master:latest
     build:
       context: .
-      dockerfile: Dockerfile
-      target: bff
+      dockerfile: bff/Dockerfile
+      target: runtime
+      # deps and tomcat-base are named build contexts: the service Dockerfile says
+      # `FROM deps` / `FROM tomcat-base`, and Compose supplies the images built by
+      # the helper services below - building each of them once per invocation.
+      additional_contexts:
+        deps: service:ds-deps
+        tomcat-base: service:tomcat-base
       secrets:
         - maven_settings
         - maven_settings_security
@@ -407,8 +471,17 @@ services:
     image: solr-image/master:latest
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ds-present/Dockerfile
       target: solr
+      # deps and tomcat-base are named build contexts: the service Dockerfile says
+      # `FROM deps` / `FROM tomcat-base`, and Compose supplies the images built by
+      # the helper services below - building each of them once per invocation.
+      additional_contexts:
+        deps: service:ds-deps
+        tomcat-base: service:tomcat-base
+      secrets:
+        - maven_settings
+        - maven_settings_security
     cap_drop:
       - ALL
     container_name: ds-solr
