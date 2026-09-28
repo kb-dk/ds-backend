@@ -30,7 +30,6 @@ import java.util.List;
 
 /**
  * ds-storage
- * ds-storage by the Royal Danish Library
  */
 @InInterceptors(interceptors = "dk.kb.storage.webservice.KBAuthorizationInterceptor")
 public class RecordApiServiceImpl extends ImplBase implements RecordApi {
