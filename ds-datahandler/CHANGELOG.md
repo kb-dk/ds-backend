@@ -7,16 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
-
 ### Added
 
-- The Flyway migrations are now published as a separate release artifact, `ds-datahandler-<version>-flyway.zip` 
-  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball. 
-  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball 
-  keeps the migrations bound to the war they were built alongside. Fetch a single release with 
-  `mvn dependency:copy -Dartifact=dk.kb.datahandler:ds-datahandler:<version>:zip:flyway`. The zip contains the 
-  migrations and `ds-datahandler.build.properties` for provenance.
 - Added endpoint `POST /rerun_clusters` that calls `ds-storage` via DsStorageClient that fetch `latestCreated` timestamp
   (can be null) in our `rerun_cluster` table, then `ds-datahandler` uses the fetched `latestCreated` timestamp to fetch
   all new rows (unique `file_id`) from remote `p3rerun` database in table `clusters` table and convert it to a list of
@@ -25,6 +17,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   object to `ds-datahandler`, that saves the number in `jobs` table.
 - Added new database connection to remote `p3rerun` database. OPS need to add extra database connection properties in
   `ds-datahandler-*.yaml` file.
+
+## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
+
+### Added
+
+- The Flyway migrations are now published as a separate release artifact, `ds-datahandler-<version>-flyway.zip`
+  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball.
+  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball
+  keeps the migrations bound to the war they were built alongside. Fetch a single release with
+  `mvn dependency:copy -Dartifact=dk.kb.datahandler:ds-datahandler:<version>:zip:flyway`. The zip contains the
+  migrations and `ds-datahandler.build.properties` for provenance.
 
 ### Changed
 

@@ -7,16 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
-
 ### Added
 
-- The Flyway migrations are now published as a separate release artifact, `ds-storage-<version>-flyway.zip` 
-  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball. 
-  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball 
-  keeps the migrations bound to the war they were built alongside. Fetch a single release with
-  `mvn dependency:copy -Dartifact=dk.kb.storage:ds-storage:<version>:zip:flyway`. The zip contains the migrations and 
-  `ds-storage.build.properties` for provenance.
 - Added support for OffsetDateTime with OpenAPI generation.
 - Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found in
   `create_rerun_clusters.ddl`*).
@@ -27,10 +19,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added endpoint `GET /rerun-cluster/created/latest` that return latest `created` datetime from `rerun_clusters` table. 
   It can be null, if `rerun_clusters` table is empty.
 
-
 ### Changed
 
-- Removed `kb-util` dependency and moved classes to `ds-shared`.
 - Make java multiline comment to Javadocs.
 - Refactored base database methods into own class `BaseModuleStorage`, so it follows the style from `ds-datahandler` and
   `ds-license``ds-datahandler`.
@@ -43,6 +33,26 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Renamed class `DsStorageUnitTestUtil` to `DsStorageUnitTestUtil` and refactored the class so it is possible to have multiple
   unit test storage classes.
 
+### Removed
+
+- Removed deprecated `description` from `@Api` in `api.mustache` file.
+- Removed deprecated `servers.description` from `ds-storage-openapi_v1.yaml`.
+
+## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
+
+### Added
+
+- The Flyway migrations are now published as a separate release artifact, `ds-storage-<version>-flyway.zip` 
+  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball. 
+  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball 
+  keeps the migrations bound to the war they were built alongside. Fetch a single release with
+  `mvn dependency:copy -Dartifact=dk.kb.storage:ds-storage:<version>:zip:flyway`. The zip contains the migrations and 
+  `ds-storage.build.properties` for provenance.
+
+### Changed
+
+- Removed `kb-util` dependency and moved classes to `ds-shared`.
+
 ### Fixed
 
 - Make script that fixes `referenceId` in `ds_records` table, from being `blank` to correctly `NULL`.
@@ -51,8 +61,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Deleted the unused `create_ds_storage.ddl` and `create_ds_storage_h2_unittest.ddl`, and dropped the former from the 
   distribution tarball.
-- Removed deprecated `description` from `@Api` in `api.mustache` file.
-- Removed deprecated `servers.description` from `ds-storage-openapi_v1.yaml`.
 
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
