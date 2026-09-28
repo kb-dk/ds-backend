@@ -2,15 +2,19 @@
 #  ds-backend build base: every module pom, plus ds-shared, the three contract
 #  modules and ds-kaltura compiled and installed into /m2.
 #
-#  Not built on its own. docker-compose.yml builds it as the `ds-deps` helper
+#  It holds third-party dependencies AND our own shared code, compiled: a base
+#  that the service build stages start from, not just a dependency cache.
+#
+#  Not built on its own. docker-compose.yml builds it as the `build-base` helper
 #  service and hands it to every service Dockerfile as the named build context
-#  `deps`, which is why each of those starts `FROM deps` without defining it.
+#  `build-base`, which is why each of those starts `FROM build-base` without
+#  defining it.
 #  Compose builds this once per `docker compose build`, however many services
 #  reference it.
 #
 #  Build context: the repository root.
 # =============================================================================
-FROM maven:3.9-eclipse-temurin-17 AS deps
+FROM maven:3.9-eclipse-temurin-17 AS build-base
 WORKDIR /build
 
 # -Dmaven.repo.local=/m2 is load-bearing: a BuildKit cache mount is NOT part of
@@ -25,7 +29,8 @@ WORKDIR /build
 # useful place for it anyway.
 ENV MVN="mvn -B --settings /run/secrets/maven_settings -Dmaven.repo.local=/m2 \
          -Dmaven.gitcommitid.skip=true -Dgit.failOnNoGitDirectory=false"
-ENV DEPS="ds-shared,ds-storage-api,ds-license-api,ds-present-api,ds-kaltura"
+# The modules compiled into this base: everything a service build needs from us.
+ENV SHARED_MODULES="ds-shared,ds-storage-api,ds-license-api,ds-present-api,ds-kaltura"
 
 COPY maven_settings_security_relocation.xml /root/.m2/settings-security.xml
 
@@ -45,7 +50,7 @@ COPY ds-discover/pom.xml      ds-discover/
 COPY ds-image/pom.xml      ds-image/
 RUN --mount=type=secret,id=maven_settings \
     --mount=type=secret,id=maven_settings_security \
-    $MVN -pl $DEPS dependency:go-offline
+    $MVN -pl $SHARED_MODULES dependency:go-offline
 
 # --- contract sources: change rarely, so this is usually a cache hit ---
 COPY ds-storage-api/.openapi-codegen-ignore-api ds-storage-api/
@@ -58,4 +63,4 @@ COPY ds-present-api/src  ds-present-api/src
 COPY ds-kaltura/src      ds-kaltura/src
 RUN --mount=type=secret,id=maven_settings \
     --mount=type=secret,id=maven_settings_security \
-    $MVN -pl $DEPS install -DskipTests
+    $MVN -pl $SHARED_MODULES install -DskipTests

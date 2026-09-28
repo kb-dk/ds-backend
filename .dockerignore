@@ -1,6 +1,5 @@
-# .git changes on every commit. Without this line the COPY layer in the legacy
-# build stage is invalidated by every single commit, so Maven re-runs every time
-# regardless of what actually changed.
+# .git changes on every commit. Nothing in the image build reads it (git-commit-id
+# is skipped), and sending it would only make every build context bigger.
 .git/
 
 .idea/
@@ -14,8 +13,12 @@ Jenkinsfile.release
 README.md
 CHANGELOG.md
 
-# Maven build files
-target/
+# Maven build output, in every module. `**/` is required: like `*.log` below, a
+# bare `target/` only matches the top level, which let each module's local
+# target/ (wars, jars, classes) into the build context. The service stages copy
+# their whole module directory, so a local `mvn install` then invalidated that
+# service's image build even when no source had changed.
+**/target/
 
 ## Contains KB-internal information for testing
 # These config files should NEVER be in git, as they can contain passwords or information that must not be public
