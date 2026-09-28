@@ -36,8 +36,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  *     <li>{@code dk.kb.license.api.v1.impl.<Name>ServiceImpl} exists and implements it, and</li>
  *     <li>that class is registered in {@code Application_v1#getClasses()}.</li>
  * </ol>
- * To get a stub for a new tag, run from the repo root:
- * <pre>mvn -pl ds-license -am -Pgenerate-impl compile</pre>
+ * The skeleton generator in the ds-license pom writes a stub for a new tag on every build
+ * (unless {@code -DskipImplGen} is set); registering it in Application_v1 is the manual step.
  * <p>
  * The check reads Application_v1's source rather than calling {@code getClasses()}, because
  * that method loads the service configuration and this test must run without one.
@@ -48,7 +48,7 @@ class ApiImplementationGuardTest {
     private static final Path APPLICATION_SOURCE =
             Paths.get("src", "main", "java", "dk", "kb", "license", "webservice", "Application_v1.java");
     private static final String HINT =
-            " To generate a stub, run from the repo root: mvn -pl ds-license -am -Pgenerate-impl compile";
+            " Build ds-license without -DskipImplGen and the skeleton generator writes a stub for it.";
 
     @Test
     void everyContractInterfaceIsImplementedAndRegistered() throws Exception {
