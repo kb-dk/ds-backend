@@ -1,0 +1,58 @@
+info:
+  name: Show amount of records in each origin
+  type: http
+  seq: 2
+  tags:
+    - Record
+
+http:
+  method: GET
+  url: "{{baseUrl}}/origin/stats"
+  auth:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://api.example.com/oauth2/authorize
+    callbackUrl: "{{oauth_callback_url}}"
+    credentials:
+      clientId: "{{oauth_client_id}}"
+    scope: generic_ds read write devel admin public any
+    state: "{{oauth_state}}"
+    tokenConfig:
+      placement:
+        header: Bearer
+      source: access_token
+    settings:
+      autoFetchToken: false
+      autoRefreshToken: true
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: Show how many records exists for each origin
+    request:
+      url: "{{baseUrl}}/origin/stats"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "origin": "${config:origins[0].name}",
+              "count": 0,
+              "deleted": 0,
+              "latestMTime": 0,
+              "lastMTimeHuman": ""
+            }
+          ]

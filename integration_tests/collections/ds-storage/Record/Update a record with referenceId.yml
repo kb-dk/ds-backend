@@ -1,0 +1,62 @@
+info:
+  name: Update a record with referenceId
+  type: http
+  seq: 9
+  tags:
+    - Record
+
+http:
+  method: POST
+  url: "{{baseUrl}}/record/updateReferenceId"
+  params:
+    - name: recordId
+      value: ""
+      type: query
+    - name: referenceId
+      value: ""
+      type: query
+  auth:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://api.example.com/oauth2/authorize
+    callbackUrl: "{{oauth_callback_url}}"
+    credentials:
+      clientId: "{{oauth_client_id}}"
+    scope: generic_ds read write devel admin public any
+    state: "{{oauth_state}}"
+    tokenConfig:
+      placement:
+        header: Bearer
+      source: access_token
+    settings:
+      autoFetchToken: false
+      autoRefreshToken: true
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 204 Response
+    description: No Content - The request has been executed correct and the server did not deliver any content.
+    request:
+      url: "{{baseUrl}}/record/updateReferenceId"
+      method: POST
+      params:
+        - name: recordId
+          value: ""
+          type: query
+        - name: referenceId
+          value: ""
+          type: query
+    response:
+      status: 204
+      statusText: No Content
+      body:
+        type: text
+        data: ""
+
+docs: "Update a record with the referenceId. The referenceId is a value in the external system. For preservica origin it is the stream file name "

@@ -1,0 +1,66 @@
+info:
+  name: Create a new record or update an existing record
+  type: http
+  seq: 7
+  tags:
+    - Record
+
+http:
+  method: POST
+  url: "{{baseUrl}}/record"
+  body:
+    type: json
+    data: |-
+      {
+        "id": "ds.radio:oai:du:c124a602-7fe6-470e-a484-c771db44aee1",
+        "origin": "ds.radio",
+        "recordType": "DELIVERABLEUNIT",
+        "data": "<xip:DeliverableUnit> <Metadata> <PBCoreDescriptionDocument:PBCoreDescriptionDocument> <exampleTitle>Radioavisen</exampleTitle> <exampleDescription>This is an example description of a news broadcast.</exampleDescription> </PBCoreDescriptionDocument:PBCoreDescriptionDocument> </Metadata> </<xip:DeliverableUnit>>"
+      }
+  auth:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://api.example.com/oauth2/authorize
+    callbackUrl: "{{oauth_callback_url}}"
+    credentials:
+      clientId: "{{oauth_client_id}}"
+    scope: generic_ds read write devel admin public any
+    state: "{{oauth_state}}"
+    tokenConfig:
+      placement:
+        header: Bearer
+      source: access_token
+    settings:
+      autoFetchToken: false
+      autoRefreshToken: true
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 204 Response (DSRecord)
+    description: No Content - The request has been executed correct and the server did not deliver any content.
+    request:
+      url: "{{baseUrl}}/record"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "id": "ds.radio:oai:du:c124a602-7fe6-470e-a484-c771db44aee1",
+            "origin": "ds.radio",
+            "recordType": "DELIVERABLEUNIT",
+            "data": "<xip:DeliverableUnit> <Metadata> <PBCoreDescriptionDocument:PBCoreDescriptionDocument> <exampleTitle>Radioavisen</exampleTitle> <exampleDescription>This is an example description of a news broadcast.</exampleDescription> </PBCoreDescriptionDocument:PBCoreDescriptionDocument> </Metadata> </<xip:DeliverableUnit>>"
+          }
+    response:
+      status: 204
+      statusText: No Content
+      body:
+        type: text
+        data: ""
+
+docs: A record can have a single optional parent and may have multiple children

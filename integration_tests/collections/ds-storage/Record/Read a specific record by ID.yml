@@ -1,0 +1,86 @@
+info:
+  name: Read a specific record by ID
+  type: http
+  seq: 5
+  tags:
+    - Record
+
+http:
+  method: GET
+  url: "{{baseUrl}}/record/:id"
+  params:
+    - name: id
+      value: ds.tv:oai:du:3006e2f8-3f73-477a-a504-4d7cb1ae1e1c
+      type: path
+      description: Record ID
+    - name: includeLocalTree
+      value: "false"
+      type: query
+      description: Also load parent and direct children as objects
+  auth:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://api.example.com/oauth2/authorize
+    callbackUrl: "{{oauth_callback_url}}"
+    credentials:
+      clientId: "{{oauth_client_id}}"
+    scope: generic_ds read write devel admin public any
+    state: "{{oauth_state}}"
+    tokenConfig:
+      placement:
+        header: Bearer
+      source: access_token
+    settings:
+      autoFetchToken: false
+      autoRefreshToken: true
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: DSRecord
+    request:
+      url: "{{baseUrl}}/record/:id"
+      method: GET
+      params:
+        - name: id
+          value: ds.tv:oai:du:3006e2f8-3f73-477a-a504-4d7cb1ae1e1c
+          type: path
+          description: Record ID
+        - name: includeLocalTree
+          value: "false"
+          type: query
+          description: Also load parent and direct children as objects
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "id": "ds.radio:oai:du:c124a602-7fe6-470e-a484-c771db44aee1",
+            "orgid": "null",
+            "id_error": false,
+            "origin": "ds.radio",
+            "recordType": "DELIVERABLEUNIT",
+            "deleted": false,
+            "data": "<xip:DeliverableUnit>Metadata for DeliverableUnit</xip:DeliverableUnit>\n",
+            "cTime": 1701180992527000,
+            "mTime": 1701262548465000,
+            "cTimeHuman": "2023-11-28 15:16:32+0100",
+            "mTimeHuman": "2023-11-29 13:55:48+0100",
+            "parentId": "null",
+            "childrenIds": "null",
+            "parent": "null",
+            "children": "null"
+          }
+
+docs: |
+  Extract a specific record by ID. Parent and children recordIds will also be include. If setting includeLocalTree=true the local recordTree with parent record and children records will also be loaded as objects.   A record marked with delete flag will also be returned. If a record is not found in ds-storage, the endpoint will throw an exception.

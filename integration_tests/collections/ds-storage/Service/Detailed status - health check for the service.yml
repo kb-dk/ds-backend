@@ -1,0 +1,61 @@
+info:
+  name: Detailed status / health check for the service
+  type: http
+  seq: 2
+  tags:
+    - Service
+
+http:
+  method: GET
+  url: "{{baseUrl}}/monitor/status"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: OK
+    request:
+      url: "{{baseUrl}}/monitor/status"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "application": "MyService",
+            "version": "1.2.3",
+            "build": "2022-04-21T13:37:16Z",
+            "java": "11.0.11",
+            "heap": "4096",
+            "server": "miaplacidus",
+            "health": "ok",
+            "gitCommitChecksum": "ca82a6dff817ec66f44342007202690a93763949",
+            "gitBranch": "master",
+            "gitClosestTag": "",
+            "gitCommitTime": ""
+          }
+  - name: 500 Response
+    description: Internal Error
+    request:
+      url: "{{baseUrl}}/monitor/status"
+      method: GET
+    response:
+      status: 500
+      statusText: Internal Server Error
+      headers:
+        - name: Content-Type
+          value: text/plain
+      body:
+        type: text
+        data: ""

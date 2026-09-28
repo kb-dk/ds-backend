@@ -1,0 +1,4 @@
+name: Version 1
+variables:
+  - name: baseUrl
+    value: ${config:openapi.serverurl}

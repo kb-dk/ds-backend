@@ -1,0 +1,6 @@
+info:
+  name: Service
+  type: folder
+
+request:
+  auth: inherit

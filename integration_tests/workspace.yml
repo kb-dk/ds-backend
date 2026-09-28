@@ -1,0 +1,22 @@
+opencollection: 1.0.0
+info:
+  name: "ds-backend"
+  type: workspace
+
+collections:
+  - name: "bff"
+    path: "collections/bff"
+  - name: "ds-datahandler"
+    path: "collections/ds-datahandler"
+  - name: "ds-image"
+    path: "collections/ds-image"
+  - name: "ds-license"
+    path: "collections/ds-license"
+  - name: "ds-present"
+    path: "collections/ds-present"
+  - name: "${project.name}"
+    path: "collections/${project.name}"
+
+specs:
+
+docs: ''

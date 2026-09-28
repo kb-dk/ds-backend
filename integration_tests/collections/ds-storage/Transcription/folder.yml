@@ -1,0 +1,6 @@
+info:
+  name: Transcription
+  type: folder
+
+request:
+  auth: inherit

@@ -1,0 +1,88 @@
+info:
+  name: Get a stream of minimal records having a referenceId after a given lastModified time
+  type: http
+  seq: 12
+  tags:
+    - Record
+
+http:
+  method: GET
+  url: "{{baseUrl}}/records/minimal"
+  params:
+    - name: origin
+      value: ds.tv
+      type: query
+      description: The origin to extract records for
+    - name: mTime
+      value: "0"
+      type: query
+      description: Only extract records after this mTime.
+    - name: maxRecords
+      value: "500"
+      type: query
+      description: Number of records to extract.
+  auth:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://api.example.com/oauth2/authorize
+    callbackUrl: "{{oauth_callback_url}}"
+    credentials:
+      clientId: "{{oauth_client_id}}"
+    scope: generic_ds read write devel admin public any
+    state: "{{oauth_state}}"
+    tokenConfig:
+      placement:
+        header: Bearer
+      source: access_token
+    settings:
+      autoFetchToken: false
+      autoRefreshToken: true
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 200 Response
+    description: List of DsRecordReferenceId
+    request:
+      url: "{{baseUrl}}/records/minimal"
+      method: GET
+      params:
+        - name: origin
+          value: ds.tv
+          type: query
+          description: The origin to extract records for
+        - name: mTime
+          value: "0"
+          type: query
+          description: Only extract records after this mTime.
+        - name: maxRecords
+          value: "500"
+          type: query
+          description: Number of records to extract.
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          [
+            {
+              "id": "",
+              "mTime": 0,
+              "referenceId": "",
+              "kalturaId": ""
+            }
+          ]
+
+docs: |
+  Extract a list of records with a given batch size by origin and mTime larger than input.        
+   The records will only have the id, mTime, referenceId and kalturaId fields. This means that no actual data can be retrieved through this endpoint. It can however be used
+   for operations where the data from the record isn't needed. Such as updating Kaltura IDs for records, which is done with referenceId and kalturaId only.
