@@ -470,4 +470,93 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <!-- Skeleton generator for new endpoints. OFF in every normal build.
+
+                 The contract module (ds-license-api) owns the OpenAPI spec and generates the
+                 interfaces and DTOs. This module only implements them, so when a new tag
+                 (= new interface) or a new operation is added to the spec, run from the repo root:
+
+                     mvn -pl ds-license -am -Pgenerate-impl compile
+
+                 It writes <Tag>ApiServiceImpl.java stubs into src/main/java/dk/kb/license/api/v1/impl
+                 for interfaces that have no implementation yet. skipOverwrite=true means existing
+                 implementations are never touched. Then:
+                   * fill in the stub,
+                   * register it in dk.kb.license.webservice.Application_v1#getClasses()
+                     (ApiImplementationGuardTest fails until you do),
+                   * commit it.
+
+                 A new operation on an EXISTING tag does not get a stub (the file exists); the compiler
+                 tells you which method to add instead.
+
+                 The spec and templates are read from target/classes, where the copy-openapi-contract
+                 execution puts them at `initialize`. `-am` makes sure ds-license-api has produced them. -->
+            <id>generate-impl</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
+                        <version>4.3.1</version>
+                        <!-- Same generator settings as ds-license-api, so the stubs match the interfaces exactly. -->
+                        <configuration>
+                            <generatorName>jaxrs-cxf-extended</generatorName>
+                            <inputSpec>${project.build.outputDirectory}/openapi.yaml</inputSpec>
+                            <modelNameSuffix>Dto</modelNameSuffix>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateApis>true</generateApis>
+                            <output>${project.basedir}</output>
+                            <templateDirectory>${project.build.outputDirectory}/openapi-templates/</templateDirectory>
+                            <!-- ds-license serializes DTOs to XML as well as JSON; this drives the
+                                 javax.xml.bind annotations in the generated models. -->
+                            <withXml>true</withXml>
+                            <configOptions>
+                                <sourceFolder>target/skeleton-scratch</sourceFolder>
+                                <useSwaggerFeature>true</useSwaggerFeature>
+                                <useSwaggerUI>true</useSwaggerUI>
+                                <apiPackage>${project.package}.api</apiPackage>
+                                <modelPackage>${project.package}.model.v1</modelPackage>
+                                <!-- java8, not threetenbp: the hand-written mappers in ds-license pass
+                                     java.time types to these DTOs. -->
+                                <dateLibrary>java8</dateLibrary>
+                                <implFolder>src/main/java</implFolder>
+                                <invokerPackage>${project.package}</invokerPackage>
+                            </configOptions>
+                            <packageName>${project.package}</packageName>
+                            <!-- The interfaces and DTOs this run also produces land in target/skeleton-scratch.
+                                 They must NOT be compiled here: the real ones come from the contract jar. -->
+                            <addCompileSourceRoot>false</addCompileSourceRoot>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>v1: generate skeleton impl</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>${project.build.outputDirectory}/ds-license-openapi_v1.yaml</inputSpec>
+                                    <ignoreFileOverride>${project.basedir}/.openapi-codegen-ignore-impl</ignoreFileOverride>
+                                    <configOptions>
+                                        <apiPackage>${project.package}.api.v1</apiPackage>
+                                        <modelPackage>${project.package}.model.v1</modelPackage>
+                                        <!-- true, as before the split: stubs get an example body -->
+                                        <generateOperationBody>true</generateOperationBody>
+                                        <sourceFolder>target/skeleton-scratch</sourceFolder>
+                                    </configOptions>
+                                    <!-- Never overwrite an implementation that already exists. -->
+                                    <skipOverwrite>true</skipOverwrite>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
