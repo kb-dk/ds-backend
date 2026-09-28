@@ -37,6 +37,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Fixed `referenceId` so it now correctly get inserted as `NULL` in `ds_records` table, instead as before where it got
   inserted as `blank`.
 
+### Removed
+
+- Removed `warn` log statement that logged if `referenceId` was empty, but that information can also be found in the
+  `ds_records` table.
+
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
