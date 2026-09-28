@@ -9,6 +9,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added `ERROR_KALTURA_TRANSCODING` and `ERROR_KALTURA_IMPORT` to `StreamErrorType`, for records whose Kaltura
+  entry failed transcoding or import.
 - The Flyway migrations are now published as a separate release artifact,
   `ds-storage-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and
   embedded at the root of the distribution tarball. OPS and Jenkins can obtain the SQL for a

@@ -1,13 +1,13 @@
 package dk.kb.datahandler.kaltura;
 
-import java.io.IOException;
-
+import com.kaltura.client.enums.EntryStatus;
+import com.kaltura.client.enums.MediaType;
+import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kaltura.client.enums.MediaType;
-
-import dk.kb.datahandler.config.ServiceConfig;
+import java.io.IOException;
 
 public class KalturaUtil {
     private static String DOMS_RADIOTV_PATH;
@@ -27,7 +27,22 @@ public class KalturaUtil {
         PRESERVICA_TV_PATH=ServiceConfig.getStreamPathPreservicaTv();
         PRESERVICA_RADIO_PATH=ServiceConfig.getStreamPathPreservicaRadio();        
     }
-    
+
+    /**
+     * Map a Kaltura entry status to the error marker stored as kaltura_id for the record.
+     *
+     * @param status Status of the Kaltura entry.
+     * @return The matching error, or null if the status is not a Kaltura error.
+     */
+    public static StreamErrorTypeDto getStreamError(EntryStatus status) {
+        if (status == EntryStatus.ERROR_CONVERTING) {
+            return StreamErrorTypeDto.KALTURA_TRANSCODING;
+        } else if (status == EntryStatus.ERROR_IMPORTING) {
+            return StreamErrorTypeDto.KALTURA_IMPORT;
+        }
+        return null;
+    }
+
     /**
      * Map resourceDescription to Kaltura MediaType
      * 

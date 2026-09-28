@@ -7,6 +7,7 @@ import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.kaltura.client.DsKalturaAnalytics;
 import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.kaltura.client.DsKalturaClientBase;
+import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -112,14 +113,15 @@ public class KalturaValidationJob {
     }
 
     /**
-     * Validate a single record's kaltura_id against Kaltura. If the kaltura_id does not exist in Kaltura, or
-     * exists but is not in status READY, the Kaltura entry is deleted (if it exists) and the kaltura_id is
-     * cleared for the record in storage.
+     * Validate a single record's kaltura_id against Kaltura. If the Kaltura entry is in an error state
+     * (ERROR_CONVERTING or ERROR_IMPORTING), the kaltura_id is replaced with the matching error marker. Otherwise, if
+     * the kaltura_id does not exist in Kaltura, or exists but is not in status READY, the Kaltura entry is deleted
+     * (if it exists) and the kaltura_id is cleared for the record in storage.
      *
      * @param batchStatus The status found for the kaltura_id by the batch lookup, or null if it was not found.
      * @param dryRun      If true, nothing is deleted or cleared. The record is only added to the summary.
-     * @param summary     Records that are (or would be) cleared are added to this.
-     * @return true if the record's kaltura_id was cleared in storage, or would have been cleared if dryRun.
+     * @param summary     Records that are (or would be) cleared or marked with an error are added to this.
+     * @return true if the record's kaltura_id was changed in storage, or would have been changed if dryRun.
      */
     static boolean validateRecord(DsStorageClient storageClient, String id, String fileId, String kalturaId,
                                   EntryStatus batchStatus, boolean dryRun, ValidationSummary summary) {
@@ -136,7 +138,15 @@ public class KalturaValidationJob {
 
             String prefix = dryRun ? "DRY RUN: " : "";
             String verb = dryRun ? "Would" : "Will";
-            if (status != null) { //Entry exists in Kaltura but is not ready. Remove it.
+            StreamErrorTypeDto streamError = KalturaUtil.getStreamError(status);
+            if (streamError != null) { //Entry failed in Kaltura. Keep the entry and mark the record with the error.
+                log.warn("{}Kaltura entry='{}' for id='{}' has status='{}'. {} set kaltura_id to '{}'.",
+                        prefix, kalturaId, id, status, verb, streamError.getValue());
+                if (!dryRun) {
+                    updateKalturaIdForRecordWithError(storageClient, fileId, streamError);
+                }
+                summary.addMarkedError(id, kalturaId, status, streamError);
+            } else if (status != null) { //Entry exists in Kaltura but is not ready. Remove it.
                 log.warn("{}Kaltura entry='{}' for id='{}' has status='{}', not READY. {} delete entry and clear kaltura_id.",
                         prefix, kalturaId, id, status, verb);
                 if (!dryRun) {
@@ -163,6 +173,10 @@ public class KalturaValidationJob {
 
     static void clearKalturaIdForRecord(DsStorageClient storageClient, String fileId) {
         storageClient.clearKalturaIdForRecord(fileId);
+    }
+
+    static void updateKalturaIdForRecordWithError(DsStorageClient storageClient, String fileId, StreamErrorTypeDto streamErrorTypeDto) {
+        storageClient.updateKalturaIdForRecord(fileId, streamErrorTypeDto.getValue());
     }
 
     /**

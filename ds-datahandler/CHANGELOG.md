@@ -11,8 +11,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - New service method `/kaltura/validate` that checks every registered kaltura_id against Kaltura. Upload error
   markers such as `ERROR_FILE_MISSING` are skipped. If the entry does not exist or is not READY, the entry is
-  deleted in Kaltura and the kaltura_id is cleared, so the record is uploaded again. With `dryRun=true` nothing is changed; the job only logs a summary of the kaltura_ids that
-  would be cleared.
+  deleted in Kaltura and the kaltura_id is cleared, so the record is uploaded again. If the entry is in status
+  `ERROR_CONVERTING` or `ERROR_IMPORTING`, the entry is kept and the kaltura_id is set to `ERROR_KALTURA_TRANSCODING`
+  or `ERROR_KALTURA_IMPORT`. With `dryRun=true` nothing is changed; the job only logs a summary of the kaltura_ids
+  that would be changed.
 - The Flyway migrations are now published as a separate release artifact,
   `ds-datahandler-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and
   embedded at the root of the distribution tarball. OPS and Jenkins can obtain the SQL for a
@@ -23,6 +25,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 - Build suggest only trigger on full index. 
+- The Kaltura delta upload now looks up existing entries with the Kaltura entry service instead of eSearch, so
+  entries that are not yet indexed in eSearch are no longer uploaded twice. If the existing entry is in status
+  `ERROR_CONVERTING` or `ERROR_IMPORTING`, the record's kaltura_id is set to `ERROR_KALTURA_TRANSCODING` or
+  `ERROR_KALTURA_IMPORT` instead of the entry id.
 - Build suggest is fire-and-forget call to solr. This will fix job that shows jobs as failed due to timeout.
 - Only one build suggest can run at same time. Any calls to build suggest when it is running will be ignored.
 - New CategoryDto created for the job log: CategoryDto.SOLR_BUILD_SUGGEST

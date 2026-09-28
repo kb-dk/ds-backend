@@ -1,6 +1,7 @@
 package dk.kb.datahandler.kaltura;
 
 import com.kaltura.client.enums.EntryStatus;
+import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -99,6 +100,38 @@ class KalturaValidationUnitTest {
         assertEquals(1, result);
         service.verify(() -> KalturaValidationJob.deleteStream(eq(KALTURA_ID)), times(1));
         service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), eq(FILE_ID)), times(1));
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryErrorConverting_thenKalturaIdIsMarkedWithTranscodingError() {
+        assertKalturaErrorIsMarked(EntryStatus.ERROR_CONVERTING, StreamErrorTypeDto.KALTURA_TRANSCODING);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryErrorImporting_thenKalturaIdIsMarkedWithImportError() {
+        assertKalturaErrorIsMarked(EntryStatus.ERROR_IMPORTING, StreamErrorTypeDto.KALTURA_IMPORT);
+    }
+
+    private void assertKalturaErrorIsMarked(EntryStatus status, StreamErrorTypeDto expectedError) {
+        // Arrange
+        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
+        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+
+        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
+                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
+                .thenReturn(Map.of(KALTURA_ID, status));
+        service.when(() -> KalturaValidationJob.updateKalturaIdForRecordWithError(any(), any(), any()))
+                .thenAnswer(inv -> null);
+
+        // Act
+        int result = KalturaValidationJob.validateKalturaIds(false);
+
+        // Assert
+        assertEquals(1, result);
+        service.verify(() -> KalturaValidationJob.updateKalturaIdForRecordWithError(any(), eq(FILE_ID), eq(expectedError)), times(1));
+        service.verify(() -> KalturaValidationJob.deleteStream(any()), never());
+        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
     }
 
     @Test
@@ -245,6 +278,7 @@ class KalturaValidationUnitTest {
         assertEquals(2, result);
         service.verify(() -> KalturaValidationJob.deleteStream(any()), never());
         service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
+        service.verify(() -> KalturaValidationJob.updateKalturaIdForRecordWithError(any(), any(), any()), never());
     }
 
     @Test

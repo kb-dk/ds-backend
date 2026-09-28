@@ -11,11 +11,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Added `TopContentDtoMappperTest`
 - Added `DsKalturaClient.getEntryStatus`, which looks up the status of a Kaltura entry by its entry id.
+- Added `DsKalturaClient.listMediaEntryByReferenceId`, which lists the non-deleted media entries with a referenceId.
 
 ### Changed
 - Removed kb-util dependency and moved classes to ds-shared
 - Changed `TopContentDto` so it now have a couple of extra fields. Future unexpected fields will now be ignored.
 - Changed `uploadFile` method to split data into smaller chunks enable to enhance upload job stability.
+
+### Removed
+
+- Removed `DsKalturaClient.getKalturaInternalId`. Use `listMediaEntryByReferenceId` instead.
 
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 

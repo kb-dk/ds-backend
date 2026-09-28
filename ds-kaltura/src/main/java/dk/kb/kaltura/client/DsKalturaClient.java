@@ -103,6 +103,22 @@ public class DsKalturaClient extends DsKalturaClientBase {
         return handleRequest(MediaService.list(filter));
     }
 
+    /**
+     * List the media entries with the given referenceId, excluding deleted entries. Unlike eSearch, the entry
+     * service is not affected by index lag, so newly uploaded entries are included.
+     *
+     * @param referenceId External reference ID given when uploading the entry to Kaltura.
+     * @throws APIException if the client failed to establish an kaltura session or if the request itself was
+     *                      unsuccessful.
+     */
+    public ListResponse<MediaEntry> listMediaEntryByReferenceId(String referenceId) throws APIException {
+        MediaEntryFilter filter = new MediaEntryFilter();
+        filter.setReferenceIdEqual(referenceId);
+        filter.setModerationStatusNotEqual(EntryModerationStatus.DELETED);
+        filter.setStatusNotEqual(EntryStatus.DELETED);
+        return listMediaEntry(filter);
+    }
+
     public int countMediaEntry(MediaEntryFilter filter) throws APIException {
         return handleRequest(MediaService.count(filter));
     }
@@ -124,33 +140,6 @@ public class DsKalturaClient extends DsKalturaClientBase {
             return null;
         }
         return response.getObjects().get(0).getStatus();
-    }
-
-    /**
-     * Search Kaltura for a referenceId. The referenceId was given to Kaltura when uploading the record.
-     * We use filenames (file_id) as refereceIds. Example: b16bc5cb-1ea9-48d4-8e3c-2a94abae501b
-     * The Kaltura response contains a lot more information that is required, so it is not a light weight call against Kaltura.
-     *
-     * @param referenceId External reference ID given when uploading the entry to Kaltura.
-     * @return The Kaltura id (internal id). Return null if the refId is not found.
-     * @throws IOException  if more than 1 entry was found with the referenceId.
-     * @throws APIException if the client failed to establish an kaltura session or if the request itself was
-     *                      unsuccessful.
-     */
-    public String getKalturaInternalId(String referenceId) throws IOException, APIException {
-        List<ESearchEntryBaseItem> items = List.of(createReferenceIdItem(referenceId));
-        ESearchEntryResponse response = handleRequest(getSearchEntryESearchBuilder(items));
-        int numberResults = response.getTotalCount();
-
-        if (numberResults == 0) {
-            log.info("No entry found at Kaltura for referenceId:'{}'", referenceId);
-            return null;
-        } else if (numberResults > 1) { //Sanity, has not happened yet.
-            log.error("More that one entry was found at Kaltura for referenceId:'{}'", referenceId); // if this happens there is a logic error with uploading records
-            throw new IOException("More than 1 entry found at Kaltura for referenceId:" + referenceId);
-        }
-
-        return response.getObjects().get(0).getObject().getId();
     }
 
     /**
