@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
+
 ### Added
 
 - New property in `ds-license-behaviour.yaml` for cutoff year for TV. All TV before this year will bypass holdback

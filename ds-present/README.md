@@ -67,7 +67,7 @@ ds-present comes with convenience scripts for downloading, installing and starti
 ```shell
   bin/cloud_install.sh
   bin/cloud_start.sh
- 
+  bin/update_solr_config.sh main
   bin/cloud_ds.sh new
   bin/cloud_ds.sh align
 ```
@@ -85,8 +85,13 @@ bin/cloud_stop.sh
 bin/cloud_start.sh
 ```
 
-Aliases and collections can be seen from the admin gui or by calling
+To upload solr config on the devel machine:
 ```shell
+bin/update_solr_config.sh <branch>
+```
+
+Aliases and collections can be seen from the admin gui or by calling
+```vshell
 bin/cloud_alias.sh
 ```
 and
@@ -109,6 +114,8 @@ bin/cloud_delete.sh ds-20231114-1446
 
 If the Solr configuration is changed in a way that does not require a full reindex, the
 configuration can be assigned to an existing collection.
+
+Remember to first update the solr config on the devel with: bin/update_solr_config.sh <branch>
 
 The existing collection should be the one that the alias `ds-write` points to.
 In that case the updated configuration can be assigned with
