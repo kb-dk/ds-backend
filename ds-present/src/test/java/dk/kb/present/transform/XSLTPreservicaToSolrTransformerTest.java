@@ -259,19 +259,19 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    void testRitzauSaesonnr(){
-        assertPvicaContains(TestFiles.PVICA_RECORD_0e89456b, "\"ritzau_saesonnr\":\"7\"");
-        assertPvicaContains(TestFiles.PVICA_RECORD_e8c664f9, "\"ritzau_saesonnr\":\"1\"");
+    void testSeasonNumberRitzau(){
+        assertPvicaContains(TestFiles.PVICA_RECORD_0e89456b, "\"season_number_ritzau\":\"7\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_e8c664f9, "\"season_number_ritzau\":\"1\"");
     }
 
     @Test
-    void testRitzauSaesonnrZeroIsOmitted(){
-        assertPvicaNotContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "ritzau_saesonnr");
+    void testSeasonNumberRitzauZeroIsOmitted(){
+        assertPvicaNotContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "season_number_ritzau");
     }
 
     @Test
-    void testRitzauSaesonnrMissing(){
-        assertPvicaNotContains(TestFiles.PVICA_RECORD_3945e2d1, "ritzau_saesonnr");
+    void testSeasonNumberRitzauMissing(){
+        assertPvicaNotContains(TestFiles.PVICA_RECORD_3945e2d1, "season_number_ritzau");
     }
 
     @Test

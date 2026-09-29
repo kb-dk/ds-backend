@@ -15,6 +15,7 @@
                xmlns:program_structure="http://doms.statsbiblioteket.dk/types/program_structure/0/1/#"
                xmlns:err="http://www.w3.org/2005/xqt-errors"
                xmlns:transcoding="http://id.kb.dk/schemas/radiotv_access/transcoding_status"
+               xmlns:ritzau_md="http://id.kb.dk/schemas/supplementary_ritzau_metadata"
                version="3.0">
 
   <xsl:output method="text"/>
@@ -1104,12 +1105,14 @@
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'undergenre_id', 'kb:subgenre_id')"/>
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'afsnit_id', 'kb:episode_id')"/>
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'saeson_id', 'kb:season_id')"/>
-    <!-- add ritzu saesonnr to schema.org (is used to generate copydan report) -->
-    <xsl:variable name="seasonNumber"
-                  select="/XIP/Metadata[@schemaUri = 'http://id.kb.dk/schemas/supplementary_ritzau_metadata']
-                          /Content/record/source/ritzau/seasonnr"/>
-    <xsl:if test="number(normalize-space($seasonNumber)) > 0">
-      <f:string key="kb:ritzau_saesonnr"><xsl:value-of select="normalize-space($seasonNumber)"/></f:string>
+    <!-- add ritzau season number to schema.org (is used to generate copydan report).
+         Only the record element is reliably in the ritzau namespace; its descendants sit in no
+         namespace or in the Preservica v7 namespace depending on the record, hence the wildcards. -->
+    <xsl:variable name="seasonNumberRitzau"
+                  select="/*:XIP/*:Metadata[@schemaUri = 'http://id.kb.dk/schemas/supplementary_ritzau_metadata']
+                          /*:Content/*:record/*:source/*:ritzau/*:seasonnr"/>
+    <xsl:if test="number(normalize-space($seasonNumberRitzau)) > 0">
+      <f:string key="kb:season_number_ritzau"><xsl:value-of select="normalize-space($seasonNumberRitzau)"/></f:string>
     </xsl:if>
     <xsl:sequence select="my:extensionStringField($pbcExtensions, 'serie_id', 'kb:series_id')"/>
 
