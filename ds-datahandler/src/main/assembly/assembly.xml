@@ -5,6 +5,14 @@
   </formats>
 
   <files>
+    <!-- This build's flyway zip, identical to the one published to Nexus, so the
+         migrations ship with the war they were built against. Produced by the
+         'flyway-sql' execution, which must run before this one. -->
+    <file>
+      <source>target/${project.build.finalName}-flyway.zip</source>
+      <outputDirectory>/</outputDirectory>
+      <fileMode>0644</fileMode>
+    </file>
     <file>
       <source>conf/ocp/ds-datahandler.xml</source>
       <outputDirectory>/</outputDirectory>

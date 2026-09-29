@@ -1,0 +1,36 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+  <!-- ds-storage-${version}-flyway.zip: this release's Flyway migrations plus provenance.
+       Fetch with:
+         mvn dependency:copy -Dartifact=dk.kb.storage:ds-storage:<version>:zip:flyway -->
+  <id>flyway</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <!-- Base dir kept so unzipping does not spray files into the cwd. -->
+  <includeBaseDirectory>true</includeBaseDirectory>
+
+  <fileSets>
+    <!-- Migrations, at the same path they occupy on the classpath in the war. -->
+    <fileSet>
+      <directory>src/main/resources/db</directory>
+      <outputDirectory>db</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>migration/**/*.sql</include>
+      </includes>
+    </fileSet>
+    <!-- Provenance of the build this zip came from. -->
+    <fileSet>
+      <directory>target/ds-storage-${version}</directory>
+      <outputDirectory>.</outputDirectory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0644</fileMode>
+      <includes>
+        <include>ds-storage.build.properties</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>
