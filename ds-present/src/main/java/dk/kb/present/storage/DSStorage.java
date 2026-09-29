@@ -88,7 +88,9 @@ public class DSStorage implements Storage {
         try {
             return storageClient.getRecord(id,false);
         } catch (ServiceException e) {
-            log.warn("Unable to retrieve record with id: '{}'. URL: '{}'. Exception: ", id, storageUrl, e);
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve record with id: '{}'. URL: '{}'. Exception: ",
+                id, storageUrl, e);
            throw e;
         }
     }
@@ -116,8 +118,10 @@ public class DSStorage implements Storage {
                 throw new IllegalArgumentException("Requests for anything else than deliverableUnits are not allowed.");
             }
             return record;
-        } catch (ServiceException e){
-            log.warn("Unable to retrieve record with id: '{}'. URL: '{}'. Exception: ", id, storageUrl, e);
+        } catch (ServiceException e) {
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve record with id: '{}'. URL: '{}'. Exception: ",
+                id, storageUrl, e);
             throw e;
         }
     }
