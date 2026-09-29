@@ -2,7 +2,6 @@ package dk.kb.datahandler.kaltura;
 
 import com.kaltura.client.enums.MediaType;
 import com.kaltura.client.types.APIException;
-import com.kaltura.client.types.MediaEntry;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.kaltura.enums.FileExtension;
@@ -27,7 +26,6 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -286,28 +284,18 @@ public class KalturaDeltaUploadJob {
      * Check if a file_id already does exist in kaltura. Then it is already uploaded.
      * There can be meta-data errors where different records points to same stream.
      *
-     * If the entry is in a Kaltura error state, the matching error marker is returned instead of the kalturaId,
-     * so the record is marked with the error rather than being uploaded again.
+     * The kalturaId is returned whatever the entry status. Entries in a Kaltura error state are marked by
+     * {@link KalturaValidationJob}, which also handles the cleanup.
      *
      * @param file_id Our reference to the stream.
-     * @return kalturaId, an error marker (ERROR_KALTURA_*) or null if does not exist.
+     * @return kalturaId or null if does not exist.
      * @throws IOException If more than 1 entry was found with the file_id.
      * @throws APIException If API error
      *
      */
     static String getInternalIdKaltura(String file_id) throws IOException, APIException {
         initKalturaClient();
-        List<MediaEntry> mediaEntryList = kalturaClient.listMediaEntryByReferenceId(file_id).getObjects();
-
-        if (mediaEntryList.isEmpty()) {
-            return null;
-        } else if (mediaEntryList.size() > 1) {
-            throw new IOException("More than 1 Kaltura Entry matched file id " + file_id);
-        } else {
-            MediaEntry mediaEntry = mediaEntryList.get(0);
-            StreamErrorTypeDto streamError = KalturaUtil.getStreamError(mediaEntry.getStatus());
-            return streamError != null ? streamError.getValue() : mediaEntry.getId();
-        }
+        return kalturaClient.getEntryIdByReferenceId(file_id);
     }
 
     /*

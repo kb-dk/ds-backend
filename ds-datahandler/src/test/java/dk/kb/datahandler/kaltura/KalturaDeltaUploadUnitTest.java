@@ -1,8 +1,5 @@
 package dk.kb.datahandler.kaltura;
 
-import com.kaltura.client.enums.EntryStatus;
-import com.kaltura.client.types.ListResponse;
-import com.kaltura.client.types.MediaEntry;
 import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -18,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -209,47 +205,11 @@ class KalturaDeltaUploadUnitTest {
     // ─── getInternalIdKaltura ─────────────────────────────────────────────────
 
     @Test
-    void testGetInternalIdKaltura_whenNoEntry_thenReturnsNull() throws Exception {
-        mockKalturaEntries();
-        assertNull(KalturaDeltaUploadJob.getInternalIdKaltura(FILE_ID));
-    }
-
-    @Test
-    void testGetInternalIdKaltura_whenEntryReady_thenReturnsEntryId() throws Exception {
-        mockKalturaEntries(mockMediaEntry("0_ready", EntryStatus.READY));
-        assertEquals("0_ready", KalturaDeltaUploadJob.getInternalIdKaltura(FILE_ID));
-    }
-
-    @Test
-    void testGetInternalIdKaltura_whenEntryErrorConverting_thenReturnsTranscodingError() throws Exception {
-        mockKalturaEntries(mockMediaEntry("0_err", EntryStatus.ERROR_CONVERTING));
-        assertEquals("ERROR_KALTURA_TRANSCODING", KalturaDeltaUploadJob.getInternalIdKaltura(FILE_ID));
-    }
-
-    @Test
-    void testGetInternalIdKaltura_whenEntryErrorImporting_thenReturnsImportError() throws Exception {
-        mockKalturaEntries(mockMediaEntry("0_err", EntryStatus.ERROR_IMPORTING));
-        assertEquals("ERROR_KALTURA_IMPORT", KalturaDeltaUploadJob.getInternalIdKaltura(FILE_ID));
-    }
-
-    @Test
-    void testGetInternalIdKaltura_whenMultipleEntries_thenThrowsIOException() throws Exception {
-        mockKalturaEntries(mockMediaEntry("0_a", EntryStatus.READY), mockMediaEntry("0_b", EntryStatus.READY));
-        assertThrows(IOException.class, () -> KalturaDeltaUploadJob.getInternalIdKaltura(FILE_ID));
-    }
-
-    private void mockKalturaEntries(MediaEntry... entries) throws Exception {
-        ListResponse<MediaEntry> response = new ListResponse<>();
-        response.setObjects(List.of(entries));
+    void testGetInternalIdKaltura_thenReturnsEntryIdFromKalturaClient() throws Exception {
         DsKalturaClient kalturaClient = mock(DsKalturaClient.class);
-        when(kalturaClient.listMediaEntryByReferenceId(FILE_ID)).thenReturn(response);
+        when(kalturaClient.getEntryIdByReferenceId(FILE_ID)).thenReturn("0_entry");
         KalturaDeltaUploadJob.kalturaClient = kalturaClient;
-    }
 
-    private MediaEntry mockMediaEntry(String id, EntryStatus status) {
-        MediaEntry entry = mock(MediaEntry.class);
-        lenient().when(entry.getId()).thenReturn(id);
-        lenient().when(entry.getStatus()).thenReturn(status);
-        return entry;
+        assertEquals("0_entry", KalturaDeltaUploadJob.getInternalIdKaltura(FILE_ID));
     }
 }

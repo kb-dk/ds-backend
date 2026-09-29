@@ -104,19 +104,29 @@ public class DsKalturaClient extends DsKalturaClientBase {
     }
 
     /**
-     * List the media entries with the given referenceId, excluding deleted entries. Unlike eSearch, the entry
-     * service is not affected by index lag, so newly uploaded entries are included.
+     * Find the Kaltura id for a referenceId, excluding deleted entries. Unlike eSearch, the entry service is not
+     * affected by index lag, so newly uploaded entries are found.
      *
      * @param referenceId External reference ID given when uploading the entry to Kaltura.
+     * @return The Kaltura id (internal id) whatever the entry status, or null if the referenceId is not found.
+     * @throws IOException  if more than 1 entry was found with the referenceId.
      * @throws APIException if the client failed to establish an kaltura session or if the request itself was
      *                      unsuccessful.
      */
-    public ListResponse<MediaEntry> listMediaEntryByReferenceId(String referenceId) throws APIException {
+    public String getEntryIdByReferenceId(String referenceId) throws IOException, APIException {
         MediaEntryFilter filter = new MediaEntryFilter();
         filter.setReferenceIdEqual(referenceId);
         filter.setModerationStatusNotEqual(EntryModerationStatus.DELETED);
         filter.setStatusNotEqual(EntryStatus.DELETED);
-        return listMediaEntry(filter);
+        List<MediaEntry> mediaEntryList = listMediaEntry(filter).getObjects();
+
+        if (mediaEntryList.isEmpty()) {
+            return null;
+        } else if (mediaEntryList.size() > 1) {
+            throw new IOException("More than 1 Kaltura entry matched referenceId " + referenceId);
+        } else {
+            return mediaEntryList.get(0).getId();
+        }
     }
 
     public int countMediaEntry(MediaEntryFilter filter) throws APIException {
