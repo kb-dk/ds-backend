@@ -1,7 +1,7 @@
 info:
   name: GET rerun-cluster/{fileId} - non-UUID fileId is rejected
   type: http
-  seq: 6
+  seq: 13
 
 http:
   method: GET

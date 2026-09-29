@@ -1,7 +1,7 @@
 info:
   name: GET rerun-cluster/{fileId} - unknown fileId returns 404
   type: http
-  seq: 5
+  seq: 12
 
 http:
   method: GET

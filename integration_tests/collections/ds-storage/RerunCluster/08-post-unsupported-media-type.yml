@@ -1,7 +1,7 @@
 info:
   name: POST rerun-cluster - text/plain returns 415
   type: http
-  seq: 12
+  seq: 8
 
 http:
   method: POST

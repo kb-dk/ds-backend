@@ -22,9 +22,7 @@ http:
           "rerunClusterId": "{{rerunClusterId}}",
           "rerunClusterIdCount": 2,
           "created": "{{created}}",
-          "jobId": "bruno-it-update",
-          "inserted": "{{created}}",
-          "updated": "{{created}}"
+          "jobId": "bruno-it-update"
         }
       ]
 

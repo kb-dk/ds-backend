@@ -1,7 +1,7 @@
 info:
-  name: GET rerun-cluster/created/latest - happy path
+  name: GET rerun-cluster/created/latest
   type: http
-  seq: 4
+  seq: 15
 
 http:
   method: GET

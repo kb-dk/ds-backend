@@ -1,7 +1,7 @@
 info:
-  name: GET rerun-cluster/{fileId} - happy path
+  name: GET rerun-cluster/{fileId}
   type: http
-  seq: 3
+  seq: 11
 
 http:
   method: GET

@@ -1,7 +1,7 @@
 info:
-  name: POST rerun-cluster - invalid UUID in body returns 400
+  name: POST rerun-cluster - missing required fileId returns 400
   type: http
-  seq: 8
+  seq: 5
 
 http:
   method: POST
@@ -17,14 +17,11 @@ http:
     data: |-
       [
         {
-          "id": "not-a-uuid",
-          "fileId": "{{fileId1}}",
+          "id": "{{id1}}",
           "rerunClusterId": "{{rerunClusterId}}",
           "rerunClusterIdCount": 2,
           "created": "{{created}}",
-          "jobId": "bruno-it",
-          "inserted": "{{created}}",
-          "updated": "{{created}}"
+          "jobId": "bruno-it"
         }
       ]
 
@@ -32,8 +29,12 @@ runtime:
   scripts:
     - type: tests
       code: |-
+        // Will likely FAIL unless the server is generated with useBeanValidation=true.
         test("status is 400", function () {
           expect(res.getStatus()).to.equal(400);
+        });
+        test("is not a 5xx (no NPE / DB constraint leak)", function () {
+          expect(res.getStatus()).to.be.below(500);
         });
 
 settings:

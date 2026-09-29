@@ -1,7 +1,7 @@
 info:
-  name: POST rerun-cluster - malformed JSON returns 400
+  name: POST rerun-cluster - no token returns 401
   type: http
-  seq: 7
+  seq: 9
 
 http:
   method: POST
@@ -10,18 +10,17 @@ http:
     - name: Content-Type
       value: application/json
   auth:
-    type: bearer
-    token: "{{token}}"
+    type: none
   body:
-    type: text
-    data: '[{"id": "broken", '
+    type: json
+    data: "[]"
 
 runtime:
   scripts:
     - type: tests
       code: |-
-        test("status is 400", function () {
-          expect(res.getStatus()).to.equal(400);
+        test("status is 401", function () {
+          expect(res.getStatus()).to.equal(401);
         });
 
 settings:

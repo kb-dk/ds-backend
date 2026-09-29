@@ -1,5 +1,5 @@
 info:
-  name: POST rerun-cluster - happy path (2 items)
+  name: POST rerun-cluster - insert (2 items)
   type: http
   seq: 1
 
@@ -24,9 +24,7 @@ http:
           "rerunClusterId": "{{rerunClusterId}}",
           "rerunClusterIdCount": 2,
           "created": "{{created}}",
-          "jobId": "bruno-it",
-          "inserted": "{{created}}",
-          "updated": "{{created}}"
+          "jobId": "bruno-it"
         },
         {
           "id": "{{id2}}",
@@ -34,9 +32,7 @@ http:
           "rerunClusterId": "{{rerunClusterId}}",
           "rerunClusterIdCount": 2,
           "created": "{{created}}",
-          "jobId": "bruno-it",
-          "inserted": "{{created}}",
-          "updated": "{{created}}"
+          "jobId": "bruno-it"
         }
       ]
 

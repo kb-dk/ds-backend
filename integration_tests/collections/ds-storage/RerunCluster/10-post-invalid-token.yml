@@ -1,7 +1,7 @@
 info:
-  name: POST rerun-cluster - no token returns 401
+  name: POST rerun-cluster - invalid token returns 401
   type: http
-  seq: 13
+  seq: 10
 
 http:
   method: POST
@@ -10,7 +10,8 @@ http:
     - name: Content-Type
       value: application/json
   auth:
-    type: none
+    type: bearer
+    token: invalid.token.value
   body:
     type: json
     data: "[]"

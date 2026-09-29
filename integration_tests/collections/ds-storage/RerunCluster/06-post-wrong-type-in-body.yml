@@ -1,7 +1,7 @@
 info:
   name: POST rerun-cluster - non-integer rerunClusterIdCount returns 400
   type: http
-  seq: 10
+  seq: 6
 
 http:
   method: POST
@@ -22,9 +22,7 @@ http:
           "rerunClusterId": "{{rerunClusterId}}",
           "rerunClusterIdCount": "two",
           "created": "{{created}}",
-          "jobId": "bruno-it",
-          "inserted": "{{created}}",
-          "updated": "{{created}}"
+          "jobId": "bruno-it"
         }
       ]
 
