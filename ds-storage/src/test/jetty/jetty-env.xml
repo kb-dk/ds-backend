@@ -11,12 +11,22 @@
     </New>
 
     <New id="config" class="org.eclipse.jetty.plus.jndi.EnvEntry">
-        <!-- ServiceConfig loads a single YAML file. For a local override (e.g. your own DB credentials),
-             use a config/application.properties file (or a system property / env var) instead of a second
-             YAML file: see SMALLRYE_CONFIG_MIGRATION.md. -->
+        <!-- ServiceConfig loads a single YAML file. -->
         <Arg>application-config</Arg>
         <Arg type="java.lang.String">
             ${basedir}/conf/${project.artifactId}-behaviour.yaml
+        </Arg>
+        <Arg type="boolean">true</Arg>
+    </New>
+
+    <New id="propertiesConfig" class="org.eclipse.jetty.plus.jndi.EnvEntry">
+        <!-- Optional devops/operations properties override file (see SMALLRYE_CONFIG_MIGRATION.md). Nothing is
+             created at this path by default, so a local run logs (and is meant to log) an error that it could
+             not be found - copy conf/ds-storage-application.properties.SAMPLE here, without the '.SAMPLE'
+             suffix, if you want to exercise the override with your own local values. -->
+        <Arg>application-properties-config</Arg>
+        <Arg type="java.lang.String">
+            ${basedir}/conf/${project.artifactId}-application.properties
         </Arg>
         <Arg type="boolean">true</Arg>
     </New>

@@ -1,6 +1,8 @@
 package dk.kb.storage.config;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.smallrye.config.PropertiesConfigSource;
 import io.smallrye.config.SmallRyeConfig;
 import io.smallrye.config.SmallRyeConfigBuilder;
 import io.smallrye.config.source.yaml.YamlConfigSource;
@@ -31,22 +34,33 @@ import dk.kb.util.Resolver;
  * Configuration class backed by <a href="https://smallrye.io/smallrye-config/">SmallRye Config</a> (a standalone
  * implementation of MicroProfile Config; this project does not use Quarkus).
  * <p>
- * This replaces the previous kb-util {@code YAML}-backed implementation. {@link #initialize(String)} takes a
- * single YAML file (resolved via {@link Resolver#resolveURL(String)}: verbatim as a file, then on the classpath,
- * then under the user's home), typically the one path configured outside the project in the Tomcat context
- * environment (see {@code conf/ocp/ds-storage.xml}). This is a deliberate simplification over the old
+ * This replaces the previous kb-util {@code YAML}-backed implementation. {@link #initialize(String, String)}
+ * takes a single YAML file (resolved via {@link Resolver#resolveURL(String)}: verbatim as a file, then on the
+ * classpath, then under the user's home), typically the one path configured outside the project in the Tomcat
+ * context environment (see {@code conf/ocp/ds-storage.xml}). This is a deliberate simplification over the old
  * behaviour/environment/local three-file layering convention: environment- or operator-specific overrides are
- * now expressed with SmallRye Config's own layering instead of a second or third YAML file &mdash; system
- * properties, environment variables, an optional {@code config/application.properties} (or {@code .env}) file,
- * and/or {@link #setRuntimeProperty(String, String)} &mdash; all of which sit above the single YAML file in
- * priority. See {@code SMALLRYE_CONFIG_MIGRATION.md} for the full picture.
+ * now expressed with SmallRye Config's own layering instead of a second or third YAML file.
  * <p>
- * <b>Runtime property injection.</b> Besides the YAML file, environment variables and system properties, this
- * class registers a small in-memory {@link ConfigSource} ({@link RuntimeConfigSource}) with the highest ordinal
- * of all sources. Properties set with {@link #setRuntimeProperty(String, String)} are therefore visible to every
- * subsequent config lookup immediately, without a restart and without touching any file: unlike the old
- * {@code YAML} class (which produced an immutable snapshot), SmallRye Config re-reads all sources on every
- * {@code getValue}/{@code getOptionalValue} call.
+ * <b>The devops/operations override file.</b> A second, optional properties file - also configured outside the
+ * project, via its own Tomcat context environment entry (see {@code conf/ocp/ds-storage.xml}) - carries values
+ * operations control per environment, most importantly secrets such as the real database password. This is
+ * deliberately <em>not</em> SmallRye's own implicit {@code config/application.properties} convention (part of
+ * {@code addDefaultSources()} below): that convention is keyed off the JVM's current working directory, which is
+ * shared by every webapp in a Tomcat instance that hosts several WARs (as the development server does) - so it
+ * cannot tell one service's override file apart from another's. The explicit path instead flows through the same
+ * per-webapp JNDI mechanism as the YAML file itself, exactly like {@code ds-storage-behaviour.yaml} and
+ * {@code ds-present-behaviour.yaml} are already two distinct context entries for two distinct WARs. See
+ * {@code SMALLRYE_CONFIG_MIGRATION.md} for the full picture, including why the implicit convention is still left
+ * enabled (harmless as long as no file is ever placed at that shared location) and other ways to inject
+ * configuration &mdash; environment variables, system properties, and/or {@link #setRuntimeProperty(String,
+ * String)} &mdash; all of which sit above the single YAML file in priority.
+ * <p>
+ * <b>Runtime property injection.</b> Besides the YAML file, the properties override file, environment variables
+ * and system properties, this class registers a small in-memory {@link ConfigSource} ({@link RuntimeConfigSource})
+ * with the highest ordinal of all sources. Properties set with {@link #setRuntimeProperty(String, String)} are
+ * therefore visible to every subsequent config lookup immediately, without a restart and without touching any
+ * file: unlike the old {@code YAML} class (which produced an immutable snapshot), SmallRye Config re-reads all
+ * sources on every {@code getValue}/{@code getOptionalValue} call.
  */
 public class ServiceConfig {
     private static final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
@@ -55,14 +69,23 @@ public class ServiceConfig {
 
     /**
      * Ordinal for the runtime-injected overrides ({@link #setRuntimeProperty(String, String)}). This is higher
-     * than system properties (400), environment variables (300) and the YAML file (see {@link #YAML_ORDINAL}),
-     * so a runtime override always wins.
+     * than system properties (400), environment variables (300) and everything below, so a runtime override
+     * always wins.
      */
     public static final int RUNTIME_ORDINAL = 500;
 
     /**
-     * Ordinal for the single configured YAML file (see {@link #initialize(String)}). This is comfortably below
-     * environment variables (300) and system properties (400), so operations can override any individual
+     * Ordinal for the explicit, per-service devops/operations properties override file (see
+     * {@link #initialize(String, String)}). This is deliberately above SmallRye's own implicit
+     * {@code config/application.properties} convention (ordinal 260, part of {@code addDefaultSources()}), so
+     * that if a file is ever accidentally left at that shared location in a multi-webapp Tomcat instance, it can
+     * never silently outrank the correct, explicitly-configured file for a given service.
+     */
+    private static final int PROPERTIES_OVERRIDE_ORDINAL = 270;
+
+    /**
+     * Ordinal for the single configured YAML file (see {@link #initialize(String, String)}). This is comfortably
+     * below environment variables (300) and system properties (400), so operations can override any individual
      * configured value without editing YAML at all.
      */
     private static final int YAML_ORDINAL = 100;
@@ -75,17 +98,41 @@ public class ServiceConfig {
     private static SmallRyeConfig serviceConfig;
 
     /**
-     * Initializes the configuration from the provided configFile.
+     * Initializes the configuration from the provided configFile, without a devops/operations properties
+     * override file. Equivalent to {@code initialize(configFile, null)}.
+     * <p>
+     * This overload exists mainly for tests and other callers that don't need/have an override file; production
+     * start-up (see {@link dk.kb.storage.webservice.ContextListener}) should use
+     * {@link #initialize(String, String)} instead.
+     *
+     * @param configFile the single YAML file which the configuration is loaded from; see
+     *                    {@link #initialize(String, String)}.
+     * @throws IOException if the configuration could not be located, loaded or parsed.
+     */
+    public static synchronized void initialize(String configFile) throws IOException {
+        initialize(configFile, null);
+    }
+
+    /**
+     * Initializes the configuration from the provided configFile and (optional) devops/operations properties
+     * override file.
      * This should normally be called from {@link dk.kb.storage.webservice.ContextListener} as
-     * part of web server initialization of the container, using the single path configured outside the project
-     * (Tomcat context environment entry {@code application-config}, see {@code conf/ocp/ds-storage.xml}).
+     * part of web server initialization of the container, using the two paths configured outside the project
+     * (Tomcat context environment entries {@code application-config} and {@code application-properties-config},
+     * see {@code conf/ocp/ds-storage.xml}).
      *
      * @param configFile the single YAML file which the configuration is loaded from: a plain file path, a
      *                    classpath resource name, or a path relative to the user's home
      *                    (see {@link Resolver#resolveURL(String)}).
-     * @throws IOException if the configuration could not be located, loaded or parsed.
+     * @param propertiesOverrideFile the devops/operations properties override file (same path syntax as
+     *                    {@code configFile}), or {@code null}/blank if none is configured. If a path is given but
+     *                    cannot be resolved to an existing file, this is logged as an error and startup continues
+     *                    without that source - values that were meant to come from it (most importantly secrets
+     *                    such as the database password) will then be missing or fall back to the YAML file.
+     * @throws IOException if the YAML configuration could not be located, loaded or parsed. A missing/unresolvable
+     *                    {@code propertiesOverrideFile} does <em>not</em> throw - see above.
      */
-    public static synchronized void initialize(String configFile) throws IOException {
+    public static synchronized void initialize(String configFile, String propertiesOverrideFile) throws IOException {
         URL configUrl = Resolver.resolveURL(configFile);
 
         SmallRyeConfigBuilder builder = new SmallRyeConfigBuilder()
@@ -93,11 +140,28 @@ public class ServiceConfig {
                 // db.url's '${TMPDIR:/tmp}' and by the self-referencing '${openapi.serverurl}'-style values.
                 .addDefaultInterceptors()
                 // System properties (400), environment variables (300), an optional .env file (295), an optional
-                // config/application.properties (260) or classpath application.properties (250), and
+                // config/application.properties (260, see the class javadoc for why this is not what
+                // propertiesOverrideFile below uses) or classpath application.properties (250), and
                 // META-INF/microprofile-config.properties (100), if present.
                 .addDefaultSources()
                 .withSources(runtimeSource)
                 .withSources(new YamlConfigSource(configUrl, YAML_ORDINAL));
+
+        if (propertiesOverrideFile == null || propertiesOverrideFile.isBlank()) {
+            log.info("No devops/operations properties override file configured; continuing with only the YAML " +
+                      "file '{}' (plus environment variables/system properties/runtime injection)", configFile);
+        } else {
+            try {
+                URL propertiesUrl = Resolver.resolveURL(propertiesOverrideFile);
+                builder.withSources(new PropertiesConfigSource(propertiesUrl, PROPERTIES_OVERRIDE_ORDINAL));
+                log.info("Loaded devops/operations properties override file '{}'", propertiesOverrideFile);
+            } catch (FileNotFoundException | MalformedURLException e) {
+                log.error("Configured devops/operations properties override file '{}' could not be found. " +
+                           "Continuing without it - values that were meant to come from it (most importantly " +
+                           "secrets such as the database password) will be missing or fall back to the YAML file.",
+                           propertiesOverrideFile, e);
+            }
+        }
 
         serviceConfig = builder.build();
         loadAllowedOrigins();
@@ -168,7 +232,11 @@ public class ServiceConfig {
     }
 
     public static String getDBPassword() {
-        return serviceConfig.getValue("db.password", String.class);
+        // Unlike db.driver/db.url/db.username, an empty password is a legitimate, intentional value (e.g. local
+        // databases with no authentication). SmallRye's built-in String converter treats "" as "no value", which
+        // makes the non-optional getValue(...) throw NoSuchElementException (SRCFG00040) instead of returning "" -
+        // so this uses getOptionalValue(...) with an empty-string default to preserve the old kb-util behaviour.
+        return serviceConfig.getOptionalValue("db.password", String.class).orElse("");
     }
 
     public static int getConnectionPoolSize() {
@@ -202,8 +270,9 @@ public class ServiceConfig {
      * and without restarting the service.
      * <p>
      * The change is visible to every subsequent config lookup immediately: it takes precedence over every
-     * other configuration source (the YAML file, environment variables and system properties, see
-     * {@link #RUNTIME_ORDINAL}). This is intended for short-lived operational overrides (temporarily raising a
+     * other configuration source (the YAML file, the properties override file, environment variables and
+     * system properties, see {@link #RUNTIME_ORDINAL}). This is intended for short-lived operational overrides
+     * (temporarily raising a
      * limit, flipping a behaviour flag, etc.) or for exercising the config system from a test. It is
      * <em>not</em> persisted: restarting the service reverts to the values from the configuration file.
      *
