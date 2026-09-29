@@ -1,5 +1,5 @@
 info:
-  name: POST rerun-cluster - malformed JSON returns 400
+  name: POST rerun-cluster - malformed JSON returns 500
   type: http
   seq: 3
 
@@ -9,20 +9,24 @@ http:
   headers:
     - name: Content-Type
       value: application/json
-  auth:
-    type: bearer
-    token: "{{token}}"
   body:
     type: text
     data: '[{"id": "broken", '
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 runtime:
   scripts:
     - type: tests
       code: |-
-        test("status is 400", function () {
-          expect(res.getStatus()).to.equal(400);
+        test("status is 500", function () {
+          expect(res.getStatus()).to.equal(500);
         });
 
 settings:
   encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

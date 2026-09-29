@@ -533,7 +533,7 @@ paths:
               items:
                 $ref: '#/components/schemas/RerunClusterRequest'
       responses:
-        '201':
+        '200':
           description: 'Return the number of rows inserted or updated in rerun_clusters table.'
           content:
             application/json:

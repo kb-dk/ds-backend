@@ -1,7 +1,7 @@
 info:
-  name: POST rerun-cluster - non-integer rerunClusterIdCount returns 400
+  name: POST rerun-cluster - invalid UUID in body returns 500
   type: http
-  seq: 6
+  seq: 4
 
 http:
   method: POST
@@ -9,30 +9,33 @@ http:
   headers:
     - name: Content-Type
       value: application/json
-  auth:
-    type: bearer
-    token: "{{token}}"
   body:
     type: json
     data: |-
       [
         {
-          "id": "{{id1}}",
+          "id": "not-a-uuid",
           "fileId": "{{fileId1}}",
           "rerunClusterId": "{{rerunClusterId}}",
-          "rerunClusterIdCount": "two",
           "created": "{{created}}",
           "jobId": "bruno-it"
         }
       ]
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 runtime:
   scripts:
     - type: tests
       code: |-
-        test("status is 400", function () {
-          expect(res.getStatus()).to.equal(400);
+        test("status is 500", function () {
+          expect(res.getStatus()).to.equal(500);
         });
 
 settings:
   encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

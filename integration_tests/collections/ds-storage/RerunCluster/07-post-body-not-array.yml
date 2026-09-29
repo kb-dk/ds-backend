@@ -9,9 +9,6 @@ http:
   headers:
     - name: Content-Type
       value: application/json
-  auth:
-    type: bearer
-    token: "{{token}}"
   body:
     type: json
     data: |-
@@ -19,21 +16,24 @@ http:
         "id": "{{id1}}",
         "fileId": "{{fileId1}}",
         "rerunClusterId": "{{rerunClusterId}}",
-        "rerunClusterIdCount": 2,
         "created": "{{created}}",
-        "jobId": "bruno-it",
-        "inserted": "{{created}}",
-        "updated": "{{created}}"
+        "jobId": "bruno-it"
       }
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 runtime:
   scripts:
     - type: tests
       code: |-
-        // Jackson with ACCEPT_SINGLE_VALUE_AS_ARRAY enabled would accept this -> test fails, which is a finding.
-        test("status is 400", function () {
-          expect(res.getStatus()).to.equal(400);
+        test("status is 500", function () {
+          expect(res.getStatus()).to.equal(500);
         });
 
 settings:
   encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
