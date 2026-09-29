@@ -1,0 +1,39 @@
+info:
+  name: POST rerun-cluster - object instead of array returns 400
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: "{{baseUrl}}/rerun-cluster"
+  headers:
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{token}}"
+  body:
+    type: json
+    data: |-
+      {
+        "id": "{{id1}}",
+        "fileId": "{{fileId1}}",
+        "rerunClusterId": "{{rerunClusterId}}",
+        "rerunClusterIdCount": 2,
+        "created": "{{created}}",
+        "jobId": "bruno-it",
+        "inserted": "{{created}}",
+        "updated": "{{created}}"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        // Jackson with ACCEPT_SINGLE_VALUE_AS_ARRAY enabled would accept this -> test fails, which is a finding.
+        test("status is 400", function () {
+          expect(res.getStatus()).to.equal(400);
+        });
+
+settings:
+  encodeUrl: true

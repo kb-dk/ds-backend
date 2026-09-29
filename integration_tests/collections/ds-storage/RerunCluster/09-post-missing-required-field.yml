@@ -1,0 +1,43 @@
+info:
+  name: POST rerun-cluster - missing required fileId returns 400
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/rerun-cluster"
+  headers:
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{token}}"
+  body:
+    type: json
+    data: |-
+      [
+        {
+          "id": "{{id1}}",
+          "rerunClusterId": "{{rerunClusterId}}",
+          "rerunClusterIdCount": 2,
+          "created": "{{created}}",
+          "jobId": "bruno-it",
+          "inserted": "{{created}}",
+          "updated": "{{created}}"
+        }
+      ]
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        // Will likely FAIL unless the server is generated with useBeanValidation=true.
+        test("status is 400", function () {
+          expect(res.getStatus()).to.equal(400);
+        });
+        test("is not a 5xx (no NPE / DB constraint leak)", function () {
+          expect(res.getStatus()).to.be.below(500);
+        });
+
+settings:
+  encodeUrl: true

@@ -1,0 +1,25 @@
+info:
+  name: GET rerun-cluster/{fileId} - non-UUID fileId is rejected
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{baseUrl}}/rerun-cluster/not-a-uuid"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 400 or 404 (JAX-RS path param conversion failure = 404)", function () {
+          expect([400, 404]).to.include(res.getStatus());
+        });
+        test("is not a 5xx", function () {
+          expect(res.getStatus()).to.be.below(500);
+        });
+
+settings:
+  encodeUrl: true

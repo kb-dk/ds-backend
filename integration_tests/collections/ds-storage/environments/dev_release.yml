@@ -1,0 +1,18 @@
+name: dev-release
+variables:
+  - secret: true
+    name: baseUrl
+  - name: id1
+    value: 10000000-0000-4000-8000-000000000000
+  - name: fileId1
+    value: a0000000-0000-4000-8000-000000000000
+  - name: id2
+    value: 20000000-0000-4000-8000-000000000000
+  - name: fileId2
+    value: b0000000-0000-4000-8000-000000000000
+  - name: rerunClusterId
+    value: 99000000-0000-4000-8000-000000000000
+  - name: unknownFileId
+    value: 00000000-0000-4000-8000-000000000000
+  - name: created
+    value: "2026-01-30T08:30:00Z"

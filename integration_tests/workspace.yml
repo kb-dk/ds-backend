@@ -4,18 +4,10 @@ info:
   type: workspace
 
 collections:
-  - name: "bff"
-    path: "collections/bff"
-  - name: "ds-datahandler"
-    path: "collections/ds-datahandler"
-  - name: "ds-image"
-    path: "collections/ds-image"
-  - name: "ds-license"
-    path: "collections/ds-license"
-  - name: "ds-present"
-    path: "collections/ds-present"
-  - name: "${project.name}"
-    path: "collections/${project.name}"
+  - name: "ds-storage"
+    path: "collections/ds-storage"
+  - name: "authentication"
+    path: "collections/authentication"
 
 specs:
 

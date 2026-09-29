@@ -1,0 +1,40 @@
+info:
+  name: POST rerun-cluster - invalid UUID in body returns 400
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/rerun-cluster"
+  headers:
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{token}}"
+  body:
+    type: json
+    data: |-
+      [
+        {
+          "id": "not-a-uuid",
+          "fileId": "{{fileId1}}",
+          "rerunClusterId": "{{rerunClusterId}}",
+          "rerunClusterIdCount": 2,
+          "created": "{{created}}",
+          "jobId": "bruno-it",
+          "inserted": "{{created}}",
+          "updated": "{{created}}"
+        }
+      ]
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 400", function () {
+          expect(res.getStatus()).to.equal(400);
+        });
+
+settings:
+  encodeUrl: true

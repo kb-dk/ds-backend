@@ -1,0 +1,42 @@
+info:
+  name: GET rerun-cluster/created/latest - happy path
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/rerun-cluster/created/latest"
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function () {
+          expect(res.getStatus()).to.equal(200);
+        });
+        test("body has 'created' property", function () {
+          expect(res.getBody()).to.have.property("created");
+        });
+        test("created is not null (rows were inserted earlier in this run)", function () {
+          expect(res.getBody().created).to.not.be.null;
+        });
+        test("created is a valid ISO-8601 date-time", function () {
+          expect(isNaN(Date.parse(res.getBody().created))).to.be.false;
+        });
+        test("created is >= the created value posted in this run", function () {
+          expect(Date.parse(res.getBody().created))
+            .to.be.at.least(Date.parse(bru.getEnvVar("created")));
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

@@ -1,0 +1,22 @@
+info:
+  name: DELETE rerun-cluster/{fileId} - unsupported method returns 405
+  type: http
+  seq: 17
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/rerun-cluster/{{fileId1}}"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 405", function () {
+          expect(res.getStatus()).to.equal(405);
+        });
+
+settings:
+  encodeUrl: true
