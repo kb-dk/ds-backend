@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XIP>
+    <InformationObject>
+        <Ref>0a000a00-a000-000a-0aaa-00000a0a00aa</Ref>
+        <Title>drp1_1991-09-12_23.16_00.16_tada</Title>
+        <Description>Tada</Description>
+        <SecurityTag>pligtafleveringRadioTvOpenProgram</SecurityTag>
+        <Parent>0a000a00-a000-000a-0aaa-00000a0a00aa_1991_09_12</Parent>
+    </InformationObject>
+    <Metadata schemaUri="http://id.kb.dk/schemas/radiotv_access/access">
+        <Ref>0a000a00-a000-000a-0aaa-00000a0a00aa</Ref>
+        <Entity>0a000a00-a000-000a-0aaa-00000a0a00aa</Entity>
+        <Content>
+            <access xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <individuelt_forbud>Nej</individuelt_forbud>
+                <klausuleret>Nej</klausuleret>
+                <defekt>Nej</defekt>
+                <kommentarer/>
+            </access>
+        </Content>
+    </Metadata>
+    <Metadata schemaUri="http://kuana.kb.dk/types/padding/0/1/#">
+        <Ref>0a000a00-a000-000a-0aaa-00000a0a00aa</Ref>
+        <Entity>0a000a00-a000-000a-0aaa-00000a0a00aa</Entity>
+        <Content>
+            <padding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <preRollPaddingSeconds>15</preRollPaddingSeconds>
+                <postRollPaddingSeconds>180</postRollPaddingSeconds>
+            </padding>
+        </Content>
+    </Metadata>
+    <Metadata schemaUri="http://www.pbcore.org/PBCore/PBCoreNamespace.html">
+        <Ref>0a000a00-a000-000a-0aaa-00000a0a00aa</Ref>
+        <Entity>0a000a00-a000-000a-0aaa-00000a0a00aa</Entity>
+        <Content>
+            <PBCoreDescriptionDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <pbcoreIdentifier>
+                    <identifier>0a000a00-a000-000a-0aaa-00000a0a00aa</identifier>
+                    <identifierSource>Det Kgl. Bibliotek</identifierSource>
+                </pbcoreIdentifier>
+                <pbcoreTitle>
+                    <title>Tada</title>
+                    <titleType>titel</titleType>
+                </pbcoreTitle>
+                <pbcoreTitle>
+                    <title/>
+                    <titleType>originaltitel</titleType>
+                </pbcoreTitle>
+                <pbcoreTitle>
+                    <title/>
+                    <titleType>episodetitel</titleType>
+                </pbcoreTitle>
+                <pbcoreDescription>
+                    <description/>
+                    <descriptionType>kortomtale</descriptionType>
+                </pbcoreDescription>
+                <pbcoreDescription>
+                    <description>En fin beskrivelse</description>
+                    <descriptionType>langomtale1</descriptionType>
+                </pbcoreDescription>
+                <pbcoreGenre>
+                    <genre>hovedgenre:</genre>
+                    <genreAuthorityUsed>DR (Danmarks Radio)</genreAuthorityUsed>
+                </pbcoreGenre>
+                <pbcoreGenre>
+                    <genre>undergenre:</genre>
+                    <genreAuthorityUsed>DR (Danmarks Radio)</genreAuthorityUsed>
+                </pbcoreGenre>
+                <pbcoreContributor>
+                    <contributor/>
+                    <contributorRole>medvirkende</contributorRole>
+                </pbcoreContributor>
+                <pbcoreContributor>
+                    <contributor/>
+                    <contributorRole>medvirkende</contributorRole>
+                </pbcoreContributor>
+                <pbcorePublisher>
+                    <publisher>drp1</publisher>
+                    <publisherRole>channel_name</publisherRole>
+                </pbcorePublisher>
+                <pbcorePublisher>
+                    <publisher>P1</publisher>
+                    <publisherRole>kanalnavn</publisherRole>
+                </pbcorePublisher>
+                <pbcoreInstantiation>
+                    <formatLocation>Det Kgl. Bibliotek; Radio/TV-samlingen</formatLocation>
+                    <formatMediaType>Sound</formatMediaType>
+                    <pbcoreDateAvailable>
+                        <dateAvailableStart>1991-09-12T23:16:00+02:00</dateAvailableStart>
+                        <dateAvailableEnd>1991-09-13T00:16:00+02:00</dateAvailableEnd>
+                    </pbcoreDateAvailable>
+                    <pbcoreFormatID>
+                        <formatIdentifier>0a000a00-a000-000a-0aaa-00000a0a00aa</formatIdentifier>
+                        <formatIdentifierSource>Det Kgl. Bibliotek</formatIdentifierSource>
+                    </pbcoreFormatID>
+                    <pbcoreAnnotation>
+                        <annotation/>
+                    </pbcoreAnnotation>
+                </pbcoreInstantiation>
+                <pbcoreExtension>
+                    <extension>produktionsnummer:00000000000</extension>
+                    <extensionAuthorityUsed>DR (Danmarks Radio)</extensionAuthorityUsed>
+                </pbcoreExtension>
+            </PBCoreDescriptionDocument>
+        </Content>
+    </Metadata>
+    <Metadata schemaUri="http://id.kb.dk/schemas/radiotv_access/transcoding_status">
+        <Ref>0a000a00-a000-000a-0aaa-00000a0a00aa</Ref>
+        <Entity>0a000a00-a000-000a-0aaa-00000a0a00aa</Entity>
+        <Content>
+            <radiotvTranscodingStatus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <transcodingReady>true</transcodingReady>
+                <workOrder/>
+                <missingStartSeconds>0</missingStartSeconds>
+                <missingEndSeconds>0</missingEndSeconds>
+                <coverage>1.0</coverage>
+                <specificRadioTvTranscodingStatus>
+                    <transcodingStatus>awaiting</transcodingStatus>
+                    <profile>onlyclip</profile>
+                    <profileVersion>1.0</profileVersion>
+                </specificRadioTvTranscodingStatus>
+            </radiotvTranscodingStatus>
+        </Content>
+    </Metadata>
+    <Metadata schemaUri="http://id.kb.dk/schemas/dr_archive_supplementary_rights_metadata">
+        <Ref>0a000a00-a000-000a-0aaa-00000a0a00aa</Ref>
+        <Entity>0a000a00-a000-000a-0aaa-00000a0a00aa</Entity>
+        <Content>
+            <record xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <identifiers/>
+                <events/>
+                <dr_archive_supplementary_rights_metadata>
+                    <produktionsnummer>00000000000</produktionsnummer>
+                    <egenproduktion_kode/>
+                    <holdback_kategori/>
+                    <intent_purpose/>
+                    <form/>
+                    <contentsitem_typology/>
+                    <productioncountry_origincountry/>
+                </dr_archive_supplementary_rights_metadata>
+            </record>
+        </Content>
+    </Metadata>
+    <Metadata schemaUri="http://id.kb.dk/schemas/unstructured">
+        <Ref>0a000a00-a000-000a-0aaa-00000a0a00aa</Ref>
+        <Entity>0a000a00-a000-000a-0aaa-00000a0a00aa</Entity>
+        <Content>
+            <Unstructured xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <Blob originalName="drp1_1991-09-12_23.16_00.16_tada_origin.json" source="Det Kgl. Bibliotek"
+                      type="origin.json">{
+                    "super_file" : "drp1_drdat.000000000_1991-09-12_20.00.00_000000000_1991-09-13_02.00.00",
+                    "broadcast_file" : [ "drp1_drdat.000000000_1991-09-12_20.00.00_000000000_1991-09-13_02.00.00.mp3" ],
+                    "intended_pre_roll" : "15",
+                    "intended_post_roll" : "180",
+                    "cut_in" : 11745.0,
+                    "cut_out" : 15540.0,
+                    "md5sum" : "0a000a00-a000-000a-0aaa-00000a0a00aa"
+                    }
+                </Blob>
+            </Unstructured>
+        </Content>
+    </Metadata>
+</XIP>

@@ -182,7 +182,8 @@ public class PreservicaOaiRecordHandler extends DefaultHandler {
             if (!lastTranscodedContent.isEmpty()) {
                 currentOffsetDateTime = OffsetDateTime.parse(lastTranscodedContent);
             }
-            if (lastEncodedDate == null || currentOffsetDateTime.isAfter(lastEncodedDate)) {
+            if (!accessFilePathContent.isEmpty() && (lastEncodedDate == null ||
+                currentOffsetDateTime != null && currentOffsetDateTime.isAfter(lastEncodedDate))) {
                 lastEncodedDate = currentOffsetDateTime;
                 fileId = getFileId(accessFilePathContent.toString());
                 try {
