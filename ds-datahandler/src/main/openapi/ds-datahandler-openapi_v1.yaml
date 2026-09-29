@@ -611,9 +611,9 @@ components:
         - kaltura validation
         - transcriptions
       x-enum-varnames:
-        - OAI_HARVEST
-        - SOLR_BUILD_SUGGEST
+        - OAI_HARVEST        
         - SOLR_INDEX
+        - SOLR_BUILD_SUGGEST
         - KALTURA_UPLOAD
         - KALTURA_VALIDATION
         - TRANSCRIPTIONS
