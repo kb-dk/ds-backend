@@ -20,7 +20,7 @@ BIN_SOURCE="ds-present/bin"
 BIN_TARGET="/home/digisam/solr-management/bin"
 
 SOLR_SOURCE="ds-present/src/main/solr"
-SOLR_TARGET="/home/digisam/solr-management/src/main/solr"
+SOLR_TARGET="/home/digisam/solr-management/solr"
 # -----------------------------------------------------------------------------
 
 die() {
