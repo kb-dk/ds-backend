@@ -21,14 +21,15 @@ public class RerunClusterApiServiceImpl extends ImplBase implements RerunCluster
   private static final Logger log = LoggerFactory.getLogger(RerunClusterApiServiceImpl.class);
 
   /**
-   * Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table and return
-   * number of rows inserted or updated in rerun_clusters table.
+   * Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table
+   * and return number of rows inserted or updated in rerun_clusters table.
    *
    * @param rerunClusterRequestDtoList
    * @return RecordsCountDto number of rows inserted or updated
    */
   @Override
-  public RecordsCountDto updateRerunClusters(List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
+  public RecordsCountDto updateRerunClusters(
+      List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
     try {
       return RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
     } catch (Exception exception) {

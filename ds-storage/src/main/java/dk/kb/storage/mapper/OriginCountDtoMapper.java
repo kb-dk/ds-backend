@@ -12,30 +12,32 @@ import java.util.Locale;
 
 public class OriginCountDtoMapper {
 
-    /**
-     * Create a {@link OriginCountDto} from a ResultSet
-     *
-     * @param resultSet containing values from ds_records table
-     * @return OriginCountDto populated with data
-     * @throws SQLException
-     */
-    public OriginCountDto map(ResultSet resultSet) throws SQLException {
-        OriginCountDto originCountDto = new OriginCountDto();
+  /**
+   * Method is synchronized because simple dateformat is not thread safe. Faster to reuse
+   * synchronized than to construct new every time.
+   */
+  private static synchronized String convertToHumanDate(long millis_time_1000) {
+    return OffsetDateTime.ofInstant(Instant.ofEpochMilli(millis_time_1000 / 1000),
+            ZoneId.systemDefault())
+        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssZ", Locale.ROOT));
+  }
 
-        originCountDto.setOrigin(resultSet.getString("origin"));
-        originCountDto.setCount(resultSet.getLong("count"));
-        originCountDto.setDeleted(resultSet.getLong("deleted"));
-        originCountDto.setLatestMTime(resultSet.getLong("max"));
-        originCountDto.setLastMTimeHuman(convertToHumanDate(originCountDto.getLatestMTime()));
+  /**
+   * Create a {@link OriginCountDto} from a ResultSet
+   *
+   * @param resultSet containing values from ds_records table
+   * @return OriginCountDto populated with data
+   * @throws SQLException
+   */
+  public OriginCountDto map(ResultSet resultSet) throws SQLException {
+    OriginCountDto originCountDto = new OriginCountDto();
 
-        return originCountDto;
-    }
+    originCountDto.setOrigin(resultSet.getString("origin"));
+    originCountDto.setCount(resultSet.getLong("count"));
+    originCountDto.setDeleted(resultSet.getLong("deleted"));
+    originCountDto.setLatestMTime(resultSet.getLong("max"));
+    originCountDto.setLastMTimeHuman(convertToHumanDate(originCountDto.getLatestMTime()));
 
-    /**
-     * Method is synchronized because simple dateformat is not thread safe. Faster to reuse synchronized than to construct new every time.
-     */
-    private static synchronized String convertToHumanDate(long millis_time_1000) {
-        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(millis_time_1000 / 1000), ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssZ", Locale.ROOT));
-    }
+    return originCountDto;
+  }
 }

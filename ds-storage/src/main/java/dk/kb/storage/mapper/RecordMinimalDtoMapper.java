@@ -7,21 +7,21 @@ import java.sql.SQLException;
 
 public class RecordMinimalDtoMapper {
 
-    /**
-     * Create a {@link DsRecordMinimalDto} from a ResultSet
-     *
-     * @param resultSet containing values from ds_records table
-     * @return DsRecordMinimalDto populated with data
-     * @throws SQLException
-     */
-    public DsRecordMinimalDto map(ResultSet resultSet) throws SQLException {
-        DsRecordMinimalDto dsRecordMinimalDto = new DsRecordMinimalDto();
+  /**
+   * Create a {@link DsRecordMinimalDto} from a ResultSet
+   *
+   * @param resultSet containing values from ds_records table
+   * @return DsRecordMinimalDto populated with data
+   * @throws SQLException
+   */
+  public DsRecordMinimalDto map(ResultSet resultSet) throws SQLException {
+    DsRecordMinimalDto dsRecordMinimalDto = new DsRecordMinimalDto();
 
-        dsRecordMinimalDto.setId(resultSet.getString("id"));
-        dsRecordMinimalDto.setmTime(resultSet.getLong("mtime"));
-        dsRecordMinimalDto.setReferenceId(resultSet.getString("referenceid"));
-        dsRecordMinimalDto.setKalturaId(resultSet.getString("kalturaid"));
+    dsRecordMinimalDto.setId(resultSet.getString("id"));
+    dsRecordMinimalDto.setmTime(resultSet.getLong("mtime"));
+    dsRecordMinimalDto.setReferenceId(resultSet.getString("referenceid"));
+    dsRecordMinimalDto.setKalturaId(resultSet.getString("kalturaid"));
 
-        return dsRecordMinimalDto;
-    }
+    return dsRecordMinimalDto;
+  }
 }

@@ -16,13 +16,14 @@ public class RerunClusterFacade {
   private static final Logger log = LoggerFactory.getLogger(RerunClusterFacade.class);
 
   /**
-   * Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table and return
-   * number of rows inserted or updated in rerun_clusters table.
+   * Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table
+   * and return number of rows inserted or updated in rerun_clusters table.
    *
    * @param rerunClusterRequestDtoList
    * @return RecordsCountDto number of rows inserted or updated
    */
-  public static RecordsCountDto updateRerunClusters(List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
+  public static RecordsCountDto updateRerunClusters(
+      List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
     RecordsCountDto allRecordsCountDto = new RecordsCountDto();
     // Start the count at 0
     allRecordsCountDto.setCount(0);
@@ -34,8 +35,8 @@ public class RerunClusterFacade {
             RecordsCountDto recordsCountDto =
                 ((RerunClusterStorage) storage).updateRerunClusters(rerunClusterRequestDto);
 
-            int touched = storage.updateMTimeForRecordByFileId(
-                rerunClusterRequestDto.getFileId().toString());
+            int touched =
+                storage.updateMTimeForRecordByFileId(rerunClusterRequestDto.getFileId().toString());
 
             allRecordsCountDto.setCount(allRecordsCountDto.getCount() + recordsCountDto.getCount());
 
@@ -43,8 +44,7 @@ public class RerunClusterFacade {
           });
     }
 
-    log.info("Inserted/updated rows in rerun_clusters table:'{}'",
-                allRecordsCountDto.getCount());
+    log.info("Inserted/updated rows in rerun_clusters table:'{}'", allRecordsCountDto.getCount());
     return allRecordsCountDto;
   }
 

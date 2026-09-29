@@ -9,22 +9,22 @@ import java.util.UUID;
 
 public class RerunClusterRequestDtoMapper {
 
-    /**
-     * Create a {@link RerunClusterRequestDto} from a ResultSet
-     *
-     * @param resultSet containing values from rerun_clusters table
-     * @return RerunClusterRequestDto populated with data
-     * @throws SQLException
-     */
-    public RerunClusterRequestDto map(ResultSet resultSet) throws SQLException {
-        RerunClusterRequestDto output = new RerunClusterRequestDto();
+  /**
+   * Create a {@link RerunClusterRequestDto} from a ResultSet
+   *
+   * @param resultSet containing values from rerun_clusters table
+   * @return RerunClusterRequestDto populated with data
+   * @throws SQLException
+   */
+  public RerunClusterRequestDto map(ResultSet resultSet) throws SQLException {
+    RerunClusterRequestDto output = new RerunClusterRequestDto();
 
-        output.setId(resultSet.getObject("id", UUID.class));
-        output.setFileId(resultSet.getObject("file_id", UUID.class));
-        output.setRerunClusterId(resultSet.getObject("rerun_cluster_id", UUID.class));
-        output.setCreated(resultSet.getObject("created", OffsetDateTime.class));
-        output.setJobId(resultSet.getString("job_id"));
+    output.setId(resultSet.getObject("id", UUID.class));
+    output.setFileId(resultSet.getObject("file_id", UUID.class));
+    output.setRerunClusterId(resultSet.getObject("rerun_cluster_id", UUID.class));
+    output.setCreated(resultSet.getObject("created", OffsetDateTime.class));
+    output.setJobId(resultSet.getString("job_id"));
 
-        return output;
-    }
+    return output;
+  }
 }

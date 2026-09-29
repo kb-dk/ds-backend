@@ -20,74 +20,76 @@ public class RerunClusterStorage extends BaseModuleStorage {
 
   private final static CreatedDtoMapper createdDtoMapper = new CreatedDtoMapper();
   private final static RecordsCountDtoMapper recordsCountDtoMapper = new RecordsCountDtoMapper();
-  private final static RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper = new RerunClusterRequestDtoMapper();
-  private final static RerunClusterResponseDtoMapper rerunClusterResponseDtoMapper = new RerunClusterResponseDtoMapper();
+  private final static RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper =
+      new RerunClusterRequestDtoMapper();
+  private final static RerunClusterResponseDtoMapper rerunClusterResponseDtoMapper =
+      new RerunClusterResponseDtoMapper();
 
   private static final String updateRerunClustersStatement = """
-    WITH insert_update_rerun_clusters AS (
-        INSERT INTO rerun_clusters (
-            id,
-            file_id,
-            rerun_cluster_id,
-            created,
-            job_id,
-            inserted,
-            updated
-        )
-        VALUES (
-            ?,
-            ?,
-            ?,
-            ?,
-            ?,
-            transaction_timestamp(),
-            transaction_timestamp()
-        )
-        ON CONFLICT (file_id) DO UPDATE SET
-            id = EXCLUDED.id,
-            rerun_cluster_id = EXCLUDED.rerun_cluster_id,
-            created = EXCLUDED.created,
-            job_id = EXCLUDED.job_id,
-            updated = statement_timestamp()
-        RETURNING
-            file_id -- used in count(*)
-    ),
-    inserted_updated_rerun_clusters AS (
-        SELECT
-            count(*) AS rerun_clusters_count
-        FROM
-            insert_update_rerun_clusters
-    )
-    SELECT
-        iurc.rerun_clusters_count
-    FROM
-        inserted_updated_rerun_clusters iurc
-    CROSS JOIN
-        inserted_updated_rerun_clusters udr
-    """;
+                                                             WITH insert_update_rerun_clusters AS (
+                                                                 INSERT INTO rerun_clusters (
+                                                                     id,
+                                                                     file_id,
+                                                                     rerun_cluster_id,
+                                                                     created,
+                                                                     job_id,
+                                                                     inserted,
+                                                                     updated
+                                                                 )
+                                                                 VALUES (
+                                                                     ?,
+                                                                     ?,
+                                                                     ?,
+                                                                     ?,
+                                                                     ?,
+                                                                     transaction_timestamp(),
+                                                                     transaction_timestamp()
+                                                                 )
+                                                                 ON CONFLICT (file_id) DO UPDATE SET
+                                                                     id = EXCLUDED.id,
+                                                                     rerun_cluster_id = EXCLUDED.rerun_cluster_id,
+                                                                     created = EXCLUDED.created,
+                                                                     job_id = EXCLUDED.job_id,
+                                                                     updated = statement_timestamp()
+                                                                 RETURNING
+                                                                     file_id -- used in count(*)
+                                                             ),
+                                                             inserted_updated_rerun_clusters AS (
+                                                                 SELECT
+                                                                     count(*) AS rerun_clusters_count
+                                                                 FROM
+                                                                     insert_update_rerun_clusters
+                                                             )
+                                                             SELECT
+                                                                 iurc.rerun_clusters_count
+                                                             FROM
+                                                                 inserted_updated_rerun_clusters iurc
+                                                             CROSS JOIN
+                                                                 inserted_updated_rerun_clusters udr
+                                                             """;
 
   private static final String getRerunClusterByFileIdStatement = """
-    SELECT
-        rc.id,
-        rc.file_id,
-        rc.rerun_cluster_id,
-        (SELECT COUNT(*) FROM rerun_clusters WHERE rerun_cluster_id = rc.rerun_cluster_id)::int AS rerun_cluster_id_count,
-        rc.created,
-        rc.job_id,
-        rc.inserted,
-        rc.updated
-    FROM
-        rerun_clusters rc
-    WHERE
-        file_id = ?
-    """;
+                                                                 SELECT
+                                                                     rc.id,
+                                                                     rc.file_id,
+                                                                     rc.rerun_cluster_id,
+                                                                     (SELECT COUNT(*) FROM rerun_clusters WHERE rerun_cluster_id = rc.rerun_cluster_id)::int AS rerun_cluster_id_count,
+                                                                     rc.created,
+                                                                     rc.job_id,
+                                                                     rc.inserted,
+                                                                     rc.updated
+                                                                 FROM
+                                                                     rerun_clusters rc
+                                                                 WHERE
+                                                                     file_id = ?
+                                                                 """;
 
   private static final String latestCreatedStatement = """
-    SELECT
-        max(rc.created) AS latest_created -- find the latest created datetime
-    FROM
-        rerun_clusters rc
-    """;
+                                                       SELECT
+                                                           max(rc.created) AS latest_created -- find the latest created datetime
+                                                       FROM
+                                                           rerun_clusters rc
+                                                       """;
 
   public RerunClusterStorage() throws SQLException {
     super();
@@ -100,7 +102,8 @@ public class RerunClusterStorage extends BaseModuleStorage {
    * @return RecordsCountDto number of rows inserted or updated
    * @throws SQLException
    */
-  public RecordsCountDto updateRerunClusters(RerunClusterRequestDto rerunClusterRequestDto) throws SQLException {
+  public RecordsCountDto updateRerunClusters(RerunClusterRequestDto rerunClusterRequestDto)
+      throws SQLException {
     try (PreparedStatement stmt = connection.prepareStatement(updateRerunClustersStatement)) {
       stmt.setObject(1, rerunClusterRequestDto.getId());
       stmt.setObject(2, rerunClusterRequestDto.getFileId());
