@@ -142,7 +142,9 @@ public class DSOrigin {
                     .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
 
             // Note: stopOnError is set at the outer level, not specifically for each origin
-            stopOnError = ServiceConfig.getConfig().getBoolean(STOP_ON_ERROR_KEY, true);
+            stopOnError = ServiceConfig.getFlatConfig()
+                    .getOptionalValue(STOP_ON_ERROR_KEY, Boolean.class)
+                    .orElse(true);
         } catch (NotFoundException e) {
             throw new IllegalArgumentException(
                     "Mandatory property '" + e.getPath() + "' not present for Origin '" + id + "'");

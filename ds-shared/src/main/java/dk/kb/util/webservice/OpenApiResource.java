@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -34,8 +35,14 @@ import java.util.regex.Pattern;
 /**
  * Handle serving of OpenAPI specification for a webapp. This class handles dynamic updates of the API specification.
  * Through this class it gets possible to use syntax as the following {@code ${config:yaml.path}} to access values from
- * config files in API specifications. A wildcard segment is also supported, e.g. {@code ${config:origins[*].name}},
- * which is expanded to every matching indexed property (see {@link #resolveWildcard(String)}).
+ * config files in API specifications. Two forms of wildcard segment are also supported, and may be combined in a
+ * single path (see {@link #resolveWildcard(String)}):
+ * <ul>
+ *     <li>{@code [*]}, matching a list index, e.g. {@code ${config:origins[*].name}}.</li>
+ *     <li>a bare {@code *} path segment, matching a single, dynamically-named YAML key, e.g.
+ *     {@code ${config:origins[*].*.origin}} (used where each list entry is itself a single-key map keyed by a
+ *     dynamic ID, e.g. ds-present's {@code origins} configuration).</li>
+ * </ul>
  * <p>
  * JAX-RS uses the empty constructor for serving the webapp. To configure the {@link OpenApiResource} call the
  * {@link #setConfig(Config)}-method inside the given implementation of {@link Application#getClasses()} before
@@ -232,29 +239,66 @@ public class OpenApiResource extends ImplBase {
     }
 
     /**
-     * Resolves a path containing a single {@code [*]} wildcard segment (e.g. {@code origins[*].name}) against
-     * every configured index for that segment (e.g. the properties {@code origins[0].name}, {@code origins[1].name},
-     * ...), which is how a YAML list-of-objects is flattened into individual configuration properties.
-     * <p>
-     * Note: only a single {@code [*]} occurrence per path is supported, which matches current usage in the
-     * OpenAPI specifications.
-     *
-     * @param yPath a path containing exactly one {@code [*]} segment.
-     * @return the matched values, ordered by ascending index. Empty if nothing matched.
+     * A single {@code [*]} index wildcard, or a single bare {@code *} name wildcard, as one match each - used to
+     * split a path into literal fragments (quoted verbatim into the built regex) and wildcard segments (turned
+     * into a capturing group) in {@link #resolveWildcard(String)}. {@code [*]} is listed first so it is preferred
+     * over the bare {@code *} alternative when a match could start at the same position.
      */
-    private static List<String> resolveWildcard(String yPath) {
-        String regex = "^" + Pattern.quote(yPath).replace("[*]", "\\E(\\d+)\\Q") + "$";
-        Pattern indexed = Pattern.compile(regex);
+    private static final Pattern WILDCARD_SEGMENT = Pattern.compile("\\[\\*]|\\*");
 
-        SortedMap<Integer, String> byIndex = new TreeMap<>();
+    /**
+     * Resolves a path containing one or more wildcard segments against the matching indexed/keyed properties -
+     * see the class javadoc for the two supported forms, {@code [*]} and a bare {@code *}, which may be combined
+     * in a single path (e.g. {@code origins[*].*.origin}).
+     * <p>
+     * A bare {@code *} segment matches a single, dynamically-named YAML key, which may itself contain dots (e.g.
+     * {@code "ds.radio"}, a literal quoted YAML key, not two nested keys) - it is matched non-greedily up to
+     * whatever literal text follows it in the path, rather than stopping at the first dot.
+     * <p>
+     * If the path contains an {@code [*]} index wildcard, results are ordered by ascending index (using the
+     * first such wildcard when more than one is present); otherwise they are ordered by the matched property name.
+     *
+     * @param yPath a path containing one or more wildcard segments.
+     * @return the matched values, in the order described above. Empty if nothing matched.
+     */
+    // Package-private (not private) for direct unit testing - see OpenApiResourceWildcardTest.
+    static List<String> resolveWildcard(String yPath) {
+        StringBuilder regex = new StringBuilder("^");
+        Matcher segmentMatcher = WILDCARD_SEGMENT.matcher(yPath);
+        int lastEnd = 0;
+        boolean hasIndexWildcard = false;
+        while (segmentMatcher.find()) {
+            regex.append(Pattern.quote(yPath.substring(lastEnd, segmentMatcher.start())));
+            if ("[*]".equals(segmentMatcher.group())) {
+                // The brackets are literal characters in the actual (flattened) property name, e.g.
+                // "origins[0].name" - only the index itself varies, so the brackets must stay in the regex too.
+                regex.append("\\[(\\d+)\\]");
+                hasIndexWildcard = true;
+            } else {
+                // Non-greedy: matches up to whatever literal fragment follows, even if the matched key itself
+                // contains dots (e.g. a quoted YAML key like "ds.radio").
+                regex.append("(.+?)");
+            }
+            lastEnd = segmentMatcher.end();
+        }
+        regex.append(Pattern.quote(yPath.substring(lastEnd)));
+        regex.append("$");
+        Pattern combined = Pattern.compile(regex.toString());
+
+        // Sort key: for a path with an index wildcard, a zero-padded index followed by the property name (so
+        // ordering is numeric-ascending by index, stable for any further wildcard segments at the same index);
+        // otherwise just the property name.
+        SortedMap<String, String> byOrderKey = new TreeMap<>();
         for (String name : config.getPropertyNames()) {
-            Matcher m = indexed.matcher(name);
+            Matcher m = combined.matcher(name);
             if (m.matches()) {
-                config.getOptionalValue(name, String.class)
-                        .ifPresent(value -> byIndex.put(Integer.parseInt(m.group(1)), value));
+                String orderKey = hasIndexWildcard ?
+                        String.format(Locale.ROOT, "%020d|%s", Long.parseLong(m.group(1)), name) :
+                        name;
+                config.getOptionalValue(name, String.class).ifPresent(value -> byOrderKey.put(orderKey, value));
             }
         }
-        return new ArrayList<>(byIndex.values());
+        return new ArrayList<>(byOrderKey.values());
     }
 
     /**

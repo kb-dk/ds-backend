@@ -39,13 +39,18 @@ public class AuditLogModuleStorage extends BaseModuleStorage {
     private static final String TEXTBEFORE_COLUMN = "TEXTBEFORE";
     private static final String TEXTAFTER_COLUMN = "TEXTAFTER";
 
-    private final static String selectAuditLogOlderThanModifiedTimeQuery    = "SELECT * FROM " + TABLE + " WHERE " + MODIFIEDTIME_COLUMN + " < ? ORDER BY "+MODIFIEDTIME_COLUMN + " DESC LIMIT 100";
-    private final static String selectAuditLogOlderThanModifiedTimeByChangeNameQuery          = "SELECT * FROM " + TABLE + " WHERE " + MODIFIEDTIME_COLUMN + " < ? AND "+ CHANGENAME_COLUMN + " = ? ORDER BY " + MODIFIEDTIME_COLUMN + " DESC LIMIT 100";
-  
-    private final static String selectAuditLogQueryById = "SELECT * FROM " + TABLE + " WHERE " + ID_COLUMN + " = ? ";
-    private final static String selectAuditLogQueryByObjectId = "SELECT * FROM " + TABLE + " WHERE " + OBJECTID_COLUMN + " = ? " + " ORDER BY " + MODIFIEDTIME_COLUMN + " DESC";
+    // MODIFIEDTIME has only millisecond resolution, so two audit entries persisted in quick succession (e.g. a
+    // create immediately followed by an update, as tests routinely do) can land on the exact same value. Every
+    // ORDER BY on MODIFIEDTIME below therefore also sorts by ID (itself monotonically increasing, see
+    // generateUniqueID()) as a tiebreaker, so ties still resolve deterministically to insertion order instead of
+    // an unspecified (and in practice not always stable) order for equal timestamps.
+    private final static String selectAuditLogOlderThanModifiedTimeQuery    = "SELECT * FROM " + TABLE + " WHERE " + MODIFIEDTIME_COLUMN + " < ? ORDER BY "+MODIFIEDTIME_COLUMN + " DESC, " + ID_COLUMN + " DESC LIMIT 100";
+    private final static String selectAuditLogOlderThanModifiedTimeByChangeNameQuery          = "SELECT * FROM " + TABLE + " WHERE " + MODIFIEDTIME_COLUMN + " < ? AND "+ CHANGENAME_COLUMN + " = ? ORDER BY " + MODIFIEDTIME_COLUMN + " DESC, " + ID_COLUMN + " DESC LIMIT 100";
 
-    private final static String selectAllAuditLogQuery = "SELECT * FROM " + TABLE + " ORDER BY " + MODIFIEDTIME_COLUMN + " DESC";
+    private final static String selectAuditLogQueryById = "SELECT * FROM " + TABLE + " WHERE " + ID_COLUMN + " = ? ";
+    private final static String selectAuditLogQueryByObjectId = "SELECT * FROM " + TABLE + " WHERE " + OBJECTID_COLUMN + " = ? " + " ORDER BY " + MODIFIEDTIME_COLUMN + " DESC, " + ID_COLUMN + " DESC";
+
+    private final static String selectAllAuditLogQuery = "SELECT * FROM " + TABLE + " ORDER BY " + MODIFIEDTIME_COLUMN + " DESC, " + ID_COLUMN + " DESC";
     private final static String persistAuditLog = "INSERT INTO " + TABLE + " (" +
             ID_COLUMN + ", " +
             OBJECTID_COLUMN + ", " +

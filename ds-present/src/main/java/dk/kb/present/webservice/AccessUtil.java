@@ -44,7 +44,8 @@ public class AccessUtil {
     private static final String LICENSE_ALLOWALL_KEY = "licensemodule.allowall";
 
     public static DsLicenseClient licenseClient;     // Shared between instances
-    public static boolean licenseAllowAll = ServiceConfig.getConfig().getBoolean(LICENSE_ALLOWALL_KEY, false);
+    public static boolean licenseAllowAll =
+            ServiceConfig.getFlatConfig().getOptionalValue(LICENSE_ALLOWALL_KEY, Boolean.class).orElse(false);
 
     /**
      * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
@@ -163,7 +164,7 @@ public class AccessUtil {
           return licenseClient;
         }
 
-        String dsLicenseUrl = ServiceConfig.getConfig().getString(LICENSE_URL_KEY, null);
+        String dsLicenseUrl = ServiceConfig.getFlatConfig().getOptionalValue(LICENSE_URL_KEY, String.class).orElse(null);
         if (dsLicenseUrl == null) {
             throw new IllegalStateException("No ds-license URL specified at " + LICENSE_URL_KEY);
         }

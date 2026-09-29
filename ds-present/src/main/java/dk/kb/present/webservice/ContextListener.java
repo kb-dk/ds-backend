@@ -36,6 +36,7 @@ public class ContextListener implements ServletContextListener {
 
     public static final String LOGBACK_ENV = "java:/comp/env/ds-present-logback-config";
     public static final String CONFIG_ENV = "java:/comp/env/application-config";
+    public static final String PROPERTIES_CONFIG_ENV = "java:/comp/env/application-properties-config";
 
     /**
      * On context initialisation this
@@ -65,9 +66,18 @@ public class ContextListener implements ServletContextListener {
                      BuildInfoManager.getGitCommitChecksum(), BuildInfoManager.getGitCommitTime(),
                      BuildInfoManager.getGitClosestTag());
             InitialContext ctx = new InitialContext();
-            String configFile = (String) ctx.lookup("java:/comp/env/application-config");
+            String configFile = (String) ctx.lookup(CONFIG_ENV);
+            String propertiesFile = null;
+            try {
+                propertiesFile = (String) ctx.lookup(PROPERTIES_CONFIG_ENV);
+                log.info("Resolved devops/operations properties override file from JNDI '{}': '{}'",
+                         PROPERTIES_CONFIG_ENV, propertiesFile);
+            } catch (NamingException e) {
+                log.info("No '{}' JNDI entry configured; continuing without a devops/operations properties " +
+                          "override file", PROPERTIES_CONFIG_ENV);
+            }
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
-            ServiceConfig.initialize(configFile);
+            ServiceConfig.initializeWithPropertiesOverride(configFile, propertiesFile);
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {

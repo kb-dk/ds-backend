@@ -18,7 +18,7 @@ public class Application_v1 extends javax.ws.rs.core.Application {
     @Override
     public Set<Class<?>> getClasses() {
         PresentFacade.warmUp(); // Fail early
-        OpenApiResource.setConfig(ServiceConfig.getConfig());
+        OpenApiResource.setConfig(ServiceConfig.getFlatConfig());
 
         return new HashSet<>(Arrays.asList(
                 JacksonJsonProvider.class,

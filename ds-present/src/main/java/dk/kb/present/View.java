@@ -188,7 +188,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             throw new InternalServiceException("Error extracting values from Preservica content for record:" + record.getId(), e);
         }
 
-        String url = ServiceConfig.getConfig().getString("licensemodule.url");
+        String url = ServiceConfig.getFlatConfig().getValue("licensemodule.url", String.class);
         DsLicenseClient licenseClient = new DsLicenseClient(url);
 
         PlatformEnumDto platform = PlatformEnumDto.DRARKIV;
@@ -208,7 +208,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
 
-        boolean useTranscriptions=  ServiceConfig.getConfig().getBoolean("index.useTransriptions");
+        boolean useTranscriptions=  ServiceConfig.getFlatConfig().getValue("index.useTransriptions", Boolean.class);
         boolean hasTranscription=false;
         //Transcription text.
         String refrenceId = record.getReferenceId();        
