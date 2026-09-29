@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 import dk.kb.util.yaml.YAML;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,7 +41,7 @@ class SolrShieldTest {
     @BeforeAll
     static void setup() throws IOException {
       // ServiceConfig needed by SolrManager (used by per-collection shield tests)
-      ServiceConfig.getInstance().initialize("solrshield-test1.yaml");
+      ServiceConfig.initialize("solrshield-test1.yaml");
       YAML fullConf = YAML.resolveLayeredConfigs("solrshield-test1.yaml");
       shield = new SolrShield(fullConf.getSubMap("solr.shield"));
     }
@@ -67,26 +71,65 @@ class SolrShieldTest {
         // TODO: Add the rest of the search params
     }
 
-    private static YAML buildCollectionConfig(Map<String, String> collectionShields) {
-        List<Map<String, Object>> collections = new ArrayList<>();
-        for (Map.Entry<String, String> entry : collectionShields.entrySet()) {
-            Map<String, Object> inner = new LinkedHashMap<>();
-            inner.put("server", "http://localhost:8983");
-            inner.put("collection", entry.getKey());
-
-            if (entry.getValue() != null) {
-                inner.put("shield", entry.getValue());
+    /**
+     * Sets up a {@code solr.collections} configuration for the given collections and loads it into
+     * {@link SolrManager}.
+     * <p>
+     * Previously (before the migration to SmallRye Config) this built a standalone kb-util {@code YAML} object
+     * in memory and pushed it directly into {@code SolrManager.setConfig(YAML)}. {@code SolrManager} now always
+     * reads {@code solr.collections} from {@link ServiceConfig} via {@link ServiceConfig#getSolrCollections()},
+     * which scans {@code Config#getPropertyNames()} for the flattened {@code solr.collections[i].<id>.*} entries a
+     * real YAML source produces.
+     * <p>
+     * An earlier version of this helper injected those same property paths individually via {@link
+     * ServiceConfig#setRuntimeProperty(String, String)} instead of writing a real YAML file. That does not work
+     * for this particular case: {@code getPropertyNames()} is computed once from the sources present when the
+     * underlying SmallRye {@code Config} is built and is not required to (and in practice does not) pick up keys
+     * added to a source afterwards - unlike a lookup of one already-known key via {@code getValue}/{@code
+     * getOptionalValue}, which SmallRye always re-resolves live. So instead this writes a small temporary YAML
+     * file with the desired {@code solr.collections} list and calls {@link ServiceConfig#initialize(String)} with
+     * it, exactly as production start-up would with a real config file.
+     *
+     * @param collectionShields map of abstract collection ID to SolrShield config file name (or {@code null} for
+     *                          no shield for that collection).
+     */
+    private static void applyCollectionConfig(Map<String, String> collectionShields) {
+        StringBuilder yaml = new StringBuilder("solr:\n");
+        if (collectionShields.isEmpty()) {
+            yaml.append("  collections: []\n");
+        } else {
+            yaml.append("  collections:\n");
+            for (Map.Entry<String, String> entry : collectionShields.entrySet()) {
+                yaml.append("    - ").append(entry.getKey()).append(":\n");
+                yaml.append("        server: 'http://localhost:8983'\n");
+                yaml.append("        collection: '").append(entry.getKey()).append("'\n");
+                if (entry.getValue() != null) {
+                    yaml.append("        shield: ").append(entry.getValue()).append('\n');
+                }
             }
-
-            Map<String, Object> collEntry = new LinkedHashMap<>();
-            collEntry.put(entry.getKey(), inner);
-            collections.add(collEntry);
         }
-        Map<String, Object> solr = new LinkedHashMap<>();
-        solr.put("collections", collections);
-        Map<String, Object> root = new LinkedHashMap<>();
-        root.put("solr", solr);
-        return new YAML(root);
+
+        try {
+            Path tempFile = Files.createTempFile("solrshield-collections-", ".yaml");
+            try {
+                Files.writeString(tempFile, yaml.toString(), StandardCharsets.UTF_8);
+                ServiceConfig.initialize(tempFile.toString());
+            } finally {
+                Files.deleteIfExists(tempFile);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(
+                    "Unable to build a temporary solr.collections configuration for testing", e);
+        }
+        SolrManager.getInstance().loadSolrServices();
+    }
+
+    /**
+     * Reloads {@link SolrManager} with an empty {@code solr.collections} configuration, so it goes back to having
+     * no configured collections.
+     */
+    private static void clearCollectionConfig() {
+        applyCollectionConfig(Map.of());
     }
 
     @Test
@@ -541,11 +584,10 @@ class SolrShieldTest {
 
     @Test
     void perCollectionShieldLoaded() {
-        YAML config = buildCollectionConfig(Map.of(
+        applyCollectionConfig(Map.of(
                 "permissive-collection", "solrshield-permissive.yaml",
                 "restrictive-collection", "solrshield-restrictive.yaml"
         ));
-        SolrManager.getInstance().setConfig(config);
 
         try {
             Optional<SolrShield> permissive = SolrManager.getShield("permissive-collection");
@@ -557,7 +599,7 @@ class SolrShieldTest {
                     "Different collections should have different shield instances");
         } finally {
             // Restore empty state so other tests aren't affected
-            SolrManager.getInstance().setConfig(buildCollectionConfig(Map.of()));
+            clearCollectionConfig();
         }
     }
 
@@ -566,23 +608,21 @@ class SolrShieldTest {
         Map<String, String> collections = new LinkedHashMap<>();
         collections.put("permissive-collection", "solrshield-permissive.yaml");
         collections.put("noshield-collection", null);
-        YAML config = buildCollectionConfig(collections);
-        SolrManager.getInstance().setConfig(config);
+        applyCollectionConfig(collections);
 
         try {
             Optional<SolrShield> noShield = SolrManager.getShield("noshield-collection");
             assertTrue(noShield.isEmpty(), "Collection without shield config should return empty");
         } finally {
-            SolrManager.getInstance().setConfig(buildCollectionConfig(Map.of()));
+            clearCollectionConfig();
         }
     }
 
     @Test
     void permissiveShieldAllowsBasicQuery() {
-        YAML config = buildCollectionConfig(Map.of(
+        applyCollectionConfig(Map.of(
                 "permissive-collection", "solrshield-permissive.yaml"
         ));
-        SolrManager.getInstance().setConfig(config);
 
         try {
             SolrShield shield = SolrManager.getShield("permissive-collection").orElseThrow();
@@ -595,16 +635,15 @@ class SolrShieldTest {
             assertTrue(response.allowed,
                     "Permissive shield should allow basic query. Reasons: " + response.reasons);
         } finally {
-            SolrManager.getInstance().setConfig(buildCollectionConfig(Map.of()));
+            clearCollectionConfig();
         }
     }
 
     @Test
     void restrictiveShieldRejectsBasicQuery() {
-        YAML config = buildCollectionConfig(Map.of(
+        applyCollectionConfig(Map.of(
                 "restrictive-collection", "solrshield-restrictive.yaml"
         ));
-        SolrManager.getInstance().setConfig(config);
 
         try {
             SolrShield shield = SolrManager.getShield("restrictive-collection").orElseThrow();
@@ -618,17 +657,16 @@ class SolrShieldTest {
                     "Restrictive shield (maxWeight=100) should reject even basic queries. " +
                             "Weight: " + response.weight);
         } finally {
-            SolrManager.getInstance().setConfig(buildCollectionConfig(Map.of()));
+            clearCollectionConfig();
         }
     }
 
     @Test
     void sameQueryDifferentResultPerCollection() {
-        YAML config = buildCollectionConfig(Map.of(
+        applyCollectionConfig(Map.of(
                 "permissive-collection", "solrshield-permissive.yaml",
                 "restrictive-collection", "solrshield-restrictive.yaml"
         ));
-        SolrManager.getInstance().setConfig(config);
 
         try {
             SolrShield permissive = SolrManager.getShield("permissive-collection").orElseThrow();
@@ -647,16 +685,15 @@ class SolrShieldTest {
             assertFalse(restrictiveResponse.allowed,
                     "Restrictive shield should reject the same query. Weight: " + restrictiveResponse.weight);
         } finally {
-            SolrManager.getInstance().setConfig(buildCollectionConfig(Map.of()));
+            clearCollectionConfig();
         }
     }
 
     @Test
     void restrictiveShieldDeniesTextField() {
-        YAML config = buildCollectionConfig(Map.of(
+        applyCollectionConfig(Map.of(
                 "restrictive-collection", "solrshield-restrictive.yaml"
         ));
-        SolrManager.getInstance().setConfig(config);
 
         try {
             SolrShield shield = SolrManager.getShield("restrictive-collection").orElseThrow();
@@ -670,16 +707,15 @@ class SolrShieldTest {
             assertTrue(response.reasons.toString().contains("denied"),
                     "Reason should mention denied list");
         } finally {
-            SolrManager.getInstance().setConfig(buildCollectionConfig(Map.of()));
+            clearCollectionConfig();
         }
     }
 
     @Test
     void permissiveShieldAllowsTextField() {
-        YAML config = buildCollectionConfig(Map.of(
+        applyCollectionConfig(Map.of(
                 "permissive-collection", "solrshield-permissive.yaml"
         ));
-        SolrManager.getInstance().setConfig(config);
 
         try {
             SolrShield shield = SolrManager.getShield("permissive-collection").orElseThrow();
@@ -692,7 +728,7 @@ class SolrShieldTest {
             assertTrue(response.allowed,
                     "Permissive shield should allow field 'text'. Reasons: " + response.reasons);
         } finally {
-            SolrManager.getInstance().setConfig(buildCollectionConfig(Map.of()));
+            clearCollectionConfig();
         }
     }
 

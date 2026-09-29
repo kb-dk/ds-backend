@@ -16,7 +16,7 @@ public class LicenseUtil {
             return licenseClient;
         }
 
-        String dsLicenseUrl = ServiceConfig.getConfig().getString("licensemodule.url");
+        String dsLicenseUrl = ServiceConfig.getConfig().getValue("licensemodule.url", String.class);
         licenseClient = new DsLicenseClient(dsLicenseUrl);
         return licenseClient;
     }
