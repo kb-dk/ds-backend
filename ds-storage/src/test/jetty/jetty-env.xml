@@ -11,10 +11,12 @@
     </New>
 
     <New id="config" class="org.eclipse.jetty.plus.jndi.EnvEntry">
-        <!-- Note that the application-config is defined using globbing: Multiple config files are merged -->
+        <!-- ServiceConfig loads a single YAML file. For a local override (e.g. your own DB credentials),
+             use a config/application.properties file (or a system property / env var) instead of a second
+             YAML file: see SMALLRYE_CONFIG_MIGRATION.md. -->
         <Arg>application-config</Arg>
         <Arg type="java.lang.String">
-            ${basedir}/conf/${project.artifactId}*.yaml
+            ${basedir}/conf/${project.artifactId}-behaviour.yaml
         </Arg>
         <Arg type="boolean">true</Arg>
     </New>

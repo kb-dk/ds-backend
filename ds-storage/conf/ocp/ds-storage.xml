@@ -5,8 +5,12 @@
         value="/app/conf/ds-storage.logback.xml"
         type="java.lang.String"
         override="false"/>
+    <!-- ServiceConfig now loads a single YAML file (no more behaviour/environment/local globbing);
+         environment-specific overrides go through SmallRye Config's own layers instead
+         (system properties, environment variables, or a config/application.properties file
+         alongside this one). -->
     <Environment name="application-config"
-        value="/app/conf/ds-storage*.yaml"
+        value="/app/conf/ds-storage.yaml"
         type="java.lang.String"
         override="false"/>
 

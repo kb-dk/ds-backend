@@ -25,6 +25,7 @@ import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.oauth2.KeycloakUtil;
 import dk.kb.util.webservice.OAuthConstants;
+import dk.kb.util.yaml.YAML;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import dk.kb.util.webservice.stream.ContinuationUtil;
@@ -58,59 +59,65 @@ public class DsStorageClientTest {
     private static final Logger log =  LoggerFactory.getLogger(DsStorageClientTest.class);
 
     private static DsStorageClient remote = null;
-    private static String dsStorageDevel=null;  
+    private static String dsStorageDevel=null;
 
     @BeforeAll
     static void setUp() throws Exception{
+        // ServiceConfig now loads a single YAML file, so the integration-only overlay (server-internal, not
+        // in git - see the file itself) is no longer merged in through ServiceConfig. It only carries
+        // 'integration.*' keys used solely by this test, so it is read directly with kb-util's YAML instead.
+        YAML integrationConf;
         try {
-            ServiceConfig.initialize("conf/ds-storage-behaviour.yaml","ds-storage-integration-test.yaml");
-            dsStorageDevel= ServiceConfig.getConfig().getValue("integration.devel.storage", String.class);
+            ServiceConfig.initialize("conf/ds-storage-behaviour.yaml");
+            integrationConf = YAML.resolveLayeredConfigs("ds-storage-integration-test.yaml");
+            dsStorageDevel = integrationConf.getString("integration.devel.storage");
             remote = new DsStorageClient(dsStorageDevel);
-        } catch (IOException e) { 
+        } catch (IOException e) {
             e.printStackTrace();
-            log.error("Integration yaml 'ds-storage-integration-test.yaml' file most be present. Call 'kb init'"); 
+            log.error("Integration yaml 'ds-storage-integration-test.yaml' file most be present. Call 'kb init'");
             fail();
+            return;
         }
-        
-        try {            
-            String keyCloakRealmUrl= ServiceConfig.getConfig().getValue("integration.devel.keycloak.realmUrl", String.class);
-            String clientId=ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientId", String.class);
-            String clientSecret=ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientSecret", String.class);
-            String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
-            log.info("Retrieved keycloak access token:"+token);            
-            
+
+        try {
+            String keyCloakRealmUrl= integrationConf.getString("integration.devel.keycloak.realmUrl");
+            String clientId=integrationConf.getString("integration.devel.keycloak.clientId");
+            String clientSecret=integrationConf.getString("integration.devel.keycloak.clientSecret");
+            String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);
+            log.info("Retrieved keycloak access token:"+token);
+
             //Mock that we have a JaxRS session with an Oauth token as seen from within a service call.
-            MessageImpl message = new MessageImpl();                            
-            message.put(OAuthConstants.ACCESS_TOKEN_STRING,token);            
-            MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);           
+            MessageImpl message = new MessageImpl();
+            message.put(OAuthConstants.ACCESS_TOKEN_STRING,token);
+            MockedStatic<JAXRSUtils> mocked = mockStatic(JAXRSUtils.class);
             mocked.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
-                                                                         
+
         }
         catch(Exception e) {
-            log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");            
+            log.warn("Could not retrieve keycloak access token. Service will be called without Bearer access token");
             e.printStackTrace();
-        }                        
+        }
     }
 
     @Test
-    public void testGetOriginConfiguration() {      
-         List<OriginDto> originConfiguration = remote.getOriginConfiguration();          
+    public void testGetOriginConfiguration() {
+         List<OriginDto> originConfiguration = remote.getOriginConfiguration();
          OriginDto originDto = originConfiguration.get(0);
          assertTrue(originConfiguration.size() > 0);
          assertNotNull(originDto.getName());
-         
+
     }
-    
+
     @Test
-    public void testGetOriginStatistics()  {      
-         List<OriginCountDto> originStatistics = remote.getOriginStatistics();                 
-         OriginCountDto dto = originStatistics.get(0);         
+    public void testGetOriginStatistics()  {
+         List<OriginCountDto> originStatistics = remote.getOriginStatistics();
+         OriginCountDto dto = originStatistics.get(0);
          assertTrue(originStatistics.size() > 0);
          assertTrue(dto.getCount() >=0);
     }
 
     @Test
-    public void testGetRecord() {      
+    public void testGetRecord() {
         String id = "kb.image.luftfo.luftfoto:oai:kb.dk:images:luftfo:2011:maj:luftfoto:object187744";
       try {
         DsRecordDto record = remote.getRecord(id,false);
@@ -119,7 +126,7 @@ public class DsStorageClientTest {
       catch(Exception e) {
          //ignore.
           log.debug("Record not found in integration test.");
-      }         
+      }
     }
 
     @Test
@@ -131,39 +138,39 @@ public class DsStorageClientTest {
     }
 
     @Test
-    public void testMarkRecordForDelete() {              
+    public void testMarkRecordForDelete() {
          String id="ds.radio:oai:io:8f8f2da9-98e3-4ba2-aa6c-XXXXXX";  //does not exist
-         RecordsCountDto  marked = remote.markRecordForDelete(id); 
+         RecordsCountDto  marked = remote.markRecordForDelete(id);
          assertEquals(0,marked.getCount());
-         
+
     }
-        
+
     @Test
-    public void testUpdateReferenceId() {              
+    public void testUpdateReferenceId() {
          String recordId="ds.radio:oai:io:8f8f2da9-98e3-4ba2-aa6c-XXXXX";
          String refId="1234";
-         remote.updateReferenceIdForRecord(recordId, refId);          
+         remote.updateReferenceIdForRecord(recordId, refId);
     }
 
     @Test
-    public void testUpdateKalturaIdForRecord() {                       
+    public void testUpdateKalturaIdForRecord() {
          String refId="1234";
          String kalturaId="1234";
-         remote.updateKalturaIdForRecord(refId,kalturaId);         
+         remote.updateKalturaIdForRecord(refId,kalturaId);
     }
 
     @Test
-    public void testGetMinimalRecords() {                       
+    public void testGetMinimalRecords() {
         String origin="ds.radio";
         int maxRecords=10;
         long mTime=0;
-         
+
          List<DsRecordMinimalDto> minimalRecords = remote.getMinimalRecords(origin, maxRecords,mTime);
-         assertEquals(10,minimalRecords.size());         
+         assertEquals(10,minimalRecords.size());
     }
 
     @Test
-    public void testRemoteRecordsRaw() throws IOException {       
+    public void testRemoteRecordsRaw() throws IOException {
         try (ContinuationInputStream<Long> recordsIS = remote.getRecordsModifiedAfterJSON(
                 "ds.radio", 0L, 3L)) {
             String recordsStr = IOUtils.toString(recordsIS, StandardCharsets.UTF_8);
@@ -181,7 +188,7 @@ public class DsStorageClientTest {
     @Test
     public void testRemotePaging() throws IOException {
          long numberOfRecords=200L;
-    	    	
+
         Long lastMTime;
         boolean hasMore;
 
@@ -237,18 +244,18 @@ public class DsStorageClientTest {
 
     @Test
     public void testGetTranscription() throws IOException {
-        String fileId="7abbf6ff-3fda-41db-9632-b48343bb88bd";        
+        String fileId="7abbf6ff-3fda-41db-9632-b48343bb88bd";
         TranscriptionDto transcription = remote.getTranscription(fileId);
         String snippet="kvindekvoter";
-        assertTrue(transcription.getTranscription().indexOf(snippet)>0);               
+        assertTrue(transcription.getTranscription().indexOf(snippet)>0);
     }
 
     @Test
-    public void testRemotePageLast() throws IOException {        
+    public void testRemotePageLast() throws IOException {
         Long lastMTime = null;
-        
+
         List<OriginCountDto> stats = remote.getOriginStatistics();
-        
+
         for (OriginCountDto originCount: stats) {
             if ("ds.radio".equals(originCount.getOrigin())) {
                 lastMTime = originCount.getLatestMTime();
@@ -284,7 +291,7 @@ public class DsStorageClientTest {
     @Test
     public void testRemoteRecordsStream() throws IOException {
        long numberOfRecords=300L;
-     
+
         try (ContinuationStream<DsRecordDto, Long> records = remote.getRecordsModifiedAfterStream(
                 "ds.radio", 0L,numberOfRecords)) {
             List<DsRecordDto> recordList = records.collect(Collectors.toList());

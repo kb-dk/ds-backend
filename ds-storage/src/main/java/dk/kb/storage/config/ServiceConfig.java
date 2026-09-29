@@ -1,13 +1,9 @@
 package dk.kb.storage.config;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collection;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +12,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.spi.ConfigSource;
@@ -36,19 +31,22 @@ import dk.kb.util.Resolver;
  * Configuration class backed by <a href="https://smallrye.io/smallrye-config/">SmallRye Config</a> (a standalone
  * implementation of MicroProfile Config; this project does not use Quarkus).
  * <p>
- * This replaces the previous kb-util {@code YAML}-backed implementation. The configuration files themselves
- * ({@code ds-storage-behaviour.yaml}, {@code ds-storage-environment.yaml}, {@code ds-storage-local.yaml}) are
- * unchanged (a single expression in {@code ds-storage-behaviour.yaml} had to be rewritten to SmallRye's
- * {@code ${property:default}} expression syntax; see the YAML file for details) and are still layered the same
- * way: the YAML files matched by the configured glob(s) are loaded in alphanumerical order and later files take
- * precedence over earlier ones, key by key.
+ * This replaces the previous kb-util {@code YAML}-backed implementation. {@link #initialize(String)} takes a
+ * single YAML file (resolved via {@link Resolver#resolveURL(String)}: verbatim as a file, then on the classpath,
+ * then under the user's home), typically the one path configured outside the project in the Tomcat context
+ * environment (see {@code conf/ocp/ds-storage.xml}). This is a deliberate simplification over the old
+ * behaviour/environment/local three-file layering convention: environment- or operator-specific overrides are
+ * now expressed with SmallRye Config's own layering instead of a second or third YAML file &mdash; system
+ * properties, environment variables, an optional {@code config/application.properties} (or {@code .env}) file,
+ * and/or {@link #setRuntimeProperty(String, String)} &mdash; all of which sit above the single YAML file in
+ * priority. See {@code SMALLRYE_CONFIG_MIGRATION.md} for the full picture.
  * <p>
- * <b>Runtime property injection.</b> Besides the layered YAML files, environment variables and system
- * properties, this class registers a small in-memory {@link ConfigSource} ({@link RuntimeConfigSource}) with the
- * highest ordinal of all sources. Properties set with {@link #setRuntimeProperty(String, String)} are therefore
- * visible to every subsequent config lookup immediately, without a restart and without touching any file: unlike
- * the old {@code YAML} class (which produced an immutable snapshot), SmallRye Config re-reads all sources on
- * every {@code getValue}/{@code getOptionalValue} call.
+ * <b>Runtime property injection.</b> Besides the YAML file, environment variables and system properties, this
+ * class registers a small in-memory {@link ConfigSource} ({@link RuntimeConfigSource}) with the highest ordinal
+ * of all sources. Properties set with {@link #setRuntimeProperty(String, String)} are therefore visible to every
+ * subsequent config lookup immediately, without a restart and without touching any file: unlike the old
+ * {@code YAML} class (which produced an immutable snapshot), SmallRye Config re-reads all sources on every
+ * {@code getValue}/{@code getOptionalValue} call.
  */
 public class ServiceConfig {
     private static final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
@@ -57,20 +55,17 @@ public class ServiceConfig {
 
     /**
      * Ordinal for the runtime-injected overrides ({@link #setRuntimeProperty(String, String)}). This is higher
-     * than system properties (400), environment variables (300) and the layered YAML files (see
-     * {@link #YAML_BASE_ORDINAL}), so a runtime override always wins.
+     * than system properties (400), environment variables (300) and the YAML file (see {@link #YAML_ORDINAL}),
+     * so a runtime override always wins.
      */
     public static final int RUNTIME_ORDINAL = 500;
 
     /**
-     * Base ordinal for the layered YAML config files. Each file resolved from the glob(s) passed to
-     * {@link #initialize(String...)} gets {@code YAML_BASE_ORDINAL + <index in alphanumerical order>}, so later
-     * files (e.g. {@code ds-storage-environment.yaml}) override earlier ones (e.g. {@code ds-storage-behaviour.yaml})
-     * key by key, exactly like the old {@code YAML.resolveLayeredConfigs(...)} did. This is comfortably below
-     * environment variables (300) and system properties (400), so operations can still override any single
-     * configured value without editing YAML.
+     * Ordinal for the single configured YAML file (see {@link #initialize(String)}). This is comfortably below
+     * environment variables (300) and system properties (400), so operations can override any individual
+     * configured value without editing YAML at all.
      */
-    private static final int YAML_BASE_ORDINAL = 100;
+    private static final int YAML_ORDINAL = 100;
 
     // key is origin
     private static final HashMap<String, OriginDto> allowedOrigins = new HashMap<>();
@@ -80,36 +75,29 @@ public class ServiceConfig {
     private static SmallRyeConfig serviceConfig;
 
     /**
-     * Initializes the configuration from the provided configFiles.
+     * Initializes the configuration from the provided configFile.
      * This should normally be called from {@link dk.kb.storage.webservice.ContextListener} as
-     * part of web server initialization of the container.
+     * part of web server initialization of the container, using the single path configured outside the project
+     * (Tomcat context environment entry {@code application-config}, see {@code conf/ocp/ds-storage.xml}).
      *
-     * @param configFiles the YAML files (or globs, e.g. {@code /app/conf/ds-storage*.yaml}) which the
-     *                    configuration is loaded from.
-     * @throws IOException if the configuration could not be loaded or parsed.
+     * @param configFile the single YAML file which the configuration is loaded from: a plain file path, a
+     *                    classpath resource name, or a path relative to the user's home
+     *                    (see {@link Resolver#resolveURL(String)}).
+     * @throws IOException if the configuration could not be located, loaded or parsed.
      */
-    public static synchronized void initialize(String... configFiles) throws IOException {
-        List<Path> configPaths = Arrays.stream(configFiles)
-                .map(Resolver::resolveGlob)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        if (configPaths.isEmpty()) {
-            throw new FileNotFoundException("No paths resolved from " + Arrays.toString(configFiles));
-        }
+    public static synchronized void initialize(String configFile) throws IOException {
+        URL configUrl = Resolver.resolveURL(configFile);
 
         SmallRyeConfigBuilder builder = new SmallRyeConfigBuilder()
                 // Enables ${other.property} / ${other.property:default} expression resolution, used by e.g.
                 // db.url's '${TMPDIR:/tmp}' and by the self-referencing '${openapi.serverurl}'-style values.
                 .addDefaultInterceptors()
-                // System properties (ordinal 400), environment variables (300) and
+                // System properties (400), environment variables (300), an optional .env file (295), an optional
+                // config/application.properties (260) or classpath application.properties (250), and
                 // META-INF/microprofile-config.properties (100), if present.
                 .addDefaultSources()
-                .withSources(runtimeSource);
-
-        int ordinal = YAML_BASE_ORDINAL;
-        for (Path path : configPaths) {
-            builder.withSources(new YamlConfigSource(path.toUri().toURL(), ordinal++));
-        }
+                .withSources(runtimeSource)
+                .withSources(new YamlConfigSource(configUrl, YAML_ORDINAL));
 
         serviceConfig = builder.build();
         loadAllowedOrigins();
@@ -118,13 +106,14 @@ public class ServiceConfig {
     /**
      * Loads the {@code origins} list from configuration into {@link #allowedOrigins}.
      * <p>
-     * Note on layered lists: SmallRye Config flattens a YAML list into indexed properties
+     * Note on overriding lists: SmallRye Config flattens a YAML list into indexed properties
      * (e.g. {@code origins[0].name}, {@code origins[1].name}, ...) and resolves each property individually
-     * across sources. The old kb-util {@code YAML} merge instead replaced the *whole* {@code origins} list
-     * when it was redefined in an overriding file (environment/local). To keep that "whole list wins"
-     * behaviour for {@code origins} specifically, this method picks the single highest-ordinal config source
-     * that defines any {@code origins[...]} entry and reads the full list from that source alone, rather than
-     * resolving each index independently through the normal per-property override mechanism.
+     * across sources. Since {@link #initialize(String)} only loads a single YAML file, this rarely matters in
+     * practice&nbsp;&mdash; but if {@code origins} is ever also (partially) redefined via a higher-priority
+     * source (a {@code config/application.properties} file, or {@link #setRuntimeProperty(String, String)}),
+     * a naive per-index read would mix entries from both sources instead of one replacing the other. To avoid
+     * that, this method picks the single highest-ordinal config source that defines any {@code origins[...]}
+     * entry and reads the full list from that source alone.
      */
     private static void loadAllowedOrigins() throws IOException {
         ConfigSource originsSource = null;
@@ -213,10 +202,10 @@ public class ServiceConfig {
      * and without restarting the service.
      * <p>
      * The change is visible to every subsequent config lookup immediately: it takes precedence over every
-     * other configuration source (the layered YAML files, environment variables and system properties, see
+     * other configuration source (the YAML file, environment variables and system properties, see
      * {@link #RUNTIME_ORDINAL}). This is intended for short-lived operational overrides (temporarily raising a
      * limit, flipping a behaviour flag, etc.) or for exercising the config system from a test. It is
-     * <em>not</em> persisted: restarting the service reverts to the values from the configuration files.
+     * <em>not</em> persisted: restarting the service reverts to the values from the configuration file.
      *
      * @param key   dotted property path, using the exact same syntax as the YAML configuration
      *              (e.g. {@code "db.connectionPoolSize"}).
@@ -234,7 +223,7 @@ public class ServiceConfig {
 
     /**
      * Removes a previously injected runtime override for the given key, reverting to whatever value the
-     * layered YAML files, environment variables or system properties provide.
+     * YAML file, environment variables or system properties provide.
      *
      * @param key dotted property path previously passed to {@link #setRuntimeProperty(String, String)}.
      */

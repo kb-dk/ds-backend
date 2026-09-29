@@ -10,16 +10,21 @@ necessary touch in `ds-shared` (see below).
 | File | Change |
 |---|---|
 | `ds-storage/pom.xml` | Added `smallrye-config` and `smallrye-config-source-yaml` (3.12.4). |
-| `ds-storage/src/main/java/dk/kb/storage/config/ServiceConfig.java` | Rewritten on top of `SmallRyeConfig`. Public API (`initialize`, `getConfig`, `getDBDriver`, `getDBUrl`, `getDBUserName`, `getDBPassword`, `getConnectionPoolSize`, `getDBBatchSize`, `getAllowedOrigins`) is unchanged, plus new `setRuntimeProperty` / `clearRuntimeProperty` / `getRuntimePropertyNames`. |
+| `ds-storage/src/main/java/dk/kb/storage/config/ServiceConfig.java` | Rewritten on top of `SmallRyeConfig`. `initialize(String... configFiles)` (multi-file glob) became `initialize(String configFile)` (single file, resolved with `Resolver.resolveURL(...)`). The rest of the public API (`getConfig`, `getDBDriver`, `getDBUrl`, `getDBUserName`, `getDBPassword`, `getConnectionPoolSize`, `getDBBatchSize`, `getAllowedOrigins`) is unchanged, plus new `setRuntimeProperty` / `clearRuntimeProperty` / `getRuntimePropertyNames`. |
 | `ds-storage/src/main/java/dk/kb/storage/webservice/KBOAuth2Handler.java` | Switched from `YAML.getSubMap("security")` to reading `security.*` keys directly from the MicroProfile `Config`. Behaviour unchanged, including the warning when no `security` section is configured at all. |
 | `ds-storage/conf/ds-storage-behaviour.yaml` | One line changed: `${env:TMPDIR:-/tmp}` → `${TMPDIR:/tmp}` (see "YAML stays almost the same" below). |
+| `ds-storage/conf/ocp/ds-storage.xml` | The `application-config` Tomcat context entry changed from a glob (`/app/conf/ds-storage*.yaml`) to a single path (`/app/conf/ds-storage.yaml`). |
+| `ds-storage/src/test/jetty/jetty-env.xml` | Same change for local Jetty runs: `${basedir}/conf/${project.artifactId}*.yaml` → `${basedir}/conf/${project.artifactId}-behaviour.yaml`. |
+| `ds-storage/src/test/java/dk/kb/storage/config/ServiceConfigTest.java` | Sample test updated to call `initialize(...)` with the single `ds-storage-behaviour.yaml` path, and to check for a `config/application.properties` local override instead of an `ds-storage-environment.yaml`. |
+| `ds-storage/src/test/java/dk/kb/storage/integration/DsStorageClientTest.java` | `@Tag("integration")` test updated for the single-file `initialize(...)` signature; the integration-only `ds-storage-integration-test.yaml` overlay (server-internal, not in git) is no longer merged in through `ServiceConfig` — it's read directly with kb-util's `YAML.resolveLayeredConfigs(...)` instead, since it only carries test-only `integration.*` keys. |
 | `ds-storage/src/test/java/dk/kb/storage/config/ServiceConfigRuntimeInjectionTest.java` | **New.** Demonstrates runtime property injection. |
 | `ds-shared/pom.xml` | Added `microprofile-config-api` (interface only, no implementation — see below). |
 | `ds-shared/src/main/java/dk/kb/util/webservice/OpenApiResource.java` | `setConfig(YAML)` → `setConfig(Config)`. Still supports `${config:yaml.path}` and `${config:origins[*].name}` (wildcard) placeholders in OpenAPI specs, now resolved against MicroProfile Config instead of YAML. |
 
-Nothing else needed to change: `ContextListener.initialize(configFile)`, `DsStorage`,
-`DsStorageApiServiceImpl`, `DsStorageFacade` and `Application_v1` all call `ServiceConfig`
-exactly as before and did not need edits.
+Nothing else needed to change: `ContextListener.initialize(configFile)` already only ever passed a
+single `String` (the one JNDI-looked-up context value), so it works unchanged against the new
+single-argument `initialize`. `DsStorage`, `DsStorageApiServiceImpl`, `DsStorageFacade` and
+`Application_v1` all call `ServiceConfig` exactly as before and did not need edits either.
 
 ### Why touch ds-shared?
 
@@ -31,18 +36,39 @@ kb-util `YAML`. It was changed to accept the standard `org.eclipse.microprofile.
 interface instead — `ds-shared` now only depends on the MicroProfile Config *API* (no concrete
 implementation), so it stays decoupled from the choice of SmallRye Config made in `ds-storage`.
 
+## Single YAML file, not three
+
+The previous `ServiceConfig` loaded a **glob** of files (`ds-storage-behaviour.yaml`,
+`ds-storage-environment.yaml`, `ds-storage-local.yaml`) resolved via kb-util's
+`Resolver.resolveGlob(...)` and layered in alphanumerical order, each overriding the previous one
+key by key. That convention has been retired as part of this cleanup:
+`ServiceConfig.initialize(String configFile)` now takes exactly **one** YAML file, resolved with
+`Resolver.resolveURL(...)` (verbatim file path → classpath → user home). In production that single
+path is still configured entirely outside the project, via the same `application-config` Tomcat
+context environment entry as before (`conf/ocp/ds-storage.xml`) — it's simply a plain path now
+instead of a glob.
+
+Environment- or operator-specific overrides that used to live in a second or third YAML file are
+now expressed with SmallRye Config's own built-in layering instead, all of which sit above the
+single YAML file (ordinal 100) in priority:
+
+* system properties (ordinal 400) — e.g. `-Ddb.connectionPoolSize=42`
+* environment variables (300) — e.g. `DB_CONNECTIONPOOLSIZE=42`
+* an optional `.env` file (295) next to the working directory
+* an optional `config/application.properties` file (260) — a plain `key=value` file, the closest
+  drop-in replacement for the old `ds-storage-local.yaml`/`ds-storage-environment.yaml` pattern
+* runtime injection via `ServiceConfig.setRuntimeProperty(...)` (500, highest — see below)
+
+`ds-storage-behaviour.yaml` itself keeps its structure and keys unchanged (see below), and
+`ds-storage-environment.yaml.SAMPLE` is no longer read by `ServiceConfig` — it's kept only as a
+reference for which keys are commonly overridden, until it's replaced by a
+`config/application.properties.SAMPLE` in a follow-up.
+
 ## YAML stays almost the same
 
-`ds-storage-behaviour.yaml`, `ds-storage-environment.yaml` and `ds-storage-local.yaml` keep their
-structure, keys and the three-layer behaviour/environment/local pattern described in `DEVELOPER.md`.
-They are still located and layered via the exact same mechanism as before: the `application-config`
-JNDI/context value (a glob such as `/app/conf/ds-storage*.yaml`) is resolved with kb-util's
-`Resolver.resolveGlob(...)`, and the matching files are loaded in alphanumerical order — so
-`ds-storage-behaviour.yaml` < `ds-storage-environment.yaml` < `ds-storage-local.yaml`, with later
-files overriding earlier ones key by key. `ContextListener` is unchanged.
-
-One line had to change because of a genuine syntax difference between kb-util's extrapolation
-(Apache Commons Text `StringSubstitutor`) and SmallRye Config's own `${...}` expression syntax:
+`ds-storage-behaviour.yaml` keeps its structure and keys exactly as before. One line had to change
+because of a genuine syntax difference between kb-util's extrapolation (Apache Commons Text
+`StringSubstitutor`) and SmallRye Config's own `${...}` expression syntax:
 
 ```diff
 - url: jdbc:h2:${env:TMPDIR:-/tmp}/h2_ds_storage;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
@@ -51,32 +77,34 @@ One line had to change because of a genuine syntax difference between kb-util's 
 
 Environment variables are already a config source in SmallRye Config (ordinal 300), so `${TMPDIR}`
 resolves directly against the `TMPDIR` env var; `${TMPDIR:/tmp}` adds the same `/tmp` fallback the
-old `:-` syntax provided. No other expression in the current YAML files needed changing.
+old `:-` syntax provided. No other expression in the file needed changing.
 
 ## Known semantic difference: overriding list values
 
 SmallRye Config flattens a YAML list into indexed properties, e.g. `origins[0].name`,
 `origins[1].name`, .... Each property is then resolved independently, highest-ordinal source wins,
 same as any other key. kb-util's old merge instead replaced the *entire* `origins` list as soon as
-an overriding file (environment/local) redefined it at all (`MERGE_ACTION.keep_extra` for lists).
+an overriding file redefined it at all (`MERGE_ACTION.keep_extra` for lists).
 
-Concretely: if `ds-storage-environment.yaml` defines only 2 origins (as
-`ds-storage-environment.yaml.SAMPLE` does) while `ds-storage-behaviour.yaml` defines 14, the old
-code ended up with exactly those 2 origins. A naive per-index SmallRye read would instead end up
-with 14 origins, where only indices 0 and 1 are overridden by the environment file.
+Now that `ServiceConfig` only loads a single YAML file, this rarely comes up in practice — but it
+can still matter if `origins` is ever (partially) redefined via a higher-priority source, e.g. a
+`config/application.properties` with `origins[0].name=...`, or a runtime injection. A naive
+per-index read would then mix entries from both sources instead of one cleanly replacing the other:
+if the override only defines `origins[0]` and `origins[1]` while the YAML file defines 14, a naive
+read would end up with 14 origins where only indices 0 and 1 come from the override.
 
 `ServiceConfig.loadAllowedOrigins()` special-cases this: it finds the single highest-ordinal config
-source that defines *any* `origins[...]` entry and reads the whole list from that source alone,
-which reproduces the old "whole list wins" behaviour for `origins` specifically. This is not a
-generic solution for arbitrary YAML lists — if a future config value needs the same treatment, apply
-the same pattern (or introduce a `@ConfigMapping` with an explicit `List<T>` and accept SmallRye's
+source that defines *any* `origins[...]` entry and reads the whole list from that source alone, so
+one source always wins outright for `origins`, never a per-index blend. This is not a generic
+solution for arbitrary YAML lists — if a future config value needs the same treatment, apply the
+same pattern (or introduce a `@ConfigMapping` with an explicit `List<T>` and accept SmallRye's
 per-index override semantics).
 
 ## Runtime property injection
 
 `ServiceConfig` registers a small in-memory `ConfigSource` (`ServiceConfig.RuntimeConfigSource`) at
 the highest ordinal (500) of all sources used — above system properties (400), environment variables
-(300) and the layered YAML files (100+). SmallRye Config re-reads all sources on every
+(300) and the single YAML file (100). SmallRye Config re-reads all sources on every
 `getValue`/`getOptionalValue` call rather than caching a snapshot (unlike the old `YAML`, which was
 immutable once loaded), so:
 
@@ -87,7 +115,7 @@ ServiceConfig.clearRuntimeProperty("db.connectionPoolSize");     // reverts to t
 ```
 
 See `ServiceConfigRuntimeInjectionTest` for a runnable demonstration, including injecting a key that
-doesn't exist in any YAML file at all. `setRuntimeProperty` redacts values in its log line for keys
+doesn't exist in the YAML file at all. `setRuntimeProperty` redacts values in its log line for keys
 that look like passwords/secrets/tokens.
 
 This PoC deliberately stops at the Java API level (per the scoping decision for this round): there is
@@ -98,6 +126,8 @@ needs to be operable from outside the process.
 ## Suggested follow-ups (out of scope for this PoC)
 
 * Apply the same migration to the other `ds-backend` submodules once this pattern is validated.
+* Replace `ds-storage-environment.yaml.SAMPLE` with a `config/application.properties.SAMPLE` that
+  documents the same commonly-overridden keys in the new format.
 * Consider `@ConfigMapping` interfaces for strongly-typed, validated config sections instead of raw
   `getValue(String, Class)` calls, for sections that don't need runtime mutability.
 * Decide whether runtime-injected properties should be reachable via an admin API and, if so, what

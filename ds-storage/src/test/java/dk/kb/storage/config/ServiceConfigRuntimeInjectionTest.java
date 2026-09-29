@@ -34,12 +34,13 @@ class ServiceConfigRuntimeInjectionTest {
 
     /**
      * Mirrors the setup in {@link ServiceConfigTest}: resolve the project's own {@code conf/} folder so the
-     * test runs against the real {@code ds-storage-behaviour.yaml} (plus a local/environment overlay, if present).
+     * test runs against the real {@code ds-storage-behaviour.yaml} (the single YAML file {@link ServiceConfig}
+     * now loads).
      */
     private static void initializeFromProjectConf() throws IOException {
         Path knownFile = Path.of(Resolver.resolveURL("logback-test.xml").getPath());
         String projectRoot = knownFile.getParent().getParent().getParent().toString();
-        ServiceConfig.initialize(projectRoot + "/conf/ds-storage*.yaml");
+        ServiceConfig.initialize(projectRoot + "/conf/ds-storage-behaviour.yaml");
     }
 
     @Test
