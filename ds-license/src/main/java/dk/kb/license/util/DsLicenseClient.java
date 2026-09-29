@@ -36,6 +36,7 @@ import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.yaml.YAML;
 
 import org.apache.hc.core5.net.URIBuilder;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +87,19 @@ public class DsLicenseClient{
         this(yaml.getString(URL_KEY),
                 yaml.getInteger(CACHE_ID_COUNT_KEY, CACHE_ID_COUNT_DEFAULT),
                 yaml.getLong(CACHE_ID_MS_KEY, CACHE_ID_MS_DEFAULT));
+    }
+
+    /**
+     * Creates a client for the service based on a MicroProfile {@link Config} (as used by every ds-backend
+     * module migrated to SmallRye Config) with the same structure as outlined in the {@link #DsLicenseClient(YAML)}
+     * javadoc.
+     *
+     * @param config setup for the license client, as outlined in {@link #DsLicenseClient(YAML)}.
+     */
+    public DsLicenseClient(Config config) {
+        this(config.getValue(URL_KEY, String.class),
+                config.getOptionalValue(CACHE_ID_COUNT_KEY, Integer.class).orElse(CACHE_ID_COUNT_DEFAULT),
+                config.getOptionalValue(CACHE_ID_MS_KEY, Long.class).orElse(CACHE_ID_MS_DEFAULT));
     }
 
     /**
