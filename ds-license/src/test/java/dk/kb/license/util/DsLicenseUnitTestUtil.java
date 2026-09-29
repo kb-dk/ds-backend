@@ -46,7 +46,13 @@ public abstract class DsLicenseUnitTestUtil {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
         URL = getJdbcUrlForSchema(schemaName);
 
-        ServiceConfig.initialize("conf/ds-license*.yaml", "src/test/resources/ds-license-integration-test.yaml");
+        // Note: previously "conf/ds-license*.yaml" (a glob, resolved by kb-util's YAML.resolveLayeredConfigs)
+        // plus a second file "src/test/resources/ds-license-integration-test.yaml" that does not actually exist
+        // in this repository - so in practice this only ever loaded ds-license-behaviour.yaml. SmallRye Config's
+        // Resolver.resolveURL(...) does not support globs, so this now names that single file explicitly. The
+        // database itself is set up below via Testcontainers (DRIVER/URL/USERNAME/PASSWORD), bypassing
+        // ServiceConfig's db.* getters entirely, exactly as before.
+        ServiceConfig.initialize("conf/ds-license-behaviour.yaml");
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
         DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
 

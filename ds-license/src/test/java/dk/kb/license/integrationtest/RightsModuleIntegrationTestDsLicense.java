@@ -36,6 +36,10 @@ public class RightsModuleIntegrationTestDsLicense extends DsLicenseUnitTestUtil 
     @BeforeAll
     static void setup() throws Exception {
         try {
+            // Note: the second argument is now a devops/operations *properties* override file (see
+            // ServiceConfig#initialize(String, String)), not a second YAML file merged via kb-util's old
+            // multi-file layering. This test is tagged @Tag("integration") and not run by the automatic build
+            // flow either way.
             ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");
 
             // Instantiate the RightsModuleStorage without it being able to touch records in a backing DS-storage
@@ -46,9 +50,9 @@ public class RightsModuleIntegrationTestDsLicense extends DsLicenseUnitTestUtil 
         }
 
         try {
-            String keyCloakRealmUrl = ServiceConfig.getConfig().getString("integration.devel.keycloak.realmUrl");
-            String clientId = ServiceConfig.getConfig().getString("integration.devel.keycloak.clientId");
-            String clientSecret = ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");
+            String keyCloakRealmUrl = ServiceConfig.getConfig().getValue("integration.devel.keycloak.realmUrl", String.class);
+            String clientId = ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientId", String.class);
+            String clientSecret = ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientSecret", String.class);
             String token = KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);
             log.info("Retrieved keycloak access token:"+token);
 
