@@ -18,7 +18,7 @@ public class EncryptionHelperTest {
     @BeforeAll
     static void initConfig() throws IOException {
         Path knownFile = Path.of(Resolver.resolveURL("bff-security-salt.yaml").getPath());
-        ServiceConfig.getInstance().initialize(knownFile.toString());
+        ServiceConfig.initialize(knownFile.toString());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class EncryptionHelperTest {
         String decryptedString = EncryptionHelper.decryptString(encryptedString);
         assertEquals(testString,decryptedString);
         Path knownFile = Path.of(Resolver.resolveURL("bff-security-newsalt.yaml").getPath());
-        ServiceConfig.getInstance().initialize(knownFile.toString());
+        ServiceConfig.initialize(knownFile.toString());
         assertEquals(testString,decryptedString);
         assertThrows(ServiceException.class, () ->
             EncryptionHelper.decryptString(encryptedString));
