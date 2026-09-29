@@ -33,6 +33,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Renamed class `DsStorageUnitTestUtil` to `DsStorageUnitTestUtil` and refactored the class so it is possible to have multiple
   unit test storage classes.
 
+### Fixed
+
+- Make script that fixes `referenceId` in `ds_records` table, from being `blank` to correctly `NULL`.
+
 ### Removed
 
 - Removed deprecated `description` from `@Api` in `api.mustache` file.
