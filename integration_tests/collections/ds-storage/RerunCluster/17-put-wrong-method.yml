@@ -1,5 +1,5 @@
 info:
-  name: DELETE rerun-cluster/{fileId} - unsupported method returns 405
+  name: PUT rerun-cluster/{fileId} - unsupported method returns 405
   type: http
   seq: 17
 
