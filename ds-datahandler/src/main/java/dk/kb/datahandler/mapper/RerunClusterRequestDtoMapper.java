@@ -11,7 +11,7 @@ public class RerunClusterRequestDtoMapper {
   /**
    * Create a {@link RerunClusterRequestDto} from a ResultSet.
    *
-   * @param resultSet containing values from remote p3rerun database in table clusters table
+   * @param resultSet containing values from remote p3rerun database in clusters table
    * @return RerunClusterRequestDto populated with data
    * @throws SQLException
    */

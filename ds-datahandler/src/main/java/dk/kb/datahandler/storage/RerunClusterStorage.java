@@ -149,7 +149,7 @@ public class RerunClusterStorage implements AutoCloseable {
     }
 
   /**
-   * Return new rows from remote p3rerun database in table clusters table.
+   * Return new rows from remote p3rerun database in clusters table.
    *
    * @param created latest created time in our database
    * @return List<RerunClusterRequestDto> of rows
