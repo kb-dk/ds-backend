@@ -19,15 +19,15 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BaseModuleStorage implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(BaseModuleStorage.class);
-  protected static BasicDataSource dataSource = null; // shared
   private static final String updateMTimeForRecordByFileIdStatement = """
-                                                                UPDATE
-                                                                    ds_records
-                                                                SET
-                                                                    mtime = ?
-                                                                WHERE
-                                                                    referenceid = ?
-                                                                """;
+                                                                      UPDATE
+                                                                          ds_records
+                                                                      SET
+                                                                          mtime = ?
+                                                                      WHERE
+                                                                          referenceid = ?
+                                                                      """;
+  protected static BasicDataSource dataSource = null; // shared
   protected Connection connection = null; // private
 
   public BaseModuleStorage() throws SQLException {
