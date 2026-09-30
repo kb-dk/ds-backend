@@ -96,7 +96,7 @@ public class ContextListener implements ServletContextListener {
       	String user = ServiceConfig.getDBUserName();
       	String password = ServiceConfig.getDBPassword();
       	
-       RecordStorage.initialize(driver,url,user,password);
+       BaseModuleStorage.initialize(driver, url, user, password);
     }
     
     /**
