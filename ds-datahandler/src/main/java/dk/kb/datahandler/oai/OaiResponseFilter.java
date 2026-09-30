@@ -69,16 +69,17 @@ public class OaiResponseFilter {
     /**
      * Add record from an OAI-PMH harvest to ds-storage. The public implementation does not resolve parent and
      * sets the type to {@link RecordTypeDto#DELIVERABLEUNIT}.
+     *
      * @param oaiRecord     a record from an OAI-PMH response
      * @param origin        the origin, which the record is added to in ds-storage.
      * @param referenceId   the reference for the record (file ID)
      */
     public void addToStorage(OaiRecord oaiRecord, String origin, String referenceId) throws ServiceException {
+        // There is some weird logic happening here with storageId is created, then possibly used to
+        // mark record to be deleted, and finally checking if origin is empty. That seems wrong.
         String storageId = origin + ":" + oaiRecord.getId();
         log.debug("adding with ref id "+oaiRecord.getId()+" "+referenceId);
-        if (StringUtils.isEmpty(referenceId)) {
-            log.warn("OAI Record with ID: '{}', has empty reference ID.", oaiRecord.getId());
-        }
+
         if (oaiRecord.isDeleted()) {
             storage.markRecordForDelete(storageId);
         } else if (origin.isEmpty()){

@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Make script that fixes `referenceId` in `ds_records` table, from being `blank` to correctly `NULL`.
+
+## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
+
 ### Added
 
 - The Flyway migrations are now published as a separate release artifact,
