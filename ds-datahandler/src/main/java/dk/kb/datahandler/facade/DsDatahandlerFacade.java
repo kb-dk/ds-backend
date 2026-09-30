@@ -1,5 +1,6 @@
 package dk.kb.datahandler.facade;
 
+import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
 
 import java.io.BufferedInputStream;
@@ -349,7 +350,7 @@ public class DsDatahandlerFacade {
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         DsStorageClient dsStorageApiClient = getDsStorageApiClient();
 
-        dk.kb.storage.model.v1.CreatedDto latestCreated = latestCreated();
+        CreatedDto latestCreated = latestCreated();
         JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, latestCreated.getCreated(), user);
 
         try {
@@ -400,10 +401,10 @@ public class DsDatahandlerFacade {
      *
      * @return CreatedDto latest created datetime
      */
-    public static dk.kb.storage.model.v1.CreatedDto latestCreated() {
+    public static CreatedDto latestCreated() {
         try {
             DsStorageClient dsStorageApiClient = getDsStorageApiClient();
-            dk.kb.storage.model.v1.CreatedDto createdDto =
+            CreatedDto createdDto =
                 dsStorageApiClient.latestCreated();
 
             log.info("Latest created datetime from ds-storage rerun_clusters table:'{}'",
