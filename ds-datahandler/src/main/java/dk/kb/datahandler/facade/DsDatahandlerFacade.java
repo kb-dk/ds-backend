@@ -548,11 +548,13 @@ public class DsDatahandlerFacade {
 
     /**
      * Updates an existing job
+     *
      * @param jobDto the job to update
      * @param jobStatusDto the new status of the job
      * @param message error message if the job has failed
      * @param endTime if the job is set to FAILED, STOPPED or COMPLETED
      * @param numberOfRecords number of records created or updated by the job
+     * @param restartValue where should a new job start from
      */
    public static void updateJob(JobDto jobDto, JobStatusDto jobStatusDto, String message, OffsetDateTime endTime, Integer numberOfRecords, OffsetDateTime restartValue) {
         jobDto.setJobStatus(jobStatusDto);

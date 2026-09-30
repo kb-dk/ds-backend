@@ -127,7 +127,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
           assertEquals(JobStatusDto.COMPLETED, returnedJobDto.getJobStatus());
           assertNull(returnedJobDto.getErrorCorrelationId());
           assertNull(returnedJobDto.getMessage());
-          assertNull(returnedJobDto.getModifiedTimeFrom());
+          assertEquals(createdDto.getCreated(), returnedJobDto.getModifiedTimeFrom());
 
           assertNotNull(returnedJobDto.getStartTime());
           assertEquals(OffsetDateTime.class, returnedJobDto.getStartTime().getClass());

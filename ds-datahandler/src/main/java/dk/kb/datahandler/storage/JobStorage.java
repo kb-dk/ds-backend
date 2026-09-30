@@ -172,7 +172,7 @@ public class JobStorage extends BaseModuleStorage {
             stmt.setString(3, modifiedJobDto.getMessage());
             stmt.setObject(4, modifiedJobDto.getEndTime());
             stmt.setObject(5, modifiedJobDto.getNumberOfRecords());
-            stmt.setObject(6, modifiedJobDto.getModifiedTimeFrom());
+            stmt.setObject(6, modifiedJobDto.getRestartValue());
             stmt.setObject(7, modifiedJobDto.getId());
 
             return stmt.executeUpdate();
