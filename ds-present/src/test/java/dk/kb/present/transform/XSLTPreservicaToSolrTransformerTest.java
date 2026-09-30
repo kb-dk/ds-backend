@@ -265,12 +265,12 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    void testSeasonNumberRitzauZeroIsOmitted(){
+    void solrTransformation_whenSeasonNumberRitzauIsZero_thenSeasonNumberRitzauDoNotExistSolrData(){
         assertPvicaNotContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "season_number_ritzau");
     }
 
     @Test
-    void testSeasonNumberRitzauMissing(){
+    void solrTransformation_whenSeasonNumberRitzauDoNotExists_thenSeasonNumberRitzauDoNotExistInSolrData(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_3945e2d1, "season_number_ritzau");
     }
 
