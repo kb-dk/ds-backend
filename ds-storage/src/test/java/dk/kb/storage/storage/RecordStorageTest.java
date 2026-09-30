@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -26,12 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RecordStorageTest extends TestcontainersUtil {
 
-    private static RecordStorageForUnitTest storage = null;
+    private static RecordStorageForUnitTest recordStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
-        storage = new RecordStorageForUnitTest();
+        recordStorage = new RecordStorageForUnitTest();
     }
 
     /**
@@ -40,7 +38,7 @@ public class RecordStorageTest extends TestcontainersUtil {
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
-        storage.clearTableRecords();
+        recordStorage.clearTableRecords();
     }
 
     @AfterAll
@@ -56,7 +54,7 @@ public class RecordStorageTest extends TestcontainersUtil {
         //TODO describe flow below
 
         //Test record not exist
-        assertFalse(storage.recordExists("origin:unknown"));
+        assertFalse(recordStorage.recordExists("origin:unknown"));
 
         String id = "origin.test:id1";
         String origin = "origin.test";
@@ -73,13 +71,13 @@ public class RecordStorageTest extends TestcontainersUtil {
         record.setParentId(parentId);
         record.setRecordType(RecordTypeDto.MANIFESTATION);
         record.setReferenceId(referenceId);
-        storage.createNewRecord(record);
+        recordStorage.createNewRecord(record);
 
         //Test record not exist
-        assertTrue(storage.recordExists(id));
+        assertTrue(recordStorage.recordExists(id));
 
         //Load and check values are correct
-        DsRecordDto recordLoaded = storage.loadRecord(id);
+        DsRecordDto recordLoaded = recordStorage.loadRecord(id);
         Assertions.assertEquals(id, recordLoaded.getId());
         Assertions.assertEquals(origin, recordLoaded.getOrigin());
         Assertions.assertFalse(recordLoaded.getDeleted());
@@ -97,10 +95,10 @@ public class RecordStorageTest extends TestcontainersUtil {
         record.setData(dataUpdate);
         record.setParentId(parentIdUpdated);
         record.setReferenceId(referenceIdUpdated);
-        storage.updateRecord(record);
+        recordStorage.updateRecord(record);
 
         //Check new updated record is correct.
-        DsRecordDto recordUpdated = storage.loadRecord(id);
+        DsRecordDto recordUpdated = recordStorage.loadRecord(id);
 
         Assertions.assertEquals(id, recordUpdated.getId());
         Assertions.assertEquals(origin, recordUpdated.getOrigin());
@@ -110,9 +108,9 @@ public class RecordStorageTest extends TestcontainersUtil {
         Assertions.assertEquals(referenceIdUpdated, recordUpdated.getReferenceId());
 
         //Mark record for delete
-        storage.markRecordForDelete(id);
+        recordStorage.markRecordForDelete(id);
 
-        DsRecordDto record_deleted = storage.loadRecord(id);
+        DsRecordDto record_deleted = recordStorage.loadRecord(id);
         Assertions.assertTrue(record_deleted.getDeleted());
 
         //MTime must also be updated when mark for delete
@@ -120,27 +118,27 @@ public class RecordStorageTest extends TestcontainersUtil {
 
         //Update it and deleted flag should be removed
         record.setData("bla bla bla2");
-        storage.updateRecord(record);
-        DsRecordDto record_updated_after_delete = storage.loadRecord(id);
+        recordStorage.updateRecord(record);
+        DsRecordDto record_updated_after_delete = recordStorage.loadRecord(id);
 
         Assertions.assertFalse(record_updated_after_delete.getDeleted());
 
         //test updateMtime
-        int updated = storage.updateMTimeForRecord(id).getCount();
+        int updated = recordStorage.updateMTimeForRecord(id).getCount();
         Assertions.assertEquals(1, updated);
-        DsRecordDto record_after_mtime_touch = storage.loadRecord(id);
+        DsRecordDto record_after_mtime_touch = recordStorage.loadRecord(id);
         Assertions.assertTrue(record_after_mtime_touch.getmTime() > record_updated_after_delete.getmTime());
 
         //delete if marked for delete.
-        int deleted = storage.deleteMarkedForDelete("origin.test").getCount();
+        int deleted = recordStorage.deleteMarkedForDelete("origin.test").getCount();
         Assertions.assertEquals(0, deleted); //Was not marked for deletes
 
         //Mark record for delete again
-        storage.markRecordForDelete(id);
-        deleted = storage.deleteMarkedForDelete("origin.test").getCount();
+        recordStorage.markRecordForDelete(id);
+        deleted = recordStorage.deleteMarkedForDelete("origin.test").getCount();
         Assertions.assertEquals(1, deleted); //Now it is deleted
 
-        DsRecordDto deletedReally = storage.loadRecord(id);
+        DsRecordDto deletedReally = recordStorage.loadRecord(id);
         Assertions.assertNull(deletedReally);
     }
 
@@ -155,13 +153,13 @@ public class RecordStorageTest extends TestcontainersUtil {
         record.setData("");
         record.setRecordType(RecordTypeDto.MANIFESTATION);
         record.setReferenceId(kalturaReferenceId);
-        storage.createNewRecord(record);
+        recordStorage.createNewRecord(record);
 
         //Update kaltura Id.
-        storage.updateKalturaIdForRecords(kalturaReferenceId, kalturaId);
+        recordStorage.updateKalturaIdForRecords(kalturaReferenceId, kalturaId);
 
         //Load and test kalturaId correct
-        DsRecordDto recordUpdated = storage.loadRecord(recordId);
+        DsRecordDto recordUpdated = recordStorage.loadRecord(recordId);
         assertEquals(kalturaReferenceId, recordUpdated.getReferenceId());
         assertEquals(kalturaId, recordUpdated.getKalturaId());
     }
@@ -176,13 +174,13 @@ public class RecordStorageTest extends TestcontainersUtil {
         record.setOrigin("origin_123");
         record.setData(data);
         record.setRecordType(RecordTypeDto.MANIFESTATION);
-        storage.createNewRecord(record);
+        recordStorage.createNewRecord(record);
 
         //Update referenceId Id.
-        storage.updateReferenceIdForRecord(recordId, referenceId);
+        recordStorage.updateReferenceIdForRecord(recordId, referenceId);
 
         //Load and test referenceId is correct
-        DsRecordDto recordUpdated = storage.loadRecord(recordId);
+        DsRecordDto recordUpdated = recordStorage.loadRecord(recordId);
         assertEquals(referenceId, recordUpdated.getReferenceId());
         assertEquals(data, recordUpdated.getData());//Data not modified
     }
@@ -194,7 +192,7 @@ public class RecordStorageTest extends TestcontainersUtil {
         createMegaParent(parentId, "test.origin");
         long afterTime = UniqueTimestampGenerator.next();
 
-        long maxTime = storage.getMaxMtime("test.origin");
+        long maxTime = recordStorage.getMaxMtime("test.origin");
         assertTrue(maxTime > beforeTime, "Max time should be higher than before time");
         assertTrue(maxTime < afterTime, "Max time should be lower than after time");
     }
@@ -206,7 +204,7 @@ public class RecordStorageTest extends TestcontainersUtil {
         createMegaParent(parentId, "test.origin");
         long afterTime = UniqueTimestampGenerator.next();
 
-        long maxTime = storage.getMaxMtime("test.origin", RecordTypeDto.COLLECTION);
+        long maxTime = recordStorage.getMaxMtime("test.origin", RecordTypeDto.COLLECTION);
         assertTrue(maxTime > beforeTime, "Max time should be higher than before time");
         assertTrue(maxTime < afterTime, "Max time should be lower than after time");
     }
@@ -218,7 +216,7 @@ public class RecordStorageTest extends TestcontainersUtil {
         createMegaParent(parentId, "test.origin");
         long afterTime = UniqueTimestampGenerator.next();
 
-        long maxTime = storage.getMaxMtime("test.origin", RecordTypeDto.MANIFESTATION);
+        long maxTime = recordStorage.getMaxMtime("test.origin", RecordTypeDto.MANIFESTATION);
         assertTrue(maxTime > beforeTime, "Max time should be higher than before time");
         assertTrue(maxTime < afterTime, "Max time should be lower than after time");
     }
@@ -230,16 +228,16 @@ public class RecordStorageTest extends TestcontainersUtil {
         createMegaParent(parentId, "test.origin");
         long afterTime = UniqueTimestampGenerator.next();
 
-        long maxBefore = storage.getMaxMtimeAfter("test.origin", beforeTime, 100).getLeft();
-        long maxMiddle = storage.getMaxMtimeAfter("test.origin", (beforeTime + afterTime) / 2, 100).getLeft();
-        Long maxAfter = storage.getMaxMtimeAfter("test.origin", afterTime, 100).getLeft();
+        long maxBefore = recordStorage.getMaxMtimeAfter("test.origin", beforeTime, 100).getLeft();
+        long maxMiddle = recordStorage.getMaxMtimeAfter("test.origin", (beforeTime + afterTime) / 2, 100).getLeft();
+        Long maxAfter = recordStorage.getMaxMtimeAfter("test.origin", afterTime, 100).getLeft();
 
         assertTrue(beforeTime < maxBefore, "Max mTime with start before should be after beforeTime");
         assertTrue(maxBefore < afterTime, "Max mTime with start before should be before afterTime");
         assertTrue(maxBefore < maxMiddle, "Max mTime with start beforeTime should be before max mTime with start in the middle");
         assertTrue(maxMiddle < afterTime, "Max mTime with start in the middle should be before afterTime");
         assertEquals(0, maxAfter, "Max mTime with start afterTime should be 0");
-        List<DsRecordDto> bRecords = storage.getRecordsModifiedAfter("test.origin", beforeTime, 100);
+        List<DsRecordDto> bRecords = recordStorage.getRecordsModifiedAfter("test.origin", beforeTime, 100);
 
         assertEquals(maxBefore, bRecords.get(bRecords.size() - 1).getmTime(),
                 "The mTime for the last bRecord should match maxBefore");
@@ -252,18 +250,18 @@ public class RecordStorageTest extends TestcontainersUtil {
         createMegaParent(parentId, "test.origin");
         long afterTime = UniqueTimestampGenerator.next();
 
-        long maxBefore = storage.getMaxMtimeAfter("test.origin", RecordTypeDto.MANIFESTATION, beforeTime, 100).getLeft();
-        long maxMiddle = storage.getMaxMtimeAfter("test.origin", RecordTypeDto.MANIFESTATION, (beforeTime + afterTime) / 2, 100).getLeft();
-        Long maxAfter = storage.getMaxMtimeAfter("test.origin", RecordTypeDto.MANIFESTATION, afterTime, 100).getLeft();
+        long maxBefore = recordStorage.getMaxMtimeAfter("test.origin", RecordTypeDto.MANIFESTATION, beforeTime, 100).getLeft();
+        long maxMiddle = recordStorage.getMaxMtimeAfter("test.origin", RecordTypeDto.MANIFESTATION, (beforeTime + afterTime) / 2, 100).getLeft();
+        Long maxAfter = recordStorage.getMaxMtimeAfter("test.origin", RecordTypeDto.MANIFESTATION, afterTime, 100).getLeft();
 
         assertTrue(beforeTime < maxBefore, "Max mTime with start before should be after beforeTime");
         assertTrue(maxBefore < afterTime, "Max mTime with start before should be before afterTime");
         assertTrue(maxBefore < maxMiddle, "Max mTime with start beforeTime should be before max mTime with start in the middle");
         assertTrue(maxMiddle < afterTime, "Max mTime with start in the middle should be before afterTime");
         assertEquals(0, maxAfter, "Max mTime with start afterTime should be 0");
-        List<String> bRecords = storage.getRecordsIdsByRecordTypeModifiedAfter("test.origin", RecordTypeDto.MANIFESTATION, beforeTime, 100);
+        List<String> bRecords = recordStorage.getRecordsIdsByRecordTypeModifiedAfter("test.origin", RecordTypeDto.MANIFESTATION, beforeTime, 100);
 
-        assertEquals(maxBefore, storage.loadRecord(bRecords.get(bRecords.size() - 1)).getmTime(),
+        assertEquals(maxBefore, recordStorage.loadRecord(bRecords.get(bRecords.size() - 1)).getmTime(),
                 "The mTime for the last bRecord should match maxBefore");
     }
 
@@ -274,16 +272,16 @@ public class RecordStorageTest extends TestcontainersUtil {
 
         createMegaParent(parentId, "test.origin");
 
-        ArrayList<DsRecordDto> list1 = storage.getModifiedAfterParentsOnly("test.origin:does_not_exist", before, 100);
+        ArrayList<DsRecordDto> list1 = recordStorage.getModifiedAfterParentsOnly("test.origin:does_not_exist", before, 100);
         assertEquals(0, list1.size());
 
-        ArrayList<DsRecordDto> list2 = storage.getModifiedAfterParentsOnly("test.origin", before, 100);
+        ArrayList<DsRecordDto> list2 = recordStorage.getModifiedAfterParentsOnly("test.origin", before, 100);
         assertEquals(1, list2.size());
 
         //None after last
         long lastModified = list2.get(0).getmTime();
 
-        ArrayList<DsRecordDto> list3 = storage.getModifiedAfterParentsOnly("test.origin", lastModified, 100);
+        ArrayList<DsRecordDto> list3 = recordStorage.getModifiedAfterParentsOnly("test.origin", lastModified, 100);
         assertEquals(0, list3.size());
     }
 
@@ -294,31 +292,31 @@ public class RecordStorageTest extends TestcontainersUtil {
 
         createMegaParent(parentId, "test.origin");
 
-        ArrayList<DsRecordDto> list1 = storage.getModifiedAfterChildrenOnly("test.origin.unknown", before, 1000);
+        ArrayList<DsRecordDto> list1 = recordStorage.getModifiedAfterChildrenOnly("test.origin.unknown", before, 1000);
         assertEquals(0, list1.size());
 
-        ArrayList<DsRecordDto> list2 = storage.getModifiedAfterChildrenOnly("test.origin", before, 1000);
+        ArrayList<DsRecordDto> list2 = recordStorage.getModifiedAfterChildrenOnly("test.origin", before, 1000);
         assertEquals(1000, list2.size());
 
         //None after last
         long lastModified = list2.get(999).getmTime();
 
-        ArrayList<DsRecordDto> list3 = storage.getModifiedAfterChildrenOnly("test.origin", lastModified, 1000);
+        ArrayList<DsRecordDto> list3 = recordStorage.getModifiedAfterChildrenOnly("test.origin", lastModified, 1000);
         assertEquals(0, list3.size());
 
         //Test Pagination (cursor)
         //only get 500
-        ArrayList<DsRecordDto> list4 = storage.getModifiedAfterChildrenOnly("test.origin", before, 500);
+        ArrayList<DsRecordDto> list4 = recordStorage.getModifiedAfterChildrenOnly("test.origin", before, 500);
         assertEquals(500, list4.size());
 
         //get next 500
         long nextTime = list4.get(499).getmTime();
-        ArrayList<DsRecordDto> list5 = storage.getModifiedAfterChildrenOnly("test.origin", nextTime, 500);
+        ArrayList<DsRecordDto> list5 = recordStorage.getModifiedAfterChildrenOnly("test.origin", nextTime, 500);
         assertEquals(500, list5.size());
 
         //And no more
         nextTime = list5.get(499).getmTime();
-        ArrayList<DsRecordDto> list6 = storage.getModifiedAfterChildrenOnly("test.origin", nextTime, 500);
+        ArrayList<DsRecordDto> list6 = recordStorage.getModifiedAfterChildrenOnly("test.origin", nextTime, 500);
         assertEquals(0, list6.size());
     }
 
@@ -329,24 +327,24 @@ public class RecordStorageTest extends TestcontainersUtil {
         createMegaParent(parentId, "test.origin");
 
         //Test they are created
-        ArrayList<DsRecordDto> list1 = storage.getRecordsModifiedAfter("test.origin", before, 10000);
+        ArrayList<DsRecordDto> list1 = recordStorage.getRecordsModifiedAfter("test.origin", before, 10000);
         assertEquals(1001, list1.size()); //1000 children +1 parent
 
         //Delete those before (empty set).
-        int deleted = storage.deleteRecordsForOrigin("test.origin", 0L, before).getCount();
+        int deleted = recordStorage.deleteRecordsForOrigin("test.origin", 0L, before).getCount();
         assertEquals(0, deleted);
 
         //still 1001
-        ArrayList<DsRecordDto> list2 = storage.getRecordsModifiedAfter("test.origin", before, 10000);
+        ArrayList<DsRecordDto> list2 = recordStorage.getRecordsModifiedAfter("test.origin", before, 10000);
         assertEquals(1001, list2.size()); //1000 children +1 parent
 
         //Now delete all
         long after = UniqueTimestampGenerator.next();
-        deleted = storage.deleteRecordsForOrigin("test.origin", 0L, after).getCount();
+        deleted = recordStorage.deleteRecordsForOrigin("test.origin", 0L, after).getCount();
         assertEquals(1001, deleted);
 
         //None left
-        ArrayList<DsRecordDto> list3 = storage.getRecordsModifiedAfter("test.origin", before, 10000);
+        ArrayList<DsRecordDto> list3 = recordStorage.getRecordsModifiedAfter("test.origin", before, 10000);
         assertEquals(0, list3.size());
     }
 
@@ -357,7 +355,7 @@ public class RecordStorageTest extends TestcontainersUtil {
 
         createMegaParent(parentId, "test.origin");
 
-        ArrayList<DsRecordDto> list1 = storage.getRecordsModifiedAfter("test.origin", before, 10000);
+        ArrayList<DsRecordDto> list1 = recordStorage.getRecordsModifiedAfter("test.origin", before, 10000);
         assertEquals(1001, list1.size()); //100 children +1 parent
     }
 
@@ -369,11 +367,11 @@ public class RecordStorageTest extends TestcontainersUtil {
         String parentId = "mega_parent_id";
         createMegaParent(parentId, "test.origin");
 
-        ArrayList<String> childIds = storage.getChildrenIds(parentId);
+        ArrayList<String> childIds = recordStorage.getChildrenIds(parentId);
         assertEquals(1000, childIds.size());
 
         //Load with children and record at once.
-        DsRecordDto recordsWithChildren = storage.loadRecordWithChildIds(parentId);
+        DsRecordDto recordsWithChildren = recordStorage.loadRecordWithChildIds(parentId);
         Assertions.assertEquals(1000, recordsWithChildren.getChildrenIds().size());
     }
 
@@ -388,7 +386,7 @@ public class RecordStorageTest extends TestcontainersUtil {
         megaParent.setParentId(null);
         megaParent.setRecordType(RecordTypeDto.COLLECTION);
 
-        storage.createNewRecord(megaParent);
+        recordStorage.createNewRecord(megaParent);
 
         for (int i = 1; i <= 1000; i++) {
             DsRecordDto child = new DsRecordDto();
@@ -398,7 +396,7 @@ public class RecordStorageTest extends TestcontainersUtil {
             child.setParentId(id);
             child.setRecordType(RecordTypeDto.MANIFESTATION);
 
-            storage.createNewRecord(child);
+            recordStorage.createNewRecord(child);
         }
     }
 
@@ -410,30 +408,30 @@ public class RecordStorageTest extends TestcontainersUtil {
         r1.setOrigin("test_origin1");
         r1.setData("id1 text");
         r1.setRecordType(RecordTypeDto.MANIFESTATION);
-        storage.createNewRecord(r1);
+        recordStorage.createNewRecord(r1);
 
         DsRecordDto r2 = new DsRecordDto();
         r2.setId("Id2");
         r2.setOrigin("test_origin1");
         r2.setData("id2 text");
         r2.setRecordType(RecordTypeDto.MANIFESTATION);
-        storage.createNewRecord(r2);
+        recordStorage.createNewRecord(r2);
 
         DsRecordDto r3 = new DsRecordDto();
         r3.setId("Id3");
         r3.setOrigin("test_origin2");
         r3.setData("id3 text");
         r3.setRecordType(RecordTypeDto.MANIFESTATION);
-        storage.createNewRecord(r3);
+        recordStorage.createNewRecord(r3);
 
         DsRecordDto r4 = new DsRecordDto();
         r4.setId("Id4");
         r4.setOrigin("test_origin3");
         r4.setData("id4 text");
         r4.setRecordType(RecordTypeDto.MANIFESTATION);
-        storage.createNewRecord(r4);
+        recordStorage.createNewRecord(r4);
 
-        ArrayList<OriginCountDto> originStatisticsList = storage.getOriginStatictics();
+        ArrayList<OriginCountDto> originStatisticsList = recordStorage.getOriginStatictics();
         Comparator<OriginCountDto> compareByOrigin = Comparator.comparing(OriginCountDto::getOrigin);
         Collections.sort(originStatisticsList, compareByOrigin);
         assertEquals(3, originStatisticsList.size());

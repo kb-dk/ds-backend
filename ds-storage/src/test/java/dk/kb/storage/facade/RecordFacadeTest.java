@@ -2,13 +2,11 @@ package dk.kb.storage.facade;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.storage.RecordStorage;
 import dk.kb.storage.storage.RecordStorageForUnitTest;
 import dk.kb.storage.util.TestcontainersUtil;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class RecordFacadeTest extends TestcontainersUtil {
-    protected static RecordStorageForUnitTest storage = null;
+    protected static RecordStorageForUnitTest recordStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
-        storage = new RecordStorageForUnitTest();
+        recordStorage = new RecordStorageForUnitTest();
     }
 
     /**
@@ -35,7 +33,7 @@ public class RecordFacadeTest extends TestcontainersUtil {
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
-        storage.clearTableRecords();
+        recordStorage.clearTableRecords();
     }
 
     //THIS UNITTEST MUST BE UPDATED WHEN VALIDATION RULES ARE MORE CLEAR!

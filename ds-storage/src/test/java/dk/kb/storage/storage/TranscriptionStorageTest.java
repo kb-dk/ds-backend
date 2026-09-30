@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TranscriptionStorageTest extends TestcontainersUtil {
 
-    private static TranscriptionStorageForUnitTest storage = null;
+    private static TranscriptionStorageForUnitTest transcriptionStorage = null;
 
     private final String fileId = "a3332323-3323233-333333";
     private final String fileName = "a3332323-3323233-333333.mp3";
@@ -27,7 +27,7 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
-        storage = new TranscriptionStorageForUnitTest();
+        transcriptionStorage = new TranscriptionStorageForUnitTest();
     }
 
     /**
@@ -36,8 +36,7 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
-        storage.clearTableRecords();
-        storage.commit();
+        transcriptionStorage.clearTableRecords();
     }
 
     /**
@@ -60,9 +59,9 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
         transcriptionDto.setTranscriptionLines(transcriptionLines);
 
         // Act
-        storage.createTranscription(transcriptionDto);
+        transcriptionStorage.createTranscription(transcriptionDto);
 
-        int count = storage.countTranscriptionByFileId(fileId);
+        int count = transcriptionStorage.countTranscriptionByFileId(fileId);
 
         // Assert
         assertEquals(1, count);
@@ -77,10 +76,10 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
         transcriptionDto.setTranscription(transcription);
         transcriptionDto.setTranscriptionLines(transcriptionLines);
 
-        storage.createTranscription(transcriptionDto);
+        transcriptionStorage.createTranscription(transcriptionDto);
 
         // Act
-        TranscriptionDto returnedTranscriptionDto = storage.getTranscriptionByFileId(fileId);
+        TranscriptionDto returnedTranscriptionDto = transcriptionStorage.getTranscriptionByFileId(fileId);
 
         // Assert
         assertNotNull(returnedTranscriptionDto);
@@ -94,7 +93,7 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
     @Test
     public void getTranscriptionByFileId_whenFileIdDoNotExists_thenReturnTranscription() throws SQLException {
         // Act
-        TranscriptionDto returnedTranscriptionDto = storage.getTranscriptionByFileId(fileId);
+        TranscriptionDto returnedTranscriptionDto = transcriptionStorage.getTranscriptionByFileId(fileId);
 
         // Assert
         assertNotNull(returnedTranscriptionDto);
@@ -114,14 +113,14 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
         transcriptionDto.setTranscription(transcription);
         transcriptionDto.setTranscriptionLines(transcriptionLines);
 
-        storage.createTranscription(transcriptionDto);
+        transcriptionStorage.createTranscription(transcriptionDto);
 
         // Act
-        storage.deleteTranscriptionByFileId(fileId);
+        transcriptionStorage.deleteTranscriptionByFileId(fileId);
 
-        int count = storage.countTranscriptionByFileId(fileId);
+        int count = transcriptionStorage.countTranscriptionByFileId(fileId);
 
-        TranscriptionDto deletedTranscriptionDto = storage.getTranscriptionByFileId(fileId);
+        TranscriptionDto deletedTranscriptionDto = transcriptionStorage.getTranscriptionByFileId(fileId);
 
         // Assert
         assertEquals(0, count);
@@ -132,11 +131,11 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
     @Test
     public void deleteTranscriptionByFileId_whenFileIdDoNotExists_thenNoTranscriptionIsReturned() throws Exception {
         // Act
-        storage.deleteTranscriptionByFileId(fileId);
+        transcriptionStorage.deleteTranscriptionByFileId(fileId);
 
-        int count = storage.countTranscriptionByFileId(fileId);
+        int count = transcriptionStorage.countTranscriptionByFileId(fileId);
 
-        TranscriptionDto deletedTranscriptionDto = storage.getTranscriptionByFileId(fileId);
+        TranscriptionDto deletedTranscriptionDto = transcriptionStorage.getTranscriptionByFileId(fileId);
 
         // Assert
         assertEquals(0, count);
