@@ -347,11 +347,12 @@ public class DsDatahandlerFacade {
      */
     public static RecordsCountDto getRerunClusters() {
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
-        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, null, user);
-        try {
-            DsStorageClient dsStorageApiClient = getDsStorageApiClient();
+        DsStorageClient dsStorageApiClient = getDsStorageApiClient();
 
-            CreatedDto latestCreated = latestCreated();
+        dk.kb.storage.model.v1.CreatedDto latestCreated = latestCreated();
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, latestCreated.getCreated(), user);
+
+        try {
             List<RerunClusterRequestDto> rerunClusterRequestDtoList =
                 RerunClusterStorage.performStorageAction("getRerunClusters()",
                     RerunClusterStorage.class, storage -> {
@@ -399,14 +400,11 @@ public class DsDatahandlerFacade {
      *
      * @return CreatedDto latest created datetime
      */
-    public static CreatedDto latestCreated() {
+    public static dk.kb.storage.model.v1.CreatedDto latestCreated() {
         try {
             DsStorageClient dsStorageApiClient = getDsStorageApiClient();
-            dk.kb.storage.model.v1.CreatedDto returnedCreatedDto =
+            dk.kb.storage.model.v1.CreatedDto createdDto =
                 dsStorageApiClient.latestCreated();
-
-            CreatedDto createdDto = new CreatedDto();
-            createdDto.setCreated(returnedCreatedDto.getCreated());
 
             log.info("Latest created datetime from ds-storage rerun_clusters table:'{}'",
                 createdDto.getCreated());
