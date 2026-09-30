@@ -1,0 +1,61 @@
+info:
+  name: POST rerun-cluster - insert (2 items)
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/rerun-cluster"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: Accept
+      value: application/json
+  body:
+    type: json
+    data: |-
+      [
+        {
+          "id": "{{id1}}",
+          "fileId": "{{fileId1}}",
+          "rerunClusterId": "{{rerunClusterId}}",
+          "created": "{{created}}",
+          "jobId": "bruno-it"
+        },
+        {
+          "id": "{{id2}}",
+          "fileId": "{{fileId2}}",
+          "rerunClusterId": "{{rerunClusterId}}",
+          "created": "{{created}}",
+          "jobId": "bruno-it"
+        }
+      ]
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function () {
+          expect(res.getStatus()).to.equal(200);
+        });
+        test("content-type is JSON", function () {
+          expect(res.getHeader("content-type")).to.include("application/json");
+        });
+        test("body has integer count", function () {
+          const body = res.getBody();
+          expect(body).to.have.property("count");
+          expect(Number.isInteger(body.count)).to.be.true;
+        });
+        test("count equals number of items sent (2)", function () {
+          expect(res.getBody().count).to.equal(2);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

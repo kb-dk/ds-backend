@@ -24,11 +24,11 @@ import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
-import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.yaml.YAML;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -208,20 +208,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
 
-        boolean useTranscriptions=  ServiceConfig.getConfig().getBoolean("index.useTransriptions");
-        boolean hasTranscription=false;
-        //Transcription text.
-        String refrenceId = record.getReferenceId();        
-        if (refrenceId != null && useTranscriptions) {
-           String transcriptionText=getTranscriptionText(record.getReferenceId());
-           if (transcriptionText != null) {
-              log.debug("Found transcription text for fileId:"+refrenceId);
-              metadata.put("has_transcription", "true");
-              metadata.put("transcription", transcriptionText);
-              hasTranscription=true;
-           }                           
-        }        
-        metadata.put("has_transcription", ""+hasTranscription);               
+        String referenceId = record.getReferenceId();
+
+        updateMetadataMapWithRerunCluster(metadata, referenceId);
+
+        updateMetadataMapWithTranscription(metadata, referenceId);
+
         metadata.put("platform", "DRARKIV");
 
         metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
@@ -350,9 +342,50 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
     }
 
-   private String getTranscriptionText(String fileId) {      
-      TranscriptionDto transcription = getStorage().getTranscription(fileId);
-      return transcription.getTranscription(); // can not be null. Will be empty DTO
+    /**
+     * Updates the provided metadata map with rerunClusterResponseDto data.
+     * You need to return an empty object because the code can not handle anything else. So we are
+     * bound to have null checks this way...
+     *
+     * @param metadata the map of metadata
+     * @param fileId   the fileId to find rerunClusterResponseDto
+     */
+    private void updateMetadataMapWithRerunCluster(Map<String, String> metadata, String fileId) {
+        if (StringUtils.isNotBlank(fileId)) {
+            RerunClusterResponseDto rerunClusterResponseDto = getStorage().getRerunClusterByFileId(
+                UUID.fromString(fileId));
+
+            if (rerunClusterResponseDto.getRerunClusterId() != null) {
+                metadata.put("rerun_cluster_id", rerunClusterResponseDto.getRerunClusterId().toString());
+            }
+
+            if (rerunClusterResponseDto.getRerunClusterIdCount() != null) {
+                metadata.put("rerun_cluster_id_count", rerunClusterResponseDto.getRerunClusterIdCount().toString());
+            }
+        }
+    }
+
+    /**
+     * Updates the provided metadata map with transcriptions.
+     *
+     * @param metadata the map of metadata
+     * @param fileId   the fileId to find transcription
+     */
+    private void updateMetadataMapWithTranscription(Map<String, String> metadata, String fileId) {
+        boolean useTranscriptions = ServiceConfig.getConfig().getBoolean("index.useTransriptions");
+        boolean hasTranscription = false;
+
+        if (StringUtils.isNotBlank(fileId) && useTranscriptions) {
+            // Can not be null. Will be empty DTO;
+            TranscriptionDto transcription = getStorage().getTranscription(fileId);
+            if (transcription.getTranscription() != null) {
+                log.debug("Found transcription text for fileId:" + fileId);
+
+                metadata.put("transcription", transcription.getTranscription());
+                hasTranscription = true;
+            }
+        }
+        metadata.put("has_transcription", String.valueOf(hasTranscription));
     }
     
    private Storage getStorage() {

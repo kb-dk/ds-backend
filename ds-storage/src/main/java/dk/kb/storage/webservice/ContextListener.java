@@ -1,5 +1,6 @@
 package dk.kb.storage.webservice;
 
+import dk.kb.storage.storage.BaseModuleStorage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,8 +19,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import dk.kb.storage.config.ServiceConfig;
-import dk.kb.storage.storage.DsStorage;
-import dk.kb.shared.util.DbUtil;
+import dk.kb.storage.storage.RecordStorage;
 
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
@@ -96,17 +96,7 @@ public class ContextListener implements ServletContextListener {
       	String user = ServiceConfig.getDBUserName();
       	String password = ServiceConfig.getDBPassword();
       	
-       DsStorage.initialize(driver,url,user,password);                        
-    }
-
-    private void createLocalPostgresForJettyEnvironment(String driver, String url, String user, String password) {
-        try {
-         log.info("Setting up Postgres database under jetty in development mode");
-      	  DbUtil.runFlywayMigrations(url, driver,  user, password, "public", "ds-storage");
-      	}
-      	catch(Exception e) {
-      	  log.error("Unable to create local Postgres database for jetty environment",e);
-     	 }
+       BaseModuleStorage.initialize(driver, url, user, password);
     }
     
     /**
@@ -207,7 +197,7 @@ public class ContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         try {
         	log.info("Shutdown service v{}", getClass().getPackage().getImplementationVersion());
-            DsStorage.shutdown();
+            BaseModuleStorage.shutdown();
             
             Enumeration<Driver> drivers = DriverManager.getDrivers();
             

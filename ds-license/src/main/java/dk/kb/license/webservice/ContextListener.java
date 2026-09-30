@@ -100,16 +100,6 @@ public class ContextListener implements ServletContextListener {
        BaseModuleStorage.initialize(driver,url,user,password);
     }
 
-//    private void createLocalH2ForJettyEnvironment(String driver, String url, String user, String password) {
-//        try {
-//         log.info("Setting upPostgres database under jetty in development mode");
-//         DbUtil.runFlywayMigrations(url, driver,  user, password, 'public');
-//       }
-//       catch(Exception e) {
-//         log.error("Unable to create localPostgres database for jetty environment",e);
-//       }
-//    }
-
     /**
      * For unfathomable reasons, logback 1.4.11 does not support the construction
      * <pre>

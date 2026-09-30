@@ -14,12 +14,15 @@
  */
 package dk.kb.storage.util;
 
+import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.OriginDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.Service2ServiceRequest;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -35,6 +38,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.hc.core5.net.URIBuilder;
 
@@ -456,5 +460,68 @@ public class DsStorageClient {
             log.error("Invalid url:"+e.getMessage());
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
         }                      
+    }
+
+    /**
+     * Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table and
+     * return number of rows inserted or updated in rerun_clusters table.
+     *
+     * @throws ServiceException if fails to make API call
+     */
+    public RecordsCountDto updateRerunClusters(List<RerunClusterRequestDto> rerunClusterRequestDtoList)
+        throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                .appendPathSegments("rerun-cluster")
+                .build();
+
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST",
+                new RecordsCountDto(), rerunClusterRequestDtoList);
+
+        } catch (URISyntaxException uriSyntaxException) {
+            log.error("Invalid url: " + uriSyntaxException.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Return a RerunClusterResponseDto from fileId.
+     *
+     * @param fileId (required)
+     * @return RerunClusterResponseDto
+     * @throws ServiceException if fails to make API call
+     */
+    public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                .appendPathSegments("rerun-cluster", fileId.toString())
+                .build();
+
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET",
+                new RerunClusterResponseDto(), null);
+        } catch (URISyntaxException uriSyntaxException) {
+            log.error("Invalid url: " + uriSyntaxException.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Return latest created datetime from rerun_clusters table. Can be null.
+     *
+     * @throws ServiceException if fails to make API call
+     */
+    public CreatedDto latestCreated() throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                .appendPathSegments("rerun-cluster","created", "latest")
+                .build();
+
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET",
+                new CreatedDto(), null);
+
+        } catch (URISyntaxException uriSyntaxException) {
+            log.error("Invalid url: " + uriSyntaxException.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
     }
 }

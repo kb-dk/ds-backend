@@ -1,0 +1,4 @@
+name: authentication
+variables:
+  - secret: true
+    name: token

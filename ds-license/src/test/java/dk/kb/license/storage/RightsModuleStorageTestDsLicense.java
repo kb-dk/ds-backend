@@ -1,7 +1,7 @@
 package dk.kb.license.storage;
 
 import dk.kb.license.model.v1.*;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,18 +15,18 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unittest class for thestorage.
- * All tests create and usePostgres database in the directory: target/h2
+ * Unittest class for LicenseStorage.
+ * All tests create and use Postgres database.
  * The directory will be deleted before the first test-method is called.
  * Each test-method will delete all entries in the database, but keep the database tables.
- * Currently, the directory is not deleted after the tests have run. This is useful as you can
- * open and open the database and see what the unit-tests did.
  */
-public class RightsModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
+public class RightsModuleStorageTestDsLicense extends TestcontainersUtil {
+    private static RightsModuleStorageForUnitTest rightsStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+        rightsStorage = new RightsModuleStorageForUnitTest();
     }
 
     /**

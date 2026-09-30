@@ -7,6 +7,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added endpoint `POST /rerun_clusters` that calls `ds-storage` via DsStorageClient that fetch `latestCreated` timestamp
+  (can be null) in our `rerun_cluster` table, then `ds-datahandler` uses the fetched `latestCreated` timestamp to fetch
+  all new rows (unique `file_id`) from remote `p3rerun` database in table `clusters` table and convert it to a list of
+  `RerunClusterRequestDto`, and sends it to `ds-storage`, that saves it in our `rerun_clusters` table, update `mtime` in
+  `ds_records` table and return number of rows inserted or updated in `rerun_clusters` table in a `RecordsCountDto`
+  object to `ds-datahandler`, that saves the number in `jobs` table.
+- Added new database connection to remote `p3rerun` database. OPS need to add extra database connection properties in
+  `ds-datahandler-*.yaml` file.
+
 ### Fixed
 
 - Fixed `referenceId` so it now correctly get inserted as `NULL` in `ds_records` table, instead as before where it got
@@ -21,19 +32,20 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- The Flyway migrations are now published as a separate release artifact,
-  `ds-datahandler-<version>-flyway.zip` (classifier `flyway`), deployed to Nexus alongside the war and
-  embedded at the root of the distribution tarball. OPS and Jenkins can obtain the SQL for a
-  given release without unpacking the war, and the copy inside the tarball keeps the migrations
-  bound to the war they were built alongside. Fetch a single release with
+- The Flyway migrations are now published as a separate release artifact, `ds-datahandler-<version>-flyway.zip`
+  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball.
+  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball
+  keeps the migrations bound to the war they were built alongside. Fetch a single release with
   `mvn dependency:copy -Dartifact=dk.kb.datahandler:ds-datahandler:<version>:zip:flyway`. The zip contains the
   migrations and `ds-datahandler.build.properties` for provenance.
 
 ### Changed
-- Build suggest only trigger on full index. 
+
+- Build suggest only trigger on full index.
 - Build suggest is fire-and-forget call to solr. This will fix job that shows jobs as failed due to timeout.
 - Only one build suggest can run at same time. Any calls to build suggest when it is running will be ignored.
-- New CategoryDto created for the job log: CategoryDto.SOLR_BUILD_SUGGEST
+- New CategoryDto created for the job log: `CategoryDto.SOLR_BUILD_SUGGEST`
+- Removed `kb-util` dependency and moved classes to `ds-shared`.
 
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
@@ -43,7 +55,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added line break before `@return` in Javadocs
 
 ### Changed
-- Removed kb-util dependency and moved classes to ds-shared
+
 - Formatted `openapi` file.
 - Moved OpenAPI description from `pom.xml` into `openapi` file.
 - Added `name` in `pom.xml`.
@@ -336,13 +348,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.7.3](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-1.7.3) - 2024-05-28
 
-###   
+### Changed
 
 - Changed how to enrich preservica 7 records with manifestations. [DRA-685](https://kb-dk.atlassian.net/browse/DRA-685)
 
 ## [1.7.2](https://github.com/kb-dk/ds-datahandler/releases/tag/ds-datahandler-1.7.2) - 2024-05-27
 
-###
+### Added
 
 - Added endpoint for enriching preservica 7 records with manifestations extracted through the preservica 7 REST
   API. [DRA-500](https://kb-dk.atlassian.net/browse/DRA-503)
