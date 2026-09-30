@@ -19,6 +19,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 @Testcontainers
 public class RerunClusterStorageTest {
+  protected static final int CONNECTION_POOL_SIZE = 3;
 
   @Container
   private static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:13.23")
@@ -32,7 +33,7 @@ public class RerunClusterStorageTest {
   public static void beforeClass() throws Exception {
     ServiceConfig.initialize("conf/ds-datahandler-behaviour.yaml");
     RerunClusterStorage.initialize(postgres.getDriverClassName(), postgres.getJdbcUrl(),
-        postgres.getUsername(), postgres.getPassword(), 10);
+        postgres.getUsername(), postgres.getPassword(), CONNECTION_POOL_SIZE);
     rerunClusterStorage = new RerunClusterStorageForUnitTests();
   }
 
