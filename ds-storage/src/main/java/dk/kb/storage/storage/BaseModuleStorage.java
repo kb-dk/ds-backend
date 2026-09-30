@@ -55,20 +55,6 @@ public abstract class BaseModuleStorage implements AutoCloseable {
     dataSource.setDefaultReadOnly(false);
     dataSource.setDefaultAutoCommit(false);
 
-    //TODO maybe set some datasource options.
-    // enable detection and logging of connection leaks
-    /*
-     * dataSource.setRemoveAbandonedOnBorrow(
-     * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
-     * > 0); dataSource.setRemoveAbandonedOnMaintenance(
-     * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
-     * > 0); dataSource.setRemoveAbandonedTimeout(AlmaPickupNumbersPropertiesHolder.
-     * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM); //1 hour
-     * dataSource.setLogAbandoned(AlmaPickupNumbersPropertiesHolder.
-     * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM > 0);
-     * dataSource.setMaxWaitMillis(AlmaPickupNumbersPropertiesHolder.
-     * PICKUPNUMBERS_DATABASE_POOL_CONNECT_TIMEOUT);
-     */
     //Idle settings defaults (min/max) has good values.
     dataSource.setMaxOpenPreparedStatements(connectionPoolSize);
 
