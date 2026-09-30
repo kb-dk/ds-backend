@@ -103,6 +103,10 @@ public class DsKalturaClient extends DsKalturaClientBase {
         return handleRequest(MediaService.list(filter));
     }
 
+    public ListResponse<MediaEntry> listMediaEntry(MediaEntryFilter filter, FilterPager pager) throws APIException {
+        return handleRequest(MediaService.list(filter, pager));
+    }
+
     /**
      * Find the Kaltura id for a referenceId, excluding deleted entries. Unlike eSearch, the entry service is not
      * affected by index lag, so newly uploaded entries are found.
@@ -150,6 +154,38 @@ public class DsKalturaClient extends DsKalturaClientBase {
             return null;
         }
         return response.getObjects().get(0).getStatus();
+    }
+
+    /**
+     * Get the status of a batch of Kaltura entries with a single request. Unlike eSearch, the entry service
+     * returns entries in any status, not only READY.
+     *
+     * @param entryIds The internal Kaltura entry ids. At most {@link #getBatchSize()}.
+     * @return Map from entry id to {@link EntryStatus}. Entries not found in Kaltura are absent from the map.
+     * @throws IllegalArgumentException if there are more entryIds than the batch size.
+     * @throws APIException             if the client failed to establish a Kaltura session or if the request itself
+     *                                  was unsuccessful.
+     */
+    public Map<String, EntryStatus> getEntryStatuses(List<String> entryIds) throws APIException {
+        if (entryIds.size() > getBatchSize()) {
+            throw new IllegalArgumentException("Size of entryIds: " + entryIds.size() +
+                    " is greater than batchSize: " + getBatchSize());
+        }
+        if (entryIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        MediaEntryFilter filter = new MediaEntryFilter();
+        filter.setIdIn(String.join(",", entryIds));
+        filter.setStatusNotEqual(EntryStatus.DELETED);
+        FilterPager pager = new FilterPager();
+        pager.setPageSize(entryIds.size());
+        List<MediaEntry> entries = listMediaEntry(filter, pager).getObjects();
+
+        Map<String, EntryStatus> statuses = new LinkedHashMap<>();
+        for (MediaEntry entry : entries) {
+            statuses.put(entry.getId(), entry.getStatus());
+        }
+        return statuses;
     }
 
     /**
