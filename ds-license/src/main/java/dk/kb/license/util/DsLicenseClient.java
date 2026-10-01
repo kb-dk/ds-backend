@@ -33,7 +33,6 @@ import dk.kb.license.model.v1.ValidateAccessOutputDto;
 import dk.kb.util.webservice.Service2ServiceRequest;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
-import dk.kb.util.yaml.YAML;
 
 import org.apache.hc.core5.net.URIBuilder;
 import org.eclipse.microprofile.config.Config;
@@ -45,19 +44,19 @@ import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Client for the service. Intended for use by other projects that calls this service.
+ * Client for the service.
  * See the {@code README.md} for details on usage.
  * This class is not used internally.
  * The client is Thread safe and handles parallel requests independently.
  * It is recommended to persist the client and to re-use it between calls.
  * The client supports caching for {@link #checkAccessForIds} and {@link #checkAccessForResourceIds}.
- * See the {@link DsLicenseApi(YAML)} constructor for details.
+ * See the {@link #DsLicenseClient(Config)} constructor for details.
  */
 public class DsLicenseClient{
     private static final Logger log = LoggerFactory.getLogger(DsLicenseClient.class);
     private final String serviceURI;
     private final static String CLIENT_URL_EXCEPTION="The client url was not constructed correct";
-    
+
     public static final String URL_KEY = "licensemodule.url";
     public static final String CACHE_ID_COUNT_KEY = "licensemodule.cache.id.count";
     public static final int CACHE_ID_COUNT_DEFAULT = 100;
@@ -71,7 +70,8 @@ public class DsLicenseClient{
             .build();
 
     /**
-     * Creates a client for the service based on YAML config with the following structure:
+     * Creates a client for the service based on a MicroProfile {@link Config} (as used by every ds-backend
+     * module, now that all of them have migrated to SmallRye Config) with the following structure:
      * <pre>
      * licensemodule:
      *   url: 'http://localhost:9076/ds-license/v1' # Mandatory
@@ -80,21 +80,8 @@ public class DsLicenseClient{
      *       count: 100 # Default
      *       ms: 60000  # Default
      * </pre>
-     * @param yaml setup for the license client, as outlined above.
-     */
-    @SuppressWarnings("JavadocLinkAsPlainText")
-    public DsLicenseClient(YAML yaml) {
-        this(yaml.getString(URL_KEY),
-                yaml.getInteger(CACHE_ID_COUNT_KEY, CACHE_ID_COUNT_DEFAULT),
-                yaml.getLong(CACHE_ID_MS_KEY, CACHE_ID_MS_DEFAULT));
-    }
-
-    /**
-     * Creates a client for the service based on a MicroProfile {@link Config} (as used by every ds-backend
-     * module migrated to SmallRye Config) with the same structure as outlined in the {@link #DsLicenseClient(YAML)}
-     * javadoc.
      *
-     * @param config setup for the license client, as outlined in {@link #DsLicenseClient(YAML)}.
+     * @param config setup for the license client, as outlined above.
      */
     public DsLicenseClient(Config config) {
         this(config.getValue(URL_KEY, String.class),
@@ -135,7 +122,7 @@ public class DsLicenseClient{
      * Creates a client for the service.
      *
      * @param serviceURI the URI for the service, e.g. {@code https://example.com/ds-license/v1}.
-     * @deprecated use {@link DsLicenseApi(YAML)} or {@link DsLicenseApi(YAML, int, long)} instead.
+     * @deprecated use {@link #DsLicenseClient(Config)} or {@link #DsLicenseClient(String, int, long)} instead.
      */
     @Deprecated
     public DsLicenseClient(String serviceURI) {
