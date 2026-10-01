@@ -1,0 +1,7 @@
+# Minimal YAML fixture for ApplicationPropertiesOverrideTest (dk.kb.util.config), demonstrating SmallRye
+# Config's own implicit config/application.properties convention - see that test's javadoc. Not a real service
+# configuration; only used by that one test.
+db:
+  password: ""
+  connectionPoolSize: 10
+  driver: "org.h2.Driver"
