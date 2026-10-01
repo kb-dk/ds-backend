@@ -12,17 +12,15 @@
 # the build-base image; $MVN and /build come with it.
 # -----------------------------------------------------------------------------
 FROM build-base AS build
-RUN --mount=type=secret,id=maven_settings \
-    --mount=type=secret,id=maven_settings_security \
-    $MVN -pl ds-discover dependency:go-offline
 # The whole module, not just src: assembly descriptors reach into conf/ and other
 # per-module folders, and enumerating those service by service is a trap.
-# dependency:go-offline has already run above against the poms inherited from the
-# build-base layer, so the expensive layer is cached before this point. `**/target/` in
-# .dockerignore keeps the module's local build output out of this copy.
+# `**/target/` in .dockerignore keeps the module's local build output out of this copy.
 COPY ds-discover/ ds-discover/
+# Downloads come from the shared cache mount (see build-base.Dockerfile), so there is
+# no separate dependency:go-offline step: nothing is downloaded twice either way.
 RUN --mount=type=secret,id=maven_settings \
     --mount=type=secret,id=maven_settings_security \
+    --mount=type=cache,id=ds-backend-m2,target=/m2/cached \
     $MVN -pl ds-discover package -DskipTests
 
 # -----------------------------------------------------------------------------
