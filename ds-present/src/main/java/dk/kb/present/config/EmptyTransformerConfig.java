@@ -12,21 +12,27 @@
  *  limitations under the License.
  *
  */
-package dk.kb.present.transform;
-
-import dk.kb.present.config.TransformerConfig;
+package dk.kb.present.config;
 
 /**
- * Constructs {@link ImageRightsExtractor}s.
+ * Configuration for transformer types that take no configuration at all, i.e. {@code identity} and
+ * {@code imagerights}, used by {@link dk.kb.present.transform.IdentityFactory} and
+ * {@link dk.kb.present.transform.ImageRightsFactory}.
  */
-public class ImageRightsFactory implements DSTransformerFactory {
-    @Override
-    public String getTransformerID() {
-        return ImageRightsExtractor.ID;
+public class EmptyTransformerConfig implements TransformerConfig {
+    private final String type;
+
+    public EmptyTransformerConfig(String type) {
+        this.type = type;
     }
 
     @Override
-    public DSTransformer createTransformer(TransformerConfig conf) {
-        return new ImageRightsExtractor();
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public String toString() {
+        return "EmptyTransformerConfig(type='" + type + "')";
     }
 }

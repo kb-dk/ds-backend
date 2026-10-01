@@ -14,6 +14,7 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.config.OriginConfig;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.storage.Storage;
@@ -31,8 +32,6 @@ import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 
 import dk.kb.util.webservice.stream.ContinuationStream;
-import dk.kb.util.yaml.NotFoundException;
-import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,15 +54,6 @@ public class DSOrigin {
     // Origin-specific properties
     private static final Logger log = LoggerFactory.getLogger(DSOrigin.class);
     private static final Logger transformationErrorsLog = LoggerFactory.getLogger("dk.kb.transformation.errors");
-    private static final String PREFIX_KEY = "prefix"; // IDs for this origin starts with <prefix>_ (note the underscore)
-    private static final String DESCRIPTION_KEY = "description";
-    private static final String STORAGE_KEY = "storage";
-    private static final String ORIGIN_KEY = "origin";
-    private static final String VIEWS_KEY = "views";
-    private static final String RECORDREQUESTTYPE_KEY = "recordRequestType";
-
-    // General properties
-    public static final String STOP_ON_ERROR_KEY = "records.errorHandling.stop";
 
     private static final int LICENSE_BATCH_SIZE = 500;
 
@@ -120,35 +110,23 @@ public class DSOrigin {
      * Create an origin based on the given conf. The storageHandler is expected to be initialized and should contain
      * the storage specified for the origin.
      *
-     * @param conf configuration for the origin, should contain a single key:value with the key being the
-     *             origin ID and the value being the configuration for the origin.
+     * @param conf configuration for the origin.
      * @param storageHandler previously initialized pool of storages.
      */
-    public DSOrigin(YAML conf, StorageHandler storageHandler) {
-        id = conf.keySet().stream().findFirst().orElseThrow();
-        try {
-            // When YAML keys contain YAML syntax they need to be encapsulated in quotation marks.
-            // This should probably be handled in the YAML util class.
-            conf = conf.getSubMap("\"" + id + "\""); // There must be some properties for a storage
-            origin = conf.getString(ORIGIN_KEY);
-            prefix = conf.getString(PREFIX_KEY);
-            description = conf.getString(DESCRIPTION_KEY, null);
-            recordRequestType = RecordTypeDto.valueOf(conf.getString(RECORDREQUESTTYPE_KEY));
-            storage = storageHandler.getStorage(conf.getString(STORAGE_KEY, null)); // null means default storage
+    public DSOrigin(OriginConfig conf, StorageHandler storageHandler) {
+        id = conf.getId();
+        origin = conf.getOrigin();
+        prefix = conf.getPrefix();
+        description = conf.getDescription();
+        recordRequestType = RecordTypeDto.valueOf(conf.getRecordRequestType());
+        storage = storageHandler.getStorage(conf.getStorage()); // null means default storage
 
-            views = conf.getYAMLList(VIEWS_KEY)
-                    .stream()
-                    .map(yaml -> new View(yaml, origin))
-                    .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
+        views = conf.getViews().stream()
+                .map(viewConf -> new View(viewConf, origin))
+                .collect(Collectors.toMap(view -> view.getId().toLowerCase(Locale.ROOT), view -> view));
 
-            // Note: stopOnError is set at the outer level, not specifically for each origin
-            stopOnError = ServiceConfig.getFlatConfig()
-                    .getOptionalValue(STOP_ON_ERROR_KEY, Boolean.class)
-                    .orElse(true);
-        } catch (NotFoundException e) {
-            throw new IllegalArgumentException(
-                    "Mandatory property '" + e.getPath() + "' not present for Origin '" + id + "'");
-        }
+        // Note: stopOnError is set at the outer level, not specifically for each origin
+        stopOnError = ServiceConfig.isStopOnErrorEnabled();
         log.info("Created " + this);
     }
 

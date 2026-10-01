@@ -111,7 +111,7 @@ public class PresentFacadeTest {
     @Tag("integration")
     void solrPreservicaRecords() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            fail("Missing internal_test_files");  
+            fail("Missing internal_test_files");
         }
 
         // No access checking
@@ -125,7 +125,7 @@ public class PresentFacadeTest {
 
     @Test
     void skiponerror() {
-        assertEquals(false, ServiceConfig.getConfig().getBoolean(DSOrigin.STOP_ON_ERROR_KEY, true));
+        assertEquals(false, ServiceConfig.isStopOnErrorEnabled());
     }
 
     /**
@@ -150,7 +150,7 @@ public class PresentFacadeTest {
     @Tag("integration")
     void getRecordsMODSDeclaration() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            fail("Missing internal_test_files");                 
+            fail("Missing internal_test_files");
         }
         StreamingOutput out = PresentFacade.getRecords(testResponse, "dsfl", 0L, -1L, FormatDto.MODS, ids -> ids);
         String result = toString(out);
@@ -198,7 +198,7 @@ public class PresentFacadeTest {
     @Tag("integration")
     void getRecordsRawLines() throws IOException {
         if (Resolver.getPathFromClasspath("internal_test_files") == null){
-            fail("Missing internal_test_files");      
+            fail("Missing internal_test_files");
         }
         try (MockedStatic<FormatDto> FormatDtoMockedStatic = Mockito.mockStatic(FormatDto.class)) {
             final FormatDto RAWBYPASS = Mockito.mock(FormatDto.class);

@@ -40,12 +40,8 @@ public class AccessUtil {
     public static final String GROUP_INTERNAL_SERVICE = "internal_service";
     public static final String GROUP_ADMIN = "admin";
 
-    private static final String LICENSE_URL_KEY = "licensemodule.url"; // Used for creating licenseClient
-    private static final String LICENSE_ALLOWALL_KEY = "licensemodule.allowall";
-
     public static DsLicenseClient licenseClient;     // Shared between instances
-    public static boolean licenseAllowAll =
-            ServiceConfig.getFlatConfig().getOptionalValue(LICENSE_ALLOWALL_KEY, Boolean.class).orElse(false);
+    public static boolean licenseAllowAll = ServiceConfig.getLicenseModuleAllowAll();
 
     /**
      * Based on user credentials (not used yet as it requires pending OAuth2-integration) and ds-license setup,
@@ -164,9 +160,9 @@ public class AccessUtil {
           return licenseClient;
         }
 
-        String dsLicenseUrl = ServiceConfig.getFlatConfig().getOptionalValue(LICENSE_URL_KEY, String.class).orElse(null);
+        String dsLicenseUrl = ServiceConfig.getLicenseModuleUrl();
         if (dsLicenseUrl == null) {
-            throw new IllegalStateException("No ds-license URL specified at " + LICENSE_URL_KEY);
+            throw new IllegalStateException("No ds-license URL specified at licensemodule.url");
         }
         licenseClient = new DsLicenseClient(dsLicenseUrl);
         log.info("Created client for ds-license at URL '{}' with allowall={}", dsLicenseUrl, licenseAllowAll);

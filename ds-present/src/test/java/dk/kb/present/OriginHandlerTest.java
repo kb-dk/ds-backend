@@ -3,7 +3,6 @@ package dk.kb.present;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -22,15 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class OriginHandlerTest {
     private static final Logger log = LoggerFactory.getLogger(OriginHandlerTest.class);
-    private static YAML config;
-    
+
     @BeforeAll
     static void setup() {
         try {
             ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "test_setup.yaml");
-            config = ServiceConfig.getConfig();
-        } catch (IOException e) {          
-            log.error("test_setup.yaml could not be loaded");            
+        } catch (IOException e) {
+            log.error("test_setup.yaml could not be loaded");
             fail();
         }
     }
@@ -82,7 +79,8 @@ class OriginHandlerTest {
 
     @Test
     void localCorpusMODS() throws IOException {
-        OriginHandler ch = new OriginHandler(config);
+        OriginHandler ch = new OriginHandler(ServiceConfig.getOrigins(), ServiceConfig.getOriginPrefixPattern(),
+                ServiceConfig.getRecordIdPattern(), ServiceConfig.getStorages());
         String record = ch.getRecord("local.mods:40221e30-1414-11e9-8fb8-00505688346e.xml", FormatDto.MODS);
         assertTrue(record.contains("<mods:title>Christian VIII</mods:title>"));
     }
@@ -94,14 +92,16 @@ class OriginHandlerTest {
             log.error("Preservica test file is not present. Test for file 9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml");
             fail();
         }
-        OriginHandler ch = new OriginHandler(config);
+        OriginHandler ch = new OriginHandler(ServiceConfig.getOrigins(), ServiceConfig.getOriginPrefixPattern(),
+                ServiceConfig.getRecordIdPattern(), ServiceConfig.getStorages());
         String record = ch.getRecord("local.radio.test:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml", FormatDto.JSON_LD);
         assertTrue(record.contains("\"id\":\"local.radio.test:9d9785a8-71f4-4b34-9a0e-1c99c13b001b.xml\""));
     }
 
     @Test
-    void localCorpusFail() throws IOException {        
-        OriginHandler ch = new OriginHandler(config);
+    void localCorpusFail() throws IOException {
+        OriginHandler ch = new OriginHandler(ServiceConfig.getOrigins(), ServiceConfig.getOriginPrefixPattern(),
+                ServiceConfig.getRecordIdPattern(), ServiceConfig.getStorages());
         try {
             ch.getRecord("local.radio:40221e30-1414-11e9-8fb8-00505688346e.xml", FormatDto.RAW);
             fail("Requesting record in raw format should fail");

@@ -1,22 +1,21 @@
 package dk.kb.present;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import dk.kb.present.config.XsltConfig;
 import dk.kb.present.copyright.XsltCopyrightMapper;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.XSLTFactory;
 import dk.kb.present.transform.XSLTTransformer;
 import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,12 +67,12 @@ public class TestUtil {
     /**
      * Implicit test of {@link dk.kb.present.transform.XSLTFactory}.
 	 *
-     * @param config XSLTFactory compliant YAML.
+     * @param config XSLTFactory compliant configuration.
      * @return the result generating a {@link dk.kb.present.transform.DSTransformer} using XSLTFactory and
      *         transforming the {@code xmlResource} with that, including access fields resolved using
      *         {@link XsltCopyrightMapper}.
      */
-	public static String getTransformedFromConfigWithAccessFields(YAML config, String xmlResource) throws Exception {
+	public static String getTransformedFromConfigWithAccessFields(XsltConfig config, String xmlResource) throws Exception {
 		DSTransformer transformer = new XSLTFactory().createTransformer(config);
 		String xml = Resolver.resolveUTF8String(xmlResource);
 		HashMap<String, String> metadata = XsltCopyrightMapper.applyXsltCopyrightTransformer(xml);
@@ -141,18 +140,12 @@ public class TestUtil {
 	 * Transform the input MODS record with an XSLT and return as pretty JSON
 	 */
 	public static void prettyPrintSolrJsonFromMods(String record) throws Exception {
-		String yamlStr =
-				"stylesheet: '" + MODS2SOLR + "'\n" +
-						"injections:\n" +
-						"  - imageserver: 'https://example.com/imageserver/'\n" +
-						"  - old_imageserver: 'http://kb-images.kb.dk'\n" +
-						"  - origin: 'ds.test'\n";
-		prettyPrintSolrJson(record, yamlStr);
-	}
-
-	private static void prettyPrintSolrJson(String record, String yamlStr) throws Exception {
-		YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
-		String solrString = getTransformedFromConfigWithAccessFields(yaml, record);
+		Map<String, String> injections = new LinkedHashMap<>();
+		injections.put("imageserver", "https://example.com/imageserver/");
+		injections.put("old_imageserver", "http://kb-images.kb.dk");
+		injections.put("origin", "ds.test");
+		XsltConfig config = new XsltConfig("xslt", MODS2SOLR, injections);
+		String solrString = getTransformedFromConfigWithAccessFields(config, record);
 		prettyPrintJson(solrString);
 	}
 

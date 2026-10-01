@@ -18,16 +18,15 @@ import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.XsltConfig;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -152,13 +151,11 @@ class XSLTCumulusToSolrTransformerTest extends XSLTTransformerTestBase {
 
 	@Test
 	void testImageResource() throws Exception {
-		String yamlStr =
-				"stylesheet: '" + MODS2SOLR + "'\n" +
-				"injections:\n" +
-				"  - imageserver: 'https://example.com/imageserver/'\n" +
-		        "  - old_imageserver: 'http://kb-images.kb.dk'\n";
-		YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
-		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, TestFiles.CUMULUS_RECORD_40221e30);
+		Map<String, String> injections = new LinkedHashMap<>();
+		injections.put("imageserver", "https://example.com/imageserver/");
+		injections.put("old_imageserver", "http://kb-images.kb.dk");
+		XsltConfig config = new XsltConfig("xslt", MODS2SOLR, injections);
+		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(config, TestFiles.CUMULUS_RECORD_40221e30);
 		assertTrue(solrString.contains("\"resource_id\":[\"\\/DAMJP2\\/DAM\\/Samlingsbilleder\\/0000\\/624\\/420\\/KE070592\"]"));
 		assertTrue(solrString.contains("\"thumbnail\":\"https:\\/\\/example.com\\/imageserver\\/%2FDAMJP2%2FDAM%2FSamlingsbilleder%2F0000%2F624%2F420%2FKE070592\\/full\\/%21150%2C150\\/0\\/default.jpg\""));
 	}
@@ -170,13 +167,11 @@ class XSLTCumulusToSolrTransformerTest extends XSLTTransformerTestBase {
 
 	@Test
 	void testOrigin() throws Exception {
-		String yamlStr =
-				"stylesheet: '" + MODS2SOLR + "'\n" +
-						"injections:\n" +
-						"  - imageserver: 'https://example.com/imageserver/'\n" +
-						"  - old_imageserver: 'http://kb-images.kb.dk'\n";
-		YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
-		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, TestFiles.CUMULUS_RECORD_40221e30);
+		Map<String, String> injections = new LinkedHashMap<>();
+		injections.put("imageserver", "https://example.com/imageserver/");
+		injections.put("old_imageserver", "http://kb-images.kb.dk");
+		XsltConfig config = new XsltConfig("xslt", MODS2SOLR, injections);
+		String solrString = TestUtil.getTransformedFromConfigWithAccessFields(config, TestFiles.CUMULUS_RECORD_40221e30);
 		assertTrue(solrString.contains("\"origin\":\"ds.test\""));
 	}
 }
