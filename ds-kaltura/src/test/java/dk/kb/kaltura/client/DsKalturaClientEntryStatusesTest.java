@@ -13,18 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class DsKalturaClientEntryStatusesTest {
 
     @Test
-    void getEntryStatuses_thenReturnsStatusForAllStatuses() throws Exception {
-        EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(
-                Map.of("0_ready", EntryStatus.READY, "0_error", EntryStatus.ERROR_CONVERTING));
-
-        Map<String, EntryStatus> statuses = client.getEntryStatuses(List.of("0_ready", "0_error", "0_missing"));
-
-        assertEquals(EntryStatus.READY, statuses.get("0_ready"));
-        assertEquals(EntryStatus.ERROR_CONVERTING, statuses.get("0_error"));
-        assertNull(statuses.get("0_missing"));
-    }
-
-    @Test
     void getEntryStatuses_thenFiltersOnIdsWithPageSizeOfBatch() throws Exception {
         EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of());
 

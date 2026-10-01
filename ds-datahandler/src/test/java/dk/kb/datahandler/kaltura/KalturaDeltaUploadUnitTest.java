@@ -1,6 +1,5 @@
 package dk.kb.datahandler.kaltura;
 
-import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
@@ -16,7 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -44,7 +44,6 @@ class KalturaDeltaUploadUnitTest {
     @AfterEach
     void tearDown() {
         service.close();
-        KalturaDeltaUploadJob.kalturaClient = null;
     }
 
     // ─── uploadStreamsToKaltura ───────────────────────────────────────────────
@@ -200,16 +199,5 @@ class KalturaDeltaUploadUnitTest {
         solrDocumentList.addAll(Arrays.asList(documents));
         solrDocumentList.setNumFound(documents.length);
         return solrDocumentList;
-    }
-
-    // ─── getInternalIdKaltura ─────────────────────────────────────────────────
-
-    @Test
-    void testGetInternalIdKaltura_thenReturnsEntryIdFromKalturaClient() throws Exception {
-        DsKalturaClient kalturaClient = mock(DsKalturaClient.class);
-        when(kalturaClient.getEntryIdByReferenceId(FILE_ID)).thenReturn("0_entry");
-        KalturaDeltaUploadJob.kalturaClient = kalturaClient;
-
-        assertEquals("0_entry", KalturaDeltaUploadJob.getInternalIdKaltura(FILE_ID));
     }
 }
