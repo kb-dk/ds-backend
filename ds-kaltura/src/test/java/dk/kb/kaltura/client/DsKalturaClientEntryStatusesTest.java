@@ -1,16 +1,14 @@
 package dk.kb.kaltura.client;
 
 import com.kaltura.client.enums.EntryStatus;
+import com.kaltura.client.types.APIException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DsKalturaClientEntryStatusesTest {
 
@@ -51,5 +49,34 @@ class DsKalturaClientEntryStatusesTest {
         List<String> ids = Collections.nCopies(client.getBatchSize() + 1, "0_a");
 
         assertThrows(IllegalArgumentException.class, () -> client.getEntryStatuses(ids));
+    }
+
+    @Test
+    void getEntryStatus_whenEntryExists_thenReturnsStatus() throws Exception {
+        EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of("0_a", EntryStatus.PENDING));
+
+        assertEquals(EntryStatus.PENDING, client.getEntryStatus("0_a"));
+    }
+
+    @Test
+    void getEntryStatus_whenEntryNotFound_thenReturnsNull() throws Exception {
+        EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of());
+
+        assertNull(client.getEntryStatus("0_missing"));
+    }
+
+    @Test
+    void getEntryStatus_whenEntryDeleted_thenReturnsNull() throws Exception {
+        EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of("0_a", EntryStatus.DELETED));
+
+        assertNull(client.getEntryStatus("0_a"));
+    }
+
+    @Test
+    void getEntryStatus_whenOtherApiError_thenThrows() throws Exception {
+        EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of());
+        client.setGetError(new APIException(APIException.FailureStep.OnResponse, "Service unavailable", "SERVICE_UNAVAILABLE"));
+
+        assertThrows(APIException.class, () -> client.getEntryStatus("0_a"));
     }
 }

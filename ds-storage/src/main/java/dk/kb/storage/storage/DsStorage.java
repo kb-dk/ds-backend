@@ -1,20 +1,13 @@
 package dk.kb.storage.storage;
 
+import dk.kb.storage.config.ServiceConfig;
+import dk.kb.storage.model.v1.*;
+import dk.kb.storage.util.UniqueTimestampGenerator;
 import dk.kb.util.Pair;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import dk.kb.storage.config.ServiceConfig;
-import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.DsRecordMinimalDto;
-import dk.kb.storage.model.v1.OriginCountDto;
-import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.model.v1.RecordsCountDto;
-import dk.kb.storage.model.v1.TranscriptionDto;
-import dk.kb.storage.util.UniqueTimestampGenerator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -125,6 +118,22 @@ public class DsStorage implements AutoCloseable {
             " WHERE " + ORIGIN_COLUMN + "= ?" +
             " AND " + RECORDTYPE_COLUMN + "= ?" +
             " ORDER BY " + MTIME_COLUMN + " DESC";
+
+    //SELECT id,mTime,referenceId,kalturaId,deleted FROM ds_records WHERE origin= 'ds.tv' and mTime > 0 AND kalturaId IS NOT NULL AND kalturaId NOT LIKE 'ERROR_%' ORDER BY mtime ASC LIMIT 50
+    // Upload error markers (StreamErrorType, e.g. ERROR_FILE_MISSING) are stored in kalturaId, but are not Kaltura ids
+    private static final String kalturaRecordsStatement =
+            "SELECT " + ID_COLUMN + ", "
+                    + MTIME_COLUMN + ", "
+                    + RECORDS_REFERENCE_ID_COLUMN + ", "
+                    + RECORDS_KALTURA_ID_COLUMN + ", "
+                    + DELETED_COLUMN
+                    + " FROM " + RECORDS_TABLE +
+                    " WHERE " + ORIGIN_COLUMN + "= ?" +
+                    " AND " + MTIME_COLUMN + " > ?" +
+                    " AND " + RECORDS_KALTURA_ID_COLUMN + " IS NOT NULL" +
+                    " AND " + RECORDS_KALTURA_ID_COLUMN + " NOT LIKE 'ERROR_%'" +
+                    " ORDER BY " + MTIME_COLUMN + " ASC" +
+                    " LIMIT ?";
 
     //SELECT id,mTime,referenceId,kalturaId FROM ds_records WHERE origin= 'ds.tv' and mTime > 0 ORDER BY mtime ASC LIMIT 50
     private static final String referenceIdsStatement =
@@ -415,7 +424,44 @@ public class DsStorage implements AutoCloseable {
             throw new SQLException("SQL error getReferenceIds",e);
         }
 
-        return records; 
+        return records;
+    }
+
+    /**
+     * Get a list of records with a Kaltura id after a given mTime. Records with an upload error marker (ERROR_*) as
+     * kalturaId are not included. The records will only have fields id, mTime, referenceId, kalturaId and deleted.
+     *
+     * @param origin    The origin to fetch records from
+     * @param mTime     only fetch records with mTime larger that this
+     * @param batchSize Number of maximum records to return
+     * @return List of records ordered by mTime
+     */
+    public ArrayList<DsRecordKalturaDto> getKalturaRecords(String origin, long mTime, int batchSize) throws SQLException {
+        if (batchSize < 1 || batchSize > 100000) { //No doom switch
+            throw new InvalidArgumentServiceException("Batchsize must be in range 1 to 100000");
+        }
+        ArrayList<DsRecordKalturaDto> records = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(kalturaRecordsStatement)) {
+            stmt.setString(1, origin);
+            stmt.setLong(2, mTime);
+            stmt.setLong(3, batchSize);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    DsRecordKalturaDto record = new DsRecordKalturaDto();
+                    record.setId(rs.getString(ID_COLUMN));
+                    record.setmTime(rs.getLong(MTIME_COLUMN));
+                    record.setReferenceId(rs.getString(RECORDS_REFERENCE_ID_COLUMN));
+                    record.setKalturaId(rs.getString(RECORDS_KALTURA_ID_COLUMN));
+                    record.setDeleted(rs.getInt(DELETED_COLUMN) == 1);
+                    records.add(record);
+                }
+            }
+        } catch (Exception e) {
+            throw new SQLException("SQL error getKalturaRecords", e);
+        }
+
+        return records;
     }
     
     /**

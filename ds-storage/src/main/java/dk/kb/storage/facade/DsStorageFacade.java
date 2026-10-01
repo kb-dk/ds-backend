@@ -36,6 +36,20 @@ public class DsStorageFacade {
         return performStorageAction(id, storage -> storage.getReferenceIds(origin, mTime, batchSize));
     }
 
+    /**
+     * Get a list of records with a Kaltura id after a given mTime. Records with an upload error marker (ERROR_*) as
+     * kalturaId are not included. The records will only have fields id, mTime, referenceId, kalturaId and deleted.
+     *
+     * @param origin    The origin to fetch records from
+     * @param mTime     only fetch records with mTime larger that this
+     * @param batchSize Number of maximum records to return
+     * @return List of records ordered by mTime
+     */
+    public static ArrayList<DsRecordKalturaDto> getKalturaRecords(String origin, long mTime, int batchSize) {
+        String id = String.format(Locale.ROOT, "getKalturaRecords(origin='%s', mTime=%d, batchSize=%d)", origin, mTime, batchSize);
+        return performStorageAction(id, storage -> storage.getKalturaRecords(origin, mTime, batchSize));
+    }
+
     public static Long getMinimalRecordsModifiedAfter(
             ExportWriter writer, String origin, long mTime, long maxRecords, int batchSize) {
         String id = String.format(Locale.ROOT, "getMinimalRecordsModifiedAfter(origin='%s', mTime=%d, maxRecords=%d, batchSize=%d)",

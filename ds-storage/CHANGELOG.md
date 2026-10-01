@@ -9,6 +9,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- New service method `/records/kaltura` and `DsStorageClient.getKalturaRecords`, which return records for an origin
+  that have a Kaltura id (not an `ERROR_*` marker), with the fields id, mTime, referenceId, kalturaId and deleted.
+- New service method `/record/clearKalturaId` and `DsStorageClient.clearKalturaIdForRecord`, which set the
+  kaltura_id of a record to null so it is uploaded to Kaltura again.
 - Added `ERROR_KALTURA_TRANSCODING` and `ERROR_KALTURA_IMPORT` to `StreamErrorType`, for records whose Kaltura
   entry failed transcoding or import.
 

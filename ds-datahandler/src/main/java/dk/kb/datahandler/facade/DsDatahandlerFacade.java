@@ -220,13 +220,14 @@ public class DsDatahandlerFacade {
      * Start job that validates that kaltura_id values registered on records in ds-storage still point to a
      * Kaltura entry with status READY.
      * This is not a delta job, so all records with a kaltura_id are (re)checked on every run.
-     * If a kaltura_id does not exist in Kaltura, or exists but is not READY, the Kaltura entry is deleted (if
-     * present) and the kaltura_id is cleared on the storage record, making it eligible for kalturaDeltaUpload
-     * again.
-     * A solr delta indexing job will be started if both the job completes succesfully or fails.
+     * If the Kaltura entry is in status ERROR_CONVERTING or ERROR_IMPORTING, the kaltura_id is set to
+     * ERROR_KALTURA_TRANSCODING or ERROR_KALTURA_IMPORT. Otherwise, if a kaltura_id does not exist in Kaltura, or
+     * exists but is not READY, the Kaltura entry is deleted (if present) and the kaltura_id is cleared on the storage
+     * record, making it eligible for kalturaDeltaUpload again.
+     * A solr delta indexing job will be started if the job completes successfully and any records were changed.
      *
-     * @param dryRun If true, nothing is deleted in Kaltura or cleared in storage, and no solr delta index is started.
-     *               A summary of the kaltura_ids that would be cleared is logged.
+     * @param dryRun If true, nothing is changed in Kaltura or storage, and no solr delta index is started.
+     *               A summary of the kaltura_ids that would be changed is logged.
      * @throws InternalServiceException
      * @throws SolrServerException
      * @throws IOException
@@ -239,22 +240,16 @@ public class DsDatahandlerFacade {
 
         log.info("Starting kaltura validation. dryRun={}", dryRun);
         try {
-            int numberRecordsCleared = KalturaValidationJob.validateKalturaIds(dryRun);
+            int numberRecordsChanged = KalturaValidationJob.validateKalturaIds(dryRun);
 
-            if (dryRun) {
-                log.info("Kaltura validation dry run completed successfully. #records that would be cleared={}", numberRecordsCleared);
-                updateJob(jobDto, JobStatusDto.COMPLETED,
-                        "Dry run: " + numberRecordsCleared + " records would have kaltura_id cleared",
-                        OffsetDateTime.now(ZoneOffset.UTC), 0, null);
-                return;
-            }
+            log.info("Kaltura validation completed successfully. dryRun={}, #records changed={}", dryRun, numberRecordsChanged);
 
-            log.info("Kaltura validation completed successfully. #records cleared={}", numberRecordsCleared);
+            String message = dryRun ? "Dry run: " + numberRecordsChanged + " records would have kaltura_id changed" : null;
+            updateJob(jobDto, JobStatusDto.COMPLETED, message, OffsetDateTime.now(ZoneOffset.UTC),
+                    dryRun ? 0 : numberRecordsChanged, null);
 
-            updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC), numberRecordsCleared, null);
-
-            //Index the records that has mTime modified due to kalturaId being cleared.
-            if (numberRecordsCleared > 0) {
+            //Index the records that has mTime modified due to kalturaId being cleared or marked with an error.
+            if (!dryRun && numberRecordsChanged > 0) {
                 log.info("Starting solr delta index job");
                 indexSolrDelta("ds.tv");
                 indexSolrDelta("ds.radio");

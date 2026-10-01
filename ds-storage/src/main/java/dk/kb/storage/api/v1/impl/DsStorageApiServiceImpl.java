@@ -292,6 +292,16 @@ public class DsStorageApiServiceImpl extends ImplBase implements DsStorageApi {
     }
 
     @Override
+    public List<DsRecordKalturaDto> getKalturaRecords(String origin, Integer maxRecords, Long mTime) {
+        try {
+            log.debug("getKalturaRecords() called with call details: {}", getCallDetails());
+            return DsStorageFacade.getKalturaRecords(origin, mTime == null ? 0L : mTime, maxRecords);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
+    @Override
     public void clearKalturaIdForRecord(String referenceId) {
         try {
             log.debug("clearKalturaIdForRecord() called with call details: {}", getCallDetails());

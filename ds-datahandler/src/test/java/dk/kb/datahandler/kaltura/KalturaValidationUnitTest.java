@@ -1,11 +1,9 @@
 package dk.kb.datahandler.kaltura;
 
 import com.kaltura.client.enums.EntryStatus;
+import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -44,12 +40,12 @@ class KalturaValidationUnitTest {
     // ─── validateKalturaIds ────────────────────────────────────────────────────
 
     @Test
-    void testValidateKalturaIds_whenSolrHasNoDocuments_thenNoRecordIsCleared() {
+    void testValidateKalturaIds_whenStorageHasNoRecords_thenNoRecordIsCleared() {
         // Arrange
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList(); // numFound = 0
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(emptyRecords);
 
         // Act
         int result = KalturaValidationJob.validateKalturaIds(false);
@@ -62,11 +58,11 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenEntryIsReady_thenRecordIsNotCleared() {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(List.of(KALTURA_ID)))
                 .thenReturn(Map.of(KALTURA_ID, EntryStatus.READY));
 
@@ -83,11 +79,11 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenEntryExistsButNotReady_thenEntryIsDeletedAndKalturaIdIsCleared() {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
                 .thenReturn(Map.of(KALTURA_ID, EntryStatus.PENDING));
         service.when(() -> KalturaValidationJob.deleteStream(any())).thenAnswer(inv -> null);
@@ -114,11 +110,11 @@ class KalturaValidationUnitTest {
 
     private void assertKalturaErrorIsMarked(EntryStatus status, StreamErrorTypeDto expectedError) {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
                 .thenReturn(Map.of(KALTURA_ID, status));
         service.when(() -> KalturaValidationJob.updateKalturaIdForRecordWithError(any(), any(), any()))
@@ -137,11 +133,11 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenEntryDoesNotExistInKaltura_thenKalturaIdIsClearedWithoutDelete() {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList())).thenReturn(Map.of());
         service.when(() -> KalturaValidationJob.getEntryStatus(KALTURA_ID)).thenReturn(null);
         service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
@@ -158,13 +154,13 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenMultipleDocuments_thenAccumulatesCount() {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(
-                buildSolrDocument("id-1", "file-1", "kaltura-1"),
-                buildSolrDocument("id-2", "file-2", "kaltura-2"));
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+        List<DsRecordKalturaDto> records = List.of(
+                buildRecord("id-1", "file-1", "kaltura-1"),
+                buildRecord("id-2", "file-2", "kaltura-2"));
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
                 .thenReturn(Map.of("kaltura-1", EntryStatus.PENDING, "kaltura-2", EntryStatus.PENDING));
         service.when(() -> KalturaValidationJob.deleteStream(any())).thenAnswer(inv -> null);
@@ -183,23 +179,11 @@ class KalturaValidationUnitTest {
     }
 
     @Test
-    void testValidateKalturaIds_whenFetchSolrRecordsThrowsSolrServerException_thenThrowsInternalServiceException() {
+    void testValidateKalturaIds_whenFetchStorageRecordsThrows_thenThrowsInternalServiceException() {
         // Arrange
-        String expectedMessage = "Solr is down";
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenThrow(new SolrServerException(expectedMessage));
-
-        // Act and Assert
-        Exception exception = assertThrows(InternalServiceException.class, () -> KalturaValidationJob.validateKalturaIds(false));
-        assertEquals(expectedMessage, exception.getCause().getMessage());
-    }
-
-    @Test
-    void testValidateKalturaIds_whenFetchSolrRecordsThrowsIOException_thenThrowsInternalServiceException() {
-        // Arrange
-        String expectedMessage = "Network failure";
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenThrow(new IOException(expectedMessage));
+        String expectedMessage = "Storage is down";
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenThrow(new RuntimeException(expectedMessage));
 
         // Act and Assert
         Exception exception = assertThrows(InternalServiceException.class, () -> KalturaValidationJob.validateKalturaIds(false));
@@ -209,10 +193,10 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenGetEntryStatusesThrows_thenThrowsInternalServiceException() {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
                 .thenThrow(new RuntimeException("Kaltura API error"));
 
@@ -224,11 +208,11 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenEntryMissingFromBatchButReady_thenRecordIsNotCleared() {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList())).thenReturn(Map.of());
         service.when(() -> KalturaValidationJob.getEntryStatus(KALTURA_ID)).thenReturn(EntryStatus.READY);
 
@@ -244,10 +228,10 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenFallbackGetEntryStatusThrows_thenThrowsInternalServiceException() {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList())).thenReturn(Map.of());
         service.when(() -> KalturaValidationJob.getEntryStatus(KALTURA_ID))
                 .thenThrow(new RuntimeException("Kaltura API error"));
@@ -260,13 +244,13 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenDryRun_thenNothingIsDeletedOrCleared() {
         // Arrange
-        SolrDocument notReady = buildSolrDocument("record-1", "file-1", "kaltura-1");
-        SolrDocument notFound = buildSolrDocument("record-2", "file-2", "kaltura-2");
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(notReady, notFound);
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+        DsRecordKalturaDto notReady = buildRecord("record-1", "file-1", "kaltura-1");
+        DsRecordKalturaDto notFound = buildRecord("record-2", "file-2", "kaltura-2");
+        List<DsRecordKalturaDto> records = List.of(notReady, notFound);
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
                 .thenReturn(Map.of("kaltura-1", EntryStatus.ERROR_CONVERTING));
         service.when(() -> KalturaValidationJob.getEntryStatus("kaltura-2")).thenReturn(null);
@@ -284,11 +268,11 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenDryRunAndEntryReady_thenNothingWouldBeCleared() {
         // Arrange
-        SolrDocumentList solrDocumentList = buildSolrDocumentList(buildSolrDocument());
-        SolrDocumentList emptySolrDocumentList = new SolrDocumentList();
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordKalturaDto> emptyRecords = List.of();
 
-        service.when(() -> KalturaValidationJob.fetchSolrRecords(anyLong(), anyInt()))
-                .thenReturn(solrDocumentList, emptySolrDocumentList);
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
                 .thenReturn(Map.of(KALTURA_ID, EntryStatus.READY));
 
@@ -301,25 +285,72 @@ class KalturaValidationUnitTest {
         service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
     }
 
+    @Test
+    void testValidateKalturaIds_whenRecordMarkedForDelete_thenRecordIsSkipped() {
+        // Arrange
+        DsRecordKalturaDto deleted = buildRecord("record-1", "file-1", "kaltura-1");
+        deleted.setDeleted(true);
+        DsRecordKalturaDto active = buildRecord("record-2", "file-2", "kaltura-2");
+
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(List.of(deleted, active), List.of());
+        service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
+                .thenReturn(Map.of("kaltura-2", EntryStatus.PENDING));
+        service.when(() -> KalturaValidationJob.deleteStream(any())).thenAnswer(inv -> null);
+        service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
+
+        // Act
+        int result = KalturaValidationJob.validateKalturaIds(false);
+
+        // Assert
+        assertEquals(1, result);
+        service.verify(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-2")), times(1));
+        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), eq("file-1")), never());
+        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), eq("file-2")), times(1));
+    }
+
+    @Test
+    void testValidateKalturaIds_thenPagesEachOriginFromLastMTime() {
+        // Arrange
+        DsRecordKalturaDto first = buildRecord("record-1", "file-1", "kaltura-1");
+        first.setmTime(100L);
+        DsRecordKalturaDto second = buildRecord("record-2", "file-2", "kaltura-2");
+        second.setmTime(200L);
+
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.tv"), eq(0L), anyInt()))
+                .thenReturn(List.of(first));
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.tv"), eq(100L), anyInt()))
+                .thenReturn(List.of(second));
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.tv"), eq(200L), anyInt()))
+                .thenReturn(List.of());
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.radio"), eq(0L), anyInt()))
+                .thenReturn(List.of());
+        service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
+                .thenReturn(Map.of("kaltura-1", EntryStatus.READY, "kaltura-2", EntryStatus.READY));
+
+        // Act
+        int result = KalturaValidationJob.validateKalturaIds(false);
+
+        // Assert
+        assertEquals(0, result);
+        service.verify(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-1")), times(1));
+        service.verify(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-2")), times(1));
+        service.verify(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.radio"), eq(0L), anyInt()), times(1));
+    }
+
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
-    private SolrDocument buildSolrDocument() {
-        return buildSolrDocument(ID, FILE_ID, KALTURA_ID);
+    private DsRecordKalturaDto buildRecord() {
+        return buildRecord(ID, FILE_ID, KALTURA_ID);
     }
 
-    private SolrDocument buildSolrDocument(String id, String fileId, String kalturaId) {
-        SolrDocument solrDocument = new SolrDocument();
-        solrDocument.setField("id", id);
-        solrDocument.setField("file_id", fileId);
-        solrDocument.setField("kaltura_id", kalturaId);
-        solrDocument.setField("internal_storage_mTime", 1_700_000_000L);
-        return solrDocument;
-    }
-
-    private SolrDocumentList buildSolrDocumentList(SolrDocument... documents) {
-        SolrDocumentList solrDocumentList = new SolrDocumentList();
-        solrDocumentList.addAll(Arrays.asList(documents));
-        solrDocumentList.setNumFound(documents.length);
-        return solrDocumentList;
+    private DsRecordKalturaDto buildRecord(String id, String referenceId, String kalturaId) {
+        DsRecordKalturaDto record = new DsRecordKalturaDto();
+        record.setId(id);
+        record.setReferenceId(referenceId);
+        record.setKalturaId(kalturaId);
+        record.setmTime(1_700_000_000L);
+        record.setDeleted(false);
+        return record;
     }
 }

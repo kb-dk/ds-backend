@@ -5,19 +5,13 @@ import com.kaltura.client.types.APIException;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.kaltura.client.DsKalturaClientBase;
+import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,27 +23,32 @@ import java.util.stream.Collectors;
 public class KalturaValidationJob {
     static DsKalturaClient kalturaClient = null;
     private static final Logger log = LoggerFactory.getLogger(KalturaValidationJob.class);
+    // Origins with streams uploaded to Kaltura
+    static final List<String> ORIGINS = List.of("ds.tv", "ds.radio");
 
     /**
      * Start job that validates all records with a registered kaltura_id.
      * Workflow:
-     * 1) Extract records from Solr using the condition kaltura_id:* AND NOT kaltura_id:ERROR_* so upload error
-     * markers such as ERROR_FILE_MISSING are never cleared. Only extract the few fields from solr that
-     * are required: id,file_id,kaltura_id,internal_storage_mTime
-     * This is not a delta job. All records with a kaltura_id must be (re)checked on every run, so mTimeFrom
+     * 1) For each origin, extract the records with a kaltura_id from ds-storage in batches ordered by mTime. Storage
+     * is used rather than Solr, so kaltura_ids changed since the last index are seen. Storage does not return upload
+     * error markers (ERROR_*, e.g. ERROR_FILE_MISSING), so they are never cleared. Records marked for delete are
+     * skipped.
+     * This is not a delta job. All records with a kaltura_id must be (re)checked on every run, so mTime
      * always starts at 0.
-     * 2) Look up the entry status in Kaltura for the whole Solr batch in a single media.list call. Entries missing
-     * from the batch result are looked up one at a time, before their kaltura_id is cleared.
-     * 3) If no entry exists in Kaltura for the kaltura_id, or the entry exists but is not in status READY,
-     * the Kaltura entry is deleted (if it exists) and the record's kaltura_id is cleared (set to null) in
-     * storage. A cleared kaltura_id makes the record eligible for upload again by KalturaDeltaUploadJob.
-     * 4) A summary of the kaltura_ids that were not found or not READY is logged at the end.
+     * 2) Look up the entry status in Kaltura for the whole batch in a single media.list call. Kaltura paging is
+     * not trusted, so entries missing from the batch result are confirmed one at a time with media.get.
+     * 3) If the entry is in status ERROR_CONVERTING or ERROR_IMPORTING, the entry is kept and the record's kaltura_id
+     * is set to the matching error marker. Otherwise, if no entry exists in Kaltura for the kaltura_id, or the entry
+     * exists but is not in status READY, the Kaltura entry is deleted (if it exists) and the record's kaltura_id is
+     * cleared (set to null) in storage. A cleared kaltura_id makes the record eligible for upload again by
+     * KalturaDeltaUploadJob.
+     * 4) A summary of the kaltura_ids that were cleared or marked with an error is logged at the end.
      *
      * @param dryRun If true, no Kaltura entries are deleted and no kaltura_ids are cleared in storage. Only the
      *               summary of what would have been done is logged.
-     * @return number of records where the kaltura_id was cleared, or would have been cleared if dryRun
-     * @throws InternalServiceException If any Solr call fails, or if a Kaltura/storage call for a record fails.
-     *                                  Stop validating more.
+     * @return number of records where the kaltura_id was cleared or marked, or would have been if dryRun
+     * @throws InternalServiceException If fetching records from storage fails, or if a Kaltura/storage call for a
+     *                                  record fails. Stop validating more.
      */
     public static int validateKalturaIds(boolean dryRun) throws InternalServiceException {
         ValidationSummary summary = new ValidationSummary();
@@ -63,47 +62,54 @@ public class KalturaValidationJob {
     }
 
     private static void validateAllRecords(boolean dryRun, ValidationSummary summary) throws InternalServiceException {
-        boolean moreSolrRecords = true;
-        long mTimeFromCurrent = 0; //Not a delta job. All records with a kaltura_id must be checked every time.
         String dsStorageUrl = ServiceConfig.getDsStorageUrl();
         DsStorageClient storageClient = new DsStorageClient(dsStorageUrl);
+        for (String origin : ORIGINS) {
+            validateOrigin(storageClient, origin, dryRun, summary);
+        }
+    }
 
-        while (moreSolrRecords) {
-            SolrDocumentList docs;
+    private static void validateOrigin(DsStorageClient storageClient, String origin, boolean dryRun,
+                                       ValidationSummary summary) throws InternalServiceException {
+        long mTimeFromCurrent = 0; //Not a delta job. All records with a kaltura_id must be checked every time.
+
+        while (true) {
+            List<DsRecordKalturaDto> records;
             try {
-                docs = fetchSolrRecords(mTimeFromCurrent, DsKalturaClientBase.MAX_BATCH_SIZE);
-            } catch (SolrServerException | IOException e) {
+                records = fetchStorageRecords(storageClient, origin, mTimeFromCurrent, DsKalturaClientBase.MAX_BATCH_SIZE);
+            } catch (Exception e) {
                 // Can not fetch more records. Stop validation
-                moreSolrRecords = false;
-                String errorMessage = "Could not fetch more solr records from mTime=" + mTimeFromCurrent;
+                String errorMessage = "Could not fetch more storage records for origin=" + origin + " from mTime=" + mTimeFromCurrent;
                 log.error(errorMessage);
                 throw new InternalServiceException(errorMessage, e);
             }
-            if (docs.getNumFound() == 0) {
+            if (records.isEmpty()) {
                 return;
             }
+            mTimeFromCurrent = records.get(records.size() - 1).getmTime(); //Storage returns records with mTime after this
 
-            List<String> kalturaIds = docs.stream()
-                    .map(doc -> (String) doc.getFieldValue("kaltura_id"))
+            List<DsRecordKalturaDto> recordsToValidate = records.stream()
+                    .filter(record -> !Boolean.TRUE.equals(record.getDeleted()))
+                    .collect(Collectors.toList());
+            if (recordsToValidate.isEmpty()) {
+                continue;
+            }
+
+            List<String> kalturaIds = recordsToValidate.stream()
+                    .map(DsRecordKalturaDto::getKalturaId)
                     .collect(Collectors.toList());
             Map<String, EntryStatus> batchStatuses;
             try {
                 batchStatuses = getEntryStatuses(kalturaIds);
             } catch (Exception e) {
-                log.error("Error fetching Kaltura entry statuses for batch starting at mTime={}", mTimeFromCurrent, e);
-                throw new InternalServiceException("Error fetching Kaltura entry statuses for batch starting at mTime="
-                        + mTimeFromCurrent, e);
+                log.error("Error fetching Kaltura entry statuses for origin={} batch after mTime={}", origin, mTimeFromCurrent, e);
+                throw new InternalServiceException("Error fetching Kaltura entry statuses for origin=" + origin +
+                        " batch after mTime=" + mTimeFromCurrent, e);
             }
 
-            for (SolrDocument doc : docs) {
-                String id = (String) doc.getFieldValue("id");
-                String fileId = (String) doc.getFieldValue("file_id");
-                String kalturaId = (String) doc.getFieldValue("kaltura_id");
-                long recordMtime = (long) doc.getFieldValue("internal_storage_mTime");
-
-                mTimeFromCurrent = recordMtime + 1L; //update mTime for next call
-
-                validateRecord(storageClient, id, fileId, kalturaId, batchStatuses.get(kalturaId), dryRun, summary);
+            for (DsRecordKalturaDto record : recordsToValidate) {
+                validateRecord(storageClient, record.getId(), record.getReferenceId(), record.getKalturaId(),
+                        batchStatuses.get(record.getKalturaId()), dryRun, summary);
             }
         }
     }
@@ -117,19 +123,17 @@ public class KalturaValidationJob {
      * @param batchStatus The status found for the kaltura_id by the batch lookup, or null if it was not found.
      * @param dryRun      If true, nothing is deleted or cleared. The record is only added to the summary.
      * @param summary     Records that are (or would be) cleared or marked with an error are added to this.
-     * @return true if the record's kaltura_id was changed in storage, or would have been changed if dryRun.
      */
-    static boolean validateRecord(DsStorageClient storageClient, String id, String fileId, String kalturaId,
+    static void validateRecord(DsStorageClient storageClient, String id, String fileId, String kalturaId,
                                   EntryStatus batchStatus, boolean dryRun, ValidationSummary summary) {
         try {
             EntryStatus status = batchStatus;
             if (status == null) {
-                // Confirm a missing entry with a single lookup before clearing. Otherwise the record would be
-                // uploaded again, leaving a duplicate entry in Kaltura.
+                // Kaltura paging is not reliable, so confirm a missing entry with media.get before clearing.
                 status = getEntryStatus(kalturaId);
             }
             if (status == EntryStatus.READY) {
-                return false; //Valid mapping. Nothing to do.
+                return; //Valid mapping. Nothing to do.
             }
 
             String prefix = dryRun ? "DRY RUN: " : "";
@@ -158,7 +162,6 @@ public class KalturaValidationJob {
                 }
                 summary.addNotFound(id, kalturaId);
             }
-            return true;
         } catch (Exception e) {
             //Totally stop all validation if a single call fails. Change strategy if this does seem to happen sporadic
             //Validation job can be started again.
@@ -176,40 +179,18 @@ public class KalturaValidationJob {
     }
 
     /**
-     * Make Solr call to fetch records with a kaltura_id registered. Upload error markers (ERROR_*) are excluded.
+     * Fetch records with a kaltura_id (id, mTime, referenceId, kaltura_id, deleted) from storage.
      *
-     * @param mTimeFrom Only extract records with mTime higher that this value
-     * @param batchSize solr batch size.
-     * @return
-     * @throws SolrServerException
-     * @throws IOException
+     * @param origin    The origin to extract records for.
+     * @param mTimeFrom Only extract records with mTime higher than this value.
+     * @param batchSize Maximum number of records to extract.
+     * @return The records ordered by mTime. Empty when there are no more records.
      */
-    public static SolrDocumentList fetchSolrRecords(long mTimeFrom, int batchSize) throws SolrServerException, IOException {
-        String solrUrl = ServiceConfig.getSolrQueryUrl();
-        // KalturaDeltaUploadJob stores upload errors (StreamErrorTypeDto, e.g. ERROR_FILE_MISSING) in kaltura_id.
-        // They are not Kaltura entries and must not be cleared, or the record would be uploaded again.
-        String filterQuery = "kaltura_id:* AND NOT kaltura_id:ERROR_*";
-
-        HttpJdkSolrClient client = new HttpJdkSolrClient.Builder(solrUrl).build();
-
-        String query = "internal_storage_mTime:[" + mTimeFrom + " TO *]"; // mTimeFrom must start with this value or higher.
-        String fieldList = "id,file_id,kaltura_id,internal_storage_mTime"; // only extract fields we need
-
-        try (client) { // autoclosable
-            SolrQuery solrQuery = new SolrQuery();
-            solrQuery.setQuery(query);
-            solrQuery.setFilterQueries(filterQuery);
-            solrQuery.set("facet", "false"); // very important. Must overwrite to false. Facets are very slow and expensive.
-            solrQuery.set("hl", false);// no highlights
-            solrQuery.set("spellcheck", false); //No spellcheck
-            solrQuery.add("sort", "internal_storage_mTime ASC"); // increasing order
-            solrQuery.add("fl", fieldList);
-            solrQuery.setRows(batchSize);
-            QueryResponse response = client.query(solrQuery);
-            SolrDocumentList results = response.getResults();
-            log.info("Load solr records for kaltura validation={}", results.getNumFound());
-            return results;
-        }
+    static List<DsRecordKalturaDto> fetchStorageRecords(DsStorageClient storageClient, String origin, long mTimeFrom,
+                                                        int batchSize) {
+        List<DsRecordKalturaDto> records = storageClient.getKalturaRecords(origin, batchSize, mTimeFrom);
+        log.debug("Loaded storage records for kaltura validation. origin={}, mTime={}, #records={}", origin, mTimeFrom, records.size());
+        return records;
     }
 
     /**
@@ -225,7 +206,7 @@ public class KalturaValidationJob {
     }
 
     /**
-     * Get the status of a Kaltura entry.
+     * Get the status of a single Kaltura entry with media.get.
      *
      * @param kalturaEntryId The internal kaltura entryId
      * @return The status of the entry, or null if the entry does not exist in Kaltura.

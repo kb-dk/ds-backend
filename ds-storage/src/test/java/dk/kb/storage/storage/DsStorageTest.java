@@ -1,9 +1,6 @@
 package dk.kb.storage.storage;
 
-import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.OriginCountDto;
-import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.model.v1.TranscriptionDto;
+import dk.kb.storage.model.v1.*;
 import dk.kb.storage.util.DsStorageUnitTestUtil;
 import dk.kb.storage.util.UniqueTimestampGenerator;
 import org.junit.jupiter.api.Assertions;
@@ -162,6 +159,47 @@ public class DsStorageTest extends DsStorageUnitTestUtil {
         DsRecordDto recordUpdated = storage.loadRecord(recordId);
         assertEquals(referenceId,recordUpdated.getReferenceId());       
         assertEquals(data,recordUpdated.getData());//Data not modified
+    }
+
+    @Test
+    public void testGetKalturaRecords() throws Exception {
+        String origin = "kaltura.test";
+        createRecordWithKalturaId(origin, "kaltura.test:valid", "ref_valid", "0_valid");
+        createRecordWithKalturaId(origin, "kaltura.test:no_kaltura_id", "ref_none", null);
+        createRecordWithKalturaId(origin, "kaltura.test:upload_error", "ref_error", "ERROR_FILE_MISSING");
+        createRecordWithKalturaId(origin, "kaltura.test:deleted", "ref_deleted", "0_deleted");
+        storage.markRecordForDelete("kaltura.test:deleted");
+
+        List<DsRecordKalturaDto> records = storage.getKalturaRecords(origin, 0L, 100);
+
+        // Records without a kaltura id and upload error markers are not returned. Ordered by mTime.
+        assertEquals(2, records.size());
+        assertEquals("kaltura.test:valid", records.get(0).getId());
+        assertEquals("ref_valid", records.get(0).getReferenceId());
+        assertEquals("0_valid", records.get(0).getKalturaId());
+        assertFalse(records.get(0).getDeleted());
+        assertEquals("kaltura.test:deleted", records.get(1).getId());
+        assertTrue(records.get(1).getDeleted());
+        assertTrue(records.get(0).getmTime() < records.get(1).getmTime());
+
+        // Batch size and mTime paging
+        List<DsRecordKalturaDto> firstBatch = storage.getKalturaRecords(origin, 0L, 1);
+        assertEquals(1, firstBatch.size());
+        List<DsRecordKalturaDto> nextBatch = storage.getKalturaRecords(origin, firstBatch.get(0).getmTime(), 1);
+        assertEquals("kaltura.test:deleted", nextBatch.get(0).getId());
+    }
+
+    private void createRecordWithKalturaId(String origin, String recordId, String referenceId, String kalturaId) throws Exception {
+        DsRecordDto record = new DsRecordDto();
+        record.setId(recordId);
+        record.setOrigin(origin);
+        record.setData("");
+        record.setRecordType(RecordTypeDto.MANIFESTATION);
+        record.setReferenceId(referenceId);
+        storage.createNewRecord(record);
+        if (kalturaId != null) {
+            storage.updateKalturaIdForRecords(referenceId, kalturaId);
+        }
     }
 
     @Test

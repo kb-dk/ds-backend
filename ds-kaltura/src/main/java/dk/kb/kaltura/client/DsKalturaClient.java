@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 public class DsKalturaClient extends DsKalturaClientBase {
     private static final Integer MAX_RETRY_COUNT = 3;
     private static final long CHUNK_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+    static final String ENTRY_ID_NOT_FOUND = "ENTRY_ID_NOT_FOUND";
 
     private final Integer conversionQueueThreshold;
     private final Integer conversionQueueRetryDelaySeconds;
@@ -138,22 +139,26 @@ public class DsKalturaClient extends DsKalturaClientBase {
     }
 
     /**
-     * Get the status of a Kaltura entry.
+     * Get the status of a single Kaltura entry with media.get. Unlike media.list, this does not depend on paging, so
+     * it can confirm that an entry missing from {@link #getEntryStatuses} really does not exist.
      *
      * @param entryId The internal Kaltura entry id.
-     * @return The {@link EntryStatus} of the entry, or null if no entry with the given id exists in Kaltura.
+     * @return The {@link EntryStatus} of the entry, or null if the entry does not exist or is deleted.
      * @throws APIException if the client failed to establish a Kaltura session or if the request itself was
-     *                      unsuccessful.
+     *                      unsuccessful for any other reason than the entry not being found.
      */
     public EntryStatus getEntryStatus(String entryId) throws APIException {
-        MediaEntryFilter filter = new MediaEntryFilter();
-        filter.setIdIn(entryId);
-        ListResponse<MediaEntry> response = listMediaEntry(filter);
-        if (response.getTotalCount() == 0) {
-            log.info("No entry found at Kaltura for entryId:'{}'", entryId);
-            return null;
+        MediaEntry entry;
+        try {
+            entry = handleRequest(MediaService.get(entryId));
+        } catch (APIException e) {
+            if (ENTRY_ID_NOT_FOUND.equals(e.getCode())) {
+                log.info("No entry found at Kaltura for entryId:'{}'", entryId);
+                return null;
+            }
+            throw e;
         }
-        return response.getObjects().get(0).getStatus();
+        return entry.getStatus() == EntryStatus.DELETED ? null : entry.getStatus();
     }
 
     /**
@@ -363,7 +368,7 @@ public class DsKalturaClient extends DsKalturaClientBase {
                                 randomAccessFile.getFilePointer(), fileLength, finalChunk, resume, thisChunkSize,
                                 result.getId());
                         break; // success, move to next chunk
-                    } catch (APIException | IOException e) {
+                    } catch (APIException e) {
                         log.warn("failed to upload file chunk: {}", e.getMessage());
                         attempt++;
                         if (attempt >= MAX_RETRY_COUNT) {

@@ -491,6 +491,52 @@ paths:
               schema:
                 $ref: '#/components/schemas/DsRecordMinimalList'
 
+  /records/kaltura:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'Get a batch of records with a Kaltura entry id after a given lastModified time'
+      security:
+        - KBOAuth:
+            - any
+      description: >
+        Extract a list of records with a given batch size by origin and mTime larger than input, ordered by mTime.
+        Only records with a kalturaId that is not an upload error marker (ERROR_*) are returned. The records will only
+        have the id, mTime, referenceId, kalturaId and deleted fields. Used to validate the Kaltura ids against Kaltura.
+      operationId: getKalturaRecords
+      parameters:
+        - name: origin
+          in: query
+          description: 'The origin to extract records for'
+          required: true
+          schema:
+            type: string
+            example: "ds.tv"
+        - name: maxRecords
+          in: query
+          description: 'Number of records to extract.'
+          required: true
+          schema:
+            type: integer
+            example: 500
+            default: 500
+        - name: mTime
+          in: query
+          description: 'Only extract records after this mTime.'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 1701262548465000
+            default: 0
+      responses:
+        '200':
+          description: 'List of DsRecordKaltura'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DsRecordKalturaList'
+
   /transcription:
     get:
       tags:
@@ -745,6 +791,31 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/DsRecordMinimal'
+
+    DsRecordKaltura:
+      type: object
+      properties:
+        id:
+          type: string
+          description: 'Unique identifier for the record.'
+        mTime:
+          type: integer
+          format: int64
+          description: 'Modification time for last create or update of the record. Format is milliseconds since Epoch with 3 added digits.'
+        referenceId:
+          type: string
+          description: 'The referenceId given when uploading the record to Kaltura.'
+        kalturaId:
+          type: string
+          description: 'The Kaltura ID for the record.'
+        deleted:
+          type: boolean
+          description: 'True if the record is marked for delete.'
+
+    DsRecordKalturaList:
+      type: array
+      items:
+        $ref: '#/components/schemas/DsRecordKaltura'
 
     OriginList:
       type: array
