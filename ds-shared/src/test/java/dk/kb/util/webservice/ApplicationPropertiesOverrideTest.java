@@ -60,6 +60,11 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * Test 2 is the odd one out - it is also the one that matters most for production confidence, since it
  * exercises the real on-disk convention devops relies on.
  * <p>
+ * The YAML fixture also carries an {@code oaiTargets} list of maps - a stand-in for the kind of nested,
+ * multi-entry config real modules have - so {@link #simpleYamlLoading()} additionally verifies that structure
+ * survives flattening into SmallRye's indexed-property syntax ({@code oaiTargets[0].name}, ...), not just the
+ * flat {@code db.*} scalars.
+ * <p>
  * This test class previously lived in ds-storage ({@code ServiceConfigApplicationPropertiesOverrideTest}) and
  * wrote then deleted a throwaway {@code config/application.properties} at test time. It was moved here because
  * the mechanism it demonstrates is generic SmallRye Config behaviour, not anything specific to ds-storage -
@@ -72,7 +77,14 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * <pre>
  * db.password=dummy-test-password
  * db.connectionPoolSize=77
+ * oaiTargets[0].password=elephant
+ * oaiTargets[1].password=mountain
  * </pre>
+ * The last two lines show that indexed-property syntax works in a plain {@code .properties} file exactly as it
+ * does in YAML: each line overrides only that one nested field of that one list entry, leaving every other
+ * field on both {@code oaiTargets} entries - {@code name}, {@code url}, {@code datasource}, ... - untouched,
+ * still coming from the YAML.
+ * <p>
  * (see {@code ds-shared/config/application.properties.SAMPLE}). This file is deliberately not committed to git
  * (the same {@code **&#47;config/application.properties} .gitignore rule every module's real override file
  * uses applies here too), so on a machine where it hasn't been created yet, only that one test is skipped (not
@@ -105,6 +117,29 @@ class ApplicationPropertiesOverrideTest {
         assertTrue(config.getOptionalValue("db.password", String.class).isEmpty(),
                 "db.password is blank in the YAML and no override source is configured, so it should resolve " +
                 "as absent, not as an empty string");
+
+        // A more realistic nested structure: a YAML list of maps, resolved via SmallRye's indexed-property
+        // syntax ("oaiTargets[0].name", "oaiTargets[1].name", ...) rather than kb-util's own YAML tree API
+        // (YPath/YAMLVisitor) - this is the flattening every module's SmallRye-based ServiceConfig relies on.
+        assertEquals("pvica.prod", config.getValue("oaiTargets[0].name", String.class),
+                "oaiTargets[0].name should come from the first list entry in the YAML");
+        assertEquals("ds.radiotv", config.getValue("oaiTargets[0].datasource", String.class),
+                "oaiTargets[0].datasource should come from the first list entry in the YAML");
+        assertEquals("https://<kuana-prod>/OAI-PMH/", config.getValue("oaiTargets[0].url", String.class),
+                "oaiTargets[0].url should come from the first list entry in the YAML");
+        assertEquals(false, config.getValue("oaiTargets[0].dayOnly", Boolean.class),
+                "oaiTargets[0].dayOnly should come from the first list entry in the YAML");
+
+        assertEquals("pvica.stage", config.getValue("oaiTargets[1].name", String.class),
+                "oaiTargets[1].name should come from the second list entry in the YAML, not overwrite the first");
+        assertEquals("https://<kuana-stage>/OAI-PMH/", config.getValue("oaiTargets[1].url", String.class),
+                "oaiTargets[1].url should come from the second list entry in the YAML");
+
+        // dayOnly is omitted entirely for the second target in the YAML - verify it really is absent rather
+        // than silently inheriting the first entry's value or some converter default.
+        assertTrue(config.getOptionalValue("oaiTargets[1].dayOnly", Boolean.class).isEmpty(),
+                "oaiTargets[1].dayOnly has no entry in the YAML for the second target and should resolve as " +
+                "absent");
     }
 
     @Test
@@ -129,6 +164,20 @@ class ApplicationPropertiesOverrideTest {
         // A key NOT present in the override file should still fall back to the YAML file, unaffected.
         assertEquals("org.h2.Driver", config.getValue("db.driver", String.class),
                 "db.driver should still come from the YAML file, unaffected by the override file");
+
+        // Indexed-property syntax works for the override file too: "oaiTargets[0].password" and
+        // "oaiTargets[1].password" each override only that one nested field of that one list entry.
+        assertEquals("elephant", config.getValue("oaiTargets[0].password", String.class),
+                "oaiTargets[0].password should come from config/application.properties, not the YAML file");
+        assertEquals("mountain", config.getValue("oaiTargets[1].password", String.class),
+                "oaiTargets[1].password should come from config/application.properties, not the YAML file, " +
+                "and must not be confused with oaiTargets[0]'s overridden password");
+
+        // Every other field on both list entries should be untouched by the override file, still from the YAML.
+        assertEquals("pvica.prod", config.getValue("oaiTargets[0].name", String.class),
+                "oaiTargets[0].name should still come from the YAML file, unaffected by the override file");
+        assertEquals("pvica.stage", config.getValue("oaiTargets[1].name", String.class),
+                "oaiTargets[1].name should still come from the YAML file, unaffected by the override file");
     }
 
     @Test

@@ -11,3 +11,9 @@
 
 db.password=dummy-test-password
 db.connectionPoolSize=77
+
+# Indexed-property syntax works in a plain .properties file exactly as it does in YAML or any other config
+# source: each line below overrides only that one nested field of that one oaiTargets list entry, leaving
+# every other field on both entries (name, url, datasource, ...) untouched, still coming from the YAML.
+oaiTargets[0].password=elephant
+oaiTargets[1].password=mountain
