@@ -19,6 +19,8 @@ import dk.kb.license.model.v1.RightsCalculationInputDto;
 import dk.kb.license.model.v1.RightsCalculationOutputDto;
 import dk.kb.license.util.DsLicenseClient;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.config.TransformerConfig;
+import dk.kb.present.config.ViewConfig;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
@@ -28,7 +30,6 @@ import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.yaml.YAML;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,11 +56,8 @@ import java.util.function.Function;
 public class View extends ArrayList<DSTransformer> implements Function<DsRecordDto, String> {
     private static final Logger log = LoggerFactory.getLogger(View.class);
 
-    private static final String MIME_KEY = "mime";
-    private static final String TRANSFORMERS_KEY = "transformers";
-    private static final String STRATEGY_KEY = "strategy";
     private static Storage storage =null;
-    
+
     private final String id;
     private final String origin;
     private final MediaType mime;
@@ -91,29 +89,22 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Creates a view from the given YAML. Expects the YAML to contain a single entry,
-     * where the key is the ID for the view and the value is the configuration of the view.
+     * Creates a view from the given configuration.
      *
      * @param conf the configuration for this specific view.
-     * @param origin the origin of the collection specified in the CONF yaml.
+     * @param origin the origin of the collection specified in the conf.
      */
-    public View(YAML conf, String origin) {
+    public View(ViewConfig conf, String origin) {
         super();
-        if (conf.size() != 1) {
-            throw new IllegalArgumentException
-                    ("Expected a single entry in the configuration but there was " + conf.size() +
-                     ". Maybe indenting was not correct in the config file?");
-        }
-        id = conf.keySet().stream().findFirst().orElseThrow();
+        id = conf.getId();
         this.origin = origin;
-        conf = conf.getSubMap(id);
-        String[] mimeTokens = conf.getString(MIME_KEY).split("/", 2);
+        String[] mimeTokens = conf.getMime().split("/", 2);
         mime = new MediaType(mimeTokens[0], mimeTokens[1]);
-        strategy = Strategy.valueOf(conf.getString(STRATEGY_KEY, "NONE"));
-        if (conf.isEmpty()) {
+        strategy = Strategy.valueOf(conf.getStrategy());
+        if (conf.getTransformers().isEmpty()) {
             throw new IllegalArgumentException("No transformer specified for view '" + id + "'");
         }
-        for (YAML transformerConf: conf.getYAMLList(TRANSFORMERS_KEY)) {
+        for (TransformerConfig transformerConf: conf.getTransformers()) {
             try {
                 add(TransformerController.createTransformer(transformerConf));
             } catch (Exception e) {
@@ -180,7 +171,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      */
     private void applyDrStrategy(DsRecordDto record, String content, Map<String, String> metadata) {
         ExtractedPreservicaValues extractedValues;
-      
+
         try {
             extractedValues = ExtractedPreservicaValues.extractValuesFromPreservicaContent(content, record.getId());
         } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -188,7 +179,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             throw new InternalServiceException("Error extracting values from Preservica content for record:" + record.getId(), e);
         }
 
-        String url = ServiceConfig.getConfig().getString("licensemodule.url");
+        String url = ServiceConfig.getLicenseModuleUrl();
+        if (url == null) {
+            throw new IllegalStateException("No ds-license URL specified at licensemodule.url");
+        }
         DsLicenseClient licenseClient = new DsLicenseClient(url);
 
         PlatformEnumDto platform = PlatformEnumDto.DRARKIV;
@@ -208,10 +202,10 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
 
-        boolean useTranscriptions=  ServiceConfig.getConfig().getBoolean("index.useTransriptions");
+        boolean useTranscriptions = ServiceConfig.isUseTranscriptionsEnabled();
         boolean hasTranscription=false;
         //Transcription text.
-        String refrenceId = record.getReferenceId();        
+        String refrenceId = record.getReferenceId();
         if (refrenceId != null && useTranscriptions) {
            String transcriptionText=getTranscriptionText(record.getReferenceId());
            if (transcriptionText != null) {
@@ -219,9 +213,9 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
               metadata.put("has_transcription", "true");
               metadata.put("transcription", transcriptionText);
               hasTranscription=true;
-           }                           
-        }        
-        metadata.put("has_transcription", ""+hasTranscription);               
+           }
+        }
+        metadata.put("has_transcription", ""+hasTranscription);
         metadata.put("platform", "DRARKIV");
 
         metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
@@ -269,13 +263,13 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadataMap.put("productionCodeAllowed", Boolean.toString(allowedProductionCode));
             metadataMap.put("productionCodeValue", productionCode);
         } else if (origin.equals("ds.radio")) {
-            metadataMap.put("productionCodeAllowed", "true");      
+            metadataMap.put("productionCodeAllowed", "true");
         }
         else if(rightsOutput.getDr().getProductionCodeAllowed() == true) { // CalculateRights call can overrule produductionCodeAllowed, even if there is no production code.
             metadataMap.put("productionCodeAllowed", "true");
             log.debug("Production code allowed without production code due to cutoff date");
         }
-        else if (origin.equals("ds.tv") ) { 
+        else if (origin.equals("ds.tv") ) {
             log.debug("Record is tv record with no production code and not production code not allowed.");
             metadataMap.put("productionCodeAllowed", "false");
         }
@@ -350,21 +344,21 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
     }
 
-   private String getTranscriptionText(String fileId) {      
+   private String getTranscriptionText(String fileId) {
       TranscriptionDto transcription = getStorage().getTranscription(fileId);
       return transcription.getTranscription(); // can not be null. Will be empty DTO
     }
-    
+
    private Storage getStorage() {
        if (storage != null) {
            log.debug("Init storage from View");
-           return storage;          
+           return storage;
        }
-      StorageHandler handler = new StorageHandler (ServiceConfig.getConfig());
+      StorageHandler handler = new StorageHandler(ServiceConfig.getStorages());
       storage= handler.getStorage(null);//Default storage
       return storage;
    }
-   
+
     /**
      * Add form and content values used for holdback calculation to the XSLT metadata map.
      *

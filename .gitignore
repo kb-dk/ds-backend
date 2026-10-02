@@ -19,6 +19,16 @@ aegis/
 */src/test/resources/rightsModuleMigratedData/*
 *internal_test_files/
 
+# SmallRye Config local/operational override files - may contain secrets (e.g. db password).
+# See <module>/config/application.properties.SAMPLE for the template.
+**/config/application.properties
+
+# SmallRye Config per-service devops/operations override files - may contain secrets (e.g. db password).
+# The real files live outside this repo (e.g. ${user.home}/services/conf/<service>-application.properties);
+# this only guards against one ending up committed if created locally for testing.
+# See <module>/conf/<service>-application.properties.SAMPLE for the template.
+*-application.properties
+
 # compiled files
 *.class
 

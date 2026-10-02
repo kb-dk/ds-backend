@@ -42,6 +42,7 @@ public class ContextListener implements ServletContextListener {
 
     public static final String LOGBACK_ENV = "java:/comp/env/ds-datahandler-logback-config";
     public static final String CONFIG_ENV = "java:/comp/env/application-config";
+    public static final String PROPERTIES_CONFIG_ENV = "java:/comp/env/application-properties-config";
 
     /**
      * On context initialisation this
@@ -70,9 +71,24 @@ public class ContextListener implements ServletContextListener {
                     BuildInfoManager.getGitCommitChecksum(), BuildInfoManager.getGitCommitTime(),
                     BuildInfoManager.getGitClosestTag());
             InitialContext ctx = new InitialContext();
-            String configFile = (String) ctx.lookup("java:/comp/env/application-config");
+            String configFile = (String) ctx.lookup(CONFIG_ENV);
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
-            ServiceConfig.initialize(configFile);
+
+            // The devops/operations properties override file (secrets such as OAI target credentials and the
+            // Kaltura admin secret) is optional and configured via its own JNDI entry, separate from the YAML
+            // file above - see the class javadoc on ServiceConfig for why this isn't just SmallRye's own
+            // implicit 'config/application.properties'.
+            String propertiesFile = null;
+            try {
+                propertiesFile = (String) ctx.lookup(PROPERTIES_CONFIG_ENV);
+                log.info("Devops/operations properties override file configured at '{}': '{}'",
+                         PROPERTIES_CONFIG_ENV, propertiesFile);
+            } catch (NamingException e) {
+                log.info("No devops/operations properties override file configured at '{}'. Continuing with " +
+                         "only the YAML configuration.", PROPERTIES_CONFIG_ENV);
+            }
+
+            ServiceConfig.initialize(configFile, propertiesFile);
             initializeStorage();
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);

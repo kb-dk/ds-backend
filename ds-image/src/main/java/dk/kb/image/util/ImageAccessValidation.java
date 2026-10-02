@@ -75,7 +75,7 @@ public class ImageAccessValidation {
             log.debug("Fullsize for IIP request since size parameter was not defined. Identifier={}", FIF);            
             return false;
         }
-        else if ( (WID != null && WID > ServiceConfig.getConfig().getInteger("thumbnail.max_width")) || (HEI != null && HEI > ServiceConfig.getConfig().getInteger("thumbnail.height.max")) ) {
+        else if ( (WID != null && WID > ServiceConfig.getConfig().getValue("thumbnail.max_width", Integer.class)) || (HEI != null && HEI > ServiceConfig.getConfig().getValue("thumbnail.height.max", Integer.class)) ) {
             log.debug("Fullsize for IIP request since size parameter was over thumbnail size. Identifier={}, width={}, height={}", FIF, WID, HEI);
             return false;
         }
@@ -121,7 +121,7 @@ public class ImageAccessValidation {
              return false;
          }
                   
-        if ( width > ServiceConfig.getConfig().getInteger("thumbnail.max_width") || height > ServiceConfig.getConfig().getInteger("thumbnail.height.max")){
+        if ( width > ServiceConfig.getConfig().getValue("thumbnail.max_width", Integer.class) || height > ServiceConfig.getConfig().getValue("thumbnail.height.max", Integer.class)){
              log.debug("Fullsize for IIIF request since size parameter was over thumbnail size. Identifier={}, width={}, height={}",identifier, width,height);
              return false;
          }
@@ -230,12 +230,12 @@ public class ImageAccessValidation {
     }
 
     private static StreamingOutput getImageForbidden() throws IOException {
-        String noAccessImageName = ServiceConfig.getConfig().getString("images.noAccess");
+        String noAccessImageName = ServiceConfig.getConfig().getValue("images.noAccess", String.class);
         return writeImgToStreamingOutput(noAccessImageName);
     }
 
     private static StreamingOutput getImageNotExist() throws IOException {
-        String nonExistingImageName = ServiceConfig.getConfig().getString("images.nonExisting");
+        String nonExistingImageName = ServiceConfig.getConfig().getValue("images.nonExisting", String.class);
         return writeImgToStreamingOutput(nonExistingImageName);
     }
 

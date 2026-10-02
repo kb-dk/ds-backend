@@ -7,20 +7,18 @@ import com.google.gson.JsonParser;
 import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.present.config.ServiceConfig;
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.XsltConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -150,12 +148,9 @@ public class XSLTCumulusToSchemaDotOrgTransformerTest extends XSLTTransformerTes
      * @param expectedJSONFile the expected result, relative to {@code src/test/resources/schemaOrgJsonTestFiles/}.
      */
     private void assertJSONTransformationFactory(String xslt, String xml, String expectedJSONFile) throws Exception {
-        String yamlStr =
-                "stylesheet: '" + xslt + "'\n" +
-                "injections:\n" +
-                "  - imageserver: 'https://example.com/imageserver/'\n";
-        YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
-        String transformedJSON = TestUtil.getTransformedFromConfigWithAccessFields(yaml, xml);
+        XsltConfig config = new XsltConfig("xslt", xslt,
+                Map.of("imageserver", "https://example.com/imageserver/"));
+        String transformedJSON = TestUtil.getTransformedFromConfigWithAccessFields(config, xml);
         assertJSON(expectedJSONFile, transformedJSON);
     }
 

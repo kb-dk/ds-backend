@@ -26,7 +26,7 @@ import java.nio.file.Path;
  */
 class ServiceConfigTest {
     private static final Logger log = LoggerFactory.getLogger(ServiceConfigTest.class);
-    
+
     /**
      * This unit-test probably fails when the template is applied and a proper project is taking form.
      * That is okay. It is only here to serve as a temporary demonstration of unit-testing and configuration.
@@ -37,13 +37,16 @@ class ServiceConfigTest {
         Path knownFile = Path.of(Resolver.resolveURL("logback-test.xml").getPath());
         String projectRoot = knownFile.getParent().getParent().getParent().toString();
 
-        Path sampleEnvironmentSetup = Path.of(projectRoot, "conf/ds-storage-environment.yaml");
-
-        if(!Files.exists(sampleEnvironmentSetup)) {
-            log.warn("You must create a local yaml-file: 'ds-storage-environment.yaml' with local values if you want to start up jetty");
-            
+        // ServiceConfig loads a single YAML file. For a local override (e.g. your own DB credentials), create a
+        // config/application.properties file (note: 'config', not this project's own 'conf' folder - it is
+        // picked up automatically by SmallRye Config from the current working directory) instead of a second
+        // YAML file: see SMALLRYE_CONFIG_MIGRATION.md.
+        Path sampleLocalOverride = Path.of(projectRoot, "config/application.properties");
+        if (!Files.exists(sampleLocalOverride)) {
+            log.warn("No local override found at 'config/application.properties'. Create one with your own DB " +
+                      "credentials etc. if you want to start up jetty against your own database");
         }
 
-        ServiceConfig.initialize(projectRoot + File.separator + "conf" + File.separator + "ds-storage*.yaml");
+        ServiceConfig.initialize(projectRoot + File.separator + "conf" + File.separator + "ds-storage-behaviour.yaml");
     }
 }

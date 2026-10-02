@@ -14,16 +14,13 @@
  */
 package dk.kb.present.transform;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.ReplaceConfig;
+import dk.kb.present.config.TransformerConfig;
 
 /**
  * Constructs {@link ReplaceFactory}s.
  */
 public class ReplaceFactory implements DSTransformerFactory {
-    public static final String REGEXP_KEY = "regexp";
-    public static final String REPLACEMENT_KEY = "replacement";
-    public static final String REPLACEALL_KEY = "replaceall";
-    public static final boolean REPLACEALL_DEFAULT = true;
 
     @Override
     public String getTransformerID() {
@@ -31,10 +28,8 @@ public class ReplaceFactory implements DSTransformerFactory {
     }
 
     @Override
-    public DSTransformer createTransformer(YAML conf) {
-        assertConfigKeys(conf, REGEXP_KEY, REPLACEMENT_KEY);
-        return new ReplaceTransformer(conf.getString(REGEXP_KEY),
-                conf.getString(REPLACEMENT_KEY),
-                conf.getBoolean(REPLACEALL_KEY, REPLACEALL_DEFAULT));
+    public DSTransformer createTransformer(TransformerConfig conf) {
+        ReplaceConfig c = (ReplaceConfig) conf;
+        return new ReplaceTransformer(c.getRegexp(), c.getReplacement(), c.isReplaceAll());
     }
 }

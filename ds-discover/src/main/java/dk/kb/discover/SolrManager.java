@@ -31,17 +31,17 @@ import java.util.Optional;
 
 /**
  * Singleton. Sets up {@link SolrService}s based on config and provides lookup of the services.
+ * <p>
+ * Previously this class implemented a kb-util {@code AutoYAML} {@code Observer} callback so that its
+ * {@code setConfig(YAML)} method (since replaced by {@link #loadSolrServices()}) was invoked automatically
+ * whenever the configuration changed. That registration was already commented out (unused template scaffolding:
+ * {@code autoupdate} was never enabled for this service) and has been dropped entirely along with the
+ * {@code Observer} interface itself; {@link
+ * #loadSolrServices()} is instead called explicitly once, from {@link dk.kb.discover.webservice.ContextListener},
+ * after {@link ServiceConfig} has been initialized.
  */
-public class SolrManager implements ServiceConfig.Observer {
+public class SolrManager {
     private static final Logger log = LoggerFactory.getLogger(SolrManager.class);
-
-    private static final String SOLR_KEY = ".solr";
-    private static final String COLLECTIONS_KEY = ".collections";
-    private static final String SOLR_COLLECTION_KEY = ".collection";
-    private static final String SOLR_SERVER_KEY = ".server";
-    private static final String SOLR_PATH_KEY = ".path";
-    private static final String SOLR_PATH_DEFAULT = "solr";
-    private static final String SOLR_SHIELD_KEY = ".shield";
 
     private static final SolrManager instance = new SolrManager();
     private final Map<String, SolrService> solrs = new HashMap<>();
@@ -51,7 +51,6 @@ public class SolrManager implements ServiceConfig.Observer {
 
     public SolrManager() {
         log.info("Creating SolrManager");
-     //   ServiceConfig.registerObserver(this);
     }
 
     /**
@@ -72,27 +71,26 @@ public class SolrManager implements ServiceConfig.Observer {
     }
 
     /**
-     * Sets up SolrService instances as defined in the given config.
-     * Called automatically when the configuration changes.
-     * @param config setup for {@link SolrService}s.
+     * Sets up SolrService instances as defined in {@link ServiceConfig#getSolrCollections()}.
+     * Must be called once explicitly after {@link ServiceConfig} has been initialized (see
+     * {@link dk.kb.discover.webservice.ContextListener}); unlike the old {@code AutoYAML}-backed setup, this is
+     * not called automatically on configuration changes.
      */
-    @Override
-    public synchronized void setConfig(YAML config) {       
-        YAML majorConf = config.getSubMap(SOLR_KEY);
-        List<YAML> solrConfs = majorConf.getYAMLList(COLLECTIONS_KEY);
-        log.debug("setConfig called with with {} solr collections", solrConfs.size());
+    public synchronized void loadSolrServices() {
+        List<ServiceConfig.SolrCollectionConfig> collections = ServiceConfig.getSolrCollections();
+        log.debug("loadSolrServices called with {} solr collections", collections.size());
 
         solrs.values().forEach(SolrService::shutdown);
         solrs.clear();
         shieldPaths.clear();
         shields.clear();
 
-        solrConfs.stream()
+        collections.stream()
                 .map(this::createSolrService)
                 .filter(Objects::nonNull)
                 .forEach(solrService -> solrs.put(solrService.getID(), solrService));
 
-        log.debug("setConfig finished, SolrManager now contains solr services: {}", majorConf.keySet());
+        log.debug("loadSolrServices finished, SolrManager now contains solr services: {}", solrs.keySet());
     }
 
     /**
@@ -109,35 +107,25 @@ public class SolrManager implements ServiceConfig.Observer {
         return solrService;
     }
 
-    private SolrService createSolrService(YAML conf) {
-        if (conf.size() != 1) {
-            log.error("createSolrService: Expected a single entry in the configuration but there was {}." +
-                     "Maybe indenting was not correct in the config file?", conf.size());
-            return null;
-        }
-        String id = conf.keySet().stream().findFirst().orElseThrow();
-        if (!conf.containsKey(id)) {
-            log.error("createSolrService: No Solr configuration defined for collection '{}'", id);
-        }
-        YAML solrConf = conf.getSubMap(id);
+    private SolrService createSolrService(ServiceConfig.SolrCollectionConfig conf) {
+        String id = conf.getId();
 
-        String solrCollection = solrConf.getString(SOLR_COLLECTION_KEY, null);
+        String solrCollection = conf.getSolrCollection();
         if (solrCollection == null) {
-            log.error("createSolrService: No solr collection (key={}) defined for abstract collection '{}'",
-                      SOLR_COLLECTION_KEY, id);
+            log.error("createSolrService: No solr collection (key=.collection) defined for abstract collection '{}'",
+                      id);
             return null;
         }
 
-        String server = solrConf.getString(SOLR_SERVER_KEY, null);
+        String server = conf.getServer();
         if (server == null) {
-            log.error("createSolrService: No server (key={}) defined for abstract collection '{}'",
-                      SOLR_SERVER_KEY, id);
+            log.error("createSolrService: No server (key=.server) defined for abstract collection '{}'", id);
             return null;
         }
 
-        String path = solrConf.getString(SOLR_PATH_KEY, SOLR_PATH_DEFAULT);
+        String path = conf.getPath();
 
-        String shieldPath = solrConf.getString(SOLR_SHIELD_KEY, null);
+        String shieldPath = conf.getShield();
         if (shieldPath != null) {
             shieldPaths.put(id, shieldPath);
             log.info("Registered shield config path for collection '{}': {}", id, shieldPath);
