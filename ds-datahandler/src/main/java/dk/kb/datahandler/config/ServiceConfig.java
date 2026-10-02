@@ -485,24 +485,9 @@ public class ServiceConfig {
         return conversionQueueDelaySeconds;
     }
 
-    /**
-     * @return the backing MicroProfile {@link Config}, same as {@link #getConfig()}. Kept for API compatibility
-     * with the previous kb-util-backed version of this class.
-     */
-    public static Config getServiceConfig() {
-        return getConfig();
-    }
 
     public static String getKalturaAdminSecret() {
         return kalturaAdminSecret;
-    }
-
-    public static Logger getLog() {
-        return log;
-    }
-
-    public static HashMap<String, OaiTargetDto> getOaitargets() {
-        return oaiTargets;
     }
 
     public static String getTranscriptionsDropFolder() {
