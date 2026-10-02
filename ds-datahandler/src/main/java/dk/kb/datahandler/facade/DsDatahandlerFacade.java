@@ -224,15 +224,13 @@ public class DsDatahandlerFacade {
      * ERROR_KALTURA_TRANSCODING or ERROR_KALTURA_IMPORT. Otherwise, if a kaltura_id does not exist in Kaltura, or
      * exists but is not READY, the Kaltura entry is deleted (if present) and the kaltura_id is cleared on the storage
      * record, making it eligible for kalturaDeltaUpload again.
-     * A solr delta indexing job will be started if the job completes successfully and any records were changed.
+     * No solr index job is started. Changed records get a new mTime and are picked up by the next solr delta index.
      *
-     * @param dryRun If true, nothing is changed in Kaltura or storage, and no solr delta index is started.
+     * @param dryRun If true, nothing is changed in Kaltura or storage.
      *               A summary of the kaltura_ids that would be changed is logged.
      * @throws InternalServiceException
-     * @throws SolrServerException
-     * @throws IOException
      */
-    public static void kalturaValidate(String user, boolean dryRun) throws InternalServiceException, SolrServerException, IOException {
+    public static void kalturaValidate(String user, boolean dryRun) throws InternalServiceException {
         // mTimeFrom is in microseconds
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
 
@@ -248,14 +246,8 @@ public class DsDatahandlerFacade {
             updateJob(jobDto, JobStatusDto.COMPLETED, message, OffsetDateTime.now(ZoneOffset.UTC),
                     dryRun ? 0 : numberRecordsChanged, null);
 
-            //Index the records that has mTime modified due to kalturaId being cleared or marked with an error.
-            if (!dryRun && numberRecordsChanged > 0) {
-                log.info("Starting solr delta index job");
-                indexSolrDelta("ds.tv");
-                indexSolrDelta("ds.radio");
-            }
         } catch (Exception e) {
-            log.error("Kaltura validation/indexing stopped due to error", e);
+            log.error("Kaltura validation stopped due to error", e);
 
             updateJob(jobDto, JobStatusDto.FAILED, e.getMessage(),  OffsetDateTime.now(ZoneOffset.UTC), null, null);
 
