@@ -9,17 +9,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Added `DsKalturaClient.getEntryStatus`, which looks up the status of a single Kaltura entry by its entry id using
-  media.get.
-- Added `DsKalturaClient.getEntryStatuses`, which looks up the status of a batch of Kaltura entries in a single
-  media.list request.
-- Added `DsKalturaClient.listMediaEntry(MediaEntryFilter, FilterPager)`.
-- Added `DsKalturaClient.getEntryIdByReferenceId`, which finds the Kaltura id for a referenceId using the entry
-  service instead of eSearch.
+- `DsKalturaClient.getEntryStatus`, `getEntryStatuses` (batch), `listMediaEntry` and `getEntryIdByReferenceId`.
 
 ### Removed
 
-- Removed `DsKalturaClient.getKalturaInternalId`. Use `getEntryIdByReferenceId` instead.
+- `DsKalturaClient.getKalturaInternalId`. Use `getEntryIdByReferenceId` instead.
 
 ## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
 

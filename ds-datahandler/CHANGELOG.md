@@ -9,19 +9,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- New service method `/kaltura/validate` that checks every kaltura_id registered in ds-storage for `ds.tv` and
-  `ds.radio` against Kaltura. Upload error markers such as `ERROR_FILE_MISSING` and records marked for delete are
-  skipped. If the entry does not exist or is not READY, the entry is
-  deleted in Kaltura and the kaltura_id is cleared, so the record is uploaded again. If the entry is in status
-  `ERROR_CONVERTING` or `ERROR_IMPORTING`, the entry is kept and the kaltura_id is set to `ERROR_KALTURA_TRANSCODING`
-  or `ERROR_KALTURA_IMPORT`. With `dryRun=true` nothing is changed; the job only logs a summary of the kaltura_ids
-  that would be changed.
+- `/kaltura/validate` checks the kaltura_ids of `ds.tv` and `ds.radio` records against Kaltura. Missing or
+  non-READY entries are deleted and their kaltura_id is cleared, so they are uploaded again. Entries that failed
+  transcoding or import are marked `ERROR_KALTURA_TRANSCODING` or `ERROR_KALTURA_IMPORT`. Supports `dryRun`.
 
 ### Changed
 
-- The Kaltura delta upload now looks up existing entries with the Kaltura entry service instead of eSearch, so
-  entries that are not yet indexed in eSearch are no longer uploaded twice. An existing entry's id is set as the
-  record's kaltura_id whatever its status. Entries in a Kaltura error state are marked by `/kaltura/validate`.
+- The Kaltura delta upload finds existing entries with the entry service instead of eSearch, so entries not yet
+  indexed in eSearch are no longer uploaded twice.
 
 ### Fixed
 
