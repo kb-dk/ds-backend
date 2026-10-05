@@ -165,7 +165,7 @@ public class RerunClusterStorageTest {
   }
 
   @Test
-  public void getRerunClusters_whenMultipleJobsHasInsertedRowsWhereSomeOfThemIsTheSameFileId_thenOrderIsGettingUniqueLatestFileId()
+  public void getRerunClusters_whenMultipleJobsHasInsertedRowsWhereSomeOfThemIsTheSameFileId_thenReturningUniqueLatestFileIdsWhereOrderIsFileIdAscAndCreatedDesc()
       throws Exception {
     // Arrange
     OffsetDateTime created = OffsetDateTime.parse("2026-07-01T00:00:00.000Z");
@@ -174,9 +174,9 @@ public class RerunClusterStorageTest {
           """
           INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-07-06T07:23:40.638Z', 'run 1');
           INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('1000a00a-0aa0-000a-00a0-a0a000aa0aa0', '1111a11a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-08-01T00:00:00.001Z', 'run 2');
-          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-08-01T00:00:00.002Z', 'run 2');
-          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('3000a00a-0aa0-000a-00a0-a0a000aa0aa0', '2222a22a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-09-06T09:23:40.638Z', 'run 3');
-          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('4000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000b00b-0aa0-000a-00a0-a0a000aa0aa0', '2026-09-06T09:23:40.638Z', 'run 3');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('2000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000c00c-0aa0-000a-00a0-a0a000aa0aa0', '2026-08-01T00:00:00.002Z', 'run 2');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('3000a00a-0aa0-000a-00a0-a0a000aa0aa0', '2222a22a-0aa0-000a-00a0-a0a000aa0aa0', '0000d00d-0aa0-000a-00a0-a0a000aa0aa0', '2026-09-06T09:23:40.638Z', 'run 3');
+          INSERT INTO clusters (id, file_id, rerun_cluster_id, created, job_id) VALUES ('4000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000a00a-0aa0-000a-00a0-a0a000aa0aa0', '0000d00d-0aa0-000a-00a0-a0a000aa0aa0', '2026-09-06T09:23:40.638Z', 'run 3');
           """
       );
     }
@@ -192,21 +192,30 @@ public class RerunClusterStorageTest {
         rerunClusterRequestDtoList.get(0).getId());
     assertEquals(UUID.fromString("0000a00a-0aa0-000a-00a0-a0a000aa0aa0"),
         rerunClusterRequestDtoList.get(0).getFileId());
+    assertEquals(UUID.fromString("0000d00d-0aa0-000a-00a0-a0a000aa0aa0"),
+        rerunClusterRequestDtoList.get(0).getRerunClusterId());
     assertEquals(OffsetDateTime.parse("2026-09-06T09:23:40.638Z"),
         rerunClusterRequestDtoList.get(0).getCreated());
+    assertEquals("run 3", rerunClusterRequestDtoList.get(0).getJobId());
 
     assertEquals(UUID.fromString("1000a00a-0aa0-000a-00a0-a0a000aa0aa0"),
         rerunClusterRequestDtoList.get(1).getId());
     assertEquals(UUID.fromString("1111a11a-0aa0-000a-00a0-a0a000aa0aa0"),
         rerunClusterRequestDtoList.get(1).getFileId());
+    assertEquals(UUID.fromString("0000b00b-0aa0-000a-00a0-a0a000aa0aa0"),
+        rerunClusterRequestDtoList.get(0).getRerunClusterId());
     assertEquals(OffsetDateTime.parse("2026-08-01T00:00:00.001Z"),
         rerunClusterRequestDtoList.get(1).getCreated());
+    assertEquals("run 2", rerunClusterRequestDtoList.get(0).getJobId());
 
     assertEquals(UUID.fromString("3000a00a-0aa0-000a-00a0-a0a000aa0aa0"),
         rerunClusterRequestDtoList.get(2).getId());
     assertEquals(UUID.fromString("2222a22a-0aa0-000a-00a0-a0a000aa0aa0"),
         rerunClusterRequestDtoList.get(2).getFileId());
+    assertEquals(UUID.fromString("0000d00d-0aa0-000a-00a0-a0a000aa0aa0"),
+        rerunClusterRequestDtoList.get(0).getRerunClusterId());
     assertEquals(OffsetDateTime.parse("2026-09-06T09:23:40.638Z"),
         rerunClusterRequestDtoList.get(2).getCreated());
+    assertEquals("run 3", rerunClusterRequestDtoList.get(0).getJobId());
   }
 }
