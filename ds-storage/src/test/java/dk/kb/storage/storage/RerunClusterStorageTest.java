@@ -65,6 +65,7 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   public void updateRerunClusters_whenFileIdExistInTable_thenUpdateRow() throws Exception {
     // Arrange
     UUID id = UUID.randomUUID();
+    // Having the same fileId when inserting and updating
     UUID fileId = UUID.randomUUID();
     UUID rerunClusterId = UUID.randomUUID();
 
