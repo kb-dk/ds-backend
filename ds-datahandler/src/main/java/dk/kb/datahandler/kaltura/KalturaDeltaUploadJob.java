@@ -137,7 +137,7 @@ public class KalturaDeltaUploadJob {
             // Check file not already in kaltura.
             String kalturaInternalId = getInternalIdKaltura(fileId);
             if (kalturaInternalId != null) {
-                log.warn("Stream already found in Kaltura. FileId='{}' and has kalturaId='{}'. Setting this kalturaId for recordId='{}'", fileId, kalturaInternalId, id);
+                log.info("Stream already found in Kaltura. FileId='{}' and has kalturaId='{}'. Setting this kalturaId for recordId='{}'", fileId, kalturaInternalId, id);
                 updateKalturaIdForRecord(storageClient, fileId, kalturaInternalId);
                 return 0;
             }
