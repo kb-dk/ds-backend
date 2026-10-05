@@ -26,46 +26,30 @@ public class RerunClusterStorage extends BaseModuleStorage {
       new RerunClusterResponseDtoMapper();
 
   private static final String updateRerunClustersStatement = """
-                                                             WITH insert_update_rerun_clusters AS (
-                                                                 INSERT INTO rerun_clusters (
-                                                                     id,
-                                                                     file_id,
-                                                                     rerun_cluster_id,
-                                                                     created,
-                                                                     job_id,
-                                                                     inserted,
-                                                                     updated
-                                                                 )
-                                                                 VALUES (
-                                                                     ?,
-                                                                     ?,
-                                                                     ?,
-                                                                     ?,
-                                                                     ?,
-                                                                     transaction_timestamp(),
-                                                                     transaction_timestamp()
-                                                                 )
-                                                                 ON CONFLICT (file_id) DO UPDATE SET
-                                                                     id = EXCLUDED.id,
-                                                                     rerun_cluster_id = EXCLUDED.rerun_cluster_id,
-                                                                     created = EXCLUDED.created,
-                                                                     job_id = EXCLUDED.job_id,
-                                                                     updated = statement_timestamp()
-                                                                 RETURNING
-                                                                     file_id -- used in count(*)
-                                                             ),
-                                                             inserted_updated_rerun_clusters AS (
-                                                                 SELECT
-                                                                     count(*) AS rerun_clusters_count
-                                                                 FROM
-                                                                     insert_update_rerun_clusters
+                                                             INSERT INTO rerun_clusters (
+                                                                 id,
+                                                                 file_id,
+                                                                 rerun_cluster_id,
+                                                                 created,
+                                                                 job_id,
+                                                                 inserted,
+                                                                 updated
                                                              )
-                                                             SELECT
-                                                                 iurc.rerun_clusters_count
-                                                             FROM
-                                                                 inserted_updated_rerun_clusters iurc
-                                                             CROSS JOIN
-                                                                 inserted_updated_rerun_clusters udr
+                                                             VALUES (
+                                                                 ?,
+                                                                 ?,
+                                                                 ?,
+                                                                 ?,
+                                                                 ?,
+                                                                 transaction_timestamp(),
+                                                                 transaction_timestamp()
+                                                             )
+                                                             ON CONFLICT (file_id) DO UPDATE SET
+                                                                 id = EXCLUDED.id,
+                                                                 rerun_cluster_id = EXCLUDED.rerun_cluster_id,
+                                                                 created = EXCLUDED.created,
+                                                                 job_id = EXCLUDED.job_id,
+                                                                 updated = statement_timestamp()
                                                              """;
 
   private static final String getRerunClusterByFileIdStatement = """
@@ -111,13 +95,9 @@ public class RerunClusterStorage extends BaseModuleStorage {
       stmt.setObject(4, rerunClusterRequestDto.getCreated());
       stmt.setObject(5, rerunClusterRequestDto.getJobId());
 
-      ResultSet resultSet = stmt.executeQuery();
+      int insertedOrUpdatedRows = stmt.executeUpdate();
 
-      if (resultSet.next()) {
-        return recordsCountDtoMapper.map(resultSet.getInt("rerun_clusters_count"));
-      }
-
-      return null;
+      return recordsCountDtoMapper.map(insertedOrUpdatedRows);
     } catch (SQLException e) {
       String message = "SQL Exception in updateRerunClusters: " + e.getMessage();
       log.error(message);
