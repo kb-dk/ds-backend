@@ -59,7 +59,7 @@ public abstract class BaseModuleStorage implements AutoCloseable {
     dataSource.setMaxOpenPreparedStatements(connectionPoolSize);
 
     log.info(
-        "DsStorage BaseModuleStorage initialized with driverName='{}', driverURL='{}', connectionPoolSize='{}' ",
+        "BaseModuleStorage initialized with driverName='{}', driverURL='{}', connectionPoolSize='{}' ",
         driverName, driverUrl, connectionPoolSize);
   }
 
