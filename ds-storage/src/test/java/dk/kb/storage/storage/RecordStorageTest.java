@@ -41,14 +41,6 @@ public class RecordStorageTest extends TestcontainersUtil {
         recordStorage.clearTableRecords();
     }
 
-    @AfterAll
-    public static void afterClass() {
-        // No reason to delete DB data file after test, since we clear table it before each test.
-        // This way you can open the DB in a DB-browser after the unittest and see the result.
-        // Just run that single test and look in the DB
-        RecordStorage.shutdown();
-    }
-
     @Test
     public void testBasicCRUD() throws Exception {
         //TODO describe flow below

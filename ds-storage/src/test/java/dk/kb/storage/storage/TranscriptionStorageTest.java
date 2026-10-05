@@ -39,16 +39,6 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
         transcriptionStorage.clearTableRecords();
     }
 
-    /**
-     * No reason to delete DB data file after test, since we clear table it before each test.
-     * This way you can open the DB in a DB-browser after the unittest and see the result.
-     * Just run that single test and look in the DB
-     */
-    @AfterAll
-    public static void afterClass() {
-        TranscriptionStorage.shutdown();
-    }
-
     @Test
     public void createTranscription_whenNewTranscription_thenCountIsOne() throws Exception {
         // Arrange
