@@ -259,7 +259,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
-    void testSeasonNumberRitzau(){
+    void solrTransformation_whenSeasonNumberRitzauExist_thenSeasonNumberRitzauExistInSolrData(){
         assertPvicaContains(TestFiles.PVICA_RECORD_0e89456b, "\"season_number_ritzau\":\"7\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_e8c664f9, "\"season_number_ritzau\":\"1\"");
     }
