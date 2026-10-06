@@ -811,7 +811,7 @@ components:
         fileId:
           type: string
           format: uuid
-          description: 'fileId that matches a Preservica.'
+          description: 'fileId that matches a Preservica record.'
         rerunClusterId:
           type: string
           format: uuid
@@ -843,7 +843,7 @@ components:
         fileId:
           type: string
           format: uuid
-          description: 'fileId that matches a Preservica.'
+          description: 'fileId that matches a Preservica record.'
         rerunClusterId:
           type: string
           format: uuid
