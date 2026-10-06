@@ -513,7 +513,7 @@ public class DsStorageClient {
     public CreatedDto latestCreated() throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
-                .appendPathSegments("rerun-cluster","created", "latest")
+                .appendPathSegments("rerun-cluster", "created", "latest")
                 .build();
 
             return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET",
