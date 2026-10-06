@@ -43,8 +43,6 @@ public class RerunClusterFacade {
             return allRecordsCountDto;
           });
     }
-
-    log.info("Inserted/updated rows in rerun_clusters table:'{}'", allRecordsCountDto.getCount());
     return allRecordsCountDto;
   }
 
