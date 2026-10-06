@@ -361,6 +361,28 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
+    void schemaOrgTransformation_whenSeasonNumberRitzauExist_thenSeasonNumberRitzauExistInSchemaOrgData() throws IOException {
+        Assertions.assertTrue(TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_0e89456b)
+                .contains("\"kb:season_number_ritzau\":\"7\""));
+        Assertions.assertTrue(TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e8c664f9)
+                .contains("\"kb:season_number_ritzau\":\"1\""));
+    }
+
+    @Test
+    void schemaOrgTransformation_whenSeasonNumberRitzauIsZero_thenSeasonNumberRitzauDoNotExistInSchemaOrgData() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_CORRECT_PRESENTATION);
+
+        Assertions.assertFalse(transformedJSON.contains("season_number_ritzau"));
+    }
+
+    @Test
+    void schemaOrgTransformation_whenSeasonNumberRitzauDoNotExists_thenSeasonNumberRitzauDoNotExistInSchemaOrgData() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3945e2d1);
+
+        Assertions.assertFalse(transformedJSON.contains("season_number_ritzau"));
+    }
+
+    @Test
     void testCountryOfOrigin() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_74e22fd8);
 
