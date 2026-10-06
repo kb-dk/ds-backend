@@ -19,7 +19,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import dk.kb.storage.config.ServiceConfig;
-import dk.kb.storage.storage.RecordStorage;
 
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;

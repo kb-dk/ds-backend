@@ -20,8 +20,6 @@ public class RerunClusterStorage extends BaseModuleStorage {
 
   private final static CreatedDtoMapper createdDtoMapper = new CreatedDtoMapper();
   private final static RecordsCountDtoMapper recordsCountDtoMapper = new RecordsCountDtoMapper();
-  private final static RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper =
-      new RerunClusterRequestDtoMapper();
   private final static RerunClusterResponseDtoMapper rerunClusterResponseDtoMapper =
       new RerunClusterResponseDtoMapper();
 
