@@ -30,7 +30,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Demonstrates/verifies the config-source override mechanisms operations/devops rely on in production, and the
@@ -85,10 +84,14 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * field on both {@code oaiTargets} entries - {@code name}, {@code url}, {@code datasource}, ... - untouched,
  * still coming from the YAML.
  * <p>
- * (see {@code ds-shared/config/application.properties.SAMPLE}). This file is deliberately not committed to git
- * (the same {@code **&#47;config/application.properties} .gitignore rule every module's real override file
- * uses applies here too), so on a machine where it hasn't been created yet, only that one test is skipped (not
- * failed) - the other three need no local file and always run.
+ * (see {@code ds-shared/config/application.properties.SAMPLE}; copy it to {@code application.properties} in the
+ * same folder). This file is deliberately not committed to git (the same
+ * {@code **&#47;config/application.properties} .gitignore rule every module's real override file uses applies
+ * here too), but unlike a real per-service override file this one holds no actual secret - ds-shared is a
+ * library module, never deployed on its own - so there is no reason to let this test quietly not run when the
+ * file is absent. It is therefore a hard prerequisite: if it is missing, the test fails loudly with a message
+ * telling you to create it, rather than being silently skipped. The other three tests need no local file and
+ * always run.
  */
 class ApplicationPropertiesOverrideTest {
 
@@ -145,10 +148,9 @@ class ApplicationPropertiesOverrideTest {
     @Test
     void applicationPropertiesOverridesYamlValues() throws IOException {
         Path overrideFile = Path.of(System.getProperty("user.dir"), "config", "application.properties");
-        assumeTrue(Files.exists(overrideFile),
+        assertTrue(Files.exists(overrideFile),
                 "No local 'config/application.properties' override file found at '" + overrideFile + "' - copy " +
-                "config/application.properties.SAMPLE there (without the .SAMPLE suffix) to run this test. " +
-                "Skipping.");
+                "config/application.properties.SAMPLE there (without the .SAMPLE suffix) to run this test.");
 
         SmallRyeConfig config = new SmallRyeConfigBuilder()
                 .addDefaultInterceptors()

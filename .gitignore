@@ -23,6 +23,13 @@ aegis/
 # See <module>/config/application.properties.SAMPLE for the template.
 **/config/application.properties
 
+# Exception: ds-shared is a library module, never deployed on its own, and its config/application.properties
+# holds only dummy values for ApplicationPropertiesOverrideTest - no real secret. It is committed so that test
+# works on every checkout without a manual copy-the-.SAMPLE step first; application.properties.SAMPLE has been
+# removed from ds-shared as a result (unlike every other module, where the .SAMPLE stays the template and the
+# real file must never be committed).
+!ds-shared/config/application.properties
+
 # SmallRye Config per-service devops/operations override files - may contain secrets (e.g. db password).
 # The real files live outside this repo (e.g. ${user.home}/services/conf/<service>-application.properties);
 # this only guards against one ending up committed if created locally for testing.
