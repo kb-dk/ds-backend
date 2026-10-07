@@ -1,66 +1,287 @@
-
 # kb-util YAML → SmallRye Config migration (ds-backend)
 
-Status as of 2026-10-01: **migration complete for all modules, including `bff`.** ds-present was additionally refactored to a DTO-based config design (see below). All of it is built, tested and committed — `bff`'s own local `mvn test` run passed both of its test suites (`BffApiServiceImplTest` 1/1, `EncryptionHelperTest` 2/2, 0 failures), and the user has confirmed ds-present's refactor builds and is committed to a branch on GitHub.
+This is the single migration guide for the project-wide replacement of kb-util's `YAML`-backed
+configuration with [SmallRye Config](https://smallrye.io/smallrye-config/) (a standalone
+MicroProfile Config implementation — this project does not use Quarkus or Spring). It lives in
+`ds-shared` because that's where the generic parts of the pattern actually sit: the vendored
+`dk.kb.util` property-loading code (`Resolver`, the legacy `YAML` class), `OpenApiResource`'s
+`Config`-based placeholder substitution, and the generic test (`ApplicationPropertiesOverrideTest`)
+that demonstrates the override mechanism independent of any one module's `ServiceConfig`.
 
-## Scope / standing instruction
-Replace kb-util YAML-based configuration with SmallRye Config (standalone, non-Quarkus, v3.12.4) across the ds-backend multi-module Maven project. `bff` was deliberately done last since it has the one piece of behaviour none of the others need (see below).
+It replaces two earlier, now-deleted documents that drifted out of date and out of sync with each
+other: `ds-shared/SMALLRYE_CONFIG_MIGRATION.md` (a design reference) and
+`ds-storage/SMALLRYE_CONFIG_MIGRATION.md` (an early ds-storage-only proof-of-concept write-up).
+There is intentionally only one migration guide in the repo, kept here.
+
+**Status as of 2026-10-07: migration complete for all eight modules** — `ds-shared`, `ds-storage`,
+`ds-license`, `ds-image`, `ds-discover`, `ds-present`, `ds-datahandler`, and `bff`. `ds-present` was
+additionally refactored to a DTO-based config design (see below); `bff` has one piece of behaviour
+(auto-reload) none of the others need (see below). The sections below were each re-verified against
+the current source in this repo, not just carried over from prior notes.
 
 ## Module status
+
 | Module | Status | Notes |
 |---|---|---|
-| ds-shared | Done | Shared `OpenApiResource` generalized to support `${config:...}` wildcard placeholders with both `[*]` (list index) and bare `*` (dynamic/dotted YAML key). Added test dependencies (ds-shared had none before). |
-| ds-storage | Done | Standard single-file SmallRye Config pattern. |
-| ds-license | Done | Standard pattern. Also fixed an unrelated flaky test (`RightsModuleFacadeTest`) by adding `ID DESC` tiebreaker to `AuditLogModuleStorage` ORDER BY MODIFIEDTIME queries (millisecond-resolution ties). |
+| ds-shared | Done | Generic `ApplicationPropertiesOverrideTest` + `OpenApiResource`'s `${config:...}` wildcard placeholder support (both `[*]` list-index and bare `*` dynamic/dotted-key wildcards). |
+| ds-storage | Done | Standard single-file pattern; the worked example throughout this doc. |
+| ds-license | Done | Standard pattern. Also fixed an unrelated flaky test (`RightsModuleFacadeTest`) by adding an `ID DESC` tiebreaker to `AuditLogModuleStorage`'s `ORDER BY MODIFIEDTIME` queries (millisecond-resolution ties). |
 | ds-image | Done | Standard pattern. |
 | ds-discover | Done | Standard pattern. |
-| ds-present | Done, then further refactored | See "ds-present: DTO-based ServiceConfig design" below — this superseded the original hybrid `getConfig()`/`getFlatConfig()` design. |
-| ds-datahandler | Done | Standard pattern. Two files were missed in the initial pass and fixed afterward: `KBOAuth2Handler.java` and `OaiHarvestClientIntegrationTest.java` (both had leftover `YAML conf = ServiceConfig.getConfig()` + YAML-only method calls against what's now a `Config`). |
-| bff | Done | See "bff: auto-reloading ServiceConfig" below — the one module with genuinely different behaviour, not just a different file layout. |
+| ds-present | Done, then further refactored | See "ds-present: DTO-based ServiceConfig design" below. `ServiceConfig` deliberately keeps both a nested `YAML` tree and a flattened `Config` view side by side — this is by design, not leftover migration debt (see that section). |
+| ds-datahandler | Done | Standard pattern. |
+| bff | Done | See "bff: auto-reloading ServiceConfig" below — the one module with genuinely different runtime behaviour, not just a different file layout. |
 
-## Standard per-module pattern (all except ds-present and bff)
-- `ServiceConfig.getConfig()` returns MicroProfile `Config` directly (SmallRye).
-- Ordinal scheme: RUNTIME_ORDINAL=500 > system properties(400) > env vars(300) > .env(295) > PROPERTIES_OVERRIDE_ORDINAL=270 (devops properties override file) > implicit config/application.properties(260) > classpath application.properties(250) > YAML_ORDINAL=100.
-- Per-module JNDI: `application-config` and `application-properties-config` (devops override file), in `conf/ocp/<module>.xml` and `src/test/jetty/jetty-env.xml`.
-- `KBOAuth2Handler.java` rewrite pattern used in every module that has one: constructor scans config for `"security."`-prefixed property names via a for-each loop over `Config.getPropertyNames()` (`Iterable<String>`, not `Collection` — `.stream()` doesn't work), reads scalars via `getOptionalValue`, and uses a local `getIndexedStringList(Config, String)` helper for indexed list keys like `security.realms[0]`, `[1]`, ...
-- `.properties` files with real secrets are never created — only `.properties.SAMPLE` placeholder templates (per data-compliance rules).
+## Standard per-module pattern (all modules except bff's auto-reload addition)
+
+- `ServiceConfig.getConfig()` returns MicroProfile `Config` directly (SmallRye), replacing the old
+  kb-util `YAML` return type — except `ds-present`, which keeps `getConfig(): YAML` for its nested
+  tree alongside a separate `getFlatConfig(): Config` (see below).
+- Each module's `ServiceConfig.initialize(String configFile)` now takes **one** YAML file (or a glob
+  that resolves to one logical file, per module convention — `ds-present` deliberately still globs,
+  see below), resolved via `Resolver.resolveURL(...)`, rather than kb-util's old multi-file
+  glob-and-layer convention.
+- Ordinal scheme, highest wins: `RUNTIME_ORDINAL` = 500 (in-process runtime injection) >
+  system properties (400) > environment variables (300) > an optional `.env` file (295) >
+  the explicit per-service devops/operations properties override file (270) >
+  SmallRye's implicit `config/application.properties` (260) > classpath `application.properties`
+  (250) > the module's YAML file (100, registered as a custom `MapConfigSource`/`YamlConfigSource`).
+- Per-module JNDI: `application-config` (the YAML file) and `application-properties-config` (the
+  devops override file), both looked up in `ContextListener` and declared in `conf/ocp/<module>.xml`
+  (production/Tomcat) and `src/test/jetty/jetty-env.xml` (local Jetty runs).
+- `KBOAuth2Handler.java` (present in `ds-datahandler`, `ds-present`, `ds-image`, `ds-storage`,
+  `ds-discover`, `ds-license`) scans `Config.getPropertyNames()` for `"security."`-prefixed names in
+  a for-each loop (`Iterable<String>`, not `Collection` — `.stream()` isn't available), reads scalars
+  via `getOptionalValue`, and uses a local indexed-list helper for keys like `security.realms[0]`.
+- Each `ServiceConfig` also exposes `setRuntimeProperty`/`clearRuntimeProperty`/
+  `getRuntimePropertyNames` (see "Runtime property injection" below).
+- `.properties` files with real secrets are never created or committed — only `.properties.SAMPLE`
+  placeholder templates (per this project's data-compliance rules). The one documented exception is
+  `ds-shared/config/application.properties` itself — see the next section.
+
+## The generic test: ds-shared's ApplicationPropertiesOverrideTest
+
+`ds-shared/src/test/java/dk/kb/util/webservice/ApplicationPropertiesOverrideTest.java` demonstrates
+and verifies the `config/application.properties` override mechanism end-to-end, generically, once —
+this isn't specific to any one module's YAML schema, so it's tested here rather than once per module.
+(Note: an earlier draft of this guide referenced it under a `dk.kb.util.config` package; the real,
+current package is `dk.kb.util.webservice`, matching `OpenApiResource`'s own package.)
+
+Unlike every other module, where `config/application.properties` must never be committed (it's the
+local/operational override file and can carry real secrets, so it stays covered by this repo's
+blanket `**/config/application.properties` `.gitignore` rule), `ds-shared/config/application.properties`
+is **committed directly to the repository** and must be present on every checkout:
+
+- `ds-shared` is a library module — it is never deployed standalone, so this file can never carry a
+  real production secret the way another module's could.
+- Its values are dummy test fixtures only (e.g. a placeholder `db.password`, a `db.connectionPoolSize`,
+  and a small `oaiTargets[0]`/`oaiTargets[1]` list used to exercise indexed-property overriding).
+- The repo-root `.gitignore` has an explicit exception, `!ds-shared/config/application.properties`,
+  carved out of the blanket rule for exactly this reason.
+- There is no `.SAMPLE` template for it (unlike every other module) — the real file *is* the
+  checked-in template, since there is nothing in it to keep out of git.
+
+Because the file is always expected to be present, the test **fails** (`assertTrue`, not
+`Assumptions.assumeTrue`) if it's missing, rather than silently skipping — a missing file on a fresh
+checkout means something is wrong (e.g. the checkout is shallow/sparse, or the file was deleted by
+mistake), and a loud failure surfaces that immediately instead of a silently-skipped test giving a
+false sense of coverage.
+
+## The real devops/operations override file: an explicit per-service path
+
+A Tomcat instance can host several `ds-backend` WARs at once (the development server runs all
+services in one Tomcat), while production gives each service its own instance. That rules out
+relying on anything keyed off the JVM process itself (a system property, an environment variable, or
+a file found via the shared current working directory) to carry a *per-service* secret such as a
+database password — every webapp in a shared Tomcat instance would see the same value.
+
+The fix mirrors how the YAML file itself already avoids this: `application-config` is a per-webapp
+Tomcat context `<Environment>` entry, so each module points at its own YAML file even while sharing a
+Tomcat instance. The properties override file gets the same treatment via a second, optional context
+entry, `application-properties-config`, and a second, optional argument to `ServiceConfig.initialize(...)`:
+
+```java
+public static synchronized void initializeWithPropertiesOverride(String configFile, String propertiesOverrideFile) throws IOException
+```
+
+In `conf/ocp/ds-storage.xml`, for example:
+
+```xml
+<Environment name="application-config"
+    value="${user.home}/services/conf/ds-storage-behaviour.yaml"
+    type="java.lang.String" override="false"/>
+<Environment name="application-properties-config"
+    value="${user.home}/services/conf/ds-storage-application.properties"
+    type="java.lang.String" override="false"/>
+```
+
+Each other module's context defines its own two entries pointing at its own
+`<module>-behaviour.yaml`/`<module>-application.properties` — distinct files per service, so there's
+no possibility of one service's secrets leaking into another's even when they share a Tomcat instance
+and JVM. (`bff` uses a different path convention for these — `/app/conf/bff-base.yaml` /
+`/app/conf/bff-application.properties` rather than `${user.home}/services/conf/...` — a known,
+unreconciled inconsistency, not a bug.)
+
+This file is registered as a `PropertiesConfigSource` at ordinal **270** — deliberately *above*
+SmallRye's own implicit `config/application.properties` convention (260), so that convention can
+never accidentally outrank the correct, explicitly-configured file for a given service. A template is
+provided at `<module>/conf/<module>-application.properties.SAMPLE` in every module (copy it,
+dropping `.SAMPLE`, to the path the `application-properties-config` entry points at, and fill in real
+values — never commit the result). Both the JNDI entry and the argument are optional: if the entry
+isn't defined, startup logs that none is configured and continues with only the YAML file; if it's
+defined but the file can't be found, `ServiceConfig` logs an **error** (not a warning) and continues
+without that source. Each module's own `ServiceConfigPropertiesOverrideFileTest` exercises both the
+successful-override and file-not-found cases (confirmed present in `ds-storage`, `ds-license`,
+`ds-image`, `ds-discover`, `ds-datahandler`, and `ds-present`).
+
+## The single-instance-only convenience file: config/application.properties
+
+`config/application.properties` (a `config` folder, distinct from this project's `conf` folder used
+for YAML) is a plain `key=value` file SmallRye Config reads automatically as a built-in default
+source (ordinal 260), from the working directory the service is started from — no extra argument to
+`initialize(...)` needed.
+
+**This is only safe for a single, standalone instance of a service** (an IDE run, `java -jar`, a
+working directory nothing else shares) — it must not be used for real devops/operations secrets,
+since a Tomcat instance hosting several WARs shares one JVM working directory: a file left here would
+silently apply to every service sharing that instance. Use the explicit per-service file above for
+that. Every module except `ds-shared` keeps this file git-ignored with a `.SAMPLE` template to copy
+from; `ds-shared`'s own copy is the one documented exception (see above).
+
+## YAML stays almost the same
+
+Each `<module>-behaviour.yaml` keeps its structure and keys unchanged. One line per module typically
+needed to change because of a genuine syntax difference between kb-util's extrapolation (Apache
+Commons Text `StringSubstitutor`) and SmallRye Config's own `${...}` expression syntax:
+
+```diff
+- url: jdbc:h2:${env:TMPDIR:-/tmp}/h2_ds_storage;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
++ url: jdbc:h2:${TMPDIR:/tmp}/h2_ds_storage;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+```
+
+Environment variables are already a config source in SmallRye Config (300), so `${TMPDIR}` resolves
+directly against the env var; `${TMPDIR:/tmp}` adds the same `/tmp` fallback the old `:-` syntax
+provided.
+
+## Known semantic difference: overriding list values
+
+SmallRye Config flattens a YAML list into indexed properties (`origins[0].name`, `origins[1].name`,
+...), each resolved independently — highest-ordinal source wins per key, same as any scalar. kb-util's
+old merge instead replaced the *entire* list as soon as an overriding file redefined it at all.
+
+Now that each `ServiceConfig` loads a single YAML file, this rarely comes up — but it can still matter
+if `origins` is redefined via a higher-priority source (the devops override file, or a runtime
+injection): a naive per-index read would mix entries from both sources instead of one cleanly
+replacing the other. `ds-storage`'s `ServiceConfig.loadAllowedOrigins()` special-cases this: it finds
+the single highest-ordinal source that defines *any* `origins[...]` entry and reads the whole list
+from that source alone, so one source always wins outright for `origins`. This is not a generic
+solution — a future list-valued config needing the same treatment should apply the same pattern, or
+use a `@ConfigMapping` with an explicit `List<T>` and accept SmallRye's per-index override semantics.
+
+## Runtime property injection
+
+Each `ServiceConfig` registers a small in-memory `ConfigSource` at the highest ordinal (500) of all
+sources used — above system properties, environment variables, the devops override file, and the
+YAML file:
+
+```java
+ServiceConfig.setRuntimeProperty("db.connectionPoolSize", "42"); // takes effect immediately
+ServiceConfig.clearRuntimeProperty("db.connectionPoolSize");     // reverts to the YAML value
+```
+
+SmallRye Config re-reads all sources on every `getValue`/`getOptionalValue` call rather than caching a
+snapshot, so a runtime override is visible immediately with no restart. `setRuntimeProperty` redacts
+values in its log line for keys whose name looks like a password/secret/token. See each module's own
+`ServiceConfigRuntimeInjectionTest` (confirmed present, e.g. in `ds-storage`) for a runnable
+demonstration. This stays at the Java API level today — there is no HTTP/admin endpoint exposing it.
+
+## ds-present: DTO-based ServiceConfig design
+
+`ds-present`'s configuration includes an `origins`/`storages`/`views`/`transformers` object graph
+whose shape (nested, with data-driven cardinality) has no direct equivalent in SmallRye Config's flat
+property model. Rather than forcing that tree through `Config`, `ServiceConfig` deliberately keeps
+**two** parallel representations side by side, and is the *only* class in the module allowed to touch
+either `YAML` or MicroProfile `Config` directly — every other class works only with plain DTOs or
+primitives returned by `ServiceConfig`:
+
+- `getConfig(): YAML` — the original kb-util tree (`YAML.resolveLayeredConfigs(...)`), including the
+  multi-file glob merge (`ds-present-behaviour.yaml` + `ds-present-kb-origins.yaml` + an optional
+  environment-specific file) and `${path:...}` self-referencing extrapolation. Internal to
+  `ServiceConfig` — only a few tests exercising generic YAML/library behaviour still touch it directly.
+- `getOrigins()`, `getStorages()`, and the other typed getters — plain Java DTOs
+  (`dk.kb.present.config.OriginConfig`, `StorageConfig`, `ViewConfig`, the `TransformerConfig`/
+  `BackendConfig` marker-interface families) built on demand by a dedicated `ConfigParser` class from
+  the `YAML` tree above. This is how every other class in `ds-present` reads configuration.
+- `getFlatConfig(): Config` — a MicroProfile `Config`, used only where a third-party/MicroProfile-aware
+  API needs the raw object itself (the OpenAPI endpoint, `KBOAuth2Handler`). Built by flattening the
+  merged `YAML` tree (including the nested sections, for the `OpenApiResource` wildcard substitution
+  to work against it) and layering it under runtime injection, system properties, environment
+  variables, `.env`, and the devops override file.
+
+So: `ds-present` is **not** carrying leftover, unmigrated `YAML` usage — the `dk.kb.util.yaml.YAML`
+import in its `ServiceConfig.java` is a deliberate, documented part of the design (confirmed by
+reading the current class javadoc and source), not migration debt.
+
+Follow-up notes from this refactor, for anyone touching it again:
+- Scalar getters (`getLicenseModuleUrl()`, `isUseTranscriptionsEnabled()`, `isStopOnErrorEnabled()`,
+  `getRecordIdPattern()`, `getOriginPrefixPattern()`) read from `getFlatConfig()`/`getConfig()`
+  directly on `ServiceConfig`; all nested-tree parsing (`parseOrigins`/`parseStorages`/...) lives in
+  the separate `ConfigParser` class, which takes the already-loaded `YAML` tree as a parameter (no
+  call-back into `ServiceConfig`, so no circular dependency).
+- When changing a factory/handler constructor's parameter type in a refactor like this, diff the new
+  `throws` clause against the original line by line — narrowing to no checked exception compiles fine
+  against an interface declaring `throws Exception`, and only fails at the call site.
+- Grep test sources for direct calls to the changed method/constructor names, not just for the old
+  type being removed — tests that build a factory or config-consumer directly from a hand-built
+  fixture, bypassing `ServiceConfig`, won't show up in a `ServiceConfig`-usage grep.
 
 ## bff: auto-reloading ServiceConfig
-bff's config (`dk.kb.oauth.config.ServiceConfig`) differs from every other module in one respect: operators edit `bff-base.yaml` directly in production to change user-facing content — most notably `messages.*` keys shown on the frontend (service-window warnings, etc.; see the real production `messages:` block the user pasted in, e.g. `alert1`, plus `partnerId`/`videoUiConfId`/`audioUiConfId`) and `secretSalt` (used by `EncryptionHelper` to encrypt/decrypt the BFF cookie) — and these must take effect without a service restart, replicating the old kb-util `AutoYAML` behaviour.
 
-- A background daemon thread (`ServiceConfig-autoupdate`) rebuilds the entire `SmallRyeConfig` from the same `configFile`/`propertiesOverrideFile` paths every `config.autoupdate.intervalms` milliseconds (default 60000 = 1 minute) and atomically swaps a `volatile SmallRyeConfig` field, so readers never see a half-rebuilt config and never need to re-fetch/re-cache anything themselves. Controlled by `config.autoupdate.enabled`/`config.autoupdate.intervalms` read from the config itself; `restartAutoUpdateIfNeeded()` is idempotent (always stops any existing thread first), so re-`initialize()`-ing (as tests do) never leaks threads. A reload failure (file briefly missing/unparsable during a deploy) is caught, logged, and keeps serving the last known-good config rather than killing the thread.
-- `getMessagesConfig()` reconstructs the `messages.*` section as a flat `Map<String, Object>` by scanning `Config.getPropertyNames()` for that prefix (MicroProfile `Config` has no "read back a sub-tree" operation the way kb-util `YAML.getSubMap()` did), used by `BffApiServiceImpl.getMessages()`. Every call reflects the current (possibly auto-reloaded) config.
-- `ContextListener.contextInitialized` calls `ServiceConfig.initialize(configSource, propertiesSource)`; `contextDestroyed` calls `ServiceConfig.shutdown()` to stop the thread cleanly.
-- `conf/ocp/bff.xml` has the same two JNDI entries as every other module (`application-config` → `bff-base.yaml`, `application-properties-config` → `bff-application.properties`, both outside git).
-- This module's migration (including the auto-reload thread, pom.xml's `smallrye-config`/`smallrye-config-source-yaml` dependencies, and all the conf/JNDI wiring) was done and verified with a real local `mvn test` run — unlike the other modules, which were implemented here and only compile/syntax-checked in the sandbox before the user's own build confirmed them.
+`bff`'s config (`dk.kb.oauth.config.ServiceConfig`) differs from every other module in one respect:
+operators edit `bff-base.yaml` directly in production to change user-facing content (most notably the
+`messages.*` keys shown on the frontend, and `secretSalt`, used by `EncryptionHelper` to encrypt/
+decrypt the BFF cookie) and these must take effect without a service restart — replicating the old
+kb-util `AutoYAML` behaviour.
 
-## ds-present: DTO-based ServiceConfig design (2026-10-01 refactor)
-Following the standard migration above, the user asked for a further decoupling step specific to ds-present: make `ServiceConfig` the **only** class that touches `dk.kb.util.yaml.YAML` or MicroProfile `Config`; every other class in the module uses only primitives or plain Java DTOs returned by `ServiceConfig`. Rationale (user's words): "By only using get'er in the ServiceConfig, this will decouple how the properties was loaded from the rest of the code."
-
-- Scalar settings get typed getters on `ServiceConfig`, e.g. `getLicenseModuleUrl()`, `isUseTranscriptionsEnabled()`, `isStopOnErrorEnabled()`, `getRecordIdPattern()`, `getOriginPrefixPattern()`.
-- Tree-shaped settings get a new `dk.kb.present.config` package of plain DTOs, built lazily (not cached, not built at `initialize()` time — several tests `initialize()` with fixtures that lack an `origins`/`storages` section entirely):
-  - `OriginConfig`, `ViewConfig`, `StorageConfig`.
-  - `TransformerConfig` (marker interface) with `XsltConfig` (shared by `xslt`/`xsltsolr`), `ReplaceConfig`, `FailTransformerConfig`, `EmptyTransformerConfig` (used for `identity`/`imagerights` and as the fallback for unrecognized types — deliberately **not** `FailTransformerConfig`, so an unknown type still fails with a correct diagnostic naming the real type rather than being silently misrouted to the fail factory).
-  - `BackendConfig` (marker interface) with `DsStorageBackendConfig`, `FolderBackendConfig`, `FailBackendConfig`, and an anonymous fallback (same "preserve real type name" reasoning as above).
-  - `ServiceConfig.getOrigins()` / `getStorages()` return `List<OriginConfig>` / `List<StorageConfig>`.
-- A later follow-up pass moved all the tree-parsing itself (`parseOrigin`/`parseView`/`parseTransformer`/`parseStorage`/`parseBackend`/`assertKeys`, and all their key constants) out of `ServiceConfig` into a new package-private `dk.kb.present.config.ConfigParser` class, at the user's request ("I would like to move all custom yaml handling except getting properties"). `ServiceConfig` is left with only configuration loading/initialization and the flat scalar getters; `ConfigParser.parseOrigins(YAML)`/`parseStorages(YAML)` take the already-loaded tree as a parameter (no call-back into `ServiceConfig`, so no circular dependency) and do all the nested-tree walking. `ServiceConfig.getOrigins()`/`getStorages()` became one-line delegators, so no other file in ds-present needed to change — the public signatures were untouched. `getConfig()` is still needed internally by `ServiceConfig` itself (for `getRecordIdPattern()`/`getOriginPrefixPattern()`) so it stays public.
-- Every consumer was changed to take DTOs/primitives instead of `YAML`: `StorageHandler`, `StorageController`, `StorageFactory` + its 3 implementations (`DSStorageFactory`, `FileStorageFactory`, `FailStorageFactory`), `DSOrigin`, `View`, `OriginHandler`, `TransformerController`, `DSTransformerFactory` + its 6 implementations (`XSLTFactory`, `XSLTSolrFromSchemaFactory`, `ReplaceFactory`, `IdentityFactory`, `FailFactory`, `ImageRightsFactory`), `AccessUtil`, `PresentFacade`.
-- `getFlatConfig(): Config` was deliberately **kept** (not eliminated) since it's a standard MicroProfile interface already handed directly to third-party/MicroProfile-aware code (`Application_v1`'s `OpenApiResource.setConfig(...)`, `KBOAuth2Handler`).
-- Deliberately left untouched: `ServiceConfigTest.testImageserverAbstraction2` and `ServiceConfigPropertiesOverrideFileTest` (both exercise generic kb-util YAML mechanics / override-file mechanism unrelated to this DTO shape), `TestFileProvider.java`.
-- Investigated separately: whether `dk.kb.util.yaml.YPath`/`YAMLVisitor` (in `ds-shared`) are still used. They exist solely to implement `YAML.visit(...)`'s wildcard path-query feature; ds-present's own tree parsing (in `ConfigParser`) never calls it, only plain `getSubMap`/`getYAMLList`/`getString`. No caller of `YAML.visit(...)` was found outside `ds-shared` itself (checked a pre-migration reference clone, the current `OpenApiResource.java` which has fully switched to `Config`-based substitution, and ds-present/ds-storage) — they look like dead code candidates, but this wasn't acted on, just reported; no sandbox shell access means this couldn't be confirmed with a full `grep -r` across the live repo.
-
-### Compile errors found after the fact (all fixed, all worth watching for in future similar refactors)
-1. **Variable shadowing across types**: `OriginHandler`'s constructor took `String originPrefixPattern` (matching the field name `Pattern originPrefixPattern`) and compiled it to a local `Pattern`, but a lambda inside the constructor referenced the unqualified name and silently resolved to the `String` parameter instead of the field — compiler caught it (`cannot find symbol: method matcher(String)`) only because the types differed. Fix: never let a constructor parameter share a name with a differently-typed field when a lambda in the same constructor needs the field; use a distinctly-named local (e.g. `compiledOriginPrefixPattern`).
-2. **Dropped `throws` clause on an interface override**: rewriting `XSLTFactory`/`XSLTSolrFromSchemaFactory` to the new `TransformerConfig` parameter type lost the original `throws IOException` (the `XSLTTransformer`/`XSLTSolrFromSchemaTransformer` constructors read+compile an XSLT resource and can throw it). The interface declares `throws Exception`, so an override narrowing to no throws clause compiles fine on its own — the error only surfaces at the call site inside the method body. Fix: when rewriting a factory/handler method signature, diff the new `throws` clause against the pre-refactor original line by line, don't just match the interface's declared exception.
-3. **Test helpers that call a factory or config-consumer directly, bypassing `ServiceConfig`**: several test files (`ReplaceTransformerTest`, `XSLTTransformerTestBase`, `XSLTCumulusToSchemaDotOrgTransformerTest`, `XSLTCumulusToSolrTransformerTest`, `EmbeddedSolrTest`) built a raw YAML string inline and called `someFactory.createTransformer(yaml)` or `TestUtil.getTransformedFromConfigWithAccessFields(yaml, ...)` directly, rather than going through `ServiceConfig.initialize(...)` + `getOrigins()`/`getStorages()`. These don't show up in a grep for `ServiceConfig` usage, so they were missed in the first rewrite pass and only surfaced via the user's `mvn test-compile` output. Fix: build the relevant DTO (`XsltConfig`, `ReplaceConfig`, etc.) directly with its constructor instead of parsing YAML, except where the test's own readable YAML-string mini-DSL is worth keeping for readability (e.g. `ReplaceTransformerTest.getReplacer` still parses a short YAML snippet but now constructs a `ReplaceConfig` from the parsed fields before calling the factory).
-
-### Verification caveat
-None of this could be compiled against real dependencies in the cloud sandbox used to do the rewrite — Maven Central and the internal KB Nexus are both blocked by the organization's egress policy there. Verification was manual (cross-referencing original constructor signatures) plus a classpath-less `javac` syntax-only pass. All three bug classes above were only caught by the user's actual local Maven build (`mvn test-compile`) — a good reminder that this kind of refactor needs a real local build/test cycle, not just sandbox review, before being trusted.
+- A background daemon thread (`ServiceConfig-autoupdate`) rebuilds the entire `SmallRyeConfig` from
+  the same `configFile`/`propertiesOverrideFile` paths every `config.autoupdate.intervalms`
+  milliseconds (default 60000) and atomically swaps a `volatile` field, so readers never see a
+  half-rebuilt config. Controlled by `config.autoupdate.enabled`/`intervalms`, read from the config
+  itself; restarting the auto-update is idempotent, so re-`initialize()`-ing (as tests do) never leaks
+  threads. A reload failure is caught, logged, and the last known-good config keeps serving.
+- `getMessagesConfig()` reconstructs the `messages.*` section as a flat `Map<String, Object>` by
+  scanning `Config.getPropertyNames()` for that prefix (MicroProfile `Config` has no "read back a
+  sub-tree" operation the way `YAML.getSubMap()` did); every call reflects the current, possibly
+  auto-reloaded, config.
+- `ContextListener.contextInitialized` calls `ServiceConfig.initialize(...)`; `contextDestroyed` stops
+  the thread cleanly.
+- **Known gap, still open**: `bff/conf/bff-base.yaml` currently has no example `messages:` block, even
+  though `getMessagesConfig()` and the real production YAML use one — worth adding a sample block so a
+  fresh local run doesn't silently get an empty messages map.
+- Checked for this guide: no leftover `AutoYAML`-based class remains anywhere in `bff` (or any other
+  module) — every `AutoYAML` reference left in the codebase is a javadoc/comment pointing back at the
+  retired kb-util mechanism for context, not live code.
 
 ## Recurring failure pattern worth knowing about
-Files that call kb-util-YAML-only methods (`.getSubMap()`, `.containsKey()`, `.getString()`, `.getList()`, `.getInteger()`) directly against `ServiceConfig.getConfig()` broke compilation once that method's return type changed from `YAML` to `Config`. This happened more than once per module (missed files from the initial pass, surfaced later by the user's build). Useful technique: compare file `mtimeMs` (via the device bridge) against files known to have been touched by the migration — an old/original timestamp reliably indicates a file was never updated and is worth grepping for `YAML` / `.getConfig()`.
 
-The ds-present DTO refactor above surfaced the same general class of problem one level deeper: it's not enough to grep for the old type (`YAML`) in production code — test code that directly instantiates factories/handlers with hand-built config bypasses that grep entirely. When doing this kind of signature-changing refactor, also grep test sources for direct calls to the changed method names (`createTransformer(`, `createStorage(`, the constructor names of the classes being changed), not just for the old type being removed.
+Files that called kb-util-YAML-only methods (`.getSubMap()`, `.containsKey()`, `.getString()`,
+`.getList()`, `.getInteger()`) directly against `ServiceConfig.getConfig()` broke compilation once
+that method's return type changed from `YAML` to `Config` (or, for `ds-present`, once most callers
+were moved onto DTOs instead of either). This surfaced more than once per module as files missed in
+the initial migration pass. When doing a similar signature-changing refactor, grep test sources too —
+not just production code — for direct calls to the changed method/constructor names, since a test that
+builds a factory or config object directly from a hand-built fixture bypasses a grep for the old type
+name entirely.
 
 ## Remaining work
-None known. All seven modules (`ds-shared`, `ds-storage`, `ds-license`, `ds-image`, `ds-discover`, `ds-present`, `ds-datahandler`) plus `bff` are migrated; `bff` additionally passed a real local `mvn test`. If anything turns up later, it's most likely in `bff`'s committed `bff-base.yaml` sample (it currently has no example `messages:` block, even though `getMessagesConfig()`/the real production YAML use one) or in a leftover old `AutoYAML`-based class in bff that should be deleted now that `ServiceConfig` replaces it — neither was confirmed as an actual problem, just flagged as worth a quick look.
+
+None blocking. Two items are worth a look but are not confirmed problems:
+
+- `bff/conf/bff-base.yaml` has no sample `messages:` block (see above).
+- `bff`'s `/app/conf/...` JNDI path convention hasn't been reconciled with every other module's
+  `${user.home}/services/conf/...` convention — may be intentional, not yet confirmed either way.
+
+Possible future improvements, not required by anything above: `@ConfigMapping` interfaces for
+strongly-typed, validated config sections instead of raw `getValue(String, Class)` calls where runtime
+mutability isn't needed; and deciding whether runtime-injected properties should be reachable via an
+admin API (none exists today — `setRuntimeProperty`/`clearRuntimeProperty` are Java-API-only).
