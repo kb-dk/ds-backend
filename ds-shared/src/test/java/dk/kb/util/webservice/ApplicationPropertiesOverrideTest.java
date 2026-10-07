@@ -42,10 +42,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <ol>
  *     <li>{@link #simpleYamlLoading()} - the YAML file alone, no override source at all.</li>
  *     <li>{@link #applicationPropertiesOverridesYamlValues()} - a real {@code config/application.properties}
- *     file placed next to the running service - never committed to git, see
- *     {@code config/application.properties.SAMPLE} in every module - carrying secrets and per-environment
- *     values such as the real database password. SmallRye Config picks this file up automatically: it is one
- *     of the built-in default sources registered by {@code addDefaultSources()} (ordinal 260, read from the
+ *     file placed next to the running service, carrying secrets and per-environment values such as the real
+ *     database password in every other module. SmallRye Config picks this file up automatically: it is one of
+ *     the built-in default sources registered by {@code addDefaultSources()} (ordinal 260, read from the
  *     current working directory - {@code ${user.dir}}, which for a Maven-run test is this module's own root
  *     directory), so no code change is needed for it to take effect.</li>
  *     <li>{@link #environmentVariablesOverrideYamlValues()} - the same idea, but via environment variables
@@ -72,7 +71,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * and the old {@code YAML} class). It was also changed to read a pre-existing, persistent
  * {@code config/application.properties} instead of writing/deleting one itself every run.
  * <p>
- * <b>Prerequisite (test 2 only):</b> {@code ds-shared/config/application.properties} must exist locally with:
+ * <b>Prerequisite (test 2 only):</b> {@code ds-shared/config/application.properties} must exist with:
  * <pre>
  * db.password=dummy-test-password
  * db.connectionPoolSize=77
@@ -84,14 +83,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * field on both {@code oaiTargets} entries - {@code name}, {@code url}, {@code datasource}, ... - untouched,
  * still coming from the YAML.
  * <p>
- * (see {@code ds-shared/config/application.properties.SAMPLE}; copy it to {@code application.properties} in the
- * same folder). This file is deliberately not committed to git (the same
- * {@code **&#47;config/application.properties} .gitignore rule every module's real override file uses applies
- * here too), but unlike a real per-service override file this one holds no actual secret - ds-shared is a
- * library module, never deployed on its own - so there is no reason to let this test quietly not run when the
- * file is absent. It is therefore a hard prerequisite: if it is missing, the test fails loudly with a message
- * telling you to create it, rather than being silently skipped. The other three tests need no local file and
- * always run.
+ * Unlike every other module's real {@code config/application.properties} - which must never be committed,
+ * since it carries real secrets - ds-shared's copy is checked into git directly: this is a library module,
+ * never deployed on its own, and the values above are dummies for this test alone, not a real credential. It
+ * is therefore a hard prerequisite rather than an optional local file: if it is ever missing, the test fails
+ * loudly with a message pointing at the expected path, rather than silently skipping. The other three tests
+ * need no local file and always run.
  */
 class ApplicationPropertiesOverrideTest {
 
@@ -149,8 +146,9 @@ class ApplicationPropertiesOverrideTest {
     void applicationPropertiesOverridesYamlValues() throws IOException {
         Path overrideFile = Path.of(System.getProperty("user.dir"), "config", "application.properties");
         assertTrue(Files.exists(overrideFile),
-                "No local 'config/application.properties' override file found at '" + overrideFile + "' - copy " +
-                "config/application.properties.SAMPLE there (without the .SAMPLE suffix) to run this test.");
+                "ds-shared/config/application.properties not found at '" + overrideFile + "' - this file is " +
+                "committed to the repository and should always be present; check you are running this test " +
+                "from the ds-shared module's root directory.");
 
         SmallRyeConfig config = new SmallRyeConfigBuilder()
                 .addDefaultInterceptors()
