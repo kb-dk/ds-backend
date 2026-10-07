@@ -353,7 +353,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
         // Act
         String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
-        System.out.println(solrDocument);
 
         // Assert
         assertFalse(solrDocument.contains("\"transcription\""));
@@ -503,7 +502,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
         // Act
         String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
-        System.out.println(solrDocument);
+
         // Assert
         assertTrue(solrDocument.contains("\"rerun_cluster_id\":\"" + rerunClusterId + "\""));
         assertTrue(
