@@ -2,6 +2,7 @@ package dk.kb.license.storage;
 
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,19 +83,7 @@ public abstract class BaseModuleStorage implements AutoCloseable {
 
         // TODO maybe set some datasource options.
         // enable detection and logging of connection leaks
-        /*
-         * dataSource.setRemoveAbandonedOnBorrow(
-         * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
-         * > 0); dataSource.setRemoveAbandonedOnMaintenance(
-         * AlmaPickupNumbersPropertiesHolder.PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM
-         * > 0); dataSource.setRemoveAbandonedTimeout(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM); //1 hour
-         * dataSource.setLogAbandoned(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_TIME_BEFORE_RECLAIM > 0);
-         * dataSource.setMaxWaitMillis(AlmaPickupNumbersPropertiesHolder.
-         * PICKUPNUMBERS_DATABASE_POOL_CONNECT_TIMEOUT);
-         */
-        dataSource.setMaxTotal(10); //
+        dataSource.setMaxTotal(10);
 
         INITDATE = new Date();
 
@@ -151,13 +140,11 @@ public abstract class BaseModuleStorage implements AutoCloseable {
             T result;
             try {
                 result = action.process(storage);
-            }
-            catch(InvalidArgumentServiceException e) {
-                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e.getMessage());
+            } catch (InvalidArgumentServiceException e) {
+                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
                 storage.rollback();
-                throw new InvalidArgumentServiceException(e);
-            }
-            catch (Exception e) {
+                throw e;
+            } catch (Exception e) {
                 log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
                 storage.rollback();
                 throw new InternalServiceException(e);
@@ -171,6 +158,9 @@ public abstract class BaseModuleStorage implements AutoCloseable {
             }
 
             return result;
+        } catch (ServiceException e) {
+            log.error("Exception performing action '{}'", actionID, e);
+            throw e;
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             log.error("Exception performing action '{}'", actionID, e);
             throw new InternalServiceException(e);

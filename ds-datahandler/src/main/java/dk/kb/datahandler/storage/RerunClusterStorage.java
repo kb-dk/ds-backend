@@ -4,6 +4,7 @@ import dk.kb.datahandler.mapper.RerunClusterRequestDtoMapper;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -100,15 +101,14 @@ public class RerunClusterStorage implements AutoCloseable {
                                              Class<? extends RerunClusterStorage> storageClass,
                                              RerunClusterStorage.StorageAction<T> action) {
         long start = System.currentTimeMillis();
-        try (
-            RerunClusterStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
+        try (RerunClusterStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
             T result;
             try {
                 result = action.process(storage);
             } catch (InvalidArgumentServiceException e) {
-                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e.getMessage());
+                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
                 storage.rollback();
-                throw new InvalidArgumentServiceException(e);
+                throw e;
             } catch (Exception e) {
                 log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
                 storage.rollback();
@@ -124,6 +124,9 @@ public class RerunClusterStorage implements AutoCloseable {
 
             log.debug("ds-datahandler method '{}' SQL time in millis: {} ", actionID, (System.currentTimeMillis() - start));
             return result;
+        } catch (ServiceException e) {
+            log.error("Exception performing action '{}'", actionID, e);
+            throw e;
         } catch (Exception e) {
             log.error("Exception performing action '{}'", actionID, e);
             throw new InternalServiceException(e);

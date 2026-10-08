@@ -4,6 +4,7 @@ import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.util.UniqueTimestampGenerator;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -100,9 +101,9 @@ public abstract class BaseModuleStorage implements AutoCloseable {
       try {
         result = action.process(storage);
       } catch (InvalidArgumentServiceException e) {
-        log.warn("Exception performing action '{}'. Initiating rollback", actionID, e.getMessage());
+        log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
         storage.rollback();
-        throw new InvalidArgumentServiceException(e);
+        throw e;
       } catch (Exception e) {
         log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
         storage.rollback();
@@ -119,6 +120,9 @@ public abstract class BaseModuleStorage implements AutoCloseable {
       log.debug("ds-storage method '{}' SQL time in millis: {} ", actionID,
           (System.currentTimeMillis() - start));
       return result;
+    } catch (ServiceException e) {
+      log.error("Exception performing action '{}'", actionID, e);
+      throw e;
     } catch (Exception e) {
       log.error("Exception performing action '{}'", actionID, e);
       throw new InternalServiceException(e);

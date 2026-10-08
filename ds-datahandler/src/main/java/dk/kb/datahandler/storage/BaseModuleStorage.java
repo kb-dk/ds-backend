@@ -3,6 +3,7 @@ package dk.kb.datahandler.storage;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
@@ -73,15 +74,14 @@ public abstract class BaseModuleStorage implements AutoCloseable {
                                              Class<? extends BaseModuleStorage> storageClass,
                                              BaseModuleStorage.StorageAction<T> action) {
         long start = System.currentTimeMillis();
-        try (
-            BaseModuleStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
+        try (BaseModuleStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
             T result;
             try {
                 result = action.process(storage);
             } catch (InvalidArgumentServiceException e) {
-                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e.getMessage());
+                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
                 storage.rollback();
-                throw new InvalidArgumentServiceException(e);
+                throw e;
             } catch (Exception e) {
                 log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
                 storage.rollback();
@@ -97,6 +97,9 @@ public abstract class BaseModuleStorage implements AutoCloseable {
 
             log.debug("ds-datahandler method '{}' SQL time in millis: {} ", actionID, (System.currentTimeMillis() - start));
             return result;
+        } catch (ServiceException e) {
+            log.error("Exception performing action '{}'", actionID, e);
+            throw e;
         } catch (Exception e) {
             log.error("Exception performing action '{}'", actionID, e);
             throw new InternalServiceException(e);
