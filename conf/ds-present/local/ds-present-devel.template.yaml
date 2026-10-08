@@ -209,13 +209,13 @@ origins:
   # If any of those are not supported, the transformer "fail" should be used with a telling message.
   # Royal Danish Library image collection with the core format being MODS
   # Uses the default storage, which connects to a running ds-storage instance
-  - "ds.radio":
+  - ds_radio:
       description: "Radio records from the Preservica system at the Royal Danish Library"
       prefix: "ds.radio"
       origin: "ds.radio"
       recordRequestType: "DELIVERABLEUNIT"
       views: *PRESERVICA_VIEWS
-  - "ds.tv":
+  - ds_tv:
       description: "TV records from the Preservica system at the Royal Danish Library"
       prefix: "ds.tv"
       origin: "ds.tv"

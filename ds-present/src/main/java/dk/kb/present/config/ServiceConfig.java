@@ -224,7 +224,7 @@ public class ServiceConfig {
      */
     private static void flatten(YAML yaml, String prefix, Map<String, String> target) {
         for (String key : yaml.keySet()) {
-            String path = prefix.isEmpty() ? key : prefix + "." + key;
+            String path = prefix.isEmpty() ? key : prefix + "_" + key;
             try {
                 Object value = yaml.get(key);
                 if (value instanceof Map) {
