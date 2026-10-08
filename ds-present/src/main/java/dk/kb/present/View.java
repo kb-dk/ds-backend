@@ -27,6 +27,7 @@ import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
@@ -343,26 +344,27 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
     }
 
     /**
-     * Updates the provided metadata map with rerunClusterResponseDto data.
-     * You need to return an empty object because the code can not handle anything else. So we are
-     * bound to have null checks this way...
+     * Updates the provided metadata map with rerun cluster data for the fileId. Nothing is added if
+     * no rerun cluster exists for the fileId.
      *
      * @param metadata the map of metadata
-     * @param fileId   the fileId to find rerunClusterResponseDto
+     * @param fileId   the fileId to find the rerun cluster for
      */
     private void updateMetadataMapWithRerunCluster(Map<String, String> metadata, String fileId) {
-        if (StringUtils.isNotBlank(fileId)) {
-            RerunClusterResponseDto rerunClusterResponseDto = getStorage().getRerunClusterByFileId(
-                UUID.fromString(fileId));
-
-            if (rerunClusterResponseDto.getRerunClusterId() != null) {
-                metadata.put("rerun_cluster_id", rerunClusterResponseDto.getRerunClusterId().toString());
-            }
-
-            if (rerunClusterResponseDto.getRerunClusterIdCount() != null) {
-                metadata.put("rerun_cluster_id_count", rerunClusterResponseDto.getRerunClusterIdCount().toString());
-            }
+        if (StringUtils.isBlank(fileId)) {
+            return;
         }
+
+        RerunClusterResponseDto rerunClusterResponseDto;
+        try {
+            rerunClusterResponseDto = getStorage().getRerunClusterByFileId(UUID.fromString(fileId));
+        } catch (NotFoundServiceException e) {
+            // No rerun cluster for this fileId. It is to be expected
+            return;
+        }
+
+        metadata.put("rerun_cluster_id", rerunClusterResponseDto.getRerunClusterId().toString());
+        metadata.put("rerun_cluster_id_count", rerunClusterResponseDto.getRerunClusterIdCount().toString());
     }
 
     /**

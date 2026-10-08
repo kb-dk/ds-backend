@@ -3,6 +3,7 @@ package dk.kb.storage.facade;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dk.kb.storage.model.v1.CreatedDto;
@@ -14,6 +15,7 @@ import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.storage.RecordStorageForUnitTest;
 import dk.kb.storage.storage.RerunClusterStorageForUnitTest;
 import dk.kb.storage.util.TestcontainersUtil;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -158,21 +160,17 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
   }
 
   @Test
-  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnEmptyRerunCluster() {
+  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenThrowNotFoundServiceException() {
     // Arrange
     UUID fileId = UUID.randomUUID();
 
     // Act
-    RerunClusterResponseDto rerunClusterResponseDto = RerunClusterFacade.getRerunClusterByFileId(fileId);
+    NotFoundServiceException exception = assertThrows(NotFoundServiceException.class,
+        () -> RerunClusterFacade.getRerunClusterByFileId(fileId));
 
     // Assert
-    assertNull(rerunClusterResponseDto.getFileId());
-    assertNull(rerunClusterResponseDto.getRerunClusterId());
-    assertNull(rerunClusterResponseDto.getRerunClusterIdCount());
-    assertNull(rerunClusterResponseDto.getCreated());
-    assertNull(rerunClusterResponseDto.getJobId());
-    assertNull(rerunClusterResponseDto.getInserted());
-    assertNull(rerunClusterResponseDto.getUpdated());
+    String errorMessage = "No rerun cluster found for fileId '" + fileId + "'";
+    assertEquals(errorMessage, exception.getMessage());
   }
 
   @Test

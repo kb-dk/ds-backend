@@ -206,8 +206,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
     jobDto.setJobStatus(JobStatusDto.RUNNING);
     jobDto.setStartTime(OffsetDateTime.now(ZoneOffset.UTC));
 
-    String expectedMessage =
-        "dk.kb.util.webservice.exception.InvalidArgumentServiceException: dk.kb.util.webservice.exception.InvalidArgumentServiceException: There is already a/an kaltura upload job running";
+    String expectedMessage = "There is already a/an kaltura upload job running";
 
     BaseModuleStorage.performStorageAction("Create job for kaltura upload test", JobStorage.class,
         storage -> {
@@ -216,11 +215,9 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
         });
 
     // Act/Assert
-    Exception exception = Assertions.assertThrows(
-        InternalServiceException.class,
-        () -> DsDatahandlerFacade.kalturaDeltaUpload()
-    );
+    Exception exception = Assertions.assertThrows(InvalidArgumentServiceException.class,
+        () -> DsDatahandlerFacade.kalturaDeltaUpload());
 
-    Assertions.assertEquals(expectedMessage, exception.getMessage());
+    assertEquals(expectedMessage, exception.getMessage());
   }
 }

@@ -4,6 +4,7 @@ import dk.kb.datahandler.mapper.RerunClusterRequestDtoMapper;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -97,41 +98,52 @@ public class RerunClusterStorage implements AutoCloseable {
      * @return return value from the action.
      * @throws InternalServiceException if anything goes wrong.
      */
-    public static <T> T performStorageAction(String actionID,
-                                             Class<? extends RerunClusterStorage> storageClass,
-                                             RerunClusterStorage.StorageAction<T> action) {
-        long start = System.currentTimeMillis();
-        try (RerunClusterStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
-            T result;
-            try {
-                result = action.process(storage);
-            } catch (InvalidArgumentServiceException e) {
-                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
-                storage.rollback();
-                throw e;
-            } catch (Exception e) {
-                log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
-                storage.rollback();
-                throw new InternalServiceException(e);
-            }
+  public static <T> T performStorageAction(String actionID,
+                                           Class<? extends RerunClusterStorage> storageClass,
+                                           RerunClusterStorage.StorageAction<T> action) {
+    long start = System.currentTimeMillis();
+    try (RerunClusterStorage storage = storageClass.getDeclaredConstructor().newInstance()) {
+      T result;
+      try {
+        result = action.process(storage);
+      } catch (NotFoundServiceException e) {
+        // Do not have stack strace higher than debug - it is expected behavior
+        log.debug("Not found performing action '{}'", actionID, e);
+        storage.rollback();
+        throw e;
+      } catch (InvalidArgumentServiceException e) {
+        log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
+        storage.rollback();
+        throw e;
+      } catch (ServiceException e) {
+        // Other service exceptions: keep the HTTP status, no stack trace
+        log.warn("Service exception performing action '{}'. Initiating rollback: {}", actionID,
+            e.getMessage());
+        storage.rollback();
+        throw e;
+      } catch (Exception e) {
+        log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
+        storage.rollback();
+        throw new InternalServiceException(e);
+      }
 
-            try {
-                storage.commit();
-            } catch (SQLException e) {
-                log.error("Exception committing after action '{}'", actionID, e);
-                throw new InternalServiceException(e);
-            }
+      try {
+        storage.commit();
+      } catch (SQLException e) {
+        log.error("Exception committing after action '{}'", actionID, e);
+        throw new InternalServiceException(e);
+      }
 
-            log.debug("ds-datahandler method '{}' SQL time in millis: {} ", actionID, (System.currentTimeMillis() - start));
-            return result;
-        } catch (ServiceException e) {
-            log.error("Exception performing action '{}'", actionID, e);
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception performing action '{}'", actionID, e);
-            throw new InternalServiceException(e);
-        }
+      log.debug("ds-datahandler method '{}' SQL time in millis: {} ", actionID,
+          (System.currentTimeMillis() - start));
+      return result;
+    } catch (ServiceException e) {
+      throw e; // Already logged above
+    } catch (Exception e) {
+      log.error("Exception performing action '{}'", actionID, e);
+      throw new InternalServiceException(e);
     }
+  }
 
     /**
      * Callback used with {@link #performStorageAction(String, Class, RerunClusterStorage.StorageAction)}.

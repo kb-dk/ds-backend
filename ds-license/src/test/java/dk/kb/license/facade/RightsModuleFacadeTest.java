@@ -5,9 +5,8 @@ import dk.kb.license.solr.SolrServerClient;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
 import dk.kb.license.util.TestcontainersUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
-import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import java.time.Instant;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
@@ -561,7 +560,7 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
         String expectedMessage = "'id': " + notExistingId + " not found";
 
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.updateRestrictedId(notExistingId, false, updateRestrictedIdInputDto));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.updateRestrictedId(notExistingId, false, updateRestrictedIdInputDto));
         auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
@@ -649,7 +648,7 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
         deleteReasonDto.setChangeComment(changeComment);
 
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteRestrictedId(invalidId, false, deleteReasonDto));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.deleteRestrictedId(invalidId, false, deleteReasonDto));
 
         // Assert
         assertTrue(exception.getMessage().contains("'id': " + invalidId + " not found"));
@@ -679,7 +678,7 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
         RecordsCountDto recordsCountDto = RightsModuleFacade.deleteRestrictedId(restrictedIdOutputDto.getId(), false, deleteReasonDto);
 
         // Make sure that the restricted id is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getRestrictedIdById(restrictedIdOutputDto.getId()));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.getRestrictedIdById(restrictedIdOutputDto.getId()));
 
         auditLogEntriesForObject =rightsStorage.getAuditLogByObjectId(restrictedIdOutputDto.getId());
 
@@ -1538,8 +1537,8 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
         assertEquals(duplicatedRestrictedIdInputDto.getPlatform(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getPlatform());
         assertEquals(duplicatedRestrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(duplicatedRestrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
-        assertEquals("InternalServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
-        assertEquals("dk.kb.util.webservice.exception.InternalServiceException: dk.kb.util.webservice.exception.NotFoundServiceException: restricted id 'idValue': ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111, 'idType': DS_ID, 'platform': DRARKIV not found", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
+        assertEquals("NotFoundServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
+        assertEquals("restricted id 'idValue': ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111, 'idType': DS_ID, 'platform': DRARKIV not found", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(3, auditLogEntriesForObject.size());
@@ -2004,7 +2003,7 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
         RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackCategory(drHoldbackCategoryOutputDto.getId(), deleteReasonDto);
 
         // Make sure that the DR holdback category is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackCategoryByKey(key));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.getDrHoldbackCategoryByKey(key));
 
         auditLogEntriesForObject =rightsStorage.getAuditLogByObjectId(drHoldbackCategoryOutputDto.getId());
 
@@ -2063,7 +2062,7 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
         RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
 
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto));
 
         // Assert
         assertTrue(exception.getMessage().contains("DR holdback category not found for key: " + invalidKey));
@@ -2173,7 +2172,7 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
 
         String invalidKey = "invalid";
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidKey, deleteReasonDto));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidKey, deleteReasonDto));
 
         // Assert
         assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackCategoryKey: " + invalidKey));
@@ -2222,7 +2221,7 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
         RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRanges(key, deleteReasonDto);
 
         // Make sure that all DR holdback ranges is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRanges(key));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.getDrHoldbackRanges(key));
         auditLogEntriesForObject =rightsStorage.getAuditLogByObjectId(drHoldbackCategoryOutputDto.getId());
 
         // Assert

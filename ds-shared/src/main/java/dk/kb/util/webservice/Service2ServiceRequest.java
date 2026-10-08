@@ -3,6 +3,7 @@ package dk.kb.util.webservice;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -75,11 +76,21 @@ public class Service2ServiceRequest {
         try {
             HttpURLConnection con = getHttpURLConnection(uri, httpMethod, requestHeaders,postJsonDto);
             log.debug("Establishing connection to:"+uri);
+
             int status = con.getResponseCode();
-            if (status < 200 || status > 299) { // Could be mapped to a more precise exception type, but an exception here is most likely a coding error. 
-                String msg="Got HTTP " + status + " establishing connection to '" + uri + "'"+ con.getResponseCode();
-                log.error(msg);
-                throw mapServiceException(status);
+            String errorBody = readErrorBody(con);
+            // Could be mapped to a more precise exception type, but an exception here is most likely a coding error.
+            if (status < 200 || status > 299) {
+                if (status == HttpURLConnection.HTTP_NOT_FOUND) {
+                    // Often an expected outcome (resource does not exist), the caller decides if it's an error
+                    log.debug("Got HTTP " + status + " from '{}': '{}'", uri, errorBody);
+                } else {
+                    String msg =
+                        "Got HTTP " + status + " establishing connection to '" + uri + "'" +
+                            con.getResponseCode() + "errorBody: '{" + errorBody + "}'";
+                    log.error(msg);
+                }
+                throw mapServiceException(status, errorBody);
             }
             
             String json = IOUtils.toString(con.getInputStream(), StandardCharsets.UTF_8);                               
@@ -145,12 +156,21 @@ public class Service2ServiceRequest {
          try {
              HttpURLConnection con = getHttpURLConnection(uri, httpMethod, requestHeaders,postJsonDto);
              log.debug("Establishing connection to:"+uri);
+
              int status = con.getResponseCode();
-             if (status < 200 || status > 299) { // Could be mapped to a more precise exception type, but an exception here is most likely a coding error. 
-                 String msg="Got HTTP " + status + " establishing connection to '" + uri + "'"+ con.getResponseCode();
-                 log.error(msg);
-                 throw mapServiceException(status);
-             }             
+             String errorBody = readErrorBody(con);
+             if (status < 200 || status > 299) { // Could be mapped to a more precise exception type, but an exception here is most likely a coding error.
+                if (status == HttpURLConnection.HTTP_NOT_FOUND) {
+                    // Often an expected outcome (resource does not exist), the caller decides if it's an error
+                    log.debug("Got HTTP " + status + " from '{}': '{}'", uri, errorBody);
+                } else {
+                    String msg =
+                        "Got HTTP " + status + " establishing connection to '" + uri + "'" +
+                            con.getResponseCode() + "errorBody: '{" + errorBody + "}'";
+                    log.error(msg);
+                }
+                throw mapServiceException(status, errorBody);
+             }
              String json = IOUtils.toString(con.getInputStream(), StandardCharsets.UTF_8);                       
              ObjectMapper mapper = new ObjectMapper();
              mapper.registerModule(new JavaTimeModule());
@@ -224,14 +244,25 @@ public class Service2ServiceRequest {
       * Http 2xx codes should not be mapped here.
       * 
       */
-     private static ServiceException mapServiceException(int statusCode) {         
+     private static ServiceException mapServiceException(int statusCode, String message) {
          switch (statusCode) {                      
          case 400:            
-            return new InvalidArgumentServiceException();            
+            return new InvalidArgumentServiceException(message);
          case 404:
-             return new NotFoundServiceException();            
+             return new NotFoundServiceException(message);
         default:
-            return new InternalServiceException();
+            return new InternalServiceException(message);
         }         
      }
+
+    private static String readErrorBody(HttpURLConnection con) {
+        try (InputStream errorStream = con.getErrorStream()) {
+            if (errorStream == null) {
+                return "'no error body'";
+            }
+            return IOUtils.toString(errorStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            return "Could not read error body: " + e.getMessage();
+        }
+    }
 }

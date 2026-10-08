@@ -119,8 +119,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
         return rerunClusterResponseDtoMapper.map(resultSet);
       }
 
-      // DsStorageClient can not handle null values when serializing.
-      return new RerunClusterResponseDto();
+      return null;
     } catch (SQLException e) {
       String message =
           "SQL Exception in getRerunClusterByFileId with fileId:'" + fileId + "' error: " +

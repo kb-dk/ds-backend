@@ -3,6 +3,7 @@ package dk.kb.datahandler.storage;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -78,8 +79,19 @@ public abstract class BaseModuleStorage implements AutoCloseable {
             T result;
             try {
                 result = action.process(storage);
+            } catch (NotFoundServiceException e) {
+                // Do not have stack strace higher than debug - it is expected behavior
+                log.debug("Not found performing action '{}'", actionID, e);
+                storage.rollback();
+                throw e;
             } catch (InvalidArgumentServiceException e) {
                 log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
+                storage.rollback();
+                throw e;
+            } catch (ServiceException e) {
+                // Other service exceptions: keep the HTTP status, no stack trace
+                log.warn("Service exception performing action '{}'. Initiating rollback: {}",
+                    actionID, e.getMessage());
                 storage.rollback();
                 throw e;
             } catch (Exception e) {
@@ -95,11 +107,11 @@ public abstract class BaseModuleStorage implements AutoCloseable {
                 throw new InternalServiceException(e);
             }
 
-            log.debug("ds-datahandler method '{}' SQL time in millis: {} ", actionID, (System.currentTimeMillis() - start));
+            log.debug("ds-datahandler method '{}' SQL time in millis: {} ", actionID,
+                (System.currentTimeMillis() - start));
             return result;
         } catch (ServiceException e) {
-            log.error("Exception performing action '{}'", actionID, e);
-            throw e;
+            throw e; // Already logged above
         } catch (Exception e) {
             log.error("Exception performing action '{}'", actionID, e);
             throw new InternalServiceException(e);

@@ -3,7 +3,10 @@ package dk.kb.storage.api.v1.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import dk.kb.storage.facade.RecordFacade;
 import dk.kb.storage.model.v1.CreatedDto;
@@ -15,11 +18,16 @@ import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.storage.RecordStorageForUnitTest;
 import dk.kb.storage.storage.RerunClusterStorageForUnitTest;
 import dk.kb.storage.util.TestcontainersUtil;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import javax.servlet.http.HttpServletMapping;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -131,22 +139,37 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
   }
 
   @Test
-  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnEmptyRerunClusterResponseDto() {
+  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenThrowNotFoundServiceException() {
     // Arrange
     UUID fileId = UUID.randomUUID();
 
+    // The JAX-RS container injects HttpServletRequest via @Context. In unit tests we must do it ourselves,
+    // otherwise handleException -> getCallDetails() throws a NullPointerException
+    HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
+    HttpServletMapping httpServletMappingMock = mock(HttpServletMapping.class);
+
+    when(httpServletRequestMock.getMethod()).thenReturn("GET");
+    when(httpServletRequestMock.getContextPath()).thenReturn("/ds-storage");
+    when(httpServletRequestMock.getHttpServletMapping()).thenReturn(httpServletMappingMock);
+    when(httpServletMappingMock.getMatchValue()).thenReturn("v1");
+    when(httpServletRequestMock.getPathInfo()).thenReturn("/rerun-cluster");
+    when(httpServletRequestMock.getParameterMap()).thenReturn(Map.of());
+    when(httpServletRequestMock.getHeaders("Accept")).thenReturn(Collections.emptyEnumeration());
+
+    // Anonymous subclass, so we can set the protected field from ImplBase without reflection
+    rerunClusterApiServiceImpl = new RerunClusterApiServiceImpl() {
+      {
+        httpServletRequest = httpServletRequestMock;
+      }
+    };
+
     // Act
-    RerunClusterResponseDto rerunClusterResponseDto = rerunClusterApiServiceImpl.getRerunClusterByFileId(fileId);
+    NotFoundServiceException exception = assertThrows(NotFoundServiceException.class,
+        () -> rerunClusterApiServiceImpl.getRerunClusterByFileId(fileId));
 
     // Assert
-    assertNotNull(rerunClusterResponseDto);
-    assertNull(rerunClusterResponseDto.getFileId());
-    assertNull(rerunClusterResponseDto.getRerunClusterId());
-    assertNull(rerunClusterResponseDto.getRerunClusterIdCount());
-    assertNull(rerunClusterResponseDto.getCreated());
-    assertNull(rerunClusterResponseDto.getJobId());
-    assertNull(rerunClusterResponseDto.getInserted());
-    assertNull(rerunClusterResponseDto.getUpdated());
+    String errorMessage = "No rerun cluster found for fileId '" + fileId + "'";
+    assertEquals(errorMessage, exception.getMessage());
   }
 
   @Test

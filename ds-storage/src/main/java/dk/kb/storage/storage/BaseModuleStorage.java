@@ -4,6 +4,7 @@ import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.util.UniqueTimestampGenerator;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,8 +101,19 @@ public abstract class BaseModuleStorage implements AutoCloseable {
       T result;
       try {
         result = action.process(storage);
+      } catch (NotFoundServiceException e) {
+        // Do not have stack strace higher than debug - it is expected behavior
+        log.debug("Not found performing action '{}'", actionID, e);
+        storage.rollback();
+        throw e;
       } catch (InvalidArgumentServiceException e) {
         log.warn("Exception performing action '{}'. Initiating rollback", actionID, e);
+        storage.rollback();
+        throw e;
+      } catch (ServiceException e) {
+        // Other service exceptions: keep the HTTP status, no stack trace
+        log.warn("Service exception performing action '{}'. Initiating rollback: {}", actionID,
+            e.getMessage());
         storage.rollback();
         throw e;
       } catch (Exception e) {
@@ -121,8 +133,7 @@ public abstract class BaseModuleStorage implements AutoCloseable {
           (System.currentTimeMillis() - start));
       return result;
     } catch (ServiceException e) {
-      log.error("Exception performing action '{}'", actionID, e);
-      throw e;
+      throw e; // Already logged above
     } catch (Exception e) {
       log.error("Exception performing action '{}'", actionID, e);
       throw new InternalServiceException(e);
