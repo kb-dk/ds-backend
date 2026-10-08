@@ -117,7 +117,8 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
         List.of(firstRerunClusterRequestDto, secondRerunClusterRequestDto);
 
     // Act
-    RecordsCountDto recordsCountDto = RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
+    RecordsCountDto recordsCountDto =
+        RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
 
     // Assert
     assertNotNull(recordsCountDto);
@@ -143,8 +144,10 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
     List<RerunClusterRequestDto> rerunClusterRequestDtoList = List.of(rerunClusterRequestDto);
 
     // Act
-    RecordsCountDto recordsCountDto = RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
-    RerunClusterResponseDto rerunClusterResponseDto = RerunClusterFacade.getRerunClusterByFileId(fileId);
+    RecordsCountDto recordsCountDto =
+        RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
+    RerunClusterResponseDto rerunClusterResponseDto =
+        RerunClusterFacade.getRerunClusterByFileId(fileId);
 
     // Assert
     assertNotNull(recordsCountDto);
@@ -196,7 +199,8 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
     List<RerunClusterRequestDto> rerunClusterRequestDtoList =
         List.of(firstRerunClusterRequestDto, secondRerunClusterRequestDto);
 
-    RecordsCountDto recordsCountDto = RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
+    RecordsCountDto recordsCountDto =
+        RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
 
     // Act
     CreatedDto createdDto = RerunClusterFacade.latestCreated();
