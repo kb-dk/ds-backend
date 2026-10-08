@@ -198,7 +198,7 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsEmpty_thenReturnNull() throws Exception {
+  public void latestCreated_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated() throws Exception {
     // Act
     CreatedDto createdDto = rerunClusterStorage.latestCreated();
 

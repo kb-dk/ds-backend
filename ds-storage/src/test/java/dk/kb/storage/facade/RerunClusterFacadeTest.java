@@ -207,7 +207,7 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsEmpty_thenReturnNull() {
+  public void latestCreated_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated() {
     // Act
     CreatedDto createdDto = RerunClusterFacade.latestCreated();
 
