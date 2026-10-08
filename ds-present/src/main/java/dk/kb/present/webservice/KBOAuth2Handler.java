@@ -40,7 +40,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
@@ -48,7 +47,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,10 +78,11 @@ public class KBOAuth2Handler {
      * will fail, unless the role {@code public} is specified in the {@link KBAuthorization} annotation.
      */
     private KBOAuth2Handler() {
-        Config conf = ServiceConfig.getFlatConfig();
+        Config conf = ServiceConfig.getConfig();
+
         boolean hasSecuritySection = false;
-        for (String propertyName : conf.getPropertyNames()) {
-            if (propertyName.startsWith("security.")) {
+        for (String name : conf.getPropertyNames()) {
+            if (name.equals("security") || name.startsWith("security.")) {
                 hasSecuritySection = true;
                 break;
             }
@@ -93,8 +92,10 @@ public class KBOAuth2Handler {
                      "key .security");
         }
 
-        mode = MODE.valueOf(conf.getOptionalValue("security.mode", String.class)
-                .orElse(MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
+        mode = MODE.valueOf(
+                conf.getOptionalValue("security.mode", String.class)
+                        .orElse(MODE.ENABLED.toString())
+                        .toUpperCase(Locale.ROOT));
         if (mode == MODE.OFFLINE) {
             log.warn("Authorization mode is {}. Access tokens will not be properly checked. " +
                      "Set security.mode to ENABLED to activate full access token validation", MODE.OFFLINE);
@@ -103,41 +104,22 @@ public class KBOAuth2Handler {
         baseurl = trimTrailingSlash(conf.getOptionalValue("security.baseurl", String.class).orElse(null));
         if (baseurl == null && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No security.baseurl defined and security.mode=" + mode);
+                     "No security.baseurl defined and security.mode='{}'", mode);
         }
 
-        realms = new HashSet<>(getIndexedStringList(conf, "security.realms"));
+        List<String> realmsList = conf.getOptionalValues("security.realms", String.class)
+                .orElse(Collections.emptyList());
+        realms = new HashSet<>(realmsList);
         if (realms.isEmpty() && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No security.realms defined and security.mode=" + mode);
+                     "No .security.realms defined and security.mode='{}'", mode);
         }
 
         keysTTL = conf.getOptionalValue("security.public_keys.ttl_seconds", Integer.class).orElse(600);
 
         realmKeys = new TimeMap<>(keysTTL*1000L); // The TimeMap operates in milliseconds
 
-        log.info("Created " + this);
-    }
-
-    /**
-     * Reads an indexed list of Strings, e.g. {@code security.realms[0]}, {@code security.realms[1]}, ..., as
-     * produced by {@link dk.kb.present.config.ServiceConfig}'s flattening of a plain YAML list of scalars.
-     *
-     * @param conf the configuration to read from.
-     * @param keyPrefix the property name prefix, without the trailing {@code [index]}.
-     * @return the values at {@code keyPrefix[0]}, {@code keyPrefix[1]}, ... in order, stopping at the first
-     * missing index. Empty if {@code keyPrefix[0]} is not present.
-     */
-    private static List<String> getIndexedStringList(Config conf, String keyPrefix) {
-        List<String> result = new ArrayList<>();
-        for (int i = 0; ; i++) {
-            Optional<String> value = conf.getOptionalValue(keyPrefix + "[" + i + "]", String.class);
-            if (value.isEmpty()) {
-                break;
-            }
-            result.add(value.get());
-        }
-        return result;
+        log.info("Created '{}'", this);
     }
 
     /**

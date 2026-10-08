@@ -58,7 +58,7 @@ security:
   auth_url: "${keycloak_url}/oauth2/authorize"
   # Accepted realms for requests. These must be present at the OAuth2 server
   realms:
-    - DS
+    - "${keycloak_realm}"
   public_keys:
     # The number of seconds that public keys from the realms are cached
     # Optional, -1 means forever.

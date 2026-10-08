@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * {@code origins}/{@code storages}/{@code views}/{@code transformers} object graph - has a shape (nested, with
  * data-driven cardinality) that SmallRye Config's flat property model has no direct equivalent for.
  * <ul>
- *     <li>{@link #getConfig()} - the original kb-util {@link YAML} tree, produced by
+ *     <li>{@link #getYamlConfig()} - the original kb-util {@link YAML} tree, produced by
  *     {@link YAML#resolveLayeredConfigs(String...)}, including the multi-file glob merge ({@code
  *     ds-present-behaviour.yaml} + {@code ds-present-kb-origins.yaml} + an optional environment-specific file,
  *     merged in alphanumeric order - see {@code conf/ocp/ds-present.xml}) and the {@code ${path:...}}
@@ -52,19 +52,20 @@ import java.util.concurrent.ConcurrentHashMap;
  *     to ds-present's own configuration schema are the only remaining exceptions).</li>
  *     <li>{@link #getOrigins()}, {@link #getStorages()} and the other typed getters below - plain Java DTOs (see
  *     the {@code dk.kb.present.config} package) built on demand from the tree above by {@link ConfigParser}, the
- *     only other class that walks the nested {@link YAML} tree (it never touches {@link #getConfig()} itself -
+ *     only other class that walks the nested {@link YAML} tree (it never touches {@link #getYamlConfig()} itself -
  *     {@code ServiceConfig} hands it the already-loaded tree). This is how every other class in ds-present (and
  *     its tests) should read the {@code origins}/{@code storages}/{@code views}/{@code transformers} sections and
  *     every scalar setting - outside of {@code ServiceConfig} and {@link ConfigParser}, no class in ds-present
  *     knows about {@link YAML} or MicroProfile {@link Config}.</li>
- *     <li>{@link #getFlatConfig()} - a MicroProfile {@link Config}, used only for the handful of things that need
- *     the raw {@link Config} object itself for interop with a third-party/MicroProfile-aware library (the OpenAPI
- *     endpoint, the OAuth2 handler) - see those classes for why. It also gives every scalar setting the same
- *     environment variable/system property/devops properties override file layering the other services have. It
- *     is built by flattening the fully merged {@link YAML} tree above into a property map (see
- *     {@link #flatten(YAML, String, Map)}) and layering it under runtime injection, system properties, environment
- *     variables, an optional {@code .env} file, and the optional devops/operations properties override file - see
- *     {@link #initializeWithPropertiesOverride(String, String)}.</li>
+ *     <li>{@link #getConfig()} - a MicroProfile {@link Config}, named to match every other module's {@code
+ *     ServiceConfig.getConfig()} so that code which needs a plain {@link Config} (the OpenAPI endpoint, {@code
+ *     KBOAuth2Handler}) can be written identically across every module - see those classes. It also gives every
+ *     scalar setting the same environment variable/system property/devops properties override file layering the
+ *     other services have. It is built by flattening the fully merged {@link YAML} tree above into a property map
+ *     (see {@link #flatten(YAML, String, Map)}) <em>before</em> that tree is extrapolated (see
+ *     {@link #initializeWithPropertiesOverride(String, String)} for why the order matters) and layering it under
+ *     runtime injection, system properties, environment variables, an optional {@code .env} file, and the optional
+ *     devops/operations properties override file.</li>
  * </ul>
  * See the ds-storage module's {@code SMALLRYE_CONFIG_MIGRATION.md} for the general single-YAML-file pattern this
  * follows for every other service, and for the devops/operations properties override file mechanism reused here.
@@ -90,7 +91,7 @@ public class ServiceConfig {
 
     /**
      * Ordinal for the flattened YAML tree (see {@link #flatten(YAML, String, Map)}) backing {@link
-     * #getFlatConfig()}. This is comfortably below environment variables (300) and system properties (400), so
+     * #getConfig()}. This is comfortably below environment variables (300) and system properties (400), so
      * operations can override any individual configured value without editing YAML at all.
      */
     private static final int YAML_ORDINAL = 100;
@@ -105,7 +106,7 @@ public class ServiceConfig {
 
     /**
      * Initializes the configuration from the provided configFiles, without a devops/operations properties override
-     * file for {@link #getFlatConfig()}. Equivalent to how this method worked before this migration: multiple
+     * file for {@link #getConfig()}. Equivalent to how this method worked before this migration: multiple
      * globs/paths are resolved and merged, in order, into a single nested {@link YAML} tree.
      * <p>
      * This overload exists mainly for tests and other callers that don't need/have an override file; production
@@ -118,14 +119,14 @@ public class ServiceConfig {
      */
     public static synchronized void initialize(String... configFiles) throws IOException {
         serviceConfig = YAML.resolveLayeredConfigs(configFiles);
-        serviceConfig.setExtrapolate(true);
         rebuildFlatConfig(null);
+        serviceConfig.setExtrapolate(true);
     }
 
     /**
      * Initializes the configuration from a single configFile (itself possibly a glob resolving to several YAML
      * files, merged as before - see {@link #initialize(String...)}) and an optional devops/operations properties
-     * override file for {@link #getFlatConfig()}.
+     * override file for {@link #getConfig()}.
      * <p>
      * This should normally be called from {@link dk.kb.present.webservice.ContextListener} as part of web server
      * initialization of the container, using the two paths configured outside the project (Tomcat context
@@ -138,12 +139,12 @@ public class ServiceConfig {
      *
      * @param configFile the YAML configuration (glob or plain path) which the nested tree is loaded from; see
      *                    {@link #initialize(String...)}.
-     * @param propertiesOverrideFile the devops/operations properties override file for {@link #getFlatConfig()}
+     * @param propertiesOverrideFile the devops/operations properties override file for {@link #getConfig()}
      *                    (a plain file path, a classpath resource name, or a path relative to the user's home, see
      *                    {@link Resolver#resolveURL(String)}), or {@code null}/blank if none is configured. If a
      *                    path is given but cannot be resolved to an existing file, this is logged as an error and
      *                    startup continues without that source - values that were meant to come from it (most
-     *                    importantly secrets) will then be missing from {@link #getFlatConfig()} or fall back to
+     *                    importantly secrets) will then be missing from {@link #getConfig()} or fall back to
      *                    the YAML file.
      * @throws IOException if the YAML configuration could not be located, loaded or parsed. A missing/unresolvable
      *                    {@code propertiesOverrideFile} does <em>not</em> throw - see above.
@@ -151,8 +152,18 @@ public class ServiceConfig {
     public static synchronized void initializeWithPropertiesOverride(String configFile, String propertiesOverrideFile)
             throws IOException {
         serviceConfig = YAML.resolveLayeredConfigs(configFile);
-        serviceConfig.setExtrapolate(true);
+        // Deliberately flatten (see rebuildFlatConfig/flatten) BEFORE extrapolating serviceConfig below, not after:
+        // this way, a "${keycloak_realm}"-style placeholder reaches getConfig()'s backing MapConfigSource still
+        // literally unresolved, and is resolved by SmallRye Config's own ExpressionConfigSourceInterceptor (enabled
+        // via addDefaultInterceptors() in rebuildFlatConfig) against the *whole* MicroProfile Config source stack -
+        // including environment variables - exactly like every other module's SmallRye-native YamlConfigSource
+        // does. Resolving it here instead, via kb-util YAML's own extrapolate(), would only ever check it against
+        // JVM system properties for a bare (unprefixed) name - never environment variables - which is a real,
+        // previously-undetected difference from every other module despite an identical YAML `security:` section.
         rebuildFlatConfig(propertiesOverrideFile);
+        // Only now extrapolate the nested tree itself (kb-util's own engine), for getYamlConfig()/ConfigParser
+        // consumers - e.g. the ${path:...} self-referencing syntax used in the origins/views/transformers graph.
+        serviceConfig.setExtrapolate(true);
     }
 
     /**
@@ -195,7 +206,7 @@ public class ServiceConfig {
                 // initializeWithPropertiesOverride's javadoc).
                 log.error("Configured devops/operations properties override file '{}' could not be found. " +
                            "Continuing without it - values that were meant to come from it (most importantly " +
-                           "secrets) will be missing from getFlatConfig() or fall back to the YAML file.",
+                           "secrets) will be missing from getConfig() or fall back to the YAML file.",
                            propertiesOverrideFile, e);
             }
         }
@@ -204,17 +215,26 @@ public class ServiceConfig {
     }
 
     /**
-     * Flattens the given (already fully merged/extrapolated) YAML tree into a flat property map, using the same
-     * indexed-list convention SmallRye Config itself uses when it flattens a YAML list (e.g. {@code
-     * origins[0].ds.radio.description}), so that code which already knows how to scan a MicroProfile
+     * Flattens the given, already fully merged but <em>not yet extrapolated</em> YAML tree into a flat property
+     * map, using the same indexed-list convention SmallRye Config itself uses when it flattens a YAML list (e.g.
+     * {@code origins[0].ds.radio.description}), so that code which already knows how to scan a MicroProfile
      * {@link Config#getPropertyNames()} for an indexed list (see the other ds-backend services, or
-     * {@link dk.kb.util.webservice.OpenApiResource}) works unchanged against {@link #getFlatConfig()} too.
+     * {@link dk.kb.util.webservice.OpenApiResource}) works unchanged against {@link #getConfig()} too.
+     * <p>
+     * Deliberately <em>not</em> extrapolated: a value such as {@code "${keycloak_realm}"} is copied into the
+     * returned map as that literal, unresolved string. {@link #rebuildFlatConfig(String)} registers this map as a
+     * plain {@link MapConfigSource} and relies on SmallRye Config's own {@code ExpressionConfigSourceInterceptor}
+     * (enabled via {@code addDefaultInterceptors()}) to resolve {@code ${...}} placeholders found in it against the
+     * <em>whole</em> MicroProfile Config source stack - including environment variables - exactly like every other
+     * module's SmallRye-native {@code YamlConfigSource} does. (The separate {@link #serviceConfig} tree is
+     * extrapolated afterward, by kb-util's own engine - see {@link #initializeWithPropertiesOverride(String,
+     * String)} - but that tree is never read via this method.)
      * <p>
      * This deliberately flattens the <em>whole</em> tree, including sections ({@code origins}, {@code storages},
-     * ...) that {@link #getFlatConfig()} is not actually meant to be used for in ds-present's own code (those are
+     * ...) that {@link #getConfig()} is not actually meant to be used for in ds-present's own code (those are
      * read from the typed getters below instead, see the class javadoc). Flattening them too is a bit of unused
      * work at startup, but keeps this method simple and generic rather than hardcoding the specific set of "flat"
-     * keys that happen to be read through {@link #getFlatConfig()} today - and it is what makes the {@code
+     * keys that happen to be read through {@link #getConfig()} today - and it is what makes the {@code
      * origins[*].*.origin} wildcard substitution in the OpenAPI specification work (see
      * {@link dk.kb.util.webservice.OpenApiResource}).
      *
@@ -224,7 +244,7 @@ public class ServiceConfig {
      */
     private static void flatten(YAML yaml, String prefix, Map<String, String> target) {
         for (String key : yaml.keySet()) {
-            String path = prefix.isEmpty() ? key : prefix + "_" + key;
+            String path = prefix.isEmpty() ? key : prefix + "." + key;
             try {
                 Object value = yaml.get(key);
                 if (value instanceof Map) {
@@ -261,7 +281,7 @@ public class ServiceConfig {
      *
      * @return the backing YAML-handler for the configuration.
      */
-    public static YAML getConfig() {
+    public static YAML getYamlConfig() {
         if (serviceConfig == null) {
             throw new IllegalStateException("The configuration should have been loaded, but was not");
         }
@@ -269,14 +289,16 @@ public class ServiceConfig {
     }
 
     /**
-     * Direct access to the flattened, MicroProfile-Config-backed view of the configuration. This exists for the
-     * handful of call sites that need the raw {@link Config} object itself to hand to a third-party/MicroProfile
-     * -aware library (the OpenAPI endpoint, the OAuth2 handler); everything else should use the typed getters below
-     * instead, so that {@code ServiceConfig} remains the only class aware of {@link Config}/{@link YAML}.
+     * Direct access to the flattened, MicroProfile-Config-backed view of the configuration. Named {@code
+     * getConfig()}, not {@code getFlatConfig()}, so that code which needs a plain {@link Config} - a
+     * third-party/MicroProfile-aware library (the OpenAPI endpoint, {@code KBOAuth2Handler}) - can be written
+     * identically to every other module's {@code ServiceConfig.getConfig()}; everything else should use the typed
+     * getters below instead, so that {@code ServiceConfig} remains the only class aware of {@link Config}/{@link
+     * YAML}.
      *
      * @return the backing SmallRye Config-handler for the flattened configuration.
      */
-    public static Config getFlatConfig() {
+    public static Config getConfig() {
         if (flatConfig == null) {
             throw new IllegalStateException("The configuration should have been loaded, but was not");
         }
@@ -298,7 +320,7 @@ public class ServiceConfig {
      * @return the URL of the ds-license instance to use, or {@code null} if not configured.
      */
     public static String getLicenseModuleUrl() {
-        return getFlatConfig().getOptionalValue(LICENSE_URL_KEY, String.class).orElse(null);
+        return getConfig().getOptionalValue(LICENSE_URL_KEY, String.class).orElse(null);
     }
 
     /**
@@ -306,7 +328,7 @@ public class ServiceConfig {
      * {@code false}.
      */
     public static boolean getLicenseModuleAllowAll() {
-        return getFlatConfig().getOptionalValue(LICENSE_ALLOWALL_KEY, Boolean.class).orElse(false);
+        return getConfig().getOptionalValue(LICENSE_ALLOWALL_KEY, Boolean.class).orElse(false);
     }
 
     /**
@@ -314,7 +336,7 @@ public class ServiceConfig {
      * Mandatory - throws if not configured.
      */
     public static boolean isUseTranscriptionsEnabled() {
-        return getFlatConfig().getValue(USE_TRANSCRIPTIONS_KEY, Boolean.class);
+        return getConfig().getValue(USE_TRANSCRIPTIONS_KEY, Boolean.class);
     }
 
     /**
@@ -322,26 +344,26 @@ public class ServiceConfig {
      * and skipped. Defaults to {@code true}.
      */
     public static boolean isStopOnErrorEnabled() {
-        return getFlatConfig().getOptionalValue(STOP_ON_ERROR_KEY, Boolean.class).orElse(true);
+        return getConfig().getOptionalValue(STOP_ON_ERROR_KEY, Boolean.class).orElse(true);
     }
 
     /**
      * @return the pattern acceptable record IDs must conform to; see {@code conf/ds-present-behaviour.yaml}.
      */
     public static String getRecordIdPattern() {
-        return getConfig().getString(RECORD_ID_PATTERN_KEY);
+        return getYamlConfig().getString(RECORD_ID_PATTERN_KEY);
     }
 
     /**
      * @return the pattern acceptable origin prefixes must conform to; see {@code conf/ds-present-behaviour.yaml}.
      */
     public static String getOriginPrefixPattern() {
-        return getConfig().getString(ORIGIN_PREFIX_PATTERN_KEY);
+        return getYamlConfig().getString(ORIGIN_PREFIX_PATTERN_KEY);
     }
 
     // -----------------------------------------------------------------------------------------------------------
     // Typed tree getters: origins/views/transformers and storages/backends. Built on demand from the current
-    // getConfig() tree - cheap enough that there is no need to cache the result. The actual walking of the nested
+    // getYamlConfig() tree - cheap enough that there is no need to cache the result. The actual walking of the nested
     // YAML tree for these sections lives in {@link ConfigParser}, not here - every consumer (DSOrigin, View,
     // OriginHandler, StorageHandler, StorageController, the storage/transformer factories, ...) works with these
     // plain DTOs only.
@@ -353,23 +375,23 @@ public class ServiceConfig {
      * were called with).
      */
     public static List<OriginConfig> getOrigins() {
-        return ConfigParser.parseOrigins(getConfig());
+        return ConfigParser.parseOrigins(getYamlConfig());
     }
 
     /**
      * @return the configured storages, in the order they are defined in the configuration.
      */
     public static List<StorageConfig> getStorages() {
-        return ConfigParser.parseStorages(getConfig());
+        return ConfigParser.parseStorages(getYamlConfig());
     }
 
     /**
      * Set (or overwrite) a single configuration property at runtime, without touching any configuration file and
-     * without restarting the service. Only affects {@link #getFlatConfig()} (and the typed scalar getters above,
-     * which are backed by it) - the nested {@link #getConfig()} tree (and the typed tree getters above) are
+     * without restarting the service. Only affects {@link #getConfig()} (and the typed scalar getters above,
+     * which are backed by it) - the nested {@link #getYamlConfig()} tree (and the typed tree getters above) are
      * unaffected, since they are a plain immutable snapshot as before this migration.
      * <p>
-     * The change is visible to every subsequent {@link #getFlatConfig()} lookup immediately: it takes precedence
+     * The change is visible to every subsequent {@link #getConfig()} lookup immediately: it takes precedence
      * over every other configuration source (the flattened YAML tree, the properties override file, environment
      * variables and system properties, see {@link #RUNTIME_ORDINAL}). This is intended for short-lived operational
      * overrides (temporarily raising a limit, flipping a behaviour flag, etc.) or for exercising the config system

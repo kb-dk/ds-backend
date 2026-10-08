@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * {@link dk.kb.present.webservice.ContextListener} and {@code conf/ocp/ds-present.xml}). Mirrors the same test for
  * {@code ds-storage}/{@code ds-datahandler}/{@code ds-license}/{@code ds-image}/{@code ds-discover}.
  * <p>
- * Unlike those services, the override file here only ever affects {@link ServiceConfig#getFlatConfig()} - the
- * nested {@link ServiceConfig#getConfig()} tree is untouched by it. See {@link ServiceConfig}'s class javadoc.
+ * Unlike those services, the override file here only ever affects {@link ServiceConfig#getConfig()} - the
+ * nested {@link ServiceConfig#getYamlConfig()} tree is untouched by it. See {@link ServiceConfig}'s class javadoc.
  * <p>
  * {@code licensemodule.url} is used as the overridden key here purely as a convenient, non-sensitive example; in
  * production the override file's main purpose is secrets such as {@code security.client.secret}.
@@ -54,19 +54,19 @@ class ServiceConfigPropertiesOverrideFileTest {
             ServiceConfig.initializeWithPropertiesOverride(yamlFile, overrideFile.toString());
 
             assertEquals("http://overridden.example.com/ds-license/v1",
-                    ServiceConfig.getFlatConfig().getValue("licensemodule.url", String.class),
+                    ServiceConfig.getConfig().getValue("licensemodule.url", String.class),
                     "licensemodule.url should come from the explicit properties override file, not the YAML file");
 
             // A key NOT present in the override file should still fall back to the YAML file, unaffected.
-            assertEquals(Boolean.TRUE, ServiceConfig.getFlatConfig().getValue("index.useTransriptions", Boolean.class),
+            assertEquals(Boolean.TRUE, ServiceConfig.getConfig().getValue("index.useTransriptions", Boolean.class),
                     "index.useTransriptions should still come from ds-present-behaviour.yaml, unaffected by the " +
                     "override file");
 
             // The nested tree is unaffected by the flat-config-only override file.
             assertEquals("http://localhost:9076/ds-license/v1",
-                    ServiceConfig.getConfig().getString("licensemodule.url"),
-                    "The nested YAML tree (getConfig()) should be unaffected by the properties override file, " +
-                    "which only applies to getFlatConfig()");
+                    ServiceConfig.getYamlConfig().getString("licensemodule.url"),
+                    "The nested YAML tree (getYamlConfig()) should be unaffected by the properties override file, " +
+                    "which only applies to getConfig()");
         } finally {
             Files.deleteIfExists(overrideFile);
             ServiceConfig.initialize(yamlFile);
@@ -86,7 +86,7 @@ class ServiceConfigPropertiesOverrideFileTest {
 
         // Without the override file, licensemodule.url falls back to whatever the YAML file provides.
         assertEquals("http://localhost:9076/ds-license/v1",
-                ServiceConfig.getFlatConfig().getValue("licensemodule.url", String.class));
+                ServiceConfig.getConfig().getValue("licensemodule.url", String.class));
 
         ServiceConfig.initialize(yamlFile);
     }
