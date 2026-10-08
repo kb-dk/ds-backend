@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added `rerun_cluster_id` and `rerun_cluster_id_count` to `SolrShield` so it is possible to use them in `Solr` search.
+
 ## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
 
 ### Changed
