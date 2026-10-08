@@ -9,6 +9,7 @@ import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.util.webservice.ImplBase;
 import java.util.List;
 import java.util.UUID;
+import javax.validation.Valid;
 import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class RerunClusterApiServiceImpl extends ImplBase implements RerunCluster
    */
   @Override
   public RecordsCountDto updateRerunClusters(
-      List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
+      @Valid List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
     try {
       return RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
     } catch (Exception exception) {
