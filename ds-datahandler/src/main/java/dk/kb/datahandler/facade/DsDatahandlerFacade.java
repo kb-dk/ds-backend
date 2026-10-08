@@ -382,6 +382,10 @@ public class DsDatahandlerFacade {
                     returnedRecordsCountDto.getCount());
             }
 
+            if (rerunClusterRequestDtoList.size() != allRecordsCountDto.getCount()) {
+                throw new InternalServiceException("Expected to save " + rerunClusterRequestDtoList.size() + " rerun clusters, but " + allRecordsCountDto.getCount() + " were saved");
+            }
+
             updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
                 allRecordsCountDto.getCount(), null);
 

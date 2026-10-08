@@ -25,6 +25,7 @@ import dk.kb.datahandler.webservice.KBAuthorizationInterceptor;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -99,9 +100,8 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
             .thenReturn(dsStorageClient);
 
         try (MockedConstruction<RerunClusterStorage> mockedConstruction = Mockito.mockConstruction(
-                RerunClusterStorage.class, (mock, context) ->
-                    Mockito.when(mock.getRerunClusters(any()))
-                        .thenReturn(rerunClusterRequestDtoList))) {
+            RerunClusterStorage.class, (mock, context) -> Mockito.when(mock.getRerunClusters(any()))
+                .thenReturn(rerunClusterRequestDtoList))) {
 
           Mockito.when(dsStorageClient.latestCreated()).thenReturn(createdDto);
           Mockito.when(dsStorageClient.updateRerunClusters(rerunClusterRequestDtoList))
@@ -135,6 +135,69 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
           assertEquals(OffsetDateTime.class, returnedJobDto.getEndTime().getClass());
           assertEquals(count, returnedJobDto.getNumberOfRecords());
           assertNull(returnedJobDto.getRestartValue());
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void updateRerunClusters_whenGivenRerunClusterRequestDtoListDoNotMatchSavedRerunCluster_thenThrowInternalServiceException() {
+    // Arrange
+    dk.kb.storage.model.v1.CreatedDto createdDto = new dk.kb.storage.model.v1.CreatedDto();
+    createdDto.setCreated(OffsetDateTime.parse("2026-03-20T00:00:00.001Z"));
+
+    UUID id = UUID.randomUUID();
+    UUID fileId = UUID.randomUUID();
+    UUID rerunClusterId = UUID.randomUUID();
+    OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
+    String jobId = "test run 1";
+
+    RerunClusterRequestDto rerunClusterRequestDto = new RerunClusterRequestDto();
+    rerunClusterRequestDto.setId(id);
+    rerunClusterRequestDto.setFileId(fileId);
+    rerunClusterRequestDto.setRerunClusterId(rerunClusterId);
+    rerunClusterRequestDto.setCreated(created);
+    rerunClusterRequestDto.setJobId(jobId);
+
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList = List.of(rerunClusterRequestDto);
+
+    String username = "unittest";
+    Integer count = 0;
+    dk.kb.storage.model.v1.RecordsCountDto recordsCountDto =
+        new dk.kb.storage.model.v1.RecordsCountDto();
+    recordsCountDto.setCount(count);
+
+    DsStorageClient dsStorageClient = Mockito.mock(DsStorageClient.class);
+
+    MessageImpl message = new MessageImpl();
+    AccessToken mockedToken = mock(AccessToken.class);
+    when(mockedToken.getName()).thenReturn(username);
+    message.put(KBAuthorizationInterceptor.ACCESS_TOKEN, mockedToken);
+
+    try (MockedStatic<JAXRSUtils> mockedJAXRSUtils = mockStatic(JAXRSUtils.class)) {
+      mockedJAXRSUtils.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+      try (MockedStatic<DsDatahandlerFacade> mockedDsDatahandlerFacade = mockStatic(
+          DsDatahandlerFacade.class, Mockito.CALLS_REAL_METHODS)) {
+        mockedDsDatahandlerFacade.when(DsDatahandlerFacade::getDsStorageApiClient)
+            .thenReturn(dsStorageClient);
+
+        try (MockedConstruction<RerunClusterStorage> mockedConstruction = Mockito.mockConstruction(
+            RerunClusterStorage.class, (mock, context) -> Mockito.when(mock.getRerunClusters(any()))
+                .thenReturn(rerunClusterRequestDtoList))) {
+
+          Mockito.when(dsStorageClient.latestCreated()).thenReturn(createdDto);
+          Mockito.when(dsStorageClient.updateRerunClusters(rerunClusterRequestDtoList))
+              .thenReturn(recordsCountDto);
+
+          String expectedMessage = "Expected to save 1 rerun clusters, but 0 were saved";
+
+          // Act/Assert
+          Exception exception = Assertions.assertThrows(InternalServiceException.class,
+              () -> DsDatahandlerFacade.getRerunClusters());
+
+          assertEquals(expectedMessage, exception.getMessage());
         } catch (Exception e) {
           throw new RuntimeException(e);
         }
