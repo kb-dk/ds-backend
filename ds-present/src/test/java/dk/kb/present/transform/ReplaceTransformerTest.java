@@ -1,5 +1,6 @@
 package dk.kb.present.transform;
 
+import dk.kb.present.config.ReplaceConfig;
 import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +59,11 @@ class ReplaceTransformerTest {
     private DSTransformer getReplacer(String yamlString) {
         try (InputStream in = new ByteArrayInputStream(yamlString.getBytes(StandardCharsets.UTF_8))) {
             YAML yaml = YAML.parse(in);
-            return replaceFactory.createTransformer(yaml);
+            ReplaceConfig config = new ReplaceConfig(
+                    yaml.getString("regexp"),
+                    yaml.getString("replacement"),
+                    yaml.getBoolean("replaceall", true));
+            return replaceFactory.createTransformer(config);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

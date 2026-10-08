@@ -31,8 +31,8 @@ public class KalturaUtil {
      */
     public static ThumbnailsDto generateThumbnails(String  kalturaId,Integer numberOfSlices, Integer secondsStartSeek, Integer secondsEndSeek, Integer width, Integer height) {
         ThumbnailsDto thumbnails = new ThumbnailsDto();
-        String kalturaUrl= ServiceConfig.getConfig().getString("kaltura.url");
-        Integer partnerId = ServiceConfig.getConfig().getInteger("kaltura.partnerId");
+        String kalturaUrl= ServiceConfig.getConfig().getValue("kaltura.url", String.class);
+        Integer partnerId = ServiceConfig.getConfig().getValue("kaltura.partnerId", Integer.class);
 
         String baseUrl=kalturaUrl+"/p/"+partnerId+"/thumbnail/entry_id/"+kalturaId;
         if (width != null && width > 0) {

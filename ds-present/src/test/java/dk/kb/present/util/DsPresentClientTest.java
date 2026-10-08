@@ -60,7 +60,7 @@ public class DsPresentClientTest {
     static void setup() {
         try {
             ServiceConfig.initialize(TEST_CONF);                        
-            dsPresentDevel= ServiceConfig.getConfig().getString("present.url");                        
+            dsPresentDevel= ServiceConfig.getYamlConfig().getString("present.url");
             remote = new DsPresentClient(dsPresentDevel);
         } catch (IOException e) {          
             log.error("Integration yaml "+TEST_CONF+" file most be present. Call 'kb init'");            
@@ -68,9 +68,9 @@ public class DsPresentClientTest {
         }
         
         try {            
-            String keyCloakRealmUrl= ServiceConfig.getConfig().getString("integration.devel.keycloak.realmUrl");            
-            String clientId=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientId");
-            String clientSecret=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");                
+            String keyCloakRealmUrl= ServiceConfig.getYamlConfig().getString("integration.devel.keycloak.realmUrl");
+            String clientId=ServiceConfig.getYamlConfig().getString("integration.devel.keycloak.clientId");
+            String clientSecret=ServiceConfig.getYamlConfig().getString("integration.devel.keycloak.clientSecret");
             String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
             log.info("Retrieved keycloak access token:"+token);            
 

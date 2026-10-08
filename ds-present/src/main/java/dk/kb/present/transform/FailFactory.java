@@ -14,7 +14,8 @@
  */
 package dk.kb.present.transform;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.FailTransformerConfig;
+import dk.kb.present.config.TransformerConfig;
 
 /**
  * Constructs {@link FailTransformer}s.
@@ -22,16 +23,14 @@ import dk.kb.util.yaml.YAML;
 public class FailFactory implements DSTransformerFactory {
     private static final String ID = "fail";
 
-    public static final String MESSAGE_KEY = "message";
-    public static final String MESSAGE_DEFAULT = "This view always fails";
-
     @Override
     public String getTransformerID() {
         return ID;
     }
 
     @Override
-    public FailTransformer createTransformer(YAML conf) {
-        return new FailTransformer(conf.getString(MESSAGE_KEY, MESSAGE_DEFAULT));
+    public FailTransformer createTransformer(TransformerConfig conf) {
+        FailTransformerConfig c = (FailTransformerConfig) conf;
+        return new FailTransformer(c.getMessage());
     }
 }

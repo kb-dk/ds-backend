@@ -14,13 +14,14 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.config.StorageConfig;
 import dk.kb.present.storage.DSStorage;
 import dk.kb.present.storage.Storage;
 import dk.kb.present.storage.StorageController;
-import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -30,18 +31,17 @@ import java.util.stream.Collectors;
  */
 public class StorageHandler {
     private static final Logger log = LoggerFactory.getLogger(StorageHandler.class);
-    private static final String STORAGES_KEY = ".storages";
 
     private final Map<String, Storage> storages; // storageID, storage
     private Storage defaultStorage; // If the ID for the requested storage is null
 
     /**
-     * Given a top-level configuration, iterate the storages defined under {@link #STORAGES_KEY} and create
-     * storages with the given sub-configurations.
-     * @param conf top-level configuration.
+     * Given the configured storages, create a {@link Storage} for each.
+     *
+     * @param storages the configured storages; see {@link dk.kb.present.config.ServiceConfig#getStorages()}.
      */
-    public StorageHandler(YAML conf) {
-        storages = conf.getYAMLList(STORAGES_KEY).stream()
+    public StorageHandler(List<StorageConfig> storages) {
+        this.storages = storages.stream()
                 .map(storageConf -> {
                     try {
                         return StorageController.createStorage(storageConf);

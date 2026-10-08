@@ -1,6 +1,6 @@
 package dk.kb.present.storage;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.ServiceConfig;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -31,15 +31,15 @@ class StorageControllerTest {
 
     @Test
     void multiBackend() throws Exception {
-        YAML multiConf = YAML.resolveMultiConfig("test_setup.yaml");
-        Storage storage = StorageController.createStorage(multiConf.getYAMLList(".storages").get(0));
+        ServiceConfig.initialize("test_setup.yaml");
+        Storage storage = StorageController.createStorage(ServiceConfig.getStorages().get(0));
         assertTrue(storage.getRecord("40221e30-1414-11e9-8fb8-00505688346e.xml").contains("Christian VIII"));
     }
 
     // Not a proper test as it requires a local ds-storage with test-data ingested as described in the README
     void getRecordsCoreTest() throws Exception {
-        YAML localDSS = YAML.resolveMultiConfig("local_ds-storage.yaml");
-        Storage storage = StorageController.createStorage(localDSS.getYAMLList(".storages").get(0));
+        ServiceConfig.initialize("local_ds-storage.yaml");
+        Storage storage = StorageController.createStorage(ServiceConfig.getStorages().get(0));
         assertTrue(storage.getRecord("doms.radio:albert-einstein.xml").contains("Albert"));
 
         assertEquals(2, storage.getDSRecords("doms.radio", 0, 2).count(),
@@ -49,8 +49,8 @@ class StorageControllerTest {
 
     // Not a proper test as it requires a local ds-storage with test-data ingested as described in the README
     void getRecordsJSMSS() throws Exception {
-        YAML localDSS = YAML.resolveMultiConfig("local_ds-storage.yaml");
-        Storage storage = StorageController.createStorage(localDSS.getYAMLList(".storages").get(0));
+        ServiceConfig.initialize("local_ds-storage.yaml");
+        Storage storage = StorageController.createStorage(ServiceConfig.getStorages().get(0));
 
         assertEquals(2, storage.getDSRecords("kb.image.judsam.jsmss", 0, 2).count(),
                      "Retrieving multiple records should work");

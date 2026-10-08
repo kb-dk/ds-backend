@@ -1,0 +1,36 @@
+# Single-instance-only local override file for ds-image.
+#
+# IMPORTANT: if this service ever shares a Tomcat instance with other WARs (as the development server does,
+# running all 6 ds-backend services in one Tomcat), do NOT use this file for devops/operations secrets - use
+# conf/ds-image-application.properties.SAMPLE instead. The reason: this file is picked up via SmallRye Config's
+# own implicit 'config/application.properties' convention (ordinal 260), keyed off the JVM's current working
+# directory - which every webapp in that shared Tomcat instance has in common, so there is no way for this file
+# to affect only ds-image. A file left here would silently apply to every service sharing that Tomcat instance.
+# conf/ds-image-application.properties is instead read from an explicit, per-service path configured via its own
+# Tomcat context environment entry, so it cannot leak across services.
+#
+# This file is only safe to use for a single, standalone instance of the service (e.g. running it alone via an
+# IDE, or 'java -jar', from a working directory nothing else shares) - copy it to 'config/application.properties'
+# (same folder, without the '.SAMPLE' suffix) and fill in your own values; no code change and no extra argument
+# to ServiceConfig.initialize(...) is needed for it to apply, since addDefaultSources() already registers it.
+#
+# 'config/application.properties' is (and must stay) git-ignored; see .gitignore.
+#
+# Any key present in ds-image-behaviour.yaml can be overridden here, using the same dotted path. The keys below
+# are the ones commonly set per environment/operator - uncomment and set the ones you need.
+#
+# IMPORTANT: the imageservers.* keys are NOT present in ds-image-behaviour.yaml at all - one of the two Deepzoom
+# variants (path- or param-based) plus iip and iiif must be supplied here (or elsewhere) for the service to work.
+
+# imageservers.iip.server=http://example.com:1234/iipsrv/iipsrv.fcgi
+# imageservers.iiif.server=http://example.com:1234/
+# imageservers.deepzoom.path=http://example.com:1234/
+# imageservers.deepzoom.param=http://example.com:1234/iipsrv/iipsrv.fcgi
+
+# kaltura.partnerId=380
+# kaltura.userId=changeme
+# kaltura.adminSecret=changeme
+
+# security.client.secret=changeme
+
+# openapi.serverurl=http://localhost:9077/ds-image/v1

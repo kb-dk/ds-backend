@@ -14,7 +14,7 @@
  */
 package dk.kb.present.transform;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.TransformerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,39 +34,20 @@ public class TransformerController {
     private static final Map<String, DSTransformerFactory> factories = getTransformerFactories();
 
     /**
-     * Create a transformer with the given configuration, there the configuration contains a single key which is the
-     * transformer ID, with the value being the configuration to use for the transformer.
-     *
-     * @return a configured transformer for the given ID, ready for use.
-     * @throws NullPointerException if no transformer with the given id could be located.
-     * @throws Exception if the transformer could not be created.
-     */
-    public static DSTransformer createTransformer(YAML conf) throws Exception {
-        if (conf.size() != 1) {
-            throw new IllegalArgumentException
-                    ("Expected a single entry in the configuration but there was " + conf.size() +
-                     ". Maybe indenting was not correct in the config file?");
-        }
-        String id = conf.keySet().stream().findFirst().orElseThrow();
-        conf = conf.containsKey(id) ? conf.getSubMap(id) : new YAML(); // Some transformers does not have a config
-        return createTransformer(id, conf);
-    }
-
-    /**
      * Create a transformer with the given configuration.
      *
-     * @param id the ID of the transformer to create. Call {@link #getSupportedTransformerIDs()} for a complete list.
-     * @param conf transformer specific configuration.
-     * @return a configured transformer for the given ID, ready for use.
-     * @throws NullPointerException if no transformer with the given id could be located.
+     * @param conf the transformer configuration; {@link TransformerConfig#getType()} determines which factory is
+     *             used to create it.
+     * @return a configured transformer for the given type, ready for use.
+     * @throws NullPointerException if no transformer with the given type could be located.
      * @throws Exception if the transformer could not be created.
      */
-    public static DSTransformer createTransformer(String id, YAML conf) throws Exception {
-        DSTransformerFactory factory = factories.get(id);
+    public static DSTransformer createTransformer(TransformerConfig conf) throws Exception {
+        DSTransformerFactory factory = factories.get(conf.getType());
         if (factory == null) {
             throw new NullPointerException(String.format(
                     Locale.ROOT, "A factory with the ID '%s' was not available. Supported factories are %s",
-                    id, getSupportedTransformerIDs()));
+                    conf.getType(), getSupportedTransformerIDs()));
         }
         log.debug("Creating a {} transformer", factory.getTransformerID());
         return factory.createTransformer(conf);

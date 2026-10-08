@@ -44,10 +44,10 @@ class ServiceConfigTest {
         ServiceConfig.initialize(projectRoot + File.separator + "conf" + File.separator + "ds-present*.yaml");
 
         // Defined in behaviour
-        assertEquals(10, ServiceConfig.getConfig().getInteger("limits.min"));
+        assertEquals(10, ServiceConfig.getYamlConfig().getInteger("limits.min"));
 
         // Real value in environment
-        assertEquals("real_dbpassword", ServiceConfig.getConfig().getString("backend.password"));
+        assertEquals("real_dbpassword", ServiceConfig.getYamlConfig().getString("backend.password"));
     }
 
     @Test
@@ -62,7 +62,7 @@ class ServiceConfigTest {
 
         ServiceConfig.initialize(behaviour.toString(), collections.toString());
         ServiceConfig.initialize(behaviour.toString(), collections.toString(), servers.toString());
-        YAML yaml = ServiceConfig.getConfig();
+        YAML yaml = ServiceConfig.getYamlConfig();
 
         // Behaviour has an 'invalid' imageserver, but Servers overrides the list to only contain 'local'
         //System.out.println(yaml.getYAMLList("imageservers"));
@@ -83,7 +83,7 @@ class ServiceConfigTest {
 
         // Reset the YAML structure to ensure clean test of submap
         ServiceConfig.initialize(behaviour.toString(), collections.toString(), servers.toString());
-        yaml = ServiceConfig.getConfig();
+        yaml = ServiceConfig.getYamlConfig();
 
         assertEquals("the_right_url",
                 yaml.getSubMap("collections[4].samlingsbilleder.views[3].SolrJSON").

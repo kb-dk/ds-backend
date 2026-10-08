@@ -18,11 +18,11 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.yaml.YAML;
 import dk.kb.util.oauth2.TimeMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.interceptor.Fault;
+import org.eclipse.microprofile.config.Config;
 import org.json.JSONTokener;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
@@ -44,6 +44,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -77,38 +78,48 @@ public class KBOAuth2Handler {
      * will fail, unless the role {@code public} is specified in the {@link KBAuthorization} annotation.
      */
     private KBOAuth2Handler() {
-        YAML conf;
-        if (!ServiceConfig.getConfig().containsKey("security")) {
+        Config conf = ServiceConfig.getConfig();
+
+        boolean hasSecuritySection = false;
+        for (String name : conf.getPropertyNames()) {
+            if (name.equals("security") || name.startsWith("security.")) {
+                hasSecuritySection = true;
+                break;
+            }
+        }
+        if (!hasSecuritySection) {
             log.warn("Authorization interceptor enabled, but there is no security setup in configuration at " +
                      "key .security");
-            conf = new YAML();
-        } else {
-            conf = ServiceConfig.getConfig().getSubMap("security");
         }
 
-        mode = MODE.valueOf(conf.getString("mode", MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
+        mode = MODE.valueOf(
+                conf.getOptionalValue("security.mode", String.class)
+                        .orElse(MODE.ENABLED.toString())
+                        .toUpperCase(Locale.ROOT));
         if (mode == MODE.OFFLINE) {
             log.warn("Authorization mode is {}. Access tokens will not be properly checked. " +
                      "Set security.mode to ENABLED to activate full access token validation", MODE.OFFLINE);
         }
 
-        baseurl = trimTrailingSlash(conf.getString("baseurl", null));
+        baseurl = trimTrailingSlash(conf.getOptionalValue("security.baseurl", String.class).orElse(null));
         if (baseurl == null && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No security.baseurl defined and security.mode=" + mode);
+                     "No security.baseurl defined and security.mode='{}'", mode);
         }
 
-        realms = new HashSet<>(conf.getList("realms", Collections.emptyList()));
+        List<String> realmsList = conf.getOptionalValues("security.realms", String.class)
+                .orElse(Collections.emptyList());
+        realms = new HashSet<>(realmsList);
         if (realms.isEmpty() && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No .security.realms defined and security.mode=" + mode);
+                     "No .security.realms defined and security.mode='{}'", mode);
         }
 
-        keysTTL = conf.getInteger(".public_keys.ttl_seconds", 600);
+        keysTTL = conf.getOptionalValue("security.public_keys.ttl_seconds", Integer.class).orElse(600);
 
         realmKeys = new TimeMap<>(keysTTL*1000L); // The TimeMap operates in milliseconds
 
-        log.info("Created " + this);
+        log.info("Created '{}'", this);
     }
 
     /**

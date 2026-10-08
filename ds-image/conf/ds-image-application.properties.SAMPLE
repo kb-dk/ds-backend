@@ -1,0 +1,31 @@
+# Devops/operations properties override file for ds-image.
+#
+# This is the explicit, per-service override file configured via the 'application-properties-config' Tomcat
+# context environment entry (see conf/ocp/ds-image.xml) / Jetty EnvEntry (see src/test/jetty/jetty-env.xml),
+# and loaded by ServiceConfig.initialize(configFile, propertiesOverrideFile). It is meant for devops/operations
+# secrets and per-environment values that must never be committed to git.
+#
+# Copy this file to 'ds-image-application.properties' (same folder, without the '.SAMPLE' suffix) and fill in
+# your own values. This filename is already covered by the repository's generic '*-application.properties'
+# .gitignore rule.
+#
+# Any key present in ds-image-behaviour.yaml can be overridden here, using the same dotted path. The keys below
+# are the ones commonly set per environment/operator - uncomment and set the ones you need.
+#
+# IMPORTANT: the imageservers.* keys are NOT present in ds-image-behaviour.yaml at all (they name real,
+# environment-specific image server hosts) - one of the two Deepzoom variants (path- or param-based) plus iip
+# and iiif must be supplied here (or via environment variables/system properties) for the service to work.
+
+# imageservers.iip.server=http://example.com:1234/iipsrv/iipsrv.fcgi
+# imageservers.iiif.server=http://example.com:1234/
+# Deepzoom is either path- or param-based - set only the one your image server expects.
+# imageservers.deepzoom.path=http://example.com:1234/
+# imageservers.deepzoom.param=http://example.com:1234/iipsrv/iipsrv.fcgi
+
+# kaltura.partnerId=380
+# kaltura.userId=changeme
+# kaltura.adminSecret=changeme
+
+# security.client.secret=changeme
+
+# openapi.serverurl=http://localhost:9077/ds-image/v1
