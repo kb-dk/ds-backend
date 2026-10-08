@@ -6,6 +6,7 @@ import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.storage.BaseModuleStorage;
 import dk.kb.storage.storage.RerunClusterStorage;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -24,26 +25,13 @@ public class RerunClusterFacade {
    */
   public static RecordsCountDto updateRerunClusters(
       List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
-    RecordsCountDto allRecordsCountDto = new RecordsCountDto();
-    // Start the count at 0
-    allRecordsCountDto.setCount(0);
+    return BaseModuleStorage.performStorageAction("updateRerunClusters()",
+        RerunClusterStorage.class, storage -> {
+          RecordsCountDto recordsCountDto =
+              ((RerunClusterStorage) storage).updateRerunClusters(rerunClusterRequestDtoList);
 
-    for (RerunClusterRequestDto rerunClusterRequestDto : rerunClusterRequestDtoList) {
-      BaseModuleStorage.performStorageAction(
-          "updateRerunClusters() with fileId:" + rerunClusterRequestDto.getFileId(),
-          RerunClusterStorage.class, storage -> {
-            RecordsCountDto recordsCountDto =
-                ((RerunClusterStorage) storage).updateRerunClusters(rerunClusterRequestDto);
-
-            int touched =
-                storage.updateMTimeForRecordByFileId(rerunClusterRequestDto.getFileId().toString());
-
-            allRecordsCountDto.setCount(allRecordsCountDto.getCount() + recordsCountDto.getCount());
-
-            return allRecordsCountDto;
-          });
-    }
-    return allRecordsCountDto;
+          return recordsCountDto;
+        });
   }
 
   /**
