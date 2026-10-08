@@ -10,7 +10,6 @@ CREATE TABLE rerun_clusters (
     updated TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE INDEX rerun_clusters_file_id_idx ON rerun_clusters(file_id);
 CREATE INDEX rerun_clusters_rerun_cluster_id_idx ON rerun_clusters(rerun_cluster_id);
 CREATE INDEX rerun_clusters_created_idx ON rerun_clusters(created);
 
