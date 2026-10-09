@@ -42,18 +42,17 @@ public class RerunClusterFacade {
    * @throws NotFoundServiceException if no rerun cluster exists for the fileId
    */
   public static RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
-    return BaseModuleStorage.performStorageAction("getRerunClusterByFileId(" + fileId + ")",
-        RerunClusterStorage.class, storage -> {
-          RerunClusterResponseDto rerunClusterResponseDto =
-              ((RerunClusterStorage) storage).getRerunClusterByFileId(fileId);
+    RerunClusterResponseDto rerunClusterResponseDto =
+        BaseModuleStorage.performStorageAction("getRerunClusterByFileId(" + fileId + ")",
+            RerunClusterStorage.class, storage -> {
+              return ((RerunClusterStorage) storage).getRerunClusterByFileId(fileId);
+            });
 
-          if (rerunClusterResponseDto == null) {
-            throw new NotFoundServiceException(
-                "No rerun cluster found for fileId '" + fileId + "'");
-          }
+    if (rerunClusterResponseDto == null) {
+      throw new NotFoundServiceException("No rerun cluster found for fileId '" + fileId + "'");
+    }
 
-          return rerunClusterResponseDto;
-        });
+    return rerunClusterResponseDto;
   }
 
   /**
