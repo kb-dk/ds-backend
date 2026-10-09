@@ -36,6 +36,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   level, and we don't want to spam log file with expected behavior.
 - Explicit catch `ServiceException` in `performStorageAction` in `BaseModuleStorage` so it keeps the original
   `HTTP status`.
+- Renamed `getTranscription` -> `getTranscriptionByFileId` so it follow rerun cluster pattern.
+- `TranscriptionFacade.getTranscriptionByFileId` now throw `NotFoundServiceException` with `HTTP 404` like rerun cluster
+  does.
 
 ### Fixed
 

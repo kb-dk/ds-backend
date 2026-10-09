@@ -13,6 +13,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Update solr schema version to 1.8.10.
 - Update solr schema version to 1.8.11.
 
+### Changed
+
+- Renamed `getTranscription` -> `getTranscriptionByFileId` so it follow rerun cluster pattern.
+
 ## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
 
 ### Changed
