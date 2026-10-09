@@ -102,8 +102,9 @@ public abstract class BaseModuleStorage implements AutoCloseable {
       try {
         result = action.process(storage);
       } catch (NotFoundServiceException e) {
-        // Do not have stack strace higher than debug - it is expected behavior
-        log.debug("Not found performing action '{}'", actionID, e);
+        // Do not have stack strace higher than debug - it is expected behavior, no stack trace
+        log.debug("Not found performing action '{}'. Exception message: '{}'", actionID,
+            e.getMessage());
         storage.rollback();
         throw e;
       } catch (InvalidArgumentServiceException e) {
@@ -111,9 +112,8 @@ public abstract class BaseModuleStorage implements AutoCloseable {
         storage.rollback();
         throw e;
       } catch (ServiceException e) {
-        // Other service exceptions: keep the HTTP status, no stack trace
-        log.warn("Service exception performing action '{}'. Initiating rollback: {}", actionID,
-            e.getMessage());
+        // Other service exceptions: keep the HTTP status
+        log.error("Service exception performing action '{}'. Initiating rollback", actionID, e);
         storage.rollback();
         throw e;
       } catch (Exception e) {

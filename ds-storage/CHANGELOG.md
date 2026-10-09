@@ -32,6 +32,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `KBAuthorizationInterceptor`.
 - Renamed class `DsStorageUnitTestUtil` to `DsStorageUnitTestUtil` and refactored the class so it is possible to have multiple
   unit test storage classes.
+- Explicit catch `NotFoundServiceException` in `performStorageAction` in `BaseModuleStorage` because it only needs debug
+  level, and we don't want to spam log file with expected behavior.
+- Explicit catch `ServiceException` in `performStorageAction` in `BaseModuleStorage` so it keeps the original
+  `HTTP status`.
 
 ### Fixed
 

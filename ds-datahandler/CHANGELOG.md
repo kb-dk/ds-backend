@@ -18,6 +18,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added new database connection to remote `p3rerun` database. OPS need to add extra database connection properties in
   `ds-datahandler-*.yaml` file.
 
+### Changed
+
+- Explicit catch `NotFoundServiceException` in `performStorageAction` in `BaseModuleStorage` and `RerunClusterStorage`
+  because it only needs debug level, and we don't want to spam log file with expected behavior.
+- Explicit catch `ServiceException` in `performStorageAction` in `BaseModuleStorage` and `RerunClusterStorage` so it
+  keeps the original `HTTP status`.
+
 ### Fixed
 
 - Fixed `referenceId` so it now correctly get inserted as `NULL` in `ds_records` table, instead as before where it got

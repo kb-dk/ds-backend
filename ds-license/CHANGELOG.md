@@ -7,15 +7,22 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Explicit catch `NotFoundServiceException` in `performStorageAction` in `BaseModuleStorage` because it only needs debug
+  level, and we don't want to spam log file with expected behavior.
+- Explicit catch `ServiceException` in `performStorageAction` in `BaseModuleStorage` so it keeps the original
+  `HTTP status`.
+
 ## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
 
 ### Added
 
 - New property in `ds-license-behaviour.yaml` for cutoff year for TV. All TV before this year will bypass holdback
   rules.
-- The Flyway migrations are now published as a separate release artifact, `ds-license-<version>-flyway.zip` 
-  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball. 
-  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball 
+- The Flyway migrations are now published as a separate release artifact, `ds-license-<version>-flyway.zip`
+  (classifier `flyway`), deployed to Nexus alongside the war and embedded at the root of the distribution tarball.
+  OPS and Jenkins can obtain the SQL for a given release without unpacking the war, and the copy inside the tarball
   keeps the migrations bound to the war they were built alongside. Fetch a single release with
   `mvn dependency:copy -Dartifact=dk.kb.license:ds-license:<version>:zip:flyway`. The zip contains the migrations and
   `ds-license.build.properties` for provenance.
