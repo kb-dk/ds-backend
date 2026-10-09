@@ -101,6 +101,9 @@ public class DSStorage implements Storage {
         log.debug("getTranscriptionByFileId(fileid='{}') called", fileId);
         try {
              return storageClient.getTranscriptionByFileId(fileId);
+        } catch (NotFoundServiceException e) {
+            // No transcription for this fileId. It is to be expected
+            throw e;
         } catch (ServiceException e) {
             log.warn(
                 "Failed calling ds-storage when trying to retrieve transcription with fileId: '{}'. URL: '{}'. Exception: ",
