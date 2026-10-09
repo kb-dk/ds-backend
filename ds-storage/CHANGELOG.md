@@ -23,7 +23,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Make java multiline comment to Javadocs.
 - Refactored base database methods into own class `BaseModuleStorage`, so it follows the style from `ds-datahandler` and
-  `ds-license``ds-datahandler`.
+  `ds-license`.
 - Refactored method `performStorageAction` to dynamically take storageClass from what class is calling the method, so it
   is possible to have multiple storage classes.
 - Refactored mapping of inserted/updated/deleted database rows into own mapping class.
