@@ -20,6 +20,7 @@ import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.stream.ContinuationStream;
 import org.slf4j.Logger;
@@ -153,6 +154,9 @@ public class DSStorage implements Storage {
         log.debug("getRerunClusterByFileId(fileId='{}') called", fileId);
         try {
             return storageClient.getRerunClusterByFileId(fileId);
+        } catch (NotFoundServiceException e) {
+            // No rerun cluster for this fileId. It is to be expected
+            throw e;
         } catch (ServiceException e) {
             log.warn(
                 "Failed calling ds-storage when trying to retrieve rerunClusterResponseDto with fileId: '{}'. URL: '{}'. Exception: ",
