@@ -69,7 +69,7 @@ public class MultiStorage implements Storage {
     }
 
     @Override
-    public TranscriptionDto getTranscription(String file) {
+    public TranscriptionDto getTranscriptionByFileId(String file) {
       return null;
     }
 

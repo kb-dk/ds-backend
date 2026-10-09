@@ -134,7 +134,7 @@ public class FileStorage implements Storage {
     }
 
     @Override
-    public TranscriptionDto getTranscription(String fileId) throws ServiceException{
+    public TranscriptionDto getTranscriptionByFileId(String fileId) throws ServiceException{
       return null;
     }
     

@@ -179,8 +179,8 @@ public class DSOrigin {
      * @return the record in ds-storage record format.
      * @throws ServiceException if the record could not be retrieved.
      */
-    public TranscriptionDto getTranscription(String fileId) throws ServiceException {
-        return storage.getTranscription(fileId);
+    public TranscriptionDto getTranscriptionByFileId(String fileId) throws ServiceException {
+        return storage.getTranscriptionByFileId(fileId);
     }
 
     /**

@@ -197,7 +197,7 @@ public class DsStorageClient {
      * @return MappingDto
      * @throws ServiceException if fails to make API call
      */
-    public TranscriptionDto getTranscription(String fileId) throws ServiceException {        
+    public TranscriptionDto getTranscriptionByFileId(String fileId) throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
                     .appendPathSegments("transcription")                                                                

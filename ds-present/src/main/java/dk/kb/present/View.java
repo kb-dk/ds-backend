@@ -355,16 +355,14 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             return;
         }
 
-        RerunClusterResponseDto rerunClusterResponseDto;
         try {
-            rerunClusterResponseDto = getStorage().getRerunClusterByFileId(UUID.fromString(fileId));
+            RerunClusterResponseDto rerunCluster = getStorage().getRerunClusterByFileId(UUID.fromString(fileId));
+            metadata.put("rerun_cluster_id", rerunCluster.getRerunClusterId().toString());
+            metadata.put("rerun_cluster_id_count", rerunCluster.getRerunClusterIdCount().toString());
         } catch (NotFoundServiceException e) {
-            // No rerun cluster for this fileId. It is to be expected
+            // No rerun cluster for this fileId, which is normal
             return;
         }
-
-        metadata.put("rerun_cluster_id", rerunClusterResponseDto.getRerunClusterId().toString());
-        metadata.put("rerun_cluster_id_count", rerunClusterResponseDto.getRerunClusterIdCount().toString());
     }
 
     /**
@@ -374,20 +372,28 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param fileId   the fileId to find transcription
      */
     private void updateMetadataMapWithTranscription(Map<String, String> metadata, String fileId) {
-        boolean useTranscriptions = ServiceConfig.getConfig().getBoolean("index.useTransriptions");
-        boolean hasTranscription = false;
-
-        if (StringUtils.isNotBlank(fileId) && useTranscriptions) {
-            // Can not be null. Will be empty DTO;
-            TranscriptionDto transcription = getStorage().getTranscription(fileId);
-            if (transcription.getTranscription() != null) {
-                log.debug("Found transcription text for fileId:" + fileId);
-
-                metadata.put("transcription", transcription.getTranscription());
-                hasTranscription = true;
-            }
+        if (StringUtils.isBlank(fileId)) {
+            return;
         }
-        metadata.put("has_transcription", String.valueOf(hasTranscription));
+
+        // Default, overwritten below if a transcription is found
+        metadata.put("has_transcription", "false");
+
+        boolean useTranscriptions = ServiceConfig.getConfig().getBoolean("index.useTransriptions");
+        if (!useTranscriptions) {
+            return;
+        }
+
+        try {
+            TranscriptionDto transcription = getStorage().getTranscriptionByFileId(fileId);
+
+            log.debug("Found transcription text for fileId: {}", fileId);
+            metadata.put("transcription", transcription.getTranscription());
+            metadata.put("has_transcription", "true");
+        } catch (NotFoundServiceException e) {
+            // No transcription for this fileId, which is normal
+            return;
+        }
     }
     
    private Storage getStorage() {

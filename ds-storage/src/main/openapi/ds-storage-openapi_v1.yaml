@@ -479,8 +479,8 @@ paths:
       security:
         - KBOAuth:
             - any
-      operationId: getTranscription
-      description: 'Get entry from the mapping table for the referenceId. Will return empty transcriptionDto if transcription is not found.'
+      operationId: getTranscriptionByFileId
+      description: 'Get entry from the mapping table for the referenceId.'
       parameters:
         - name: fileId
           in: query
@@ -489,11 +489,13 @@ paths:
             type: string
       responses:
         '200':
-          description: 'Get the full transcription by fileId. Will return null if no transcription is found.'
+          description: 'Get the full transcription by fileId.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transcription'
+        '404':
+          description: "No match was found for fileId."
     post:
       tags:
         - 'Transcription'
@@ -544,7 +546,7 @@ paths:
     get:
       tags:
         - 'RerunCluster'
-      summary: 'Return a RerunClusterResponseDto from fileId. If no match was found, it return an RerunClusterResponseDto with null values in all fields, because the code can not handle null values or HTTP code 404 in a nice way.'
+      summary: 'Return a RerunClusterResponseDto from fileId. If no match was found, it returns a HTTP code 404.'
       security:
         - KBOAuth:
             - any
@@ -558,26 +560,26 @@ paths:
             format: uuid
       responses:
         '200':
-          description: 'Return the specific RerunClusterResponseDto. If no match was found, it return an RerunClusterResponseDto with null values in all fields, because the code can not handle null values or HTTP code 404 in a nice way.'
+          description: 'Return the specific RerunClusterResponseDto.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RerunClusterResponse'
         '404':
-          description: "Could not find RerunClusterResponseDto with fileId. How it should be, but the code can not handle it well."
+          description: "No match was found for fileId."
 
   /rerun-cluster/created/latest:
     get:
       tags:
         - 'RerunCluster'
-      summary: 'Return latest created datetime from rerun_clusters table. Can be null.'
+      summary: 'Return latest created datetime from rerun_clusters table.'
       security:
         - KBOAuth:
             - any
       operationId: latestCreated
       responses:
         '200':
-          description: 'Latest created datetime from rerun_clusters table. Can be null.'
+          description: 'Latest created datetime from rerun_clusters table.'
           content:
             application/json:
               schema:
@@ -663,7 +665,7 @@ components:
         created:
           type: string
           format: date-time
-          description: 'Latest created datetime from rerun_clusters table. Can be null.'
+          description: 'Latest created datetime from rerun_clusters table. Can be null!'
           example: '2021-01-30T08:30:00Z'
 
     Origin:

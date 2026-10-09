@@ -97,10 +97,10 @@ public class DSStorage implements Storage {
     }
 
     @Override
-    public TranscriptionDto getTranscription(String fileId) throws ServiceException{
-        log.debug("getTranscription(fileid='{}') called", fileId);
+    public TranscriptionDto getTranscriptionByFileId(String fileId) throws ServiceException{
+        log.debug("getTranscriptionByFileId(fileid='{}') called", fileId);
         try {
-             return storageClient.getTranscription(fileId);
+             return storageClient.getTranscriptionByFileId(fileId);
         } catch (ServiceException e) {
             log.warn(
                 "Failed calling ds-storage when trying to retrieve transcription with fileId: '{}'. URL: '{}'. Exception: ",

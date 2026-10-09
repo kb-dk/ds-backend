@@ -3,6 +3,7 @@ package dk.kb.storage.facade;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.storage.BaseModuleStorage;
 import dk.kb.storage.storage.TranscriptionStorage;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,15 +11,24 @@ public class TranscriptionFacade {
   private static final Logger log = LoggerFactory.getLogger(TranscriptionFacade.class);
 
   /**
-   * Load full transcription for a stream
+   * Return a transcription by fileId.
    *
    * @param fileId FileId for the stream, this is the stream filename.
-   * @return TranscriptionDto Return empty transcriptionDto if none is found
+   * @return TranscriptionDto
+   * @throws NotFoundServiceException if no match was found fileId
    */
-  public static TranscriptionDto getTranscription(String fileId) {
-    return BaseModuleStorage.performStorageAction("getTranscription(fileId='" + fileId + ")",
-        TranscriptionStorage.class,
-        storage -> ((TranscriptionStorage) storage).getTranscriptionByFileId(fileId));
+  public static TranscriptionDto getTranscriptionByFileId(String fileId) {
+    TranscriptionDto transcriptionDto =
+        BaseModuleStorage.performStorageAction("getTranscription(fileId='" + fileId + ")",
+            TranscriptionStorage.class, storage -> {
+              return ((TranscriptionStorage) storage).getTranscriptionByFileId(fileId);
+            });
+
+    if (transcriptionDto == null) {
+      throw new NotFoundServiceException("No transcription found for fileId '" + fileId + "'");
+    }
+
+    return transcriptionDto;
   }
 
   /**
@@ -47,7 +57,7 @@ public class TranscriptionFacade {
 
           ((TranscriptionStorage) storage).createTranscription(transcriptionDto);
           // Touch the record in the ds_records table so will be selected in next indexing job and transcriptions will be indexed as well.
-          int touched = ((TranscriptionStorage) storage).updateMTimeForRecordByFileId(fileId);
+          int touched = storage.updateMTimeForRecordByFileId(fileId);
           log.info(
               "Create/Updated transcriptionDto with fileId='{}' number of records touched='{}'",
               fileId, touched);

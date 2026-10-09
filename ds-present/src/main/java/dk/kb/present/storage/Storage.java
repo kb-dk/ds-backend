@@ -64,7 +64,7 @@ public interface Storage {
      * @param fileId fileId filename of the presentation stream.
      * @return Transcription text. Null if none if not found
      */
-    TranscriptionDto getTranscription(String fileId);
+    TranscriptionDto getTranscriptionByFileId(String fileId);
     
     /**
      * Return the record as a ds-storage record where parent and children are populated for this current record.

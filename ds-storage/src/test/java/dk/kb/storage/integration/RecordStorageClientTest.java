@@ -238,7 +238,7 @@ public class RecordStorageClientTest {
     @Test
     public void testGetTranscription() throws IOException {
         String fileId="7abbf6ff-3fda-41db-9632-b48343bb88bd";        
-        TranscriptionDto transcription = remote.getTranscription(fileId);
+        TranscriptionDto transcription = remote.getTranscriptionByFileId(fileId);
         String snippet="kvindekvoter";
         assertTrue(transcription.getTranscription().indexOf(snippet)>0);               
     }

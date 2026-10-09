@@ -81,17 +81,12 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
     }
 
     @Test
-    public void getTranscriptionByFileId_whenFileIdDoNotExists_thenReturnTranscription() throws SQLException {
+    public void getTranscriptionByFileId_whenFileIdDoNotExists_thenReturnNull() throws SQLException {
         // Act
         TranscriptionDto returnedTranscriptionDto = transcriptionStorage.getTranscriptionByFileId(fileId);
 
         // Assert
-        assertNotNull(returnedTranscriptionDto);
-        assertEquals(fileId, returnedTranscriptionDto.getFileId());
-        assertNull(returnedTranscriptionDto.getFileName());
-        assertNull(returnedTranscriptionDto.getmTime());
-        assertNull(returnedTranscriptionDto.getTranscription());
-        assertNull(returnedTranscriptionDto.getTranscriptionLines());
+        assertNull(returnedTranscriptionDto);
     }
 
     @Test
@@ -115,7 +110,7 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
         // Assert
         assertEquals(0, count);
 
-        assertNull(deletedTranscriptionDto.getTranscription());
+        assertNull(deletedTranscriptionDto);
     }
 
     @Test
@@ -130,6 +125,6 @@ public class TranscriptionStorageTest extends TestcontainersUtil {
         // Assert
         assertEquals(0, count);
 
-        assertNull(deletedTranscriptionDto.getTranscription());
+        assertNull(deletedTranscriptionDto);
     }
 }

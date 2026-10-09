@@ -65,7 +65,7 @@ public class TranscriptionStorage extends BaseModuleStorage {
   }
 
   /**
-   * Load a transcription by fileId.
+   * Return a transcription by fileId.
    *
    * @param fileId the fileId to load
    * @return TranscriptionDto. If fileId is not found will return null
@@ -74,17 +74,19 @@ public class TranscriptionStorage extends BaseModuleStorage {
     try (PreparedStatement stmt = connection.prepareStatement(transcriptionByFileIdStatement)) {
       stmt.setString(1, fileId);
 
-      try (ResultSet rs = stmt.executeQuery()) {
-        if (!rs.next()) {
-          // DsStorageClient can not handle null values when serializing.
-          TranscriptionDto empty = new TranscriptionDto();
-          empty.setFileId(fileId);
-          return empty;
-        }
+      ResultSet resultSet = stmt.executeQuery();
 
-        TranscriptionDto trans = transcriptionDtoMapper.map(rs);
-        return trans;
+      if (resultSet.next()) {
+        return transcriptionDtoMapper.map(resultSet);
       }
+
+      return null;
+    } catch (SQLException e) {
+      String message =
+          "SQL Exception in getTranscriptionByFileId with fileId:'" + fileId + "' error: " +
+              e.getMessage();
+      log.error(message);
+      throw new SQLException(message, e);
     }
   }
 

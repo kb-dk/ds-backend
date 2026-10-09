@@ -133,7 +133,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
    * Return a RerunClusterResponseDto by fileId.
    *
    * @param fileId
-   * @return RerunClusterResponseDto
+   * @return RerunClusterResponseDto. If fileId is not found will return null
    * @throws SQLException
    */
   public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) throws SQLException {

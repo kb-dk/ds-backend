@@ -18,14 +18,18 @@ public class TranscriptionApiServiceImpl extends ImplBase implements Transcripti
   private final Logger log = LoggerFactory.getLogger(TranscriptionApiServiceImpl.class);
 
   /**
-   * Load full transcription for a stream
+   * Return a transcription by fileId.
    *
    * @param fileId FileId for the stream, this is the stream filename.
-   * @return TranscriptionDto Will return empty transcriptionDto if no transcription is found
+   * @return TranscriptionDto
    */
   @Override
-  public TranscriptionDto getTranscription(@NotNull String fileId) {
-    return TranscriptionFacade.getTranscription(fileId);
+  public TranscriptionDto getTranscriptionByFileId(@NotNull String fileId) {
+    try {
+      return TranscriptionFacade.getTranscriptionByFileId(fileId);
+    } catch (Exception exception) {
+      throw handleException(exception);
+    }
   }
 
   /**
@@ -35,6 +39,10 @@ public class TranscriptionApiServiceImpl extends ImplBase implements Transcripti
    */
   @Override
   public void createOrUpdateTranscription(@Valid TranscriptionDto transcriptionDto) {
-    TranscriptionFacade.createOrUpdateTranscription(transcriptionDto);
+    try {
+      TranscriptionFacade.createOrUpdateTranscription(transcriptionDto);
+    } catch (Exception exception) {
+      throw handleException(exception);
+    }
   }
 }

@@ -39,7 +39,7 @@ public class RerunClusterFacade {
    *
    * @param fileId UUID of fileId.
    * @return RerunClusterResponseDto
-   * @throws NotFoundServiceException if no rerun cluster exists for the fileId
+   * @throws NotFoundServiceException if no match was found fileId
    */
   public static RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
     RerunClusterResponseDto rerunClusterResponseDto =
