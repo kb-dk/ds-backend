@@ -80,7 +80,7 @@ public class DsPresentApiServiceImplTest {
         // Change the mock to not have the record
         CheckAccessForIdsOutputDto noRecordResponse = new CheckAccessForIdsOutputDto().nonExistingIds(List.of(RECORD_ID));
         doReturn(noRecordResponse).when(mockedLicenseClient).checkAccessForIds(any(CheckAccessForIdsInputDto.class));
-        assertThrowsInner(NotFoundServiceException.class, () -> presentAPI.getRecord(RECORD_ID, FormatDto.MODS),
+        assertThrows(NotFoundServiceException.class, () -> presentAPI.getRecord(RECORD_ID, FormatDto.MODS),
                 "Calling getRecord should raise a not found exception");
     }
 

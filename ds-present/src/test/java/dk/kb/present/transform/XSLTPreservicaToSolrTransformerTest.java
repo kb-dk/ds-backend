@@ -4,7 +4,7 @@ import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
 import dk.kb.util.Resolver;
-import org.junit.jupiter.api.Assertions;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -327,18 +327,36 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     void platformField() throws IOException {
         Map<String, String > platformMap = Map.of("platform", "DRARKIV");
         String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, platformMap);
-        System.out.println(solrDocument);
         assertTrue(solrDocument.contains("\"platform\":\"DRARKIV\""));
     }
 
     @Test
-    void transcriptionsFields() throws IOException {
-        Map<String, String> map =  new HashMap<String,String>();
+    void transformWithInjections_whenTranscriptionExists_thenTranscriptionFieldIsPopulatedAndHasTranscriptionIsTrue() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
         map.put("transcription", "Dette er en transcription");
         map.put("has_transcription", "true");
+
+        // Act
         String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
-        System.out.println(solrDocument);
+
+        // Assert
         assertTrue(solrDocument.contains("\"transcription\":\"Dette er en transcription\""));
+        assertTrue(solrDocument.contains("\"has_transcription\":\"true\""));
+    }
+
+    @Test
+    void transformWithInjections_whenTranscriptionDoesNotExists_thenTranscriptionFieldDoesNotExistAndHasTranscriptionIsFalse() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+        map.put("has_transcription", "false");
+
+        // Act
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+
+        // Assert
+        assertFalse(solrDocument.contains("\"transcription\""));
+        assertTrue(solrDocument.contains("\"has_transcription\":\"false\""));
     }
 
     @Test
@@ -470,6 +488,39 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_id\":\"b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_path\":\"b5\\/57\\/b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_extension\":\"mp3\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
+    }
+
+    @Test
+    void transformWithInjections_whenRerunClusterExists_thenRerunClusterFieldsIsPopulated()
+        throws IOException {
+        // Arrange
+        UUID rerunClusterId = UUID.randomUUID();
+        Integer rerunClusterIdCount = 2;
+        Map<String, String> map = new HashMap<>();
+        map.put("rerun_cluster_id", rerunClusterId.toString());
+        map.put("rerun_cluster_id_count", rerunClusterIdCount.toString());
+
+        // Act
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+
+        // Assert
+        assertTrue(solrDocument.contains("\"rerun_cluster_id\":\"" + rerunClusterId + "\""));
+        assertTrue(
+            solrDocument.contains("\"rerun_cluster_id_count\":\"" + rerunClusterIdCount + "\""));
+    }
+
+    @Test
+    void transformWithInjections_whenRerunClusterDoesNotExists_thenRerunClusterFieldsDoesNotExit()
+        throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+
+        // Act
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+
+        // Assert
+        assertFalse(solrDocument.contains("\"rerun_cluster_id\""));
+        assertFalse(solrDocument.contains("\"rerun_cluster_id_count\""));
     }
 
     @Test

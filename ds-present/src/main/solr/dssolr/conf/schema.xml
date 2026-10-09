@@ -75,9 +75,11 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.7: New field transcription that contains full description text. Field is not stored.
 1.8.8: New field has_transcription boolean to see if a document has a transcription. Since transcription field is not stored this can not be seen directly
 1.8.9: Added field for annotations
+1.8.10: Add rerun_cluster_id and rerun_cluster_id_count field.
+1.8.11: Change rerun_cluster_id from uuid to string because Solr has a bug with UUID in JSON response.
 
   -->
-  <field name="_ds_1.8.9_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.11_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -828,6 +830,16 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="file_extension" type="string">
     <?description Extension for the file, to be used when uploading file to kaltura.?>
     <?example .mp4?>
+  </field>
+
+  <field name="rerun_cluster_id" type="string">
+    <?description UUID id of a RerunCluster. Multiple file_id can share the same rerun_cluster_id.?>
+    <?example 000000a1-0000-111a-a2b4-7488244fcca7?>
+  </field>
+
+  <field name="rerun_cluster_id_count" type="pint">
+    <?description Count on how many broadcasts has the same rerun_cluster_id.?>
+    <?example 4?>
   </field>
 
   <field name="temporal_start_year" type="string" docValues="true">

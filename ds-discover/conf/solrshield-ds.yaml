@@ -152,6 +152,8 @@ components:
           - creator_full_name
           - creator_affiliation
           - subject_full_name
+          - rerun_cluster_id
+          - rerun_cluster_id_count
       facet.limit:          # Integer
         defaultEnabled: true
         defaultValue: 20   # Must match the one defined in solrconfig.xml
@@ -347,6 +349,10 @@ fields:
   production_place:
     weight: 10
   published_in:
+    weight: 10
+  rerun_cluster_id:
+    weight: 10
+  rerun_cluster_id_count:
     weight: 10
   resource_description_general:
     weight: 10
@@ -602,3 +608,5 @@ allFields:
   - freetext
   - title_strict
   - spellcheck
+  - rerun_cluster_id
+  - rerun_cluster_id_count

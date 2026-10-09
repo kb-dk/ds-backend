@@ -3,7 +3,7 @@ package dk.kb.license.rights;
 import dk.kb.license.facade.RightsModuleFacade;
 import dk.kb.license.model.v1.*;
 import dk.kb.license.storage.RightsModuleStorageForUnitTest;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RightsCalculationTest extends DsLicenseUnitTestUtil {
+public class RightsCalculationTest extends TestcontainersUtil {
     private final static Logger log = LoggerFactory.getLogger(RightsCalculationTest.class);
     @BeforeAll
     public static void beforeClass() throws Exception {

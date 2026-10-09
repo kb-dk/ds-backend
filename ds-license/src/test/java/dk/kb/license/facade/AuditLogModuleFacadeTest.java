@@ -3,6 +3,7 @@ package dk.kb.license.facade;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mockStatic;
 
+import dk.kb.license.storage.AuditLogModuleStorageForUnitTest;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,17 +25,18 @@ import org.slf4j.LoggerFactory;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.DeleteReasonDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 
-public class AuditLogModuleFacadeTest extends DsLicenseUnitTestUtil {
-
+public class AuditLogModuleFacadeTest extends TestcontainersUtil {
+    protected static AuditLogModuleStorageForUnitTest auditStorage = null;
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleFacadeTest.class);
     static MockedStatic<JAXRSUtils> mocked;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+        auditStorage = new  AuditLogModuleStorageForUnitTest();
     }
 
     /**

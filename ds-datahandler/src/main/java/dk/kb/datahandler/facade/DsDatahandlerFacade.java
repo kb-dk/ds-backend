@@ -1,5 +1,8 @@
 package dk.kb.datahandler.facade;
 
+import dk.kb.storage.model.v1.CreatedDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,10 +20,10 @@ import dk.kb.datahandler.model.v1.*;
 import dk.kb.datahandler.oai.OaiResponseFilterDrArchive;
 import dk.kb.datahandler.oai.OaiResponseFilterPreservicaSeven;
 import dk.kb.datahandler.solr.SolrIndexResponse;
-import dk.kb.datahandler.storage.BasicStorage;
+import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.storage.JobStorage;
+import dk.kb.datahandler.storage.RerunClusterStorage;
 import dk.kb.datahandler.transcriptions.TranscriptionJob;
-import dk.kb.storage.model.v1.DsRecordMinimalDto;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -115,7 +118,7 @@ public class DsDatahandlerFacade {
      */    
     public static String indexSolrFull(String origin) throws InternalServiceException {
         SolrIndexResponse solrIndexResponse;
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.SOLR_INDEX, origin, null, user);
 
         try {
@@ -141,7 +144,7 @@ public class DsDatahandlerFacade {
      * @throws IOException
      */
     public static String indexSolrDelta(String origin) throws InternalServiceException, SolrServerException, IOException {
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         Long lastStorageModifiedTime = SolrUtils.getLatestMTimeForOrigin(origin);
         SolrIndexResponse solrIndexResponse;
 
@@ -194,7 +197,7 @@ public class DsDatahandlerFacade {
         // mTimeFrom is in microseconds
         
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom,user);
 
         log.info("Starting kaltura delta upload");
@@ -255,7 +258,7 @@ public class DsDatahandlerFacade {
      * @return Number of harvested records.
      */        
     public static Integer oaiIngestFull(String oaiTargetName) throws Exception {
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);
 
         String modifiedTimeFrom = HarvestTimeUtil.generateFrom(oaiTargetDto, null); // from == null, use default start day for OAI target instead
@@ -276,7 +279,7 @@ public class DsDatahandlerFacade {
      * @return Number of harvested records.
      */
     public static Integer oaiIngestDelta(String oaiTargetName) throws Exception {
-        String user= DsDatahandlerApiServiceImpl.getCurrentUsername();
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);       
         String lastHarvestTime = HarvestTimeUtil.loadLastHarvestTime(oaiTargetDto);
 
@@ -333,7 +336,91 @@ public class DsDatahandlerFacade {
      * @return List of jobs with status
      */    
     public static List<JobDto> getJobs(CategoryDto categoryDto, JobStatusDto jobStatusDto) {
-        return BasicStorage.performStorageAction("Get all jobs", JobStorage::new, (JobStorage storage) -> storage.getJobs(categoryDto, jobStatusDto));
+        return BaseModuleStorage.performStorageAction("Get all jobs", JobStorage.class, storage -> ((JobStorage) storage).getJobs(categoryDto, jobStatusDto));
+    }
+
+    /**
+     * Returns new rows from remote p3rerun database in clusters table, then calls ds-storage via DsStorageClient
+     * that save the rows in our rerun_clusters table, update mtime in ds_records table and return number of rows
+     * inserted or updated in rerun_clusters table in a `RecordsCountDto` object.
+     *
+     * @return RecordsCountDto number of rows inserted or updated
+     */
+    public static RecordsCountDto getRerunClusters() {
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
+        DsStorageClient dsStorageApiClient = getDsStorageApiClient();
+
+        CreatedDto latestCreated = latestCreated();
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, latestCreated.getCreated(), user);
+
+        try {
+            List<RerunClusterRequestDto> rerunClusterRequestDtoList =
+                RerunClusterStorage.performStorageAction("getRerunClusters()",
+                    RerunClusterStorage.class, storage -> {
+                        return storage.getRerunClusters(latestCreated.getCreated());
+                    });
+
+            // tomcat in dev environment could not handle one big request body, so need to split
+            // request in batches of 1000 objects at a time.
+            int partitionSize = 1000;
+            List<List<RerunClusterRequestDto>> partitions = new ArrayList<>();
+
+            for (int i = 0; i < rerunClusterRequestDtoList.size(); i += partitionSize) {
+                partitions.add(rerunClusterRequestDtoList.subList(i, Math.min(i + partitionSize,
+                    rerunClusterRequestDtoList.size())));
+            }
+
+            RecordsCountDto allRecordsCountDto = new RecordsCountDto();
+            // Start the count at 0
+            allRecordsCountDto.setCount(0);
+
+            for (List<RerunClusterRequestDto> partitionRerunClusterRequestDtoList : partitions) {
+                dk.kb.storage.model.v1.RecordsCountDto returnedRecordsCountDto =
+                    dsStorageApiClient.updateRerunClusters(partitionRerunClusterRequestDtoList);
+
+                allRecordsCountDto.setCount(allRecordsCountDto.getCount() +
+                    returnedRecordsCountDto.getCount());
+            }
+
+            if (rerunClusterRequestDtoList.size() != allRecordsCountDto.getCount()) {
+                throw new InternalServiceException("Expected to save " + rerunClusterRequestDtoList.size() + " rerun clusters, but " + allRecordsCountDto.getCount() + " were saved");
+            }
+
+            updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
+                allRecordsCountDto.getCount(), null);
+
+            return allRecordsCountDto;
+        } catch (Exception exception) {
+            log.error("Inserting/updating rerun_clusters table failed with jobId='{}'. Exception: ",
+                jobDto.getId(), exception);
+            updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(),
+                OffsetDateTime.now(ZoneOffset.UTC), null, null);
+            throw exception;
+        }
+    }
+
+    /**
+     * Calls ds-storage via DsStorageClient that return latest created datetime from rerun_clusters
+     * table. Can be null.
+     *
+     * @return CreatedDto latest created datetime
+     */
+    public static CreatedDto latestCreated() {
+        try {
+            DsStorageClient dsStorageApiClient = getDsStorageApiClient();
+            CreatedDto createdDto =
+                dsStorageApiClient.latestCreated();
+
+            log.info("Latest created datetime from ds-storage rerun_clusters table:'{}'",
+                createdDto.getCreated());
+
+            return createdDto;
+        } catch (Exception exception) {
+            log.error(
+                "Failed fetching latest created datetime from ds-storage rerun_clusters table. Exception: ",
+                exception);
+            throw exception;
+        }
     }
 
     /**
@@ -419,7 +506,7 @@ public class DsDatahandlerFacade {
                 sessionDurationSeconds, sessionRefreshThreshold, conversionQueueThreshold, conversionQueueDelaySeconds);
     }
 
-    private static DsStorageClient getDsStorageApiClient() {
+    public static DsStorageClient getDsStorageApiClient() {
         if (storageClient != null) {
             return storageClient;
         }
@@ -452,11 +539,11 @@ public class DsDatahandlerFacade {
 
         String databaseMessage = jobDto.getJobStatus().getValue() + " " + jobDto.getType().getValue() + " " + jobDto.getCategory().getValue();
 
-        UUID jobId = BasicStorage.performStorageAction(databaseMessage, JobStorage::new, (JobStorage storage) -> {
-            if (storage.hasRunningJob(categoryDto, source)) {
+        UUID jobId = BaseModuleStorage.performStorageAction(databaseMessage, JobStorage.class, storage -> {
+            if (((JobStorage) storage).hasRunningJob(categoryDto, source)) {
                 throw new InvalidArgumentServiceException("There is already a/an " + categoryDto + " job running");
             }
-            return storage.createJob(jobDto);
+            return ((JobStorage) storage).createJob(jobDto);
         });
 
         jobDto.setId(jobId);
@@ -466,11 +553,13 @@ public class DsDatahandlerFacade {
 
     /**
      * Updates an existing job
+     *
      * @param jobDto the job to update
      * @param jobStatusDto the new status of the job
      * @param message error message if the job has failed
      * @param endTime if the job is set to FAILED, STOPPED or COMPLETED
      * @param numberOfRecords number of records created or updated by the job
+     * @param restartValue where should a new job start from
      */
    public static void updateJob(JobDto jobDto, JobStatusDto jobStatusDto, String message, OffsetDateTime endTime, Integer numberOfRecords, OffsetDateTime restartValue) {
         jobDto.setJobStatus(jobStatusDto);
@@ -481,8 +570,8 @@ public class DsDatahandlerFacade {
 
         String databaseMessage = jobDto.getJobStatus().getValue() + " " + jobDto.getType().getValue() + " " + jobDto.getCategory().getValue();
 
-        BasicStorage.performStorageAction(databaseMessage, JobStorage::new, (JobStorage storage) -> {
-            storage.updateJob(jobDto);
+        BaseModuleStorage.performStorageAction(databaseMessage, JobStorage.class, storage -> {
+            ((JobStorage) storage).updateJob(jobDto);
             return null;
         });
     }

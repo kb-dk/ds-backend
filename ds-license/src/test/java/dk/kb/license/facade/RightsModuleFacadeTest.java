@@ -2,11 +2,12 @@ package dk.kb.license.facade;
 
 import dk.kb.license.model.v1.*;
 import dk.kb.license.solr.SolrServerClient;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.storage.RightsModuleStorageForUnitTest;
+import dk.kb.license.util.TestcontainersUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
-import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
+import java.time.Instant;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -25,17 +26,16 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
+public class RightsModuleFacadeTest extends TestcontainersUtil {
+    protected static RightsModuleStorageForUnitTest rightsStorage = null;
     static MockedStatic<JAXRSUtils> mocked;
 
     final String userName = "mockedName";
@@ -45,6 +45,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+        rightsStorage = new RightsModuleStorageForUnitTest();
         MessageImpl message = new MessageImpl();
         AccessToken mockedToken = mock(AccessToken.class);
         when(mockedToken.getName()).thenReturn("mockedName");
@@ -73,8 +74,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         tables.add("DR_HOLDBACK_RANGES");
         tables.add("DR_HOLDBACK_CATEGORIES");
         tables.add("AUDITLOG");
-        tables.add("AUDITLOG");
-       rightsStorage.clearTableRecords(tables);
+        rightsStorage.clearTableRecords(tables);
     }
 
     /**
@@ -86,8 +86,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
      */
     private Date parseStringToDate(String dateString) throws ParseException {
         // The format date Solr client from dependency returns
-        final String parseDateFormat = "EEEE MMM dd HH:mm:ss z yyyy";
-        return new SimpleDateFormat(parseDateFormat, Locale.ROOT).parse(dateString);
+        return Date.from(Instant.parse(dateString));
     }
 
     @Test
@@ -561,7 +560,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         String expectedMessage = "'id': " + notExistingId + " not found";
 
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.updateRestrictedId(notExistingId, false, updateRestrictedIdInputDto));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.updateRestrictedId(notExistingId, false, updateRestrictedIdInputDto));
         auditLogEntriesForObject = rightsStorage.getAllAudit();
 
         // Assert
@@ -649,7 +648,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         deleteReasonDto.setChangeComment(changeComment);
 
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteRestrictedId(invalidId, false, deleteReasonDto));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.deleteRestrictedId(invalidId, false, deleteReasonDto));
 
         // Assert
         assertTrue(exception.getMessage().contains("'id': " + invalidId + " not found"));
@@ -679,7 +678,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         RecordsCountDto recordsCountDto = RightsModuleFacade.deleteRestrictedId(restrictedIdOutputDto.getId(), false, deleteReasonDto);
 
         // Make sure that the restricted id is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getRestrictedIdById(restrictedIdOutputDto.getId()));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.getRestrictedIdById(restrictedIdOutputDto.getId()));
 
         auditLogEntriesForObject =rightsStorage.getAuditLogByObjectId(restrictedIdOutputDto.getId());
 
@@ -1538,8 +1537,8 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         assertEquals(duplicatedRestrictedIdInputDto.getPlatform(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getPlatform());
         assertEquals(duplicatedRestrictedIdInputDto.getTitle(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getTitle());
         assertEquals(duplicatedRestrictedIdInputDto.getComment(), processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getComment());
-        assertEquals("InternalServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
-        assertEquals("dk.kb.util.webservice.exception.InternalServiceException: dk.kb.util.webservice.exception.NotFoundServiceException: restricted id 'idValue': ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111, 'idType': DS_ID, 'platform': DRARKIV not found", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
+        assertEquals("NotFoundServiceException", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getException());
+        assertEquals("restricted id 'idValue': ds.tv:oai:io:ea440a12-d14b-46cd-b6b9-53b16ee56111, 'idType': DS_ID, 'platform': DRARKIV not found", processedRestrictedIdsOutputDto.getFailedRestrictedIds().get(0).getErrorMessage());
 
         // Only valid RestrictedIdInputDto objects is in the audit log
         assertEquals(3, auditLogEntriesForObject.size());
@@ -1666,8 +1665,8 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
-        String startTime = "Thu Sep 29 21:55:00 CET 1966";
-        String endTime = "Thu Sep 29 22:05:00 CET 1966";
+        String startTime = "1966-09-29T20:55:00Z";
+        String endTime = "1966-09-29T21:05:00Z";
 
         String queryDsId = "id:\"" + dsId + "\"";
         String fieldListDsId = "dr_production_id, id, title, startTime, endTime";
@@ -1717,8 +1716,8 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
-        String startTime = "Thu Sep 29 21:55:00 CET 1966";
-        String endTime = "Thu Sep 29 22:05:00 CET 1966";
+        String startTime = "1966-09-29T20:55:00Z";
+        String endTime = "1966-09-29T21:05:00Z";
 
         Date startTimeDate = parseStringToDate(startTime);
         Date endTimeDate = parseStringToDate(endTime);
@@ -1767,8 +1766,8 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         // Arrange
         String dsId = "ds.tv:oai:io:baafb0d9-691f-409d-8c34-97051cf79b93";
         String title = "TV-Avisen.";
-        String startTime = "Thu Sep 29 21:55:00 CET 1966";
-        String endTime = "Thu Sep 29 22:05:00 CET 1966";
+        String startTime = "1966-09-29T20:55:00Z";
+        String endTime = "1966-09-29T21:05:00Z";
         String restrictedCommentOne = "Brugeren har trukket deres samtykke tilbage";
 
         Date startTimeDate = parseStringToDate(startTime);
@@ -1823,14 +1822,14 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         String dsIdOne = "ds.tv:oai:io:5c6ef540-9aa6-47cd-837e-7c488f8176f0";
         String titleOne = "P2 Radioavis";
-        String startTimeOne = "Thu Apr 04 08:00:00 CEST 2018";
-        String endTimeOne = "Thu Apr 04 08:06:00 CEST 2018";
+        String startTimeOne = "2018-04-04T06:00:00Z";
+        String endTimeOne = "2018-04-04T06:06:00Z";
         String restrictedCommentOne = "Brugeren har trukket deres samtykke tilbage";
 
         String dsIdTwo = "ds.tv:oai:io:d5ec7b20-c1f2-491e-a2cb-f143683a40f8";
         String titleTwo = "P2 Radioavis";
-        String startTimeTwo = "Thu Apr 05 08:00:00 CEST 2018";
-        String endTimeTwo = "Thu Apr 05 08:06:00 CEST 2018";
+        String startTimeTwo = "2018-04-05T06:00:00Z";
+        String endTimeTwo = "2018-04-05T06:06:00Z";
 
         Date startTimeDateOne = parseStringToDate(startTimeOne);
         Date endTimeDateOne = parseStringToDate(endTimeOne);
@@ -2004,7 +2003,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackCategory(drHoldbackCategoryOutputDto.getId(), deleteReasonDto);
 
         // Make sure that the DR holdback category is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackCategoryByKey(key));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.getDrHoldbackCategoryByKey(key));
 
         auditLogEntriesForObject =rightsStorage.getAuditLogByObjectId(drHoldbackCategoryOutputDto.getId());
 
@@ -2063,7 +2062,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         RightsModuleFacade.createDrHoldbackCategory(drHoldbackCategoryInputDto);
 
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.createDrHoldbackRanges(drHoldbackRangeInputDto));
 
         // Assert
         assertTrue(exception.getMessage().contains("DR holdback category not found for key: " + invalidKey));
@@ -2173,7 +2172,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
 
         String invalidKey = "invalid";
         // Act
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidKey, deleteReasonDto));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.deleteDrHoldbackRanges(invalidKey, deleteReasonDto));
 
         // Assert
         assertTrue(exception.getMessage().contains("DR holdback ranges not found for drHoldbackCategoryKey: " + invalidKey));
@@ -2222,7 +2221,7 @@ public class RightsModuleFacadeTest extends DsLicenseUnitTestUtil {
         RecordsCountDto recordsCountDto = RightsModuleFacade.deleteDrHoldbackRanges(key, deleteReasonDto);
 
         // Make sure that all DR holdback ranges is deleted
-        Exception exception = assertThrows(InternalServiceException.class, () -> RightsModuleFacade.getDrHoldbackRanges(key));
+        Exception exception = assertThrows(NotFoundServiceException.class, () -> RightsModuleFacade.getDrHoldbackRanges(key));
         auditLogEntriesForObject =rightsStorage.getAuditLogByObjectId(drHoldbackCategoryOutputDto.getId());
 
         // Assert

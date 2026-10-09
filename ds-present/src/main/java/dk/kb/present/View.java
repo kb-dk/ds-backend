@@ -24,11 +24,12 @@ import dk.kb.present.transform.DSTransformer;
 import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
-import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.yaml.YAML;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -208,20 +209,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             metadata.put("productionIdRestrictedDr", String.valueOf(rightsOutput.getDr().getDrIdRestricted()));
         }
 
-        boolean useTranscriptions=  ServiceConfig.getConfig().getBoolean("index.useTransriptions");
-        boolean hasTranscription=false;
-        //Transcription text.
-        String refrenceId = record.getReferenceId();        
-        if (refrenceId != null && useTranscriptions) {
-           String transcriptionText=getTranscriptionText(record.getReferenceId());
-           if (transcriptionText != null) {
-              log.debug("Found transcription text for fileId:"+refrenceId);
-              metadata.put("has_transcription", "true");
-              metadata.put("transcription", transcriptionText);
-              hasTranscription=true;
-           }                           
-        }        
-        metadata.put("has_transcription", ""+hasTranscription);               
+        String referenceId = record.getReferenceId();
+
+        updateMetadataMapWithRerunCluster(metadata, referenceId);
+
+        updateMetadataMapWithTranscription(metadata, referenceId);
+
         metadata.put("platform", "DRARKIV");
 
         metadata.put("dsIdRestricted", String.valueOf(rightsOutput.getDr().getDsIdRestricted()));
@@ -350,9 +343,57 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
     }
 
-   private String getTranscriptionText(String fileId) {      
-      TranscriptionDto transcription = getStorage().getTranscription(fileId);
-      return transcription.getTranscription(); // can not be null. Will be empty DTO
+    /**
+     * Updates the provided metadata map with rerun cluster data for the fileId. Nothing is added if
+     * no rerun cluster exists for the fileId.
+     *
+     * @param metadata the map of metadata
+     * @param fileId   the fileId to find the rerun cluster for
+     */
+    private void updateMetadataMapWithRerunCluster(Map<String, String> metadata, String fileId) {
+        if (StringUtils.isBlank(fileId)) {
+            return;
+        }
+
+        try {
+            RerunClusterResponseDto rerunCluster = getStorage().getRerunClusterByFileId(UUID.fromString(fileId));
+            metadata.put("rerun_cluster_id", rerunCluster.getRerunClusterId().toString());
+            metadata.put("rerun_cluster_id_count", rerunCluster.getRerunClusterIdCount().toString());
+        } catch (NotFoundServiceException e) {
+            // No rerun cluster for this fileId, which is normal
+            return;
+        }
+    }
+
+    /**
+     * Updates the provided metadata map with transcriptions.
+     *
+     * @param metadata the map of metadata
+     * @param fileId   the fileId to find transcription
+     */
+    private void updateMetadataMapWithTranscription(Map<String, String> metadata, String fileId) {
+        if (StringUtils.isBlank(fileId)) {
+            return;
+        }
+
+        // Default, overwritten below if a transcription is found
+        metadata.put("has_transcription", "false");
+
+        boolean useTranscriptions = ServiceConfig.getConfig().getBoolean("index.useTransriptions");
+        if (!useTranscriptions) {
+            return;
+        }
+
+        try {
+            TranscriptionDto transcription = getStorage().getTranscriptionByFileId(fileId);
+
+            log.debug("Found transcription text for fileId: {}", fileId);
+            metadata.put("transcription", transcription.getTranscription());
+            metadata.put("has_transcription", "true");
+        } catch (NotFoundServiceException e) {
+            // No transcription for this fileId, which is normal
+            return;
+        }
     }
     
    private Storage getStorage() {

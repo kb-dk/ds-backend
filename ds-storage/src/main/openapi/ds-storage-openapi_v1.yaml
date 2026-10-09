@@ -76,7 +76,7 @@ paths:
   /origin/config:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Retrieve a list of configured origins with their respective update strategy'
       security:
         - KBOAuth:
@@ -98,7 +98,7 @@ paths:
   /origin/stats:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Show amount of records in each origin'
       security:
         - KBOAuth:
@@ -115,7 +115,7 @@ paths:
   /origin/cleanup:
     delete:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: Delete all records for an origin that has deleted flag set.
       security:
         - KBOAuth:
@@ -143,7 +143,7 @@ paths:
   /origin/records:
     delete:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: Delete records from the storage for the origin within the timeframe.
       security:
         - KBOAuth:
@@ -184,7 +184,7 @@ paths:
   /record/{id}:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Read a specific record by ID.'
       security:
         - KBOAuth:
@@ -223,7 +223,7 @@ paths:
                   $ref: '#/components/examples/GetDSRecord'
     delete:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Mark a record with delete flag.'
       security:
         - KBOAuth:
@@ -250,7 +250,7 @@ paths:
   #  /recordTree/{id}:
   #    get:
   #      tags:
-  #        - '${project.name}'
+  #        - 'Record'
   #      summary: 'Return the record with the full record tree loaded as parent/child object. Will return throw exception if no record with the given ID exists. A record marked with delete flag will also be returned.'
   #      operationId: getRecordTree
   #      parameters:
@@ -272,7 +272,7 @@ paths:
   /record:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Create a new record or update an existing record.'
       security:
         - KBOAuth:
@@ -294,7 +294,7 @@ paths:
   /record/updateKalturaId:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Update a record with the Kaltura id. '
 
       security:
@@ -320,7 +320,7 @@ paths:
   /record/updateReferenceId:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Update a record with referenceId '
       security:
         - KBOAuth:
@@ -345,7 +345,7 @@ paths:
   /record/touch/{id}:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Touch a record, changing its mTime to the current time.'
       operationId: touchRecord
       security:
@@ -370,7 +370,7 @@ paths:
   /records:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Extract X records from a origin.'
       security:
         - KBOAuth:
@@ -427,7 +427,7 @@ paths:
   /records/minimal:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Get a stream of minimal records having a referenceId after a given lastModified time'
       security:
         - KBOAuth:
@@ -474,13 +474,13 @@ paths:
   /transcription:
     get:
       tags:
-        - '${project.name}'
+        - 'Transcription'
       summary: 'Get full transcription by fileId, this is the filename for the stream.'
       security:
         - KBOAuth:
             - any
-      operationId: getTranscription
-      description: 'Get entry from the mapping table for the referenceId. Will return empty transcriptionDto if transcription is not found.'
+      operationId: getTranscriptionByFileId
+      description: 'Get entry from the mapping table for the referenceId.'
       parameters:
         - name: fileId
           in: query
@@ -489,14 +489,16 @@ paths:
             type: string
       responses:
         '200':
-          description: 'Get the full transcription by fileId. Will return null if no transcription is found.'
+          description: 'Get the full transcription by fileId.'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transcription'
+        '404':
+          description: "No match was found for fileId."
     post:
       tags:
-        - '${project.name}'
+        - 'Transcription'
       summary: 'Create a new transcription or update an existing. Primary key is fileId.'
       security:
         - KBOAuth:
@@ -514,6 +516,74 @@ paths:
       responses:
         '204':
           description: No Content - The request has been executed correct and the server did not deliver any content.
+
+  /rerun-cluster:
+    post:
+      tags:
+        - 'RerunCluster'
+      summary: 'Save list of RerunClusterRequestDto in rerun_clusters table, update mtime in ds_records table and return number of rows inserted or updated in rerun_clusters table.'
+      operationId: updateRerunClusters
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RerunClusterRequest'
+      responses:
+        '200':
+          description: 'Return the number of rows inserted or updated in rerun_clusters table.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
+
+  /rerun-cluster/{fileId}:
+    get:
+      tags:
+        - 'RerunCluster'
+      summary: 'Return a RerunClusterResponseDto from fileId. If no match was found, it returns a HTTP code 404.'
+      security:
+        - KBOAuth:
+            - any
+      operationId: getRerunClusterByFileId
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Return the specific RerunClusterResponseDto.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RerunClusterResponse'
+        '404':
+          description: "No match was found for fileId."
+
+  /rerun-cluster/created/latest:
+    get:
+      tags:
+        - 'RerunCluster'
+      summary: 'Return latest created datetime from rerun_clusters table.'
+      security:
+        - KBOAuth:
+            - any
+      operationId: latestCreated
+      responses:
+        '200':
+          description: 'Latest created datetime from rerun_clusters table.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Created'
 
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
@@ -587,6 +657,17 @@ paths:
 
 components:
   schemas:
+    Created:
+      type: object
+      required:
+        - created
+      properties:
+        created:
+          type: string
+          format: date-time
+          description: 'Latest created datetime from rerun_clusters table. Can be null!'
+          example: '2021-01-30T08:30:00Z'
+
     Origin:
       type: object
       properties:
@@ -689,7 +770,7 @@ components:
         count:
           type: integer
           format: int32
-          description: 'Number of records updated'
+          description: 'Number of rows inserted and/or updated'
 
     Transcription:
       type: object
@@ -701,7 +782,7 @@ components:
       properties:
         fileId:
           type: string
-          description: 'Filedd that should match preservica.'
+          description: 'FileId that should match preservica.'
         fileName:
           type: string
           description: 'Filename on the filesystem. Sometimes files have extension, sometimes not.'
@@ -715,6 +796,79 @@ components:
         transcriptionLines:
           type: string
           description: 'Each line from the transcription text.Must start with seconds.mm to and from interval. Line break between each sentence. Example: 27.06 - 32.04  This is a text'
+
+    RerunClusterRequest:
+      type: object
+      required:
+        - id
+        - fileId
+        - rerunClusterId
+        - created
+        - jobId
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Unique UUID.'
+        fileId:
+          type: string
+          format: uuid
+          description: 'fileId that matches a Preservica record.'
+        rerunClusterId:
+          type: string
+          format: uuid
+          description: 'All files with this id, is a rerun of the same broadcast.'
+        created:
+          type: string
+          format: date-time
+          description: 'When was this identified as a rerun?'
+        jobId:
+          type: string
+          description: 'Id of rerunClusters matching job. Only useful for logging and debugging.'
+
+    RerunClusterResponse:
+      type: object
+      required:
+        - id
+        - fileId
+        - rerunClusterId
+        - rerunClusterIdCount
+        - created
+        - jobId
+        - inserted
+        - updated
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Unique UUID.'
+        fileId:
+          type: string
+          format: uuid
+          description: 'fileId that matches a Preservica record.'
+        rerunClusterId:
+          type: string
+          format: uuid
+          description: 'All files with this id, is a rerun of the same broadcast.'
+        rerunClusterIdCount:
+          type: integer
+          format: int32
+          description: 'How many rerunClusters has the same rerunClusterId.'
+        created:
+          type: string
+          format: date-time
+          description: 'When was this identified as a rerun?'
+        jobId:
+          type: string
+          description: 'Id of rerunClusters matching job. Only useful for logging and debugging.'
+        inserted:
+          type: string
+          format: date-time
+          description: 'When was this row inserted in rerun_clusters table?'
+        updated:
+          type: string
+          format: date-time
+          description: 'When was this row updated in rerun_clusters table?'
 
     DsRecordList:
       type: array
@@ -993,4 +1147,4 @@ components:
             admin: 'all rights'
             # Meta role controlling authorization behaviour
             public: 'allowed for all, authorization optional, implementation behaviour depending on caller roles'
-            any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'        
+            any: 'allowed for all, authorization mandatory, implementation behaviour depending on caller roles'
