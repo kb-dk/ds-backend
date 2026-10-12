@@ -274,6 +274,10 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     rerunClusterStorage.rollback();
 
     // Assert
+    assertTrue(exception.getMessage().contains("""
+                                               null value in column "file_id" of relation "rerun_clusters" violates not-null constraint
+                                               """));
+
     RerunClusterResponseDto notChangedRerunClusterResponseDto =
         rerunClusterStorage.getRerunClusterByFileId(fileId);
 
@@ -329,8 +333,7 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   }
 
   @Test
-  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnNull()
-      throws Exception {
+  public void getRerunClusterByFileId_whenFileIdDoNotExists_thenReturnNull() throws Exception {
     // Arrange
     UUID fileId = UUID.randomUUID();
 
@@ -381,7 +384,8 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated() throws Exception {
+  public void latestCreated_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated()
+      throws Exception {
     // Act
     CreatedDto createdDto = rerunClusterStorage.latestCreated();
 

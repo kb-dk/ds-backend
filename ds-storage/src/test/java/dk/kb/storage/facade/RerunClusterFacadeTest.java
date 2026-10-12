@@ -15,6 +15,7 @@ import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.storage.RecordStorageForUnitTest;
 import dk.kb.storage.storage.RerunClusterStorageForUnitTest;
 import dk.kb.storage.util.TestcontainersUtil;
+import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
@@ -123,6 +124,72 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
     // Assert
     assertNotNull(recordsCountDto);
     assertEquals(2, recordsCountDto.getCount());
+  }
+
+  @Test
+  public void updateRerunClusters_whenBatchFails_thenExistingRowIsNotChanged() throws Exception {
+    // Arrange
+    UUID fileId = UUID.randomUUID();
+    String firstJobId = "test run 1";
+    String secondJobId = "test run 2";
+    OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
+    OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
+
+    RerunClusterRequestDto firstRerunClusterRequestDto = new RerunClusterRequestDto();
+    firstRerunClusterRequestDto.setId(UUID.randomUUID());
+    firstRerunClusterRequestDto.setFileId(fileId);
+    firstRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
+    firstRerunClusterRequestDto.setCreated(firstCreated);
+    firstRerunClusterRequestDto.setJobId(firstJobId);
+
+    // Insert a row first
+    RecordsCountDto recordsCountDto =
+        RerunClusterFacade.updateRerunClusters(List.of(firstRerunClusterRequestDto));
+
+    // Baseline we want to keep
+    RerunClusterResponseDto insertedRerunClusterResponseDto =
+        RerunClusterFacade.getRerunClusterByFileId(fileId);
+
+    RerunClusterRequestDto updateInsertedRerunClusterRequestDto = new RerunClusterRequestDto();
+    updateInsertedRerunClusterRequestDto.setId(UUID.randomUUID());
+    updateInsertedRerunClusterRequestDto.setFileId(fileId);
+    updateInsertedRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
+    updateInsertedRerunClusterRequestDto.setCreated(secondCreated);
+    updateInsertedRerunClusterRequestDto.setJobId(secondJobId);
+
+    RerunClusterRequestDto invalidRerunClusterRequestDto = new RerunClusterRequestDto();
+    invalidRerunClusterRequestDto.setId(UUID.randomUUID());
+    invalidRerunClusterRequestDto.setFileId(null);
+    invalidRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
+    invalidRerunClusterRequestDto.setCreated(secondCreated);
+    invalidRerunClusterRequestDto.setJobId(secondJobId);
+
+    List<RerunClusterRequestDto> rerunClusterRequestDtoList =
+        List.of(updateInsertedRerunClusterRequestDto, invalidRerunClusterRequestDto);
+
+    // Act
+    Exception exception = assertThrows(InternalServiceException.class,
+        () -> RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList));
+
+    // Assert
+    assertTrue(exception.getMessage().contains("""
+                                               null value in column "file_id" of relation "rerun_clusters" violates not-null constraint
+                                               """));
+
+    RerunClusterResponseDto notChangedRerunClusterResponseDto =
+        RerunClusterFacade.getRerunClusterByFileId(fileId);
+
+    assertNotNull(notChangedRerunClusterResponseDto);
+    assertEquals(insertedRerunClusterResponseDto.getId(),
+        notChangedRerunClusterResponseDto.getId());
+    assertEquals(fileId, notChangedRerunClusterResponseDto.getFileId());
+    assertEquals(insertedRerunClusterResponseDto.getRerunClusterId(),
+        notChangedRerunClusterResponseDto.getRerunClusterId());
+    assertEquals(1, notChangedRerunClusterResponseDto.getRerunClusterIdCount());
+    assertEquals(firstCreated, notChangedRerunClusterResponseDto.getCreated());
+    assertEquals(firstJobId, notChangedRerunClusterResponseDto.getJobId());
+    assertEquals(notChangedRerunClusterResponseDto.getInserted(),
+        notChangedRerunClusterResponseDto.getUpdated());
   }
 
   @Test
