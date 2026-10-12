@@ -1,5 +1,6 @@
 package dk.kb.datahandler.webservice;
 
+import dk.kb.datahandler.storage.RerunClusterStorage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,9 +19,8 @@ import javax.servlet.ServletContextListener;
 
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.model.v1.JobStatusDto;
-import dk.kb.datahandler.storage.BasicStorage;
+import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.storage.JobStorage;
-import dk.kb.shared.util.DbUtil;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
@@ -73,7 +73,7 @@ public class ContextListener implements ServletContextListener {
             String configFile = (String) ctx.lookup("java:/comp/env/application-config");
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
             ServiceConfig.initialize(configFile);
-            initializeStorage();
+            initializeStorages();
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {
@@ -84,31 +84,20 @@ public class ContextListener implements ServletContextListener {
         log.info("Service initialized.");
     }
 
-    public void initializeStorage() {
+    public void initializeStorages() {
         log.info("Initializing storage");
 
-        String driver = ServiceConfig.getDBDriver();
-        String url = ServiceConfig.getDBUrl();
-        String user = ServiceConfig.getDBUserName();
-        String password = ServiceConfig.getDBPassword();
+        JobStorage.initialize(
+            ServiceConfig.getDatabaseDriver(), ServiceConfig.getJdbcUrl(),
+            ServiceConfig.getDatabaseUsername(), ServiceConfig.getDatabasePassword(),
+            ServiceConfig.getDatabaseConnectionPoolSize());
 
-        //If running jetty for development
-        if ("org.h2.Driver".equals(driver)) { //Would be slightly better if we can detect it is jetty in local environment
-            createLocalH2ForJettyEnvironment(driver, url, user, password);
-        }
+        RerunClusterStorage.initialize(
+            ServiceConfig.getP3RerunDatabaseDriver(), ServiceConfig.getP3RerunJdbcUrl(),
+            ServiceConfig.getP3RerunDatabaseUsername(), ServiceConfig.getP3RerunDatabasePassword(),
+            ServiceConfig.getP3RerunDatabaseConnectionPoolSize());
 
-        JobStorage.initialize(driver,url,user,password);
         handleRunningJobs(JobStatusDto.FAILED, "Marked as failed on startup.");
-    }
-
-    private void createLocalH2ForJettyEnvironment(String driver, String url, String user, String password) {
-        try {
-            log.info("Setting up postgres database under jetty in development mode");
-            DbUtil.runFlywayMigrations(url, driver, user, password, "public", "ds-datahandler");
-        }
-        catch(Exception e) {
-            log.error("Unable to create local postgres database for jetty environment", e);
-        }
     }
 
     /**
@@ -212,14 +201,14 @@ public class ContextListener implements ServletContextListener {
      * @param message why the job was marked stopped/failed
      */
     private void handleRunningJobs(JobStatusDto jobStatus, String message) {
-        BasicStorage.performStorageAction("Stop all running jobs", JobStorage::new, (JobStorage storage) -> {
-           storage.getJobs(null, JobStatusDto.RUNNING).forEach(jobDto -> {
+        BaseModuleStorage.performStorageAction("Stop all running jobs", JobStorage.class, storage -> {
+            ((JobStorage) storage).getJobs(null, JobStatusDto.RUNNING).forEach(jobDto -> {
                jobDto.setJobStatus(jobStatus);
                jobDto.setEndTime(OffsetDateTime.now(ZoneOffset.UTC));
                jobDto.setMessage(message);
 
                try {
-                   storage.updateJob(jobDto);
+                   ((JobStorage) storage).updateJob(jobDto);
                } catch (SQLException e) {
                    throw new RuntimeException(e);
                }

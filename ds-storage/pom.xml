@@ -34,6 +34,7 @@
         <license.url>https://www.apache.org/licenses/LICENSE-2.0.txt</license.url>
         <timestamp>${maven.build.timestamp}</timestamp>
         <project.package>dk.kb.storage</project.package>
+        <org.testcontainers.version>2.0.5</org.testcontainers.version>
     </properties>
     <dependencies>
         <dependency>
@@ -169,7 +170,10 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-junit-jupiter -->
         <dependency>
             <groupId>org.mock-server</groupId>
@@ -183,13 +187,13 @@
             <!-- Source: https://mvnrepository.com/artifact/org.testcontainers/testcontainers-postgresql -->
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-postgresql</artifactId>
-            <version>2.0.5</version>
+            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-junit-jupiter</artifactId>
-            <version>2.0.5</version>
+            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -281,8 +285,7 @@
                         <useSwaggerUI>true</useSwaggerUI>
                         <apiPackage>${project.package}.api</apiPackage>
                         <modelPackage>${project.package}.model</modelPackage>
-                        <dateLibrary>threetenbp</dateLibrary>
-                        <!--<dateLibrary>Java11</dateLibrary>-->
+                        <dateLibrary>java8</dateLibrary>
                         <implFolder>src/main/java</implFolder>
                         <invokerPackage>${project.package}</invokerPackage>
                     </configOptions>

@@ -7,12 +7,20 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added `rerun_cluster_id` and `rerun_cluster_id_count` to `SolrShield` so it is possible to use them in `Solr` search.
+
 ## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
+
+### Changed
+
+- Removed `kb-util` dependency and moved classes to `ds-shared`.
 
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
 ### Added
-- Removed kb-util dependency and moved classes to ds-shared
+
 - Added line break before `@param` in Javadocs
 - Added line break before `@return` in Javadocs
 
