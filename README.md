@@ -32,7 +32,6 @@ cd ..
 git clone git@github.com:kb-dk/ds-web.git
 cd ds-web
 git clone git@github.com:kb-dk/aegis.git
-cd ..
 docker compose up --detach --build
 ```
 
@@ -100,6 +99,13 @@ The Keycloak container may take a moment to start. If you get a connection error
 
 ```shell
 curl --request GET "http://localhost:8084/ds-datahandler/v1/oai/import/delta?oaiTarget=stage_preservica_dr_arkiv" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
+```
+
+### Fetch rerun clusters from remote database (takes 1,5 hour):
+
+```shell
+curl --request POST "http://localhost:8084/ds-datahandler/v1/rerun-cluster" \
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 

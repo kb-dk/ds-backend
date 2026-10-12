@@ -4,12 +4,12 @@ import dk.kb.datahandler.model.v1.CategoryDto;
 import dk.kb.datahandler.model.v1.JobDto;
 import dk.kb.datahandler.model.v1.JobStatusDto;
 import dk.kb.datahandler.model.v1.TypeDto;
-import dk.kb.datahandler.util.DsDatahandlerUnitTestUtil;
+import dk.kb.datahandler.util.TestcontainersUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -20,20 +20,26 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JobStorageTest extends DsDatahandlerUnitTestUtil {
-    protected static final String TEST_CLASSES_PATH = new File(Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()).getParentFile().getAbsolutePath();
+public class JobStorageTest extends TestcontainersUtil {
+    private static JobStorageForUnitTests jobStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+        jobStorage = new JobStorageForUnitTests();
+    }
+
+    @BeforeEach
+    public void beforeEach() throws SQLException {
+        jobStorage.clearTables();
     }
 
     @Test
     public void testCreateJob() throws SQLException {
         JobDto jobDto = genetrateJobDto();
-        UUID jobId = storage.createJob(jobDto);
+        UUID jobId = jobStorage.createJob(jobDto);
 
-        List<JobDto> listJobDtoFromDb = storage.getJobs(jobDto.getCategory(), jobDto.getJobStatus());
+        List<JobDto> listJobDtoFromDb = jobStorage.getJobs(jobDto.getCategory(), jobDto.getJobStatus());
 
         assertNotNull(listJobDtoFromDb);
         assertEquals(1, listJobDtoFromDb.size());
@@ -66,9 +72,9 @@ public class JobStorageTest extends DsDatahandlerUnitTestUtil {
     @Test
     public void testUpdateJob() throws SQLException {
         JobDto jobDto = genetrateJobDto();
-        UUID jobId = storage.createJob(jobDto);
+        UUID jobId = jobStorage.createJob(jobDto);
 
-        List<JobDto> listJobDtoFromDb = storage.getJobs(jobDto.getCategory(), jobDto.getJobStatus());
+        List<JobDto> listJobDtoFromDb = jobStorage.getJobs(jobDto.getCategory(), jobDto.getJobStatus());
 
         assertNotNull(listJobDtoFromDb);
         assertEquals(1, listJobDtoFromDb.size());
@@ -84,10 +90,10 @@ public class JobStorageTest extends DsDatahandlerUnitTestUtil {
         jobDtoFromDb.setRestartValue(OffsetDateTime.now(ZoneOffset.UTC));
         jobDtoFromDb.setMessage("The job has ended");
 
-        int numberOfUpdatedRows = storage.updateJob(jobDtoFromDb);
+        int numberOfUpdatedRows = jobStorage.updateJob(jobDtoFromDb);
         assertEquals(1, numberOfUpdatedRows);
 
-        List<JobDto> listUpdatedJobDtoFromDb = storage.getJobs(jobDtoFromDb.getCategory(), jobDtoFromDb.getJobStatus());
+        List<JobDto> listUpdatedJobDtoFromDb = jobStorage.getJobs(jobDtoFromDb.getCategory(), jobDtoFromDb.getJobStatus());
 
         assertNotNull(listUpdatedJobDtoFromDb);
         assertEquals(1, listUpdatedJobDtoFromDb.size());
@@ -137,13 +143,13 @@ public class JobStorageTest extends DsDatahandlerUnitTestUtil {
         jobDto.setStartTime(OffsetDateTime.now(ZoneOffset.UTC));
 
         // Verify that no job of the same type is running
-        assertFalse(storage.hasRunningJob(CategoryDto.SOLR_INDEX, source));
+        assertFalse(jobStorage.hasRunningJob(CategoryDto.SOLR_INDEX, source));
 
         // Act
-        storage.createJob(jobDto);
+        jobStorage.createJob(jobDto);
 
         // Assert
-        assertTrue(storage.hasRunningJob(CategoryDto.SOLR_INDEX, source));
+        assertTrue(jobStorage.hasRunningJob(CategoryDto.SOLR_INDEX, source));
     }
 
     @Test
@@ -159,36 +165,36 @@ public class JobStorageTest extends DsDatahandlerUnitTestUtil {
         jobDto.setStartTime(OffsetDateTime.now(ZoneOffset.UTC));
 
         // Verify that no job of the same type is running
-        assertFalse(storage.hasRunningJob(CategoryDto.KALTURA_UPLOAD, null));
+        assertFalse(jobStorage.hasRunningJob(CategoryDto.KALTURA_UPLOAD, null));
 
         // Act
-        storage.createJob(jobDto);
+        jobStorage.createJob(jobDto);
 
         // Assert
-        assertTrue(storage.hasRunningJob(CategoryDto.KALTURA_UPLOAD, null));
+        assertTrue(jobStorage.hasRunningJob(CategoryDto.KALTURA_UPLOAD, null));
     }
 
     @Test
     public void testGetJobs() throws SQLException {
         JobDto jobDto = genetrateJobDto();
         // OAI JOBS
-        storage.createJob(jobDto);
+        jobStorage.createJob(jobDto);
         jobDto.setSource("test.source2");
-        storage.createJob(jobDto);
+        jobStorage.createJob(jobDto);
         jobDto.setJobStatus(JobStatusDto.COMPLETED);
-        storage.createJob(jobDto);
+        jobStorage.createJob(jobDto);
 
         // SOLR JOBS
         jobDto.setCategory(CategoryDto.SOLR_INDEX);
-        storage.createJob(jobDto);
+        jobStorage.createJob(jobDto);
         jobDto.setJobStatus(JobStatusDto.RUNNING);
-        storage.createJob(jobDto);
+        jobStorage.createJob(jobDto);
 
-        assertEquals(5, storage.getJobs(null, null).size());
-        assertEquals(3, storage.getJobs(CategoryDto.OAI_HARVEST, null).size());
-        assertEquals(2, storage.getJobs(CategoryDto.SOLR_INDEX, null).size());
-        assertEquals(2, storage.getJobs(null, JobStatusDto.COMPLETED).size());
-        assertEquals(1, storage.getJobs(CategoryDto.OAI_HARVEST, JobStatusDto.COMPLETED).size());
+        assertEquals(5, jobStorage.getJobs(null, null).size());
+        assertEquals(3, jobStorage.getJobs(CategoryDto.OAI_HARVEST, null).size());
+        assertEquals(2, jobStorage.getJobs(CategoryDto.SOLR_INDEX, null).size());
+        assertEquals(2, jobStorage.getJobs(null, JobStatusDto.COMPLETED).size());
+        assertEquals(1, jobStorage.getJobs(CategoryDto.OAI_HARVEST, JobStatusDto.COMPLETED).size());
     }
 
     @NotNull

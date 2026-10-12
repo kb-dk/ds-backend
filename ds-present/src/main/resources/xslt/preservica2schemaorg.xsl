@@ -28,6 +28,8 @@
   <xsl:param name="startTime"/>
   <xsl:param name="endTime"/>
   <xsl:param name="referenceId"/>
+  <xsl:param name="rerun_cluster_id"/>
+  <xsl:param name="rerun_cluster_id_count"/>
   <!-- ID created by kaltura. This ID is the ID of the stream containing the newest presentation copy for this resource. Used for video and audio objects.-->
   <xsl:param name="kalturaID"/>
   <!-- Representation of when the record was last modified in the backing ds-storage. The value is a long representing time
@@ -1011,6 +1013,20 @@
           <xsl:value-of select="fileExtension"/>
         </f:string>
       </xsl:for-each>
+    </xsl:if>
+
+    <!-- rerun_cluster_id -->
+    <xsl:if test="$rerun_cluster_id != ''">
+      <f:string key="kb:rerun_cluster_id">
+        <xsl:value-of select="$rerun_cluster_id"/>
+      </f:string>
+    </xsl:if>
+
+    <!-- rerun_cluster_id_count -->
+    <xsl:if test="$rerun_cluster_id_count != ''">
+      <f:number key="kb:rerun_cluster_id_count">
+        <xsl:value-of select="$rerun_cluster_id_count"/>
+      </f:number>
     </xsl:if>
 
     <xsl:if test="$productionIdRestrictedDr != ''">
