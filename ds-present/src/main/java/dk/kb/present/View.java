@@ -372,12 +372,12 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
      * @param fileId   the fileId to find transcription
      */
     private void updateMetadataMapWithTranscription(Map<String, String> metadata, String fileId) {
+        // Default, overwritten below if a transcription is found
+        metadata.put("has_transcription", "false");
+
         if (StringUtils.isBlank(fileId)) {
             return;
         }
-
-        // Default, overwritten below if a transcription is found
-        metadata.put("has_transcription", "false");
 
         boolean useTranscriptions = ServiceConfig.getConfig().getBoolean("index.useTransriptions");
         if (!useTranscriptions) {
