@@ -77,9 +77,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.9: Added field for annotations
 1.8.10: Add rerun_cluster_id and rerun_cluster_id_count field.
 1.8.11: Change rerun_cluster_id from uuid to string because Solr has a bug with UUID in JSON response.
+1.8.12: Added field season_number_ritzau
 
   -->
-  <field name="_ds_1.8.11_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.12_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -978,6 +979,11 @@ When adding fields to this schema please have the following guidelines in mind:
   <field name="internal_season_id" type="string">
     <?description An ID for the specific season which the resource is part of.?>
     <?example     174278?>
+  </field>
+
+  <field name="season_number_ritzau" type="pint">
+    <?description The ordinal number of the season the resource belongs to, from the ritzau metadata. Distinct from internal_season_id, which is an opaque identifier.?>
+    <?example     1?>
   </field>
 
   <field name="internal_series_id" type="string">
