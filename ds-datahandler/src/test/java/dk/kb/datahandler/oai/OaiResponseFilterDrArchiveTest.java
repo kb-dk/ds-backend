@@ -18,11 +18,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class OaiResponseFilterDrArchiveTest {
+    // The DR filter derives origin (ds.tv/ds.radio) from the record metadata, so the datasource is not used
+    private static final String IGNORED_DATASOURCE = "ignored.datasource";
 
     @Test
     public void oaiDrFilter_whenOaiContainsDeletedRecords_thenTheyAreMarkedDeletedAndAllRecordsProcessed() throws ServiceException {
         DsStorageClient storage = mock(DsStorageClient.class);
-        OaiResponseFilterDrArchive filter = new OaiResponseFilterDrArchive("ds.tv", storage);
+        OaiResponseFilterDrArchive filter = new OaiResponseFilterDrArchive(IGNORED_DATASOURCE, storage);
 
         OaiRecord deletedRecord1 = new OaiRecord();
         deletedRecord1.setId("oai:io:1111");
@@ -60,7 +62,7 @@ public class OaiResponseFilterDrArchiveTest {
     @Test
     public void oaiDrFilter_whenOaiContainsTvRecord_thenItIsStoredAsTvRecord() throws ServiceException {
         DsStorageClient storage = mock(DsStorageClient.class);
-        OaiResponseFilterDrArchive filter = new OaiResponseFilterDrArchive("ds.tv", storage);
+        OaiResponseFilterDrArchive filter = new OaiResponseFilterDrArchive(IGNORED_DATASOURCE, storage);
 
         String metadata = "<Metadata schemaUri=\"http://www.pbcore.org/PBCore/PBCoreNamespace.html\">" +
                           "<publisher>dr1</publisher><formatMediaType>Moving Image</formatMediaType></Metadata>";
@@ -88,7 +90,7 @@ public class OaiResponseFilterDrArchiveTest {
     @Test
     public void oaiDrFilter_whenOaiContainsRadioRecord_thenItIsStoredAsRadioRecord() throws ServiceException {
         DsStorageClient storage = mock(DsStorageClient.class);
-        OaiResponseFilterDrArchive filter = new OaiResponseFilterDrArchive("ds.tv", storage);
+        OaiResponseFilterDrArchive filter = new OaiResponseFilterDrArchive(IGNORED_DATASOURCE, storage);
 
         String metadata = "<Metadata schemaUri=\"http://www.pbcore.org/PBCore/PBCoreNamespace.html\">" +
                           "<publisher>drp1</publisher><formatMediaType>Sound</formatMediaType></Metadata>";
