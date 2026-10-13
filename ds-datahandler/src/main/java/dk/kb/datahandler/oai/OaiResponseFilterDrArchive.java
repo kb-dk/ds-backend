@@ -55,7 +55,7 @@ public class OaiResponseFilterDrArchive extends OaiResponseFilterPreservicaSeven
                 log.info("Deleting record with id:"+oaiRecord.getId());
                 addToStorage(oaiRecord, "ds.tv", null); //Why are these not enums? 
                 addToStorage(oaiRecord, "ds.radio", null); //Why are these not enums?               
-                return;
+                continue;
             }
 
             PreservicaOaiRecordHandler handler = new PreservicaOaiRecordHandler();
