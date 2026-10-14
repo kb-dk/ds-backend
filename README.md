@@ -167,14 +167,9 @@ folder. Look in aegis README.md for a guide.
 You need to have `Flyway` installed on your pc (go down to
 `Installing on Linux`): https://www.red-gate.com/hub/product-learning/flyway/installing-and-upgrading-the-flyway-cli/
 
-Steps:
+### Commands
 
-1. Stand in root of `ds-backend` directory.
-2. Run `info` to see the current state of the database.
-3. Run `migrate` to apply the new changes.
-4. Run `info` again to check that the changes worked.
-
-### Info
+#### Info
 
 Replace everything in {curly brackets} with your own values.
 Prints the details and status information about all the migrations.
@@ -188,7 +183,7 @@ flyway -url="jdbc:postgresql://{server}:{port}/{database}" \
 info
 ```
 
-### Migrate
+#### Migrate
 
 Replace everything in {curly brackets} with your own values.
 Migrates the schema to the latest version. Flyway will create the schema history table automatically if it doesn't
@@ -203,29 +198,40 @@ flyway -url="jdbc:postgresql://{server}:{port}/{database}" \
 migrate
 ```
 
-### When using Flyway on servers
+### How Flyway SQL files are stored in a release
 
-Each module release comes with a zip file that holds the database changes (the SQL files):
-Replace {module} and {version} with your own values.
-`ds-{module}-{version}-flyway.zip`
+Each module release comes with a zip file that holds the database changes (the SQL files). The zip contains the
+migrations and `ds-{module}.build.properties` which tells you how and when this release was built.
 
-You can find this zip in two places:
+You can find this zip file (`ds-{module}-{version}-flyway.zip`) in two places:
 
-- In Nexus, next to the war file.
-- Inside the release tarball, in the top folder.
+- In `Nexus`, next to the `war` file.
+    - This is useful because you can obtain the SQL for a module release without unpacking the war.
+- Inside the release tarball (`tar.gz`), in the top folder.
+    - This is useful because the tarball keeps the migrations bound to the war they were built alongside
 
-This is useful because you can obtain the SQL for a module release without unpacking the war, and the copy inside the
-tarball keeps the migrations bound to the war they were built alongside. 
-
-
-Download the zip for one module release:
-Replace {module} and {version} with your own values.
+You can copy the zip file using maven:
 
 ```shell
 mvn dependency:copy -Dartifact=dk.kb.{module}:ds-{module}:{version}:zip:flyway
 ```
 
-The zip contains the migrations and`ds-{module}.build.properties` which tells you how and when this release was built.
+### Updating environments for each module using a database
+
+When updating `dev` environment:
+
+1. Stand in root of `ds-backend` directory.
+2. Run `info` to see the current state of the database.
+3. Run `migrate` to apply the new changes.
+4. Run `info` again to check that the changes worked.
+
+When updating `dev-release`, `stage`, and `prod` environment:
+
+1. Fetch the zip from the release following the steps from `How Flyway SQL files are stored in a release`.
+2. Stand beside the zip file.
+3. Run `info` to see the current state of the database. Change the `locations` to match the path for the SQL files.
+4. Run `migrate` to apply the new changes. Change the `locations` to match the path for the SQL files.
+5. Run `info` again to check that the changes worked. Change the `locations` to match the path for the SQL files.
 
 # Purpose
 
