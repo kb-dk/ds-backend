@@ -29,6 +29,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Fixed `referenceId` so it now correctly get inserted as `NULL` in `ds_records` table, instead as before where it got
   inserted as `blank`.
+- Fixed DR OAI filter skipping the remaining records in an OAI response page after a deleted record.
 
 ### Removed
 
