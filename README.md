@@ -162,6 +162,71 @@ video.
 If you need to deploy the services, first run `mvn clean package` or `mvn clean install` in the root of "ds-backend"
 folder. Look in aegis README.md for a guide.
 
+## Update databases with Flyway
+
+You need to have `Flyway` installed on your pc (go down to
+`Installing on Linux`): https://www.red-gate.com/hub/product-learning/flyway/installing-and-upgrading-the-flyway-cli/
+
+Steps:
+
+1. Stand in root of `ds-backend` directory.
+2. Run info to see the current state of the database.
+3. Run migrate to apply the new changes.
+4. Run info again to check that the changes worked.
+
+### Info
+
+Replace everything in {curly brackets} with your own values.
+Prints the details and status information about all the migrations.
+
+```shell
+flyway -url="jdbc:postgresql://{server}:{port}/{database}" \
+-user="{username}" \
+-schemas="{schema}" \
+-password="{password}" \
+-locations="filesystem:ds-{module}/src/main/resources/db/migration/ds-{module}" \
+info
+```
+
+### Migrate
+
+Replace everything in {curly brackets} with your own values.
+Migrates the schema to the latest version. Flyway will create the schema history table automatically if it doesn't
+exist.
+
+```shell
+flyway -url="jdbc:postgresql://{server}:{port}/{database}" \
+-user="{username}" \
+-schemas="{schema}" \
+-password="{password}" \
+-locations="filesystem:ds-{module}/src/main/resources/db/migration/ds-{module}" \
+migrate
+```
+
+### When using Flyway on servers
+
+Each module release comes with a zip file that holds the database changes (the SQL files):
+Replace {module} and {version} with your own values.
+`ds-{module}-{version}-flyway.zip`
+
+You can find this zip in two places:
+
+- In Nexus, next to the war file.
+- Inside the release tarball, in the top folder.
+
+This is useful because you can obtain the SQL for a module release without unpacking the war, and the copy inside the
+tarball keeps the migrations bound to the war they were built alongside. 
+
+
+Download the zip for one module release:
+Replace {module} and {version} with your own values.
+
+```shell
+mvn dependency:copy -Dartifact=dk.kb.{module}:ds-{module}:{version}:zip:flyway
+```
+
+The zip contains the migrations and`ds-{module}.build.properties` which tells you how and when this release was built.
+
 # Purpose
 
 The purpose of a maven-multi-project is to consolidate all versions in the parent pom so that the submodules only depend
