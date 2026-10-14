@@ -170,9 +170,9 @@ You need to have `Flyway` installed on your pc (go down to
 Steps:
 
 1. Stand in root of `ds-backend` directory.
-2. Run info to see the current state of the database.
-3. Run migrate to apply the new changes.
-4. Run info again to check that the changes worked.
+2. Run `info` to see the current state of the database.
+3. Run `migrate` to apply the new changes.
+4. Run `info` again to check that the changes worked.
 
 ### Info
 
