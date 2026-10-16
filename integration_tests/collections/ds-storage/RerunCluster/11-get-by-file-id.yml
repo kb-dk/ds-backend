@@ -1,0 +1,62 @@
+info:
+  name: GET rerun-cluster/{fileId}
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: "{{baseUrl}}/rerun-cluster/{{fileId1}}"
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+        test("status is 200", function () {
+          expect(res.getStatus()).to.equal(200);
+        });
+        test("all required fields are present", function () {
+          const b = res.getBody();
+          ["id", "fileId", "rerunClusterId", "rerunClusterIdCount",
+           "created", "jobId", "inserted", "updated"].forEach(function (f) {
+            expect(b, "missing " + f).to.have.property(f);
+            expect(b[f], f + " is null").to.not.be.null;
+          });
+        });
+        test("fileId matches the requested one", function () {
+          expect(res.getBody().fileId).to.equal(bru.getEnvVar("fileId1"));
+        });
+        test("rerunClusterId matches what was posted", function () {
+          expect(res.getBody().rerunClusterId).to.equal(bru.getEnvVar("rerunClusterId"));
+        });
+        test("uuid fields are valid UUIDs", function () {
+          const b = res.getBody();
+          expect(b.id).to.match(UUID_RE);
+          expect(b.fileId).to.match(UUID_RE);
+          expect(b.rerunClusterId).to.match(UUID_RE);
+        });
+        test("rerunClusterIdCount is a positive integer", function () {
+          const c = res.getBody().rerunClusterIdCount;
+          expect(Number.isInteger(c)).to.be.true;
+          expect(c).to.be.greaterThan(0);
+        });
+        test("date-time fields are parseable ISO-8601", function () {
+          const b = res.getBody();
+          ["created", "inserted", "updated"].forEach(function (f) {
+            expect(isNaN(Date.parse(b[f])), f + " not a date").to.be.false;
+          });
+        });
+        test("updated >= inserted", function () {
+          const b = res.getBody();
+          expect(Date.parse(b.updated)).to.be.at.least(Date.parse(b.inserted));
+        });
+
+settings:
+  encodeUrl: true

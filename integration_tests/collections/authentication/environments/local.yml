@@ -1,0 +1,20 @@
+name: local
+variables:
+  - secret: true
+    name: password
+    description: ""
+  - secret: true
+    name: username
+    description: ""
+  - secret: true
+    name: realms
+    description: ""
+  - secret: true
+    name: client_id
+    description: ""
+  - secret: true
+    name: client_secret
+    description: ""
+  - secret: true
+    name: baseUrl
+    description: ""

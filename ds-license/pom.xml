@@ -39,6 +39,7 @@
         <project.package>dk.kb.license</project.package>
         <!-- Set -DskipImplGen to skip the skeleton impl generator (see the openapi plugin below). -->
         <skipImplGen>false</skipImplGen>
+        <org.testcontainers.version>2.0.5</org.testcontainers.version>
     </properties>
     <dependencies>
         <!-- The contract: JAX-RS interfaces, DTOs and DsLicenseClient. This module implements
@@ -226,13 +227,13 @@
             <!-- Source: https://mvnrepository.com/artifact/org.testcontainers/testcontainers-postgresql -->
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-postgresql</artifactId>
-            <version>2.0.5</version>
+            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-junit-jupiter</artifactId>
-            <version>2.0.5</version>
+            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -3,6 +3,8 @@ package dk.kb.present.transform;
 import dk.kb.present.TestFiles;
 import dk.kb.present.TestUtil;
 import dk.kb.util.Resolver;
+import java.util.HashMap;
+import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -73,6 +75,70 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"kb:file_id\":\"b557f9dd-197c-47f6-b481-785d5f7accd2\""));
         assertTrue(transformedJSON.contains("\"kb:file_path\":\"b5\\/57\\/b557f9dd-197c-47f6-b481-785d5f7accd2\""));
         assertTrue(transformedJSON.contains("\"kb:file_extension\":\"mp3\""));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenRerunClusterExists_thenRerunClusterFieldsIsPopulated()
+        throws IOException {
+        // Arrange
+        UUID rerunClusterId = UUID.randomUUID();
+        Integer rerunClusterIdCount = 2;
+        Map<String, String> map = new HashMap<>();
+        map.put("rerun_cluster_id", rerunClusterId.toString());
+        map.put("rerun_cluster_id_count", rerunClusterIdCount.toString());
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
+            TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertTrue(transformedJSON.contains("\"kb:rerun_cluster_id\":\"" + rerunClusterId + "\""));
+        assertTrue(
+            transformedJSON.contains("\"kb:rerun_cluster_id_count\":" + rerunClusterIdCount));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenRerunClusterDoesNotExists_thenRerunClusterFieldsDoesNotExits()
+        throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
+            TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertFalse(transformedJSON.contains("\"kb:rerun_cluster_id\":"));
+        assertFalse(transformedJSON.contains("\"kb:rerun_cluster_id_count\":"));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenTranscriptionExists_thenTranscriptionFieldIsPopulatedAndHasTranscriptionIsTrue() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+        map.put("transcription", "Dette er en transcription");
+        map.put("has_transcription", "true");
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertTrue(transformedJSON.contains("\"kb:transcription\":\"Dette er en transcription\""));
+        assertTrue(transformedJSON.contains("\"kb:has_transcription\":\"true\""));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenTranscriptionDoesNotExists_thenTranscriptionFieldDoesNotExistAndHasTranscriptionIsFalse() throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+        map.put("has_transcription", "false");
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertFalse(transformedJSON.contains("\"kb:transcription\":"));
+        assertTrue(transformedJSON.contains("\"kb:has_transcription\":\"false\""));
     }
 
     @Test
@@ -358,6 +424,28 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
         Assertions.assertTrue(transformedJSON.contains("\"kb:format_identifier_ritzau\":\"81213310\"," +
                 "\"kb:format_identifier_nielsen\":\"101|20220526|140000|180958|0|9629d8b8-b751-450f-bfd7-d2510910bb34|69\"," ));
+    }
+
+    @Test
+    void schemaOrgTransformation_whenSeasonNumberRitzauExist_thenSeasonNumberRitzauExistInSchemaOrgData() throws IOException {
+        Assertions.assertTrue(TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_0e89456b)
+                .contains("\"kb:season_number_ritzau\":\"7\""));
+        Assertions.assertTrue(TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e8c664f9)
+                .contains("\"kb:season_number_ritzau\":\"1\""));
+    }
+
+    @Test
+    void schemaOrgTransformation_whenSeasonNumberRitzauIsZero_thenSeasonNumberRitzauDoNotExistInSchemaOrgData() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_CORRECT_PRESENTATION);
+
+        Assertions.assertFalse(transformedJSON.contains("season_number_ritzau"));
+    }
+
+    @Test
+    void schemaOrgTransformation_whenSeasonNumberRitzauDoNotExists_thenSeasonNumberRitzauDoNotExistInSchemaOrgData() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3945e2d1);
+
+        Assertions.assertFalse(transformedJSON.contains("season_number_ritzau"));
     }
 
     @Test

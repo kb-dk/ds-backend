@@ -7,7 +7,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
+
+## [8.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.0) - 2026-10-13
+
 ## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
+
+### Changed
+
+- Removed `kb-util` dependency and moved classes to `ds-shared`.
 
 ## [6.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v6.0.0) - 2026-08-19
 
@@ -17,7 +25,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added line break before `@return` in Javadocs
 
 ### Changed
-- Removed kb-util dependency and moved classes to ds-shared
+
 - Formatted `openapi` file.
 - Added hyphen between `human-readable` in `pom.xml`.
 - Formatted `pom.xml`.
