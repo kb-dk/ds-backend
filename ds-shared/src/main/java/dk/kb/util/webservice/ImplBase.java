@@ -15,6 +15,7 @@
 package dk.kb.util.webservice;
 
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 import org.slf4j.Logger;
@@ -108,13 +109,21 @@ public abstract class ImplBase {
      */
     private ServiceException handleException(Exception e, boolean logWarning, boolean wrapServiceExceptions) {
         final String call = getCallDetails();
-        if (logWarning || !(e instanceof ServiceException)) {
+        if (e instanceof NotFoundServiceException) {
+            // Expected outcome (resource does not exist), only visible with debug logging
+            log.debug("Not found processing " + call, e);
+        }
+        else if (logWarning || !(e instanceof ServiceException)) {
             log.warn("Exception processing " + call, e);
         }
 
         final String eMessage = "Exception processing " + call + ": " + e.getMessage();
         if (e instanceof ServiceException) {
             ServiceException se = (ServiceException)e;
+            // Keep NotFoundServiceException as-is, so its type and 404 status survive
+            if (se instanceof NotFoundServiceException) {
+                return se;
+            }
             return wrapServiceExceptions ? se.extend(eMessage) : se;
         }
         // Unforeseen exception (should not happen). Wrap in internal service exception

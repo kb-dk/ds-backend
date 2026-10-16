@@ -220,13 +220,8 @@ public class RightsModuleFacade {
                 try {
                     RestrictedIdOutputDto restrictedIdOutputDto = getRestrictedId(restrictedIdInputDto.getIdValue(), restrictedIdInputDto.getIdType(), restrictedIdInputDto.getPlatform());
                     updateRestrictedId(restrictedIdOutputDto.getId(), touchDsStorageRecord, restrictedIdInputDto);
-                } catch (InternalServiceException exception) {
-                    // If the root exception is NotFoundServiceException, then create the restricted id
-                    if (exception.getCause().getCause() instanceof NotFoundServiceException) {
-                        createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
-                    } else {
-                        throw exception;
-                    }
+                } catch (NotFoundServiceException exception) {
+                    createRestrictedId(touchDsStorageRecord, restrictedIdInputDto);
                 }
 
                 // If no exception was thrown, we know that the restriction was created

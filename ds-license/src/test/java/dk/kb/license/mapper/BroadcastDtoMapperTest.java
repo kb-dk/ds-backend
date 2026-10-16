@@ -1,6 +1,7 @@
 package dk.kb.license.mapper;
 
 import dk.kb.license.model.v1.BroadcastDto;
+import java.time.Instant;
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,18 +21,15 @@ public class BroadcastDtoMapperTest {
     String dsId = "ds.tv:oai:io:d5ec7b20-c1f2-491e-a2cb-f143683a40f8";
     String title = "P2 Radioavis";
 
-    String startTime = "Thu Apr 05 08:00:00 CEST 2018";
-    Date startTimeDate = null;
+    String startTime = "2018-04-05T06:00:00Z";
 
-    String endTime = "Thu Apr 05 08:06:00 CEST 2018";
-    Date endTimeDate = null;
-
+    String endTime = "2018-04-05T06:06:00Z";
     SolrDocument solrDocument;
 
     @BeforeEach
     public void setUp() throws ParseException {
-        startTimeDate = new SimpleDateFormat(parseDateFormat, Locale.ROOT).parse(startTime);
-        endTimeDate = new SimpleDateFormat(parseDateFormat, Locale.ROOT).parse(endTime);
+        Date startTimeDate = Date.from(Instant.parse(startTime));
+        Date endTimeDate = Date.from(Instant.parse(endTime));
 
         solrDocument = new SolrDocument();
         solrDocument.put("id", dsId);

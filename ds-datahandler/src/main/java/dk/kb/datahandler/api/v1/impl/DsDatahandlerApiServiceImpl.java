@@ -4,6 +4,7 @@ import dk.kb.datahandler.api.v1.DsDatahandlerApi;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.facade.DsDatahandlerFacade;
 import dk.kb.datahandler.model.v1.OaiTargetDto;
+import dk.kb.datahandler.model.v1.RecordsCountDto;
 import dk.kb.datahandler.model.v1.TypeDto;
 import dk.kb.datahandler.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.ImplBase;
@@ -21,7 +22,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Providers;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -151,7 +156,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     @Override
     public void kalturaValidate(Boolean dryRun) {
         try {
-            DsDatahandlerFacade.kalturaValidate(getCurrentUsername(), Boolean.TRUE.equals(dryRun));
+            DsDatahandlerFacade.kalturaValidate(Boolean.TRUE.equals(dryRun));
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -166,13 +171,28 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
              throw handleException(e);
          }                       
      }
-    
+
+    /**
+     * Returns new rows from remote p3rerun database in clusters table, then calls ds-storage via DsStorageClient
+     * that save the rows in our rerun_clusters table, update mtime in ds_records table and return number of rows
+     * inserted or updated in rerun_clusters table in a `RecordsCountDto` object.
+     *
+     * @return RecordsCountDto number of rows inserted or updated
+     */
+    @Override
+    public RecordsCountDto updateRerunClusters() {
+        try {
+            return DsDatahandlerFacade.getRerunClusters();
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
     @Override
     public void buildSuggest() {
-      DsDatahandlerFacade.buildSuggest();
-        
+        DsDatahandlerFacade.buildSuggest();
     }
-    
+
     /**
      * Gets the name of the current user from the OAuth token.
      * @return
@@ -189,5 +209,5 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
             return token.getName();
         }
         return UNKNOWN;
-    }    
+    }
 }

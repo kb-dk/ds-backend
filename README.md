@@ -32,7 +32,6 @@ cd ..
 git clone git@github.com:kb-dk/ds-web.git
 cd ds-web
 git clone git@github.com:kb-dk/aegis.git
-cd ..
 docker compose up --detach --build
 ```
 
@@ -103,6 +102,13 @@ curl --request GET "http://localhost:8084/ds-datahandler/v1/oai/import/delta?oai
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
+### Fetch rerun clusters from remote database (takes 1,5 hour):
+
+```shell
+curl --request POST "http://localhost:8084/ds-datahandler/v1/rerun-cluster" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
+```
+
 ### Index records in Solr (we only have one collection (read and write in one))
 
 tv
@@ -155,6 +161,77 @@ video.
 
 If you need to deploy the services, first run `mvn clean package` or `mvn clean install` in the root of "ds-backend"
 folder. Look in aegis README.md for a guide.
+
+## Update databases with Flyway
+
+You need to have `Flyway` installed on your pc (go down to
+`Installing on Linux`): https://www.red-gate.com/hub/product-learning/flyway/installing-and-upgrading-the-flyway-cli/
+
+### Commands
+
+#### Info
+
+Replace everything in {curly brackets} with your own values.
+Prints the details and status information about all the migrations.
+
+```shell
+flyway -url="jdbc:postgresql://{server}:{port}/{database}" \
+-user="{username}" \
+-schemas="{schema}" \
+-password="{password}" \
+-locations="filesystem:ds-{module}/src/main/resources/db/migration/ds-{module}" \
+info
+```
+
+#### Migrate
+
+Replace everything in {curly brackets} with your own values.
+Migrates the schema to the latest version. Flyway will create the schema history table automatically if it doesn't
+exist.
+
+```shell
+flyway -url="jdbc:postgresql://{server}:{port}/{database}" \
+-user="{username}" \
+-schemas="{schema}" \
+-password="{password}" \
+-locations="filesystem:ds-{module}/src/main/resources/db/migration/ds-{module}" \
+migrate
+```
+
+### How Flyway SQL files are stored in a release
+
+Each module release comes with a zip file that holds the database changes (the SQL files). The zip contains the
+migrations and `ds-{module}.build.properties` which tells you how and when this release was built.
+
+You can find this zip file (`ds-{module}-{version}-flyway.zip`) in two places:
+
+- In `Nexus`, next to the `war` file.
+    - This is useful because you can obtain the SQL for a module release without unpacking the war.
+- Inside the release tarball (`tar.gz`), in the top folder.
+    - This is useful because the tarball keeps the migrations bound to the war they were built alongside
+
+You can copy the zip file using maven:
+
+```shell
+mvn dependency:copy -Dartifact=dk.kb.{module}:ds-{module}:{version}:zip:flyway
+```
+
+### Updating environments for each module using a database
+
+When updating `dev` environment:
+
+1. Stand in root of `ds-backend` directory.
+2. Run `info` to see the current state of the database.
+3. Run `migrate` to apply the new changes.
+4. Run `info` again to check that the changes worked.
+
+When updating `dev-release`, `stage`, and `prod` environment:
+
+1. Fetch the zip from the release following the steps from `How Flyway SQL files are stored in a release`.
+2. Stand beside the zip file.
+3. Run `info` to see the current state of the database. Change the `locations` to match the path for the SQL files.
+4. Run `migrate` to apply the new changes. Change the `locations` to match the path for the SQL files.
+5. Run `info` again to check that the changes worked. Change the `locations` to match the path for the SQL files.
 
 # Purpose
 

@@ -3,7 +3,7 @@ package dk.kb.license.storage;
 import dk.kb.license.model.v1.AuditLogEntryOutputDto;
 import dk.kb.license.model.v1.ChangeTypeEnumDto;
 import dk.kb.license.model.v1.ObjectTypeEnumDto;
-import dk.kb.license.util.DsLicenseUnitTestUtil;
+import dk.kb.license.util.TestcontainersUtil;
 import dk.kb.license.webservice.KBAuthorizationInterceptor;
 import org.apache.cxf.jaxrs.utils.JAXRSUtils;
 import org.apache.cxf.message.MessageImpl;
@@ -26,20 +26,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
 /**
- * Unittest class for thestorage.
- * All tests create and usePostgres database in the directory: target/h2
+ * Unittest class for LicenseStorage.
+ * All tests create and use Postgres database.
  * The directory will be deleted before the first test-method is called.
  * Each test-method will delete all entries in the database, but keep the database tables.
- * Currently, the directory is not deleted after the tests have run. This is useful as you can
- * open and open the database and see what the unit-tests did.
  */
-public class AuditLogModuleStorageTestDsLicense extends DsLicenseUnitTestUtil {
+public class AuditLogModuleStorageTestDsLicense extends TestcontainersUtil {
     private static final Logger log = LoggerFactory.getLogger(AuditLogModuleStorageTestDsLicense.class);
+    private static AuditLogModuleStorageForUnitTest auditStorage = null;
 
     @BeforeAll
     public static void beforeClass() throws Exception {
         setupDatabaseForClass(MethodHandles.lookup().lookupClass());
+        auditStorage = new AuditLogModuleStorageForUnitTest();
     }
+
     /**
      * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
      * The facade class is responsible for committing transactions. So clean up between unittests.
