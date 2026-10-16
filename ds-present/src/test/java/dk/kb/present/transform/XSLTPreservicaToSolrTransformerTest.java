@@ -705,6 +705,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    public void solrTransformation_whenMultipleAnnotations_thenAnnotationsJoined() throws IOException {
+        String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_TWO_ANNOTATIONS);
+        assertFalse(transformedJSON.contains("internal_transformation_error"), "Transformation failed: " + transformedJSON);
+        assertTrue(transformedJSON.contains("\"annotation\":\"Dette indhold blev sendt i dansk radio under den tyske besættelse af Danmark, hvor Danmarks Radio ikke havde redaktionel frihed. Oprindeligt udsendelses tidspunkt er ukendt, det angivne tidspunkt kan derfor være ukorrekt.; Anden annotation.\""));
+    }
+
+    @Test
     public void testIKKWithAnnoation() throws IOException {
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_ANNOTATION);
         assertTrue(transformedJSON.contains("\"annotation\":\"Dette indhold blev sendt i dansk radio under den tyske besættelse af Danmark, hvor Danmarks Radio ikke havde redaktionel frihed. Oprindeligt udsendelses tidspunkt er ukendt, det angivne tidspunkt kan derfor være ukorrekt.\""));

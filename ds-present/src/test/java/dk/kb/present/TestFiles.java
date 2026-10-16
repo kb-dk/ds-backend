@@ -112,4 +112,5 @@ public class TestFiles {
     public static final String PVICA_NO_DR_ARCHIVE_SUPPLEMENTARY_RIGHTS_METADATA_OR_NIELSEN_OR_TVMETER_RECORD_f0461362 = "internal_test_files/preservica7/no_dr_archive_supplementary_rights_metadata_or_nielsen_or_tvmeter/f0461362-304c-4e31-9192-527f5b8b9a85.xml";
 
     public static final String PVICA_WITH_ANNOTATION = "internal_test_files/homemade/ikk_with_annotation.xml";
+    public static final String PVICA_WITH_TWO_ANNOTATIONS = "internal_test_files/homemade/ikk_with_two_annotations.xml";
 }

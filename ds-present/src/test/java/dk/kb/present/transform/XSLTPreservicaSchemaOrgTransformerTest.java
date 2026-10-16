@@ -711,6 +711,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
+    public void transformation_whenMultipleAnnotations_thenAnnotationsJoined() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_TWO_ANNOTATIONS);
+        assertFalse(transformedJSON.contains("kb:transformation_error"), "Transformation failed: " + transformedJSON);
+        assertTrue(transformedJSON.contains("\"annotation\":\"Dette indhold blev sendt i dansk radio under den tyske besættelse af Danmark, hvor Danmarks Radio ikke havde redaktionel frihed. Oprindeligt udsendelses tidspunkt er ukendt, det angivne tidspunkt kan derfor være ukorrekt.; Anden annotation.\""));
+    }
+
+    @Test
     public void transformationWithAnnotation() throws IOException {
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_ANNOTATION);
         log.info(transformedJSON);

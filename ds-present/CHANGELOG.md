@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Records with more than one annotation failed transformation with `duplicate key value {annotation}` and were indexed
+  as transformation errors. The annotations are now joined with `; ` in the `annotation` field. Affected records need a
+  reindex.
+
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
 
 ## [8.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.0) - 2026-10-13

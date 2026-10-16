@@ -643,12 +643,14 @@
       </xsl:choose>
     </xsl:for-each>
 
-    <!-- only extract non empty annotations -->
-    <xsl:for-each select="./pbcoreInstantiation/pbcoreAnnotation[normalize-space(annotation) != '']">
+    <!-- only extract non empty annotations. The key can only be written once and the solr field is single valued,
+         so multiple annotations are joined with '; ' -->
+    <xsl:variable name="annotations" select="./pbcoreInstantiation/pbcoreAnnotation/annotation[normalize-space(.) != '']"/>
+    <xsl:if test="exists($annotations)">
       <f:string key="annotation">
-        <xsl:value-of select="normalize-space(./annotation)"/>
+        <xsl:value-of select="string-join($annotations ! normalize-space(.), '; ')"/>
       </f:string>
-    </xsl:for-each>
+    </xsl:if>
 
     <!-- Extract start and end times for broadcast  and calculate duration -->
     <xsl:if test="$startTime != '' and $endTime != ''">
