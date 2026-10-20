@@ -1,6 +1,7 @@
 package dk.kb.datahandler.webservice;
 
 import dk.kb.datahandler.storage.RerunClusterStorage;
+import dk.kb.datahandler.storage.SummaryStorage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -112,6 +113,11 @@ public class ContextListener implements ServletContextListener {
             ServiceConfig.getP3RerunDatabaseDriver(), ServiceConfig.getP3RerunJdbcUrl(),
             ServiceConfig.getP3RerunDatabaseUsername(), ServiceConfig.getP3RerunDatabasePassword(),
             ServiceConfig.getP3RerunDatabaseConnectionPoolSize());
+
+        SummaryStorage.initialize(ServiceConfig.getP3SummariesDatabaseDriver(),
+            ServiceConfig.getP3SummariesJdbcUrl(), ServiceConfig.getP3SummariesDatabaseUsername(),
+            ServiceConfig.getP3SummariesDatabasePassword(),
+            ServiceConfig.getP3SummariesDatabaseConnectionPoolSize());
 
         handleRunningJobs(JobStatusDto.FAILED, "Marked as failed on startup.");
     }

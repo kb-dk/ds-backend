@@ -20,9 +20,11 @@ import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.storage.JobStorageForUnitTests;
 import dk.kb.datahandler.storage.RerunClusterStorage;
+import dk.kb.datahandler.storage.SummaryStorage;
 import dk.kb.datahandler.util.TestcontainersUtil;
 import dk.kb.datahandler.webservice.KBAuthorizationInterceptor;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
+import dk.kb.storage.model.v1.SummaryRequestDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
@@ -196,6 +198,153 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
           // Act/Assert
           Exception exception = Assertions.assertThrows(InternalServiceException.class,
               () -> DsDatahandlerFacade.getRerunClusters());
+
+          assertEquals(expectedMessage, exception.getMessage());
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void updateSummaries_whenGivenSummaryRequestDtoList_thenReturnHowManyRowsWasInsertedOrUpdated() {
+    // Arrange
+    dk.kb.storage.model.v1.CreatedDto createdDto = new dk.kb.storage.model.v1.CreatedDto();
+    createdDto.setCreated(OffsetDateTime.parse("2026-03-20T00:00:00.001Z"));
+
+    UUID id = UUID.randomUUID();
+    UUID fileId = UUID.randomUUID();
+    String summary = "Fin beskrivelse.";
+    OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
+    String jobId = "test run 1";
+
+    SummaryRequestDto summaryRequestDto = new SummaryRequestDto();
+    summaryRequestDto.setId(id);
+    summaryRequestDto.setFileId(fileId);
+    summaryRequestDto.setSummary(summary);
+    summaryRequestDto.setCreated(created);
+    summaryRequestDto.setJobId(jobId);
+
+    List<SummaryRequestDto> summaryRequestDtoList = List.of(summaryRequestDto);
+
+    String username = "unittest";
+    Integer count = 1;
+    dk.kb.storage.model.v1.RecordsCountDto recordsCountDto =
+        new dk.kb.storage.model.v1.RecordsCountDto();
+    recordsCountDto.setCount(count);
+
+    DsStorageClient dsStorageClient = Mockito.mock(DsStorageClient.class);
+
+    MessageImpl message = new MessageImpl();
+    AccessToken mockedToken = mock(AccessToken.class);
+    when(mockedToken.getName()).thenReturn(username);
+    message.put(KBAuthorizationInterceptor.ACCESS_TOKEN, mockedToken);
+
+    try (MockedStatic<JAXRSUtils> mockedJAXRSUtils = mockStatic(JAXRSUtils.class)) {
+      mockedJAXRSUtils.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+      try (MockedStatic<DsDatahandlerFacade> mockedDsDatahandlerFacade = mockStatic(
+          DsDatahandlerFacade.class, Mockito.CALLS_REAL_METHODS)) {
+        mockedDsDatahandlerFacade.when(DsDatahandlerFacade::getDsStorageApiClient)
+            .thenReturn(dsStorageClient);
+
+        try (MockedConstruction<SummaryStorage> mockedConstruction = Mockito.mockConstruction(
+            SummaryStorage.class, (mock, context) -> Mockito.when(mock.getSummaries(any()))
+                .thenReturn(summaryRequestDtoList))) {
+
+          Mockito.when(dsStorageClient.latestCreatedSummary()).thenReturn(createdDto);
+          Mockito.when(dsStorageClient.updateSummaries(summaryRequestDtoList))
+              .thenReturn(recordsCountDto);
+
+          // Act
+          RecordsCountDto returnedRecordsCountDto = DsDatahandlerFacade.getSummaries();
+
+          // Assert
+          assertNotNull(returnedRecordsCountDto);
+          assertEquals(count, returnedRecordsCountDto.getCount());
+
+          List<JobDto> actualJobDtoList = DsDatahandlerFacade.getJobs(null, null);
+          assertEquals(1, actualJobDtoList.size());
+
+          JobDto returnedJobDto = actualJobDtoList.get(0);
+
+          assertNotNull(returnedJobDto.getId());
+          assertEquals(TypeDto.DELTA, returnedJobDto.getType());
+          assertEquals(CategoryDto.SUMMARIES, returnedJobDto.getCategory());
+          assertNull(returnedJobDto.getSource());
+          assertEquals(username, returnedJobDto.getCreatedBy());
+          assertEquals(JobStatusDto.COMPLETED, returnedJobDto.getJobStatus());
+          assertNull(returnedJobDto.getErrorCorrelationId());
+          assertNull(returnedJobDto.getMessage());
+          assertEquals(createdDto.getCreated(), returnedJobDto.getModifiedTimeFrom());
+
+          assertNotNull(returnedJobDto.getStartTime());
+          assertEquals(OffsetDateTime.class, returnedJobDto.getStartTime().getClass());
+          assertNotNull(returnedJobDto.getEndTime());
+          assertEquals(OffsetDateTime.class, returnedJobDto.getEndTime().getClass());
+          assertEquals(count, returnedJobDto.getNumberOfRecords());
+          assertNull(returnedJobDto.getRestartValue());
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void updateSummaries_whenGivenSummaryRequestDtoListDoNotMatchSavedSummary_thenThrowInternalServiceException() {
+    // Arrange
+    dk.kb.storage.model.v1.CreatedDto createdDto = new dk.kb.storage.model.v1.CreatedDto();
+    createdDto.setCreated(OffsetDateTime.parse("2026-03-20T00:00:00.001Z"));
+
+    UUID id = UUID.randomUUID();
+    UUID fileId = UUID.randomUUID();
+    String summary = "Fin beskrivelse.";
+    OffsetDateTime created = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
+    String jobId = "test run 1";
+
+    SummaryRequestDto summaryRequestDto = new SummaryRequestDto();
+    summaryRequestDto.setId(id);
+    summaryRequestDto.setFileId(fileId);
+    summaryRequestDto.setSummary(summary);
+    summaryRequestDto.setCreated(created);
+    summaryRequestDto.setJobId(jobId);
+
+    List<SummaryRequestDto> summaryRequestDtoList = List.of(summaryRequestDto);
+
+    String username = "unittest";
+    Integer count = 0;
+    dk.kb.storage.model.v1.RecordsCountDto recordsCountDto =
+        new dk.kb.storage.model.v1.RecordsCountDto();
+    recordsCountDto.setCount(count);
+
+    DsStorageClient dsStorageClient = Mockito.mock(DsStorageClient.class);
+
+    MessageImpl message = new MessageImpl();
+    AccessToken mockedToken = mock(AccessToken.class);
+    when(mockedToken.getName()).thenReturn(username);
+    message.put(KBAuthorizationInterceptor.ACCESS_TOKEN, mockedToken);
+
+    try (MockedStatic<JAXRSUtils> mockedJAXRSUtils = mockStatic(JAXRSUtils.class)) {
+      mockedJAXRSUtils.when(JAXRSUtils::getCurrentMessage).thenReturn(message);
+      try (MockedStatic<DsDatahandlerFacade> mockedDsDatahandlerFacade = mockStatic(
+          DsDatahandlerFacade.class, Mockito.CALLS_REAL_METHODS)) {
+        mockedDsDatahandlerFacade.when(DsDatahandlerFacade::getDsStorageApiClient)
+            .thenReturn(dsStorageClient);
+
+        try (MockedConstruction<SummaryStorage> mockedConstruction = Mockito.mockConstruction(
+            SummaryStorage.class, (mock, context) -> Mockito.when(mock.getSummaries(any()))
+                .thenReturn(summaryRequestDtoList))) {
+
+          Mockito.when(dsStorageClient.latestCreatedSummary()).thenReturn(createdDto);
+          Mockito.when(dsStorageClient.updateSummaries(summaryRequestDtoList))
+              .thenReturn(recordsCountDto);
+
+          String expectedMessage = "Expected to save 1 summaries, but 0 were saved";
+
+          // Act/Assert
+          Exception exception = Assertions.assertThrows(InternalServiceException.class,
+              () -> DsDatahandlerFacade.getSummaries());
 
           assertEquals(expectedMessage, exception.getMessage());
         } catch (Exception e) {

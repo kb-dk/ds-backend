@@ -578,6 +578,26 @@ public class ServiceConfig {
         return serviceConfig.getValue("db_p3rerun.connectionPoolSize", Integer.class);
     }
 
+    public static String getP3SummariesDatabaseDriver() {
+        return serviceConfig.getValue("db_p3summaries.driver", String.class);
+    }
+
+    public static String getP3SummariesJdbcUrl() {
+        return serviceConfig.getValue("db_p3summaries.url", String.class);
+    }
+
+    public static String getP3SummariesDatabaseUsername() {
+        return serviceConfig.getValue("db_p3summaries.username", String.class);
+    }
+
+    public static String getP3SummariesDatabasePassword() {
+        return serviceConfig.getValue("db_p3summaries.password", String.class);
+    }
+
+    public static int getP3SummariesDatabaseConnectionPoolSize() {
+        return serviceConfig.getValue("db_p3summaries.connectionPoolSize", Integer.class);
+    }
+
     /**
      * Set (or overwrite) a single configuration property at runtime, without touching any configuration file
      * and without restarting the service. See {@code ds-storage}'s {@code ServiceConfig} for the full rationale.

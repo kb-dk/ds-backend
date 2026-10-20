@@ -585,6 +585,74 @@ paths:
               schema:
                 $ref: '#/components/schemas/Created'
 
+  /summaries:
+    post:
+      tags:
+        - 'Summary'
+      summary: 'Save list of SummaryRequestDto in summaries table, update mtime in ds_records table and return number of rows inserted or updated in summaries table.'
+      operationId: updateSummaries
+      security:
+        - KBOAuth:
+            - any
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SummaryRequest'
+      responses:
+        '200':
+          description: 'Return the number of rows inserted or updated in summaries table.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordsCount'
+
+  /summary/{fileId}:
+    get:
+      tags:
+        - 'Summary'
+      summary: 'Return a SummaryResponseDto from fileId. If no match was found, it returns a HTTP code 404.'
+      security:
+        - KBOAuth:
+            - any
+      operationId: getSummaryByFileId
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Return the specific SummaryResponseDto.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryResponse'
+        '404':
+          description: "No match was found for fileId."
+
+  /summary/created/latest:
+    get:
+      tags:
+        - 'Summary'
+      summary: 'Return latest created datetime from summaries table.'
+      security:
+        - KBOAuth:
+            - any
+      operationId: latestCreatedSummary
+      responses:
+        '200':
+          description: 'Latest created datetime from summaries table.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Created'
+
   # The ping service should be in all projects, should not do any advanced processing
   # and should respond quickly with a simple message, e.g. "pong".
   #
@@ -869,6 +937,72 @@ components:
           type: string
           format: date-time
           description: 'When was this row updated in rerun_clusters table?'
+
+    SummaryRequest:
+      type: object
+      required:
+        - id
+        - fileId
+        - summary
+        - created
+        - jobId
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Unique UUID.'
+        fileId:
+          type: string
+          format: uuid
+          description: 'fileId that matches a Preservica record.'
+        summary:
+          type: string
+          description: 'AI generated summary of the broadcast.'
+        created:
+          type: string
+          format: date-time
+          description: 'When was this summary created?'
+        jobId:
+          type: string
+          description: 'Id of summaries matching job. Only useful for logging and debugging.'
+
+    SummaryResponse:
+      type: object
+      required:
+        - id
+        - fileId
+        - summary
+        - created
+        - jobId
+        - inserted
+        - updated
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Unique UUID.'
+        fileId:
+          type: string
+          format: uuid
+          description: 'fileId that matches a Preservica record.'
+        summary:
+          type: string
+          description: 'AI generated summary of the broadcast.'
+        created:
+          type: string
+          format: date-time
+          description: 'When was this summary created?'
+        jobId:
+          type: string
+          description: 'Id of summaries matching job. Only useful for logging and debugging.'
+        inserted:
+          type: string
+          format: date-time
+          description: 'When was this row inserted in summaries table?'
+        updated:
+          type: string
+          format: date-time
+          description: 'When was this row updated in summaries table?'
 
     DsRecordList:
       type: array

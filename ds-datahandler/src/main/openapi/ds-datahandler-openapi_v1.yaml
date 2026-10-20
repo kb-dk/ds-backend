@@ -305,7 +305,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'Returns new rows from remote p3summaries database in summaries table, then calls ds-storage via DsStorageClient that save the rows in our summaries table, update mtime in ds_records table and return number of rows inserted or updated in summaries table in a RecordsCountDto object.'
+      summary: 'Returns new rows from remote p3summaries database in summaries table, then calls ds-storage via DsStorageClient that save the rows in our summaries table, update mtime in ds_records table and return number of rows inserted or updated in summaries table in a `RecordsCountDto` object.'
       security:
         - KBOAuth:
             - any

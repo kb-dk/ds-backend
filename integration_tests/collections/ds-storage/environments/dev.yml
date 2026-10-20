@@ -16,3 +16,7 @@ variables:
     value: 00000000-0000-4000-8000-000000000000
   - name: created
     value: "2026-01-30T08:30:00Z"
+  - name: summary1
+    value: "Fin beskrivelse 1."
+  - name: summary2
+    value: "Fin beskrivelse 2."

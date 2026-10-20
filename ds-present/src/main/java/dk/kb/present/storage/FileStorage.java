@@ -15,6 +15,7 @@
 package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
+import dk.kb.storage.model.v1.SummaryResponseDto;
 import dk.kb.util.webservice.exception.ForbiddenServiceException;
 import dk.kb.storage.model.v1.DsRecordDto;
 
@@ -304,6 +305,11 @@ public class FileStorage implements Storage {
 
     @Override
     public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
+        return null;
+    }
+
+    @Override
+    public SummaryResponseDto getSummaryByFileId(UUID fileId) {
         return null;
     }
 

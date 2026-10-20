@@ -540,6 +540,34 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void transformWithInjections_whenSummaryExists_thenSummaryFieldsIsPopulated()
+        throws IOException {
+        // Arrange
+        String summary = "Fin beskrivelse.";
+        Map<String, String> map = new HashMap<>();
+        map.put("summary", summary);
+
+        // Act
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+
+        // Assert
+        assertTrue(solrDocument.contains("\"summary\":\"" + summary + "\""));
+    }
+
+    @Test
+    void transformWithInjections_whenSummaryDoesNotExists_thenSummaryFieldsDoesNotExit()
+        throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+
+        // Act
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+
+        // Assert
+        assertFalse(solrDocument.contains("\"summary\""));
+    }
+
+    @Test
     void testOriginatesFromDoms(){
         assertPvicaContains(TestFiles.PVICA_DOMS_MIG_e2dfb840, "\"originates_from\":\"DOMS\"");
     }

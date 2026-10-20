@@ -2,6 +2,7 @@ package dk.kb.storage.webservice;
 
 import dk.kb.shared.webservice.CustomJacksonJsonProvider;
 import dk.kb.storage.api.v1.impl.RerunClusterApiServiceImpl;
+import dk.kb.storage.api.v1.impl.SummaryApiServiceImpl;
 import dk.kb.storage.api.v1.impl.TranscriptionApiServiceImpl;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ public class Application_v1 extends javax.ws.rs.core.Application {
                 RecordApiServiceImpl.class,
                 RerunClusterApiServiceImpl.class,
                 ServiceApiServiceImpl.class,
+                SummaryApiServiceImpl.class,
                 TranscriptionApiServiceImpl.class,
                 ServiceExceptionMapper.class,
                 OpenApiResource.class

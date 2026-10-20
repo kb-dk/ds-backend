@@ -27,6 +27,7 @@ import dk.kb.present.transform.TransformerController;
 import dk.kb.present.util.ExtractedPreservicaValues;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
+import dk.kb.storage.model.v1.SummaryResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
@@ -224,6 +225,8 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
 
         updateMetadataMapWithRerunCluster(metadata, referenceId);
 
+        updateMetadataMapWithSummary(metadata, referenceId);
+
         updateMetadataMapWithTranscription(metadata, referenceId);
 
 
@@ -380,6 +383,26 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         } catch (NotFoundServiceException e) {
             // No rerun cluster for this fileId, which is normal
             return;
+        }
+    }
+
+    /**
+     * Updates the provided metadata map with summary data for the fileId. Nothing is added if no
+     * summary exists for the fileId.
+     *
+     * @param metadata the map of metadata
+     * @param fileId   the fileId to find the summary for
+     */
+    private void updateMetadataMapWithSummary(Map<String, String> metadata, String fileId) {
+        if (StringUtils.isBlank(fileId)) {
+            return;
+        }
+
+        try {
+            SummaryResponseDto summary = getStorage().getSummaryByFileId(UUID.fromString(fileId));
+            metadata.put("summary", summary.getSummary());
+        } catch (NotFoundServiceException e) {
+            // No summary for this fileId, which is normal
         }
     }
 

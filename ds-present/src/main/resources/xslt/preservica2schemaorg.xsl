@@ -49,6 +49,7 @@
   <xsl:param name="dsIdRestricted"/>
   <xsl:param name="titleRestricted"/>
   <xsl:param name="platform"/>
+  <xsl:param name="summary"/>
   <xsl:param name="transcription"/>
   <xsl:param name="has_transcription"/>
   <xsl:include href="xslt/utils.xsl"/>
@@ -929,13 +930,19 @@
       </f:string>
     </xsl:if>
 
-   <xsl:if test="$transcription != ''">
+    <xsl:if test="$summary != ''">
+      <f:string key="kb:summary">
+        <xsl:value-of select="$summary"/>
+      </f:string>
+    </xsl:if>
+
+    <xsl:if test="$transcription != ''">
       <f:string key="kb:transcription">
         <xsl:value-of select="$transcription"/>
       </f:string>
     </xsl:if>
    
-   <xsl:if test="$has_transcription != ''">
+    <xsl:if test="$has_transcription != ''">
       <f:string key="kb:has_transcription">
         <xsl:value-of select="$has_transcription"/>
       </f:string>

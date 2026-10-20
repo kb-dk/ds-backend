@@ -23,6 +23,8 @@ import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
+import dk.kb.storage.model.v1.SummaryRequestDto;
+import dk.kb.storage.model.v1.SummaryResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.Service2ServiceRequest;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -514,6 +516,69 @@ public class DsStorageClient {
         try {
             URI uri = new URIBuilder(serviceURI)
                 .appendPathSegments("rerun-cluster", "created", "latest")
+                .build();
+
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET",
+                new CreatedDto(), null);
+
+        } catch (URISyntaxException uriSyntaxException) {
+            log.error("Invalid url: " + uriSyntaxException.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Save list of SummaryRequestDto in summaries table, update mtime in ds_records table and
+     * return number of rows inserted or updated in summaries table.
+     *
+     * @throws ServiceException if fails to make API call
+     */
+    public RecordsCountDto updateSummaries(List<SummaryRequestDto> summaryRequestDtoList)
+        throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                .appendPathSegments("summaries")
+                .build();
+
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST",
+                new RecordsCountDto(), summaryRequestDtoList);
+
+        } catch (URISyntaxException uriSyntaxException) {
+            log.error("Invalid url: " + uriSyntaxException.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Return a SummaryResponseDto from fileId.
+     *
+     * @param fileId (required)
+     * @return SummaryResponseDto
+     * @throws ServiceException if fails to make API call
+     */
+    public SummaryResponseDto getSummaryByFileId(UUID fileId) throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                .appendPathSegments("summary", fileId.toString())
+                .build();
+
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET",
+                new SummaryResponseDto(), null);
+        } catch (URISyntaxException uriSyntaxException) {
+            log.error("Invalid url: " + uriSyntaxException.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Return latest created datetime from summaries table. Can be null.
+     *
+     * @throws ServiceException if fails to make API call
+     */
+    public CreatedDto latestCreatedSummary() throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                .appendPathSegments("summary", "created", "latest")
                 .build();
 
             return Service2ServiceRequest.httpCallWithOAuthToken(uri, "GET",

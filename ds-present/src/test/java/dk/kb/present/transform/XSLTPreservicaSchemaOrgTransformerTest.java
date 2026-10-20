@@ -113,6 +113,36 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     }
 
     @Test
+    void getTransformedWithAccessFieldsAdded_whenSummaryExists_thenSummaryFieldsIsPopulated()
+        throws IOException {
+        // Arrange
+        String summary = "Fin beskrivelse.";
+        Map<String, String> map = new HashMap<>();
+        map.put("summary", summary);
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
+            TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertTrue(transformedJSON.contains("\"kb:summary\":\"" + summary + "\""));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenSummaryDoesNotExists_thenSummaryFieldsDoesNotExits()
+        throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
+            TestFiles.PVICA_RECORD_e683b0b8, map);
+
+        // Assert
+        assertFalse(transformedJSON.contains("\"kb:summary\":"));
+    }
+
+    @Test
     void getTransformedWithAccessFieldsAdded_whenTranscriptionExists_thenTranscriptionFieldIsPopulatedAndHasTranscriptionIsTrue() throws IOException {
         // Arrange
         Map<String, String> map = new HashMap<>();
