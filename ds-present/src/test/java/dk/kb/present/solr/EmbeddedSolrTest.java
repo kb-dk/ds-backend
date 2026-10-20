@@ -8,8 +8,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import dk.kb.present.TestUtil;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.config.XsltConfig;
 import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -26,10 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -820,15 +818,13 @@ public class EmbeddedSolrTest {
     }
 
     private void indexModsRecord(String recordXml) throws Exception {
-        String yamlStr =
-                "stylesheet: '" + MODS2SOLR + "'\n" +
-                        "injections:\n" +
-                        "  - imageserver: 'https://example.com/imageserver/'\n" +
-                        "  - old_imageserver: 'http://kb-images.kb.dk'\n" +
-                        "  - origin: 'ds.test'\n";
-        YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
+        Map<String, String> injections = new LinkedHashMap<>();
+        injections.put("imageserver", "https://example.com/imageserver/");
+        injections.put("old_imageserver", "http://kb-images.kb.dk");
+        injections.put("origin", "ds.test");
+        XsltConfig config = new XsltConfig("xslt", MODS2SOLR, injections);
 
-        String solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, recordXml);
+        String solrString = TestUtil.getTransformedFromConfigWithAccessFields(config, recordXml);
 
         addRecordToEmbeddedServer(recordXml, solrString);
     }

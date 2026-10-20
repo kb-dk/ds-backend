@@ -36,9 +36,14 @@ public class DsLicenseClientTest {
     @BeforeAll
     static void setup() {
         try {
-            ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml"); 
+            // Note: the second argument is now a devops/operations *properties* override file (see
+            // ServiceConfig#initialize(String, String)), not a second YAML file merged via kb-util's old
+            // multi-file layering - a 'ds-license-integration-test.yaml' fetched via 'kb init' as real YAML
+            // content would no longer be parsed as such. This test is tagged @Tag("integration") and not run by
+            // the automatic build flow either way.
+            ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");
 
-            dsLicenseDevel= ServiceConfig.getConfig().getString("integration.devel.licensemodule"); 
+            dsLicenseDevel= ServiceConfig.getConfig().getValue("integration.devel.licensemodule", String.class);
             System.out.println(dsLicenseDevel);
             remote = new DsLicenseClient(dsLicenseDevel);
         } catch (IOException e) { 

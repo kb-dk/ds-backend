@@ -9,7 +9,7 @@ import dk.kb.util.string.CallbackReplacer;
 import dk.kb.util.string.Strings;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
-import dk.kb.util.yaml.YAML;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -24,16 +24,28 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Handle serving of OpenAPI specification for a webapp. This class handles dynamic updates of the API specification.
  * Through this class it gets possible to use syntax as the following {@code ${config:yaml.path}} to access values from
- * config files in API specifications.
+ * config files in API specifications. Two forms of wildcard segment are also supported, and may be combined in a
+ * single path (see {@link #resolveWildcard(String)}):
+ * <ul>
+ *     <li>{@code [*]}, matching a list index, e.g. {@code ${config:origins[*].name}}.</li>
+ *     <li>a bare {@code *} path segment, matching a single, dynamically-named YAML key, e.g.
+ *     {@code ${config:origins[*].*.origin}} (used where each list entry is itself a single-key map keyed by a
+ *     dynamic ID, e.g. ds-present's {@code origins} configuration).</li>
+ * </ul>
  * <p>
  * JAX-RS uses the empty constructor for serving the webapp. To configure the {@link OpenApiResource} call the
- * {@link #setConfig(YAML)}-method inside the given implementation of {@link Application#getClasses()} before
+ * {@link #setConfig(Config)}-method inside the given implementation of {@link Application#getClasses()} before
  * returning all classes that are part of the application. An example is provided here:
  *
  * <pre>
@@ -55,8 +67,12 @@ public class OpenApiResource extends ImplBase {
 
     /**
      * The config where values are substituted from.
+     * <p>
+     * This is a standard MicroProfile Config {@link Config}, not tied to any specific implementation (the
+     * concrete implementation, e.g. SmallRye Config, is chosen and wired by whichever project calls
+     * {@link #setConfig(Config)}).
      */
-    static private YAML config;
+    static private Config config;
 
     public static final String APPLICATION_YAML = "application/yaml";
 
@@ -76,7 +92,7 @@ public class OpenApiResource extends ImplBase {
 
     /**
      * JAX-RS uses the empty constructor for serving the webapp. To configure the {@link OpenApiResource} call the
-     * {@link #setConfig(YAML)}-method inside the given implementation of {@link Application#getClasses()} before
+     * {@link #setConfig(Config)}-method inside the given implementation of {@link Application#getClasses()} before
      * returning all classes that are part of the application. An example is provided here:
      *
      * <pre>
@@ -95,8 +111,8 @@ public class OpenApiResource extends ImplBase {
      */
     public OpenApiResource(){}
 
-    public static void setConfig(YAML configYAML){
-        config = configYAML;
+    public static void setConfig(Config configSource){
+        config = configSource;
     }
 
     /**
@@ -190,16 +206,26 @@ public class OpenApiResource extends ImplBase {
     }
 
     /**
-     * Resolve the value for the given YAML path in the configuration files for the project.
-     * @param yPath to extract value from.
-     * @return the value at the given path in the configuration files.
+     * Resolve the value(s) for the given path in the configuration for the project.
+     * <p>
+     * Two forms are supported:
+     * <ul>
+     *     <li>A plain (or comma-list) property, e.g. {@code openapi.serverurl} or {@code security.realms}.</li>
+     *     <li>A single wildcard segment, e.g. {@code origins[*].name}, which is expanded to every matching
+     *     indexed property, in ascending index order. See {@link #resolveWildcard(String)}.</li>
+     * </ul>
+     *
+     * @param yPath to extract value(s) from.
+     * @return the value(s) at the given path in the configuration, joined the same way {@link #getYamlSpec} expects.
      */
     private static String getReplacementForMatch(String yPath) {
         if (config == null){
             throw new IllegalStateException("Config must be initialized before using the class. See JavaDoc for OpenApiResource for further details.");
         }
 
-        List<Object> result = config.getMultiple(yPath);
+        List<String> result = yPath.contains("[*]") ?
+                resolveWildcard(yPath) :
+                config.getOptionalValues(yPath, String.class).orElse(List.of());
 
         if (result.isEmpty()){
             log.error("No entry has been found for yPath: '{}'.", yPath);
@@ -210,6 +236,69 @@ public class OpenApiResource extends ImplBase {
         // All entries are seperated by ", " to make the openAPI generator see the input ["${config:yaml.string}"] as an
         // actual array resolved as ["foo", "bar", "zoo"]
         return Strings.join(result, "\", \"");
+    }
+
+    /**
+     * A single {@code [*]} index wildcard, or a single bare {@code *} name wildcard, as one match each - used to
+     * split a path into literal fragments (quoted verbatim into the built regex) and wildcard segments (turned
+     * into a capturing group) in {@link #resolveWildcard(String)}. {@code [*]} is listed first so it is preferred
+     * over the bare {@code *} alternative when a match could start at the same position.
+     */
+    private static final Pattern WILDCARD_SEGMENT = Pattern.compile("\\[\\*]|\\*");
+
+    /**
+     * Resolves a path containing one or more wildcard segments against the matching indexed/keyed properties -
+     * see the class javadoc for the two supported forms, {@code [*]} and a bare {@code *}, which may be combined
+     * in a single path (e.g. {@code origins[*].*.origin}).
+     * <p>
+     * A bare {@code *} segment matches a single, dynamically-named YAML key, which may itself contain dots (e.g.
+     * {@code "ds.radio"}, a literal quoted YAML key, not two nested keys) - it is matched non-greedily up to
+     * whatever literal text follows it in the path, rather than stopping at the first dot.
+     * <p>
+     * If the path contains an {@code [*]} index wildcard, results are ordered by ascending index (using the
+     * first such wildcard when more than one is present); otherwise they are ordered by the matched property name.
+     *
+     * @param yPath a path containing one or more wildcard segments.
+     * @return the matched values, in the order described above. Empty if nothing matched.
+     */
+    // Package-private (not private) for direct unit testing - see OpenApiResourceWildcardTest.
+    static List<String> resolveWildcard(String yPath) {
+        StringBuilder regex = new StringBuilder("^");
+        Matcher segmentMatcher = WILDCARD_SEGMENT.matcher(yPath);
+        int lastEnd = 0;
+        boolean hasIndexWildcard = false;
+        while (segmentMatcher.find()) {
+            regex.append(Pattern.quote(yPath.substring(lastEnd, segmentMatcher.start())));
+            if ("[*]".equals(segmentMatcher.group())) {
+                // The brackets are literal characters in the actual (flattened) property name, e.g.
+                // "origins[0].name" - only the index itself varies, so the brackets must stay in the regex too.
+                regex.append("\\[(\\d+)\\]");
+                hasIndexWildcard = true;
+            } else {
+                // Non-greedy: matches up to whatever literal fragment follows, even if the matched key itself
+                // contains dots (e.g. a quoted YAML key like "ds.radio").
+                regex.append("(.+?)");
+            }
+            lastEnd = segmentMatcher.end();
+        }
+        regex.append(Pattern.quote(yPath.substring(lastEnd)));
+        regex.append("$");
+        Pattern combined = Pattern.compile(regex.toString());
+
+        // Sort key: for a path with an index wildcard, a zero-padded index followed by the property name (so
+        // ordering is numeric-ascending by index, stable for any further wildcard segments at the same index);
+        // otherwise just the property name.
+        SortedMap<String, String> byOrderKey = new TreeMap<>();
+        for (String name : config.getPropertyNames()) {
+            Matcher m = combined.matcher(name);
+            if (m.matches()) {
+                String orderKey = hasIndexWildcard ?
+                        String.format(Locale.ROOT, "%020d|%s", Long.parseLong(m.group(1)), name) :
+                        name;
+                config.getOptionalValue(name, String.class).ifPresent(value -> byOrderKey.put(orderKey, value));
+            }
+        }
+        return new ArrayList<>(byOrderKey.values());
     }
 
     /**
@@ -224,6 +313,5 @@ public class OpenApiResource extends ImplBase {
         return jsonMapper.enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(yamlObject);
     }
 }
-
 
 

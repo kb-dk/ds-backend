@@ -9,8 +9,8 @@ import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 
-import dk.kb.util.yaml.YAML;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.config.Config;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
@@ -40,8 +40,7 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
 
     @Override
     public Map<String, Object> getMessages() {
-        YAML messages = ServiceConfig.getMessagesConfig();
-        return messages;
+        return ServiceConfig.getMessagesConfig();
     }
 
     @Override
@@ -89,27 +88,27 @@ public class BffApiServiceImpl extends ImplBase implements BffApi {
     }
 
     private void addCookieToResponse(String accessTokenString) {
-        final YAML cookieConf = ServiceConfig.getConfig().getSubMap("cookies");
+        final Config cookieConf = ServiceConfig.getConfig();
         String cookieString = "Authorization="+EncryptionHelper.encryptString(accessTokenString);
 
-        if (cookieConf.getBoolean("httponly",true)) {
+        if (cookieConf.getOptionalValue("cookies.httponly", Boolean.class).orElse(true)) {
             cookieString += "; HttpOnly";
         }
-        if (cookieConf.getBoolean("secure",true)) {
+        if (cookieConf.getOptionalValue("cookies.secure", Boolean.class).orElse(true)) {
             cookieString += "; secure";
         }
-        if (cookieConf.containsKey("domain")) {
+        if (cookieConf.getOptionalValue("cookies.domain", String.class).isPresent()) {
             cookieString += "; domain=";
-            cookieString += cookieConf.getString("domain");
+            cookieString += cookieConf.getValue("cookies.domain", String.class);
         }
-        if (cookieConf.containsKey("path")) {
+        if (cookieConf.getOptionalValue("cookies.path", String.class).isPresent()) {
             cookieString += "; path=";
-            cookieString += cookieConf.getString("path");
+            cookieString += cookieConf.getValue("cookies.path", String.class);
         } else {
             cookieString += "; path=";
             cookieString += this.servletContext.getContextPath();
         }
-        cookieString += "; SameSite="+cookieConf.getString("samesite","Strict");
+        cookieString += "; SameSite="+cookieConf.getOptionalValue("cookies.samesite", String.class).orElse("Strict");
         httpServletResponse.setHeader("Set-Cookie",cookieString);
     }
 

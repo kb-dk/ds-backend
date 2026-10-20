@@ -14,7 +14,7 @@
  */
 package dk.kb.present.transform;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.TransformerConfig;
 
 /**
  * Constructs {@link ImageRightsExtractor}s.
@@ -26,7 +26,7 @@ public class ImageRightsFactory implements DSTransformerFactory {
     }
 
     @Override
-    public DSTransformer createTransformer(YAML conf) {
+    public DSTransformer createTransformer(TransformerConfig conf) {
         return new ImageRightsExtractor();
     }
 }

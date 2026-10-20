@@ -1,0 +1,32 @@
+# Single-instance-only local override file for ds-datahandler.
+#
+# IMPORTANT: if this service ever shares a Tomcat instance with other WARs (as the development server does,
+# running all 6 ds-backend services in one Tomcat), do NOT use this file for devops/operations secrets such as
+# the database password - use conf/ds-datahandler-application.properties.SAMPLE instead. The reason: this file is
+# picked up via SmallRye Config's own implicit 'config/application.properties' convention (ordinal 260), keyed
+# off the JVM's current working directory - which every webapp in that shared Tomcat instance has in common, so
+# there is no way for this file to affect only ds-datahandler. A file left here would silently apply to every
+# service sharing that Tomcat instance. conf/ds-datahandler-application.properties is instead read from an
+# explicit, per-service path configured via its own Tomcat context environment entry, so it cannot leak across
+# services.
+#
+# This file is only safe to use for a single, standalone instance of the service (e.g. running it alone via an
+# IDE, or 'java -jar', from a working directory nothing else shares) - copy it to 'config/application.properties'
+# (same folder, without the '.SAMPLE' suffix) and fill in your own values; no code change and no extra argument
+# to ServiceConfig.initialize(...) is needed for it to apply, since addDefaultSources() already registers it.
+#
+# 'config/application.properties' is (and must stay) git-ignored; see .gitignore.
+#
+# Any key present in ds-datahandler-behaviour.yaml can be overridden here, using the same dotted path. Only the
+# keys below are the ones commonly overridden per environment/operator - uncomment and set the ones you need.
+
+# db.url=jdbc:postgresql://localhost:5432/ds-datahandler
+# db.driver=org.postgresql.Driver
+# db.username=ds_datahandler_user
+# db.password=changeme
+# db.connectionPoolSize=10
+
+# oaiTargets[0].user=changeme
+# oaiTargets[0].password=changeme
+
+# openapi.serverurl=http://localhost:9071/ds-datahandler/v1

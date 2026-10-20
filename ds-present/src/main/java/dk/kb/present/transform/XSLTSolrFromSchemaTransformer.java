@@ -67,7 +67,7 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
                     transformer.setParameter(name, value);
             });
 
-            if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+            if (ServiceConfig.getYamlConfig().getInteger("transformations.threads",0) > 0) {
                 semaphore.acquire();
             }
             transformer.transform(new StreamSource(new ByteArrayInputStream(placeholderXml.getBytes(StandardCharsets.UTF_8))),
@@ -80,7 +80,7 @@ public class XSLTSolrFromSchemaTransformer extends XSLTTransformer{
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            if (ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0) {
+            if (ServiceConfig.getYamlConfig().getInteger("transformations.threads",0) > 0) {
                 semaphore.release();
             }
         }

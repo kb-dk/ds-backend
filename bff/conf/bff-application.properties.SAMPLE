@@ -1,0 +1,20 @@
+# Devops/operations properties override file for bff.
+#
+# This is the explicit, per-service override file configured via the 'application-properties-config' Tomcat
+# context environment entry (see conf/ocp/bff.xml) / Jetty EnvEntry (see src/test/jetty/jetty-env.xml), and
+# loaded by ServiceConfig.initialize(configFile, propertiesOverrideFile). It is meant for devops/operations
+# secrets and per-environment values that must never be committed to git.
+#
+# Copy this file to 'bff-application.properties' (same folder, without the '.SAMPLE' suffix) and fill in your
+# own values. This filename is already covered by the repository's generic '*-application.properties'
+# .gitignore rule.
+#
+# Any key present in bff-base.yaml can be overridden here, using the same dotted path. Like every other setting,
+# this file is picked up by the auto-reload thread too (see config.autoupdate in bff-base.yaml): editing and
+# saving it takes effect within config.autoupdate.intervalms milliseconds, without a service restart.
+
+# keycloak.secret=changeme
+# secretSalt=changeme
+
+# apis.ds-image.baseURL=https://localhost/
+# apis.poc-middleware.baseURL=http://localhost:9061

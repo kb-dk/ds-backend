@@ -1,0 +1,31 @@
+# Minimal YAML fixture for ApplicationPropertiesOverrideTest (dk.kb.util.config), demonstrating SmallRye
+# Config's own implicit config/application.properties convention - see that test's javadoc. Not a real service
+# configuration; only used by that one test. The oaiTargets list below is a stand-in for the kind of nested,
+# multi-entry YAML config real modules have, to prove that structure survives flattening into SmallRye's
+# indexed-property syntax ("oaiTargets[0].name", ...) and not just flat scalars like the db.* keys above it.
+db:
+  password: ""
+  connectionPoolSize: 10
+  driver: "org.h2.Driver"
+
+oaiTargets:
+  - name: pvica.prod
+    datasource: ds.radiotv
+    url: https://<kuana-prod>/OAI-PMH/
+    user: oai-pmh-prod
+    password: XXXX
+    metadataPrefix: xip
+    description: Radio- og TV-udsendelser
+    filter: dr
+    dateStampFormat: datetime
+    dayOnly: false
+
+  - name: pvica.stage
+    datasource: ds.radiotv
+    url: https://<kuana-stage>/OAI-PMH/
+    user: oai-pmh-stage
+    password: XXXX
+    metadataPrefix: xip
+    description: Radio- of TV-udsendelser
+    filter: dr
+    dateStampFormat: datetime

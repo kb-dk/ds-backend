@@ -214,11 +214,11 @@ public class IIPFacade {
         final String idDZI = imageid + (imageid.endsWith(".dzi") ? "" : ".dzi");
 
         UriTemplate template;
-        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)){
+        if (ServiceConfig.containsKey(KEY_DEEPZOOM_SERVER_PATH)){
             // Path based DeepZoom server: http://example.com:1234/image_identifier.dzi
             template = UriTemplate
                     .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PATH) + DEEPZOOM_PATH_DZI_TEMPLATE);
-        } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
+        } else if (ServiceConfig.containsKey(KEY_DEEPZOOM_SERVER_PARAM)){
             // Param based DeepZoom server: http://example.com:1234/iipsrv/iipsrv.fcgi?DeepZoom=Path_to_your_image.jpg.dzi
             template = UriTemplate
                     .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PARAM) + DEEPZOOM_PARAM_DZI_TEMPLATE);
@@ -255,12 +255,12 @@ public class IIPFacade {
 
         boolean isPath = true;
         UriTemplate template;
-        if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PATH)) {
+        if (ServiceConfig.containsKey(KEY_DEEPZOOM_SERVER_PATH)) {
             // Path based DeepZoom server
             // https://example.com/example-images/fooimage/fooimage_files/11/2_0.jpg
             template = UriTemplate
                     .fromTemplate(ServiceConfig.getServer(KEY_DEEPZOOM_SERVER_PATH) + DEEPZOOM_PATH_TEMPLATE);
-        } else if (ServiceConfig.getConfig().containsKey(KEY_DEEPZOOM_SERVER_PARAM)) {
+        } else if (ServiceConfig.containsKey(KEY_DEEPZOOM_SERVER_PARAM)) {
             // Param based DeepZoom server
             // https://example.com/fcgi-bin/iipsrv.fcgi?Deepzoom=hs-2007-16-a-full_tif.tif_files/12/2_4.jpg
             template = UriTemplate

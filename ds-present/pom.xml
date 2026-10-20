@@ -43,6 +43,17 @@
             <artifactId>ds-shared</artifactId>
             <version>100.0.0-SNAPSHOT</version>
         </dependency>
+        <!-- SmallRye Config: backs ServiceConfig#getFlatConfig(), a flattened MicroProfile Config view of the
+             nested kb-util YAML config kept for the rest of ServiceConfig - see ServiceConfig's class javadoc.
+             This is a standalone (non-Quarkus) use of SmallRye Config, a MicroProfile Config implementation.
+             Unlike the other ds-backend services, ds-present does not need smallrye-config-source-yaml: the
+             flattened view is built in-memory from the already-parsed nested YAML tree (see
+             ServiceConfig#flatten), not by pointing SmallRye directly at a YAML file. -->
+        <dependency>
+            <groupId>io.smallrye.config</groupId>
+            <artifactId>smallrye-config</artifactId>
+            <version>3.12.4</version>
+        </dependency>
         <dependency>
             <groupId>dk.kb.license</groupId>
             <artifactId>ds-license</artifactId>

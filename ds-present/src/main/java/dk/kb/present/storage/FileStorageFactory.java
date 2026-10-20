@@ -14,7 +14,8 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.BackendConfig;
+import dk.kb.present.config.FolderBackendConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,41 +30,24 @@ import java.util.stream.Collectors;
 public class FileStorageFactory implements StorageFactory {
     private static final Logger log = LoggerFactory.getLogger(FileStorageFactory.class);
 
-    public static final String FOLDER_KEY = "root";
-
-    public static final String EXTENSION_KEY = "extension";
-    public static final String EXTENSION_DEFAULT = ""; // All extensions
-
-    public static final String STRIP_PREFIX_KEY = "prefix.strip";
-    public static final boolean STRIP_PREFIX_DEFAULT = true;
-
-    public static final String WHITELIST_KEY = "whitelist";
-    public static final String BLACKLIST_KEY = "blacklist";
-
     @Override
     public String getStorageType() {
         return FileStorage.TYPE;
     }
 
     @Override
-    public Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception {
-        String folderStr = conf.getString(FOLDER_KEY);
-        if (folderStr == null) {
-            throw new NullPointerException(
-                    "The root folder was not specified under the key '" + FOLDER_KEY + "' for storage '" + id + "'");
+    public Storage createStorage(String id, BackendConfig conf, boolean isDefault) throws Exception {
+        FolderBackendConfig c = (FolderBackendConfig) conf;
+        if (c.getRoot() == null) {
+            throw new NullPointerException("The root folder was not specified for storage '" + id + "'");
         }
-        Path folder = Path.of(folderStr);
-        String extension = conf.getString(EXTENSION_KEY, EXTENSION_DEFAULT);
-        boolean stripPrefix = conf.getBoolean(STRIP_PREFIX_KEY, STRIP_PREFIX_DEFAULT);
+        Path folder = Path.of(c.getRoot());
 
-        List<String> whitelistStr = conf.getList(WHITELIST_KEY, null);
-        List<Pattern> whitelist = whitelistStr == null ? null :
-                whitelistStr.stream().map(Pattern::compile).collect(Collectors.toList());
+        List<Pattern> whitelist = c.getWhitelist() == null ? null :
+                c.getWhitelist().stream().map(Pattern::compile).collect(Collectors.toList());
+        List<Pattern> blacklist = c.getBlacklist() == null ? null :
+                c.getBlacklist().stream().map(Pattern::compile).collect(Collectors.toList());
 
-        List<String> blacklistStr = conf.getList(BLACKLIST_KEY, null);
-        List<Pattern> blacklist = blacklistStr == null ? null :
-                blacklistStr.stream().map(Pattern::compile).collect(Collectors.toList());
-
-        return new FileStorage(id, folder, extension, stripPrefix, whitelist, blacklist, isDefault);
+        return new FileStorage(id, folder, c.getExtension(), c.isStripPrefix(), whitelist, blacklist, isDefault);
     }
 }

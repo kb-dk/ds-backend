@@ -1,0 +1,23 @@
+# Devops/operations properties override file for ds-discover.
+#
+# This is the explicit, per-service override file configured via the 'application-properties-config' Tomcat
+# context environment entry (see conf/ocp/ds-discover.xml) / Jetty EnvEntry (see src/test/jetty/jetty-env.xml),
+# and loaded by ServiceConfig.initialize(configFile, propertiesOverrideFile). It is meant for devops/operations
+# secrets and per-environment values that must never be committed to git.
+#
+# Copy this file to 'ds-discover-application.properties' (same folder, without the '.SAMPLE' suffix) and fill in
+# your own values. This filename is already covered by the repository's generic '*-application.properties'
+# .gitignore rule.
+#
+# Any key present in ds-discover-behaviour.yaml can be overridden here, using the same dotted path. The keys
+# below are the ones commonly set per environment/operator - uncomment and set the ones you need.
+
+# solr.collections[0].ds.server=http://example.com:10007
+# solr.collections[0].ds.collection=ds
+
+# licensemodule.url=http://example.com:9076/ds-license/v1
+# present.url=http://example.com:9073/ds-present/v1
+
+# security.client.secret=changeme
+
+# openapi.serverurl=http://localhost:9074/ds-discover/v1

@@ -11,10 +11,22 @@
     </New>
 
     <New id="config" class="org.eclipse.jetty.plus.jndi.EnvEntry">
-        <!-- Note that the application-config is defined using globbing: Multiple config files are merged -->
+        <!-- ServiceConfig loads a single YAML file. -->
         <Arg>application-config</Arg>
         <Arg type="java.lang.String">
-            ${basedir}/conf/${project.artifactId}*.yaml
+            ${basedir}/conf/${project.artifactId}-behaviour.yaml
+        </Arg>
+        <Arg type="boolean">true</Arg>
+    </New>
+
+    <New id="propertiesConfig" class="org.eclipse.jetty.plus.jndi.EnvEntry">
+        <!-- Optional devops/operations properties override file (see ds-storage/SMALLRYE_CONFIG_MIGRATION.md).
+             Nothing is created at this path by default, so a local run logs (and is meant to log) an error that
+             it could not be found - copy conf/ds-license-application.properties.SAMPLE here, without the
+             '.SAMPLE' suffix, if you want to exercise the override with your own local values. -->
+        <Arg>application-properties-config</Arg>
+        <Arg type="java.lang.String">
+            ${basedir}/conf/${project.artifactId}-application.properties
         </Arg>
         <Arg type="boolean">true</Arg>
     </New>

@@ -1,0 +1,28 @@
+# Devops/operations properties override file for ds-present.
+#
+# This is the explicit, per-service override file configured via the 'application-properties-config' Tomcat
+# context environment entry (see conf/ocp/ds-present.xml) / Jetty EnvEntry (see src/test/jetty/jetty-env.xml),
+# and loaded by ServiceConfig.initializeWithPropertiesOverride(configFile, propertiesOverrideFile). It is meant
+# for devops/operations secrets and per-environment values that must never be committed to git.
+#
+# Copy this file to 'ds-present-application.properties' (same folder, without the '.SAMPLE' suffix) and fill in
+# your own values. This filename is already covered by the repository's generic '*-application.properties'
+# .gitignore rule.
+#
+# NOTE: only simple/scalar settings can be overridden here - this file affects ServiceConfig.getFlatConfig() only,
+# not the nested origins/storages/views/transformers configuration (ServiceConfig.getConfig()), which is not
+# readable through the flat properties syntax. See ServiceConfig's class javadoc for why. Environment-specific
+# overrides for the nested tree still go in a separate YAML file, merged via the 'application-config' glob
+# (see conf/ocp/ds-present.xml).
+#
+# Any flat key present in ds-present-behaviour.yaml can be overridden here, using the same dotted path. The keys
+# below are the ones commonly set per environment/operator - uncomment and set the ones you need.
+
+# licensemodule.url=http://example.com:9076/ds-license/v1
+# licensemodule.allowall=false
+
+# openapi.serverurl=http://localhost:9073/ds-present/v1
+
+# oldimageserver.url=http://example.com
+
+# security.client.secret=changeme

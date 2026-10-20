@@ -5,8 +5,18 @@
         value="/app/conf/ds-license.logback.xml"
         type="java.lang.String"
         override="false"/>
+    <!-- ServiceConfig loads a single YAML file (no more behaviour/environment/local globbing). -->
     <Environment name="application-config"
-        value="/app/conf/ds-license*.yaml"
+        value="${user.home}/services/conf/ds-license-behaviour.yaml"
+        type="java.lang.String"
+        override="false"/>
+    <!-- Optional devops/operations properties override file - carries secrets such as the real database
+         password, kept entirely outside git. Distinct per service/WAR, since a Tomcat instance hosting several
+         WARs (as the development server does) shares one JVM working directory: SmallRye's own implicit
+         'config/application.properties' convention can't tell services apart, so this explicit per-service
+         path is used instead. See ds-storage/SMALLRYE_CONFIG_MIGRATION.md. -->
+    <Environment name="application-properties-config"
+        value="${user.home}/services/conf/ds-license-application.properties"
         type="java.lang.String"
         override="false"/>
 

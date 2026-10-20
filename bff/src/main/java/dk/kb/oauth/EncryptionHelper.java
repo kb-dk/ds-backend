@@ -51,7 +51,7 @@ public class EncryptionHelper {
      */
     public static String encryptString(String plain) {
         try {
-            SecretKey key = generateKey(ServiceConfig.getConfig().getString("secretSalt"));
+            SecretKey key = generateKey(ServiceConfig.getConfig().getValue("secretSalt", String.class));
             byte[] iv = getRandomBytes(INITIALIZATION_VECTOR_LENGTH);
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, key, new GCMParameterSpec(INITIALIZATION_VECTOR_LENGTH * 8, iv));
@@ -81,7 +81,7 @@ public class EncryptionHelper {
             byte[] content = new byte[byteBuffer.remaining()];
             byteBuffer.get(content);
 
-            SecretKey key = generateKey(ServiceConfig.getConfig().getString("secretSalt"));
+            SecretKey key = generateKey(ServiceConfig.getConfig().getValue("secretSalt", String.class));
             Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(INITIALIZATION_VECTOR_LENGTH * 8, iv));
             byte[] decryptedBytes = cipher.doFinal(content);

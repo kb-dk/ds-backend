@@ -14,7 +14,7 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.BackendConfig;
 
 /**
  * Factory for creating a specific type of {@link Storage}.
@@ -34,10 +34,11 @@ public interface StorageFactory {
      * Create a new storage of the supported type and return it.
      *
      * @param id the ID for this storage, as specified in the configuration.
-     * @param conf configuration for the {@link Storage} to create.
+     * @param conf configuration for the {@link Storage} to create. Should be downcast to the concrete
+     *             {@link BackendConfig} implementation matching this factory's {@link #getStorageType()}.
      * @param isDefault whether or not the storage is the default storage.
      * @return a {@link Storage} of the supported type with the given configuration;
      * @throws Exception if the storage could not be created.
      */
-    Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception;
+    Storage createStorage(String id, BackendConfig conf, boolean isDefault) throws Exception;
 }

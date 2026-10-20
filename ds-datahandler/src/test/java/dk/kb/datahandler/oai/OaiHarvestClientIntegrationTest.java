@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import dk.kb.datahandler.config.ServiceConfig;
-import dk.kb.util.yaml.YAML;
+import org.eclipse.microprofile.config.Config;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -75,16 +75,16 @@ public class OaiHarvestClientIntegrationTest {
     @Tag("integration")
     @Test
     void testPreservicaSevenAuth() throws Exception {
-        YAML conf = ServiceConfig.getConfig();
+        Config conf = ServiceConfig.getConfig();
 
         //pvica.devel2
         OaiTargetDto oaiTarget = new OaiTargetDto();
-        oaiTarget.setUrl(conf.getString("oaiTargets[0].url")); 
+        oaiTarget.setUrl(conf.getValue("oaiTargets[0].url", String.class));
         oaiTarget.setName("Unitest2");
-        oaiTarget.setMetadataprefix(conf.getString("oaiTargets[0].metadataPrefix"));
-        oaiTarget.setUsername(conf.getString("oaiTargets[0].user"));
-        oaiTarget.setPassword(conf.getString("oaiTargets[0].password"));;
-        oaiTarget.setDatasource(conf.getString("oaiTargets[0].datasource"));
+        oaiTarget.setMetadataprefix(conf.getValue("oaiTargets[0].metadataPrefix", String.class));
+        oaiTarget.setUsername(conf.getValue("oaiTargets[0].user", String.class));
+        oaiTarget.setPassword(conf.getValue("oaiTargets[0].password", String.class));;
+        oaiTarget.setDatasource(conf.getValue("oaiTargets[0].datasource", String.class));
         oaiTarget.setFilter(OaiTargetDto.FilterEnum.PRESERVICA);
         oaiTarget.setDateStampFormat(OaiTargetDto.DateStampFormatEnum.DATETIME);
 

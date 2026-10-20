@@ -17,7 +17,7 @@ public class BffApiServiceImplTest {
     static void setup() {
         try {
             Path file = Path.of(Resolver.resolveURL("bff-test.yaml").getPath());
-            ServiceConfig.getInstance().initialize(file.toString());
+            ServiceConfig.initialize(file.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

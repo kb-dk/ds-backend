@@ -51,8 +51,8 @@ public class XSLTTransformer implements DSTransformer {
         // Ignoring base as it is always null in the ds-present code
         transformerFactory.setURIResolver((href, base) -> new StreamSource(Resolver.resolveStream(href)));
 
-        useSemaphore =  ServiceConfig.getConfig().getInteger("transformations.threads",0) > 0;
-        semaphore = new Semaphore(ServiceConfig.getConfig().getInteger("transformations.threads",0));
+        useSemaphore =  ServiceConfig.getYamlConfig().getInteger("transformations.threads",0) > 0;
+        semaphore = new Semaphore(ServiceConfig.getYamlConfig().getInteger("transformations.threads",0));
     }
     public final String stylesheet;
     public final Templates templates;

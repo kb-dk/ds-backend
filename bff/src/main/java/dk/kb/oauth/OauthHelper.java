@@ -2,7 +2,7 @@ package dk.kb.oauth;
 
 import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.yaml.YAML;
+import org.eclipse.microprofile.config.Config;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.authorization.client.util.HttpResponseException;
@@ -22,12 +22,12 @@ public class OauthHelper {
 
     private static synchronized AuthzClient getAuthzClient() {
         if (authzClient == null) {
-            final YAML keycloakConf = ServiceConfig.getConfig().getSubMap("keycloak");
+            final Config conf = ServiceConfig.getConfig();
             try {
-                keyCloakUrl = keycloakConf.getString("url");
-                realm = keycloakConf.getString("realm");
-                clientId = keycloakConf.getString("clientID");
-                clientSecret = keycloakConf.getString("secret");
+                keyCloakUrl = conf.getValue("keycloak.url", String.class);
+                realm = conf.getValue("keycloak.realm", String.class);
+                clientId = conf.getValue("keycloak.clientID", String.class);
+                clientSecret = conf.getValue("keycloak.secret", String.class);
 
                 Configuration authzClientConfig = new Configuration(keyCloakUrl, realm, clientId, Map.of("secret", clientSecret), null);
                 authzClient = AuthzClient.create(authzClientConfig);

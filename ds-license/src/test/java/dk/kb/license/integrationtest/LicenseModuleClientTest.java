@@ -41,8 +41,12 @@ public class LicenseModuleClientTest {
     @BeforeAll
     static void setup() {
         try {
-            ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");                        
-            dsLicenseUrl= ServiceConfig.getConfig().getString("integration.devel.licensemodule");
+            // Note: the second argument is now a devops/operations *properties* override file (see
+            // ServiceConfig#initialize(String, String)), not a second YAML file merged via kb-util's old
+            // multi-file layering. This test is tagged @Tag("integration") and not run by the automatic build
+            // flow either way.
+            ServiceConfig.initialize("conf/ds-license-behaviour.yaml","ds-license-integration-test.yaml");
+            dsLicenseUrl= ServiceConfig.getConfig().getValue("integration.devel.licensemodule", String.class);
         } catch (IOException e) {          
             log.error("Integration yaml 'ds-license-integration-test.yaml' file most be present. Call 'kb init'");            
             fail();

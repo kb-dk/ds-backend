@@ -14,6 +14,8 @@
  */
 package dk.kb.image.config;
 
+import io.smallrye.config.SmallRyeConfig;
+
 import java.io.Closeable;
 import java.io.IOException;
 
@@ -26,16 +28,20 @@ import java.io.IOException;
  *      ...testcode...
  * }
  * </pre>
+ * <p>
+ * Previously (under kb-util {@code YAML}/{@code AutoYAML}), this worked by swapping whole {@code ServiceConfig}
+ * instances via {@code ServiceConfig.getInstance()}/{@code setInstance(...)}. Since {@code ServiceConfig} is now
+ * a purely static singleton backed by SmallRye Config (matching every other ds-backend module), this instead
+ * captures and restores the single backing {@link SmallRyeConfig} object directly, via the package-private
+ * {@code ServiceConfig.getRawConfig()}/{@code setRawConfig(...)} escape hatch.
  */
 public class ConfigAdjuster implements Closeable {
-    private static ServiceConfig oldConfig;
+    private static SmallRyeConfig oldConfig;
 
     public ConfigAdjuster(String temporaryConfigSource) {
         try {
-            oldConfig = ServiceConfig.getInstance();
-            ServiceConfig tempConf = new ServiceConfig();
-            tempConf.initialize(temporaryConfigSource);
-            ServiceConfig.setInstance(tempConf);
+            oldConfig = ServiceConfig.getRawConfig();
+            ServiceConfig.initialize(temporaryConfigSource);
         } catch (IOException e) {
             throw new RuntimeException("Exception creating temporary ServiceConfig", e);
         }
@@ -43,6 +49,6 @@ public class ConfigAdjuster implements Closeable {
 
     @Override
     public void close() {
-        ServiceConfig.setInstance(oldConfig);
+        ServiceConfig.setRawConfig(oldConfig);
     }
 }

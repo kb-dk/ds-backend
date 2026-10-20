@@ -36,7 +36,7 @@ import java.util.List;
 public class RightsModuleFacade {
     private static final Logger log = LoggerFactory.getLogger(RightsModuleFacade.class);
     private static final SolrServerClient solrServerClient = new SolrServerClient();
-    private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getString("storageClient.url"));
+    private static final DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getConfig().getValue("storageClient.url", String.class));
     private static final InputValidator inputValidator = new InputValidator();
 
     /**

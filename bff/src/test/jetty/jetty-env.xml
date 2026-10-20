@@ -11,10 +11,21 @@
     </New>
 
     <New id="config" class="org.eclipse.jetty.plus.jndi.EnvEntry">
-        <!-- Note that the application-config is defined using globbing: Multiple config files are merged -->
+        <!-- ServiceConfig loads a single YAML file (no more base/environment globbing). -->
         <Arg>application-config</Arg>
         <Arg type="java.lang.String">
-            ${basedir}/conf/${project.artifactId}*.yaml
+            ${basedir}/conf/${project.artifactId}-base.yaml
+        </Arg>
+        <Arg type="boolean">true</Arg>
+    </New>
+
+    <!-- Optional devops/operations properties override file. Not present under conf/ during normal test runs,
+         so ServiceConfig logs that it is missing and continues with only the YAML file above - see
+         ServiceConfig's class javadoc. -->
+    <New id="propertiesConfig" class="org.eclipse.jetty.plus.jndi.EnvEntry">
+        <Arg>application-properties-config</Arg>
+        <Arg type="java.lang.String">
+            ${basedir}/conf/${project.artifactId}-application.properties
         </Arg>
         <Arg type="boolean">true</Arg>
     </New>

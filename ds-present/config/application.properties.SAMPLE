@@ -1,0 +1,34 @@
+# Single-instance-only local override file for ds-present.
+#
+# IMPORTANT: if this service ever shares a Tomcat instance with other WARs (as the development server does,
+# running all 6 ds-backend services in one Tomcat), do NOT use this file for devops/operations secrets - use
+# conf/ds-present-application.properties.SAMPLE instead. The reason: this file is picked up via SmallRye Config's
+# own implicit 'config/application.properties' convention (ordinal 260), keyed off the JVM's current working
+# directory - which every webapp in that shared Tomcat instance has in common, so there is no way for this file
+# to affect only ds-present. A file left here would silently apply to every service sharing that Tomcat instance.
+# conf/ds-present-application.properties is instead read from an explicit, per-service path configured via its
+# own Tomcat context environment entry, so it cannot leak across services.
+#
+# This file is only safe to use for a single, standalone instance of the service (e.g. running it alone via an
+# IDE, or 'java -jar', from a working directory nothing else shares) - copy it to 'config/application.properties'
+# (same folder, without the '.SAMPLE' suffix) and fill in your own values; no code change and no extra argument
+# to ServiceConfig.initialize(...)/initializeWithPropertiesOverride(...) is needed for it to apply, since
+# addDefaultSources() already registers it.
+#
+# 'config/application.properties' is (and must stay) git-ignored; see .gitignore.
+#
+# NOTE: only simple/scalar settings can be overridden here - this file affects ServiceConfig.getFlatConfig() only,
+# not the nested origins/storages/views/transformers configuration (ServiceConfig.getConfig()), which is not
+# readable through the flat properties syntax. See ServiceConfig's class javadoc for why.
+#
+# Any flat key present in ds-present-behaviour.yaml can be overridden here, using the same dotted path. The keys
+# below are the ones commonly set per environment/operator - uncomment and set the ones you need.
+
+# licensemodule.url=http://example.com:9076/ds-license/v1
+# licensemodule.allowall=false
+
+# openapi.serverurl=http://localhost:9073/ds-present/v1
+
+# oldimageserver.url=http://example.com
+
+# security.client.secret=changeme

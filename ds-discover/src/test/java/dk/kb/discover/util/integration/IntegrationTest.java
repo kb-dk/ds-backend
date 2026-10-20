@@ -29,22 +29,23 @@ public abstract class IntegrationTest {
     @BeforeAll
     static void setUp() throws Exception{
         try {
-            ServiceConfig.getInstance().initialize("ds-discover-integration-test.yaml"); 
-            //SolrManager must also be initialised. Was automatic notified before (Observer Pattern), but this only worked by luck because several
-            //different yaml configs are initialized in Ds-Discover integration tests.
-            SolrManager.getInstance().setConfig(ServiceConfig.getConfig()); 
-            dsDiscoverDevel= ServiceConfig.getConfig().getString("discover.url");
+            ServiceConfig.initialize("ds-discover-integration-test.yaml");
+            //SolrManager must also be loaded explicitly. Was automatically notified before (Observer Pattern), but
+            //this only worked by luck because several different yaml configs are initialized in Ds-Discover
+            //integration tests.
+            SolrManager.getInstance().loadSolrServices();
+            dsDiscoverDevel= ServiceConfig.getConfig().getValue("discover.url", String.class);
             remote = new DsDiscoverClient(dsDiscoverDevel);
-        } catch (IOException e) { 
+        } catch (IOException e) {
             e.printStackTrace();
-            log.error("Integration yaml 'ds-discover-integration-test.yaml' file most be present. Call 'kb init'"); 
+            log.error("Integration yaml 'ds-discover-integration-test.yaml' file most be present. Call 'kb init'");
             fail();
         }
-        
-        try {            
-            String keyCloakRealmUrl= ServiceConfig.getConfig().getString("integration.devel.keycloak.realmUrl");            
-            String clientId=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientId");
-            String clientSecret=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");                
+
+        try {
+            String keyCloakRealmUrl= ServiceConfig.getConfig().getValue("integration.devel.keycloak.realmUrl", String.class);
+            String clientId=ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientId", String.class);
+            String clientSecret=ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientSecret", String.class);
             String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
             log.info("Retrieved keycloak access token:"+token);            
           

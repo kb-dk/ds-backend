@@ -15,8 +15,7 @@
 package dk.kb.discover.util;
 
 import dk.kb.discover.config.ServiceConfig;
-import dk.kb.util.Pair;
-import dk.kb.util.yaml.YAML;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,8 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Special purpose map that supports
@@ -381,12 +381,12 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
          * @param handler a Solr handler as specified in the configuration, i.e. {@code select} or {@code mlt}.
          */
         public Factory(String handler) {
-            if (!ServiceConfig.getConfig().containsKey("solr." + handler)) {
+            defaultParams = getParams("solr." + handler + ".defaultParams");
+            forcedParams = getParams("solr." + handler + ".forcedParams");
+            if (defaultParams.isEmpty() && forcedParams.isEmpty()) {
                 log.info("No configuration entry for 'solr.{}'. " +
                          "There will be no default or forced parameters", handler);
             }
-            defaultParams = getParams("solr." + handler + ".defaultParams");
-            forcedParams = getParams("solr." + handler + ".forcedParams");
         }
 
         /**
@@ -399,45 +399,54 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
         }
 
         /**
-         * Create a Solr param map from the given YAML path.
-         *
-         * @param yPath the location in the config for the params.
-         * @return a Solr param map.
+         * Pattern matching a single flattened list entry below a {@code keyPrefix}, e.g. for
+         * {@code keyPrefix = "solr.select.defaultParams"} it matches
+         * {@code solr.select.defaultParams.facet.field[3]}, capturing {@code facet.field} (group 1, the literal
+         * Solr param name - which may itself contain dots, as Solr param names commonly do, e.g.
+         * {@code spellcheck.maxCollationRetries}) and {@code 3} (group 2, the list index).
          */
-        private Map<String, List<String>> getParams(String yPath) {
-            YAML conf = ServiceConfig.getConfig().containsKey(yPath) ?
-                    ServiceConfig.getConfig().getYAML(yPath) :
-                    null;
-            if (conf == null) {
-                return Collections.emptyMap();
+        private static final Pattern INDEXED_ENTRY_PATTERN = Pattern.compile("^(.+)\\[(\\d+)]$");
+
+        /**
+         * Create a Solr param map from the given dotted config path (e.g. {@code solr.select.defaultParams}).
+         * Each direct child of {@code keyPrefix} becomes one Solr param, using its full remaining property name
+         * (which may itself contain dots, as Solr param names commonly do) as the map key. A child may be a plain
+         * scalar or a YAML list of scalars (flattened by SmallRye Config's YAML source into
+         * {@code keyPrefix.paramName[0]}, {@code keyPrefix.paramName[1]}, ...).
+         *
+         * @param keyPrefix the location in the config for the params.
+         * @return a Solr param map. Empty if nothing is configured under {@code keyPrefix}.
+         */
+        private static Map<String, List<String>> getParams(String keyPrefix) {
+            Config config = ServiceConfig.getConfig();
+            String prefix = keyPrefix + ".";
+
+            Map<String, String> scalars = new LinkedHashMap<>();
+            Map<String, SortedMap<Integer, String>> indexed = new LinkedHashMap<>();
+
+            for (String propertyName : config.getPropertyNames()) {
+                if (!propertyName.startsWith(prefix)) {
+                    continue;
+                }
+                String remainder = propertyName.substring(prefix.length());
+                Matcher indexedMatcher = INDEXED_ENTRY_PATTERN.matcher(remainder);
+                String value = config.getOptionalValue(propertyName, String.class).orElse(null);
+                if (value == null || value.isEmpty()) {
+                    continue;
+                }
+                if (indexedMatcher.matches()) {
+                    String paramName = indexedMatcher.group(1);
+                    int index = Integer.parseInt(indexedMatcher.group(2));
+                    indexed.computeIfAbsent(paramName, k -> new TreeMap<>()).put(index, value);
+                } else {
+                    scalars.put(remainder, value);
+                }
             }
 
-            return conf.entrySet().stream()
-                    .filter(e -> e.getValue() != null)
-                    .filter(e -> !e.getValue().toString().isEmpty())
-                    .map(SolrParamMerger::toPair)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            Map<String, List<String>> result = new LinkedHashMap<>();
+            scalars.forEach((paramName, value) -> result.put(paramName, Collections.singletonList(value)));
+            indexed.forEach((paramName, valuesByIndex) -> result.put(paramName, new ArrayList<>(valuesByIndex.values())));
+            return result;
         }
-    }
-
-    /**
-     * Converts entries to pairs, with conversion of arrays and lists to String lists.
-     *
-     * @param entry a Solr param entry.
-     * @return a key-value pair with the entry data or null if {@link Map.Entry#getValue()} is an empty String array.
-     */
-    private static Pair<String, List<String>> toPair(Map.Entry<String, Object> entry) {
-        List<String> vals;
-        if (entry.getValue() instanceof String[]) {
-            vals = Arrays.asList((String[])entry.getValue());
-        } else if (entry.getValue() instanceof List) {
-            vals = ((List<?>)entry.getValue()).stream()
-                    .map(Objects::toString)
-                    .collect(Collectors.toList());
-        } else {
-            vals = Collections.singletonList(Objects.toString(entry.getValue()));
-        }
-        return vals.isEmpty() ? null : new Pair<>(entry.getKey(), vals);
     }
 }

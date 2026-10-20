@@ -10,7 +10,6 @@ import java.util.StringJoiner;
 
 import dk.kb.present.util.DsPresentClient;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
-import dk.kb.util.yaml.YAML;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -49,9 +48,13 @@ public class DocumentationExtractor {
      * @return the raw solr schema in the original XML format.
      */
     private static String getRawSchema(String collection) throws IOException {
-        YAML conf = ServiceConfig.getConfig();
-        String server = conf.getString("solr.collections[collection=" + collection + "].server");
-        String path = conf.getString("solr.collections[collection=" + collection +"].path");
+        ServiceConfig.SolrCollectionConfig collectionConfig = ServiceConfig.getSolrCollections().stream()
+                .filter(c -> collection.equals(c.getSolrCollection()))
+                .findFirst()
+                .orElseThrow(() -> new InvalidArgumentServiceException(
+                        "No Solr collection configured with collection ID '" + collection + "'"));
+        String server = collectionConfig.getServer();
+        String path = collectionConfig.getPath();
         String rawSchemaEndpoint = "admin/file/?contentType=text/xml;charset=utf-8&file=schema.xml";
 
         StringJoiner urlJoiner = new StringJoiner("/");

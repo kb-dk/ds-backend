@@ -30,8 +30,11 @@ public abstract class IntegrationTest {
     @BeforeAll
     static void setUp() throws Exception{
         try {
-            ServiceConfig.getInstance().initialize("ds-image-integration-test.yaml");            
-            dsImageDevel= ServiceConfig.getConfig().getString("image.url");
+            // Note: the second-argument devops/operations properties override file (see
+            // ServiceConfig#initialize(String, String)) is not used here - this is a single YAML file, unlike
+            // some other modules' integration tests.
+            ServiceConfig.initialize("ds-image-integration-test.yaml");
+            dsImageDevel= ServiceConfig.getConfig().getValue("image.url", String.class);
             remote = new DsImageClient(dsImageDevel);
         } catch (IOException e) { 
             e.printStackTrace();
@@ -40,9 +43,9 @@ public abstract class IntegrationTest {
         }
 
         try {            
-            String keyCloakRealmUrl= ServiceConfig.getConfig().getString("integration.devel.keycloak.realmUrl");            
-            String clientId=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientId");
-            String clientSecret=ServiceConfig.getConfig().getString("integration.devel.keycloak.clientSecret");                
+            String keyCloakRealmUrl= ServiceConfig.getConfig().getValue("integration.devel.keycloak.realmUrl", String.class);
+            String clientId=ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientId", String.class);
+            String clientSecret=ServiceConfig.getConfig().getValue("integration.devel.keycloak.clientSecret", String.class);
             String token=KeycloakUtil.getKeycloakAccessToken(keyCloakRealmUrl, clientId, clientSecret);           
             log.info("Retrieved keycloak access token:"+token);            
 

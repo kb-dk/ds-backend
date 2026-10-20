@@ -14,9 +14,7 @@
  */
 package dk.kb.present.transform;
 
-import dk.kb.util.yaml.YAML;
-
-import java.util.Arrays;
+import dk.kb.present.config.TransformerConfig;
 
 /**
  * Factory for creating a specific type of {@link DSTransformer}s.
@@ -35,25 +33,10 @@ public interface DSTransformerFactory {
     /**
      * Create a new transformer of the supported type and return it.
      *
-     * @param conf configuration for the {@link DSTransformer} to create.
+     * @param conf configuration for the {@link DSTransformer} to create. Should be downcast to the concrete
+     *             {@link TransformerConfig} implementation matching this factory's {@link #getTransformerID()}.
      * @return a {@link DSTransformer} of the supported type with the given configuration;
      * @throws Exception if the transformer could not be created.
      */
-    DSTransformer createTransformer(YAML conf) throws Exception;
-
-    /**
-     * Helper for verifying existence of keys in the config.
-     *
-     * @param config configuration for the concrete transformer.
-     * @param requiredKeys 0 or more keys that must be present in the configuration.
-     */
-    default void assertConfigKeys(YAML config, String... requiredKeys) {
-        for (String requiredKey: requiredKeys) {
-            if (!config.containsKey(requiredKey)) {
-                throw new IllegalArgumentException(
-                        "Expected the property '" + requiredKey + "' to be present in the config. " +
-                                "The complete list of mandatory properties is " + Arrays.toString(requiredKeys));
-            }
-        }
-    }
+    DSTransformer createTransformer(TransformerConfig conf) throws Exception;
 }

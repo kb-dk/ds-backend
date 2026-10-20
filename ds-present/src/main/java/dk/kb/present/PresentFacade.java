@@ -60,7 +60,8 @@ public class PresentFacade {
 
     private static OriginHandler getOriginHandler() {
         if (originHandler == null) {
-            originHandler = new OriginHandler(ServiceConfig.getConfig());
+            originHandler = new OriginHandler(ServiceConfig.getOrigins(), ServiceConfig.getOriginPrefixPattern(),
+                    ServiceConfig.getRecordIdPattern(), ServiceConfig.getStorages());
         }
         return originHandler;
     }
@@ -378,8 +379,8 @@ public class PresentFacade {
      */
     // Really hacking here to handle the case of the source containing multiple MODS-sections
     // TODO: Hopefully determine that 1 record = 1 mods always
-    
-    /* No used 
+
+    /* No used
     private static List<String> splitSolrJSON(String solrJSONs) {
         ObjectMapper mapper = new ObjectMapper();
         List<?> jsonArray = JSON.fromJson(solrJSONs, List.class);

@@ -24,7 +24,7 @@ import dk.kb.oauth.config.ServiceConfig;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
 import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
+import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +36,7 @@ public class ContextListener implements ServletContextListener {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public static final String CONFIG_ENV = "java:/comp/env/application-config";
+    public static final String PROPERTIES_CONFIG_ENV = "java:/comp/env/application-properties-config";
 
     // Having a key that contains the artifact ID is not necessary as the logback config file location
     // it is always stated in a Tomcat context file that is only used for the project.
@@ -60,11 +61,11 @@ public class ContextListener implements ServletContextListener {
 
         logServiceInfo();
         initConfig();
-        final YAML cookieConf = ServiceConfig.getConfig().getSubMap("cookies");
+        final Config conf = ServiceConfig.getConfig();
         log.info("cookie configuration secure:'{}', httponly:'{}', samesite:'{}'",
-            cookieConf.getBoolean("secure",true),
-            cookieConf.getBoolean("httponly",true),
-            cookieConf.getString("samesite","Strict"));
+            conf.getOptionalValue("cookies.secure", Boolean.class).orElse(true),
+            conf.getOptionalValue("cookies.httponly", Boolean.class).orElse(true),
+            conf.getOptionalValue("cookies.samesite", String.class).orElse("Strict"));
     }
 
     /**
@@ -117,9 +118,20 @@ public class ContextListener implements ServletContextListener {
             throw new RuntimeException(message, e);
         }
 
+        // The devops/operations properties override file (secrets etc.) is optional and configured via its own
+        // JNDI entry, separate from the YAML file above - see the class javadoc on ServiceConfig.
+        String propertiesSource = null;
         try {
-            //TODO this should not refer to something in template. Should we perhaps use reflection here?
-            ServiceConfig.getInstance().initialize(configSource);
+            propertiesSource = (String) ctx.lookup(PROPERTIES_CONFIG_ENV);
+            log.info("Devops/operations properties override file configured at '{}': '{}'",
+                     PROPERTIES_CONFIG_ENV, propertiesSource);
+        } catch (NamingException e) {
+            log.info("No devops/operations properties override file configured at '{}'. Continuing with only " +
+                      "the YAML configuration.", PROPERTIES_CONFIG_ENV);
+        }
+
+        try {
+            ServiceConfig.initialize(configSource, propertiesSource);
 
             String logConfig = "N/A";
             try {
@@ -131,8 +143,8 @@ public class ContextListener implements ServletContextListener {
                     "logbag config in '{}' or third party library include of slf4j-simple", LOGBACK_ENV);
             }
 
-            log.info("ServiceConfig initialized with autoupdate={} from config glob '{}', Logback config in '{}'",
-                     ServiceConfig.getInstance().isAutoUpdating(), configSource, logConfig);
+            log.info("ServiceConfig initialized with autoupdate={} from config file '{}', Logback config in '{}'",
+                     ServiceConfig.isAutoUpdating(), configSource, logConfig);
         } catch (IOException e) {
             String message = "Failed to load settings from '" + configSource + "' resolved from '" + CONFIG_ENV + "'";
             log.error(message, e);
@@ -253,7 +265,7 @@ public class ContextListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         log.debug("contextDestroyed called: Shutting down ServiceConfig");
-        ServiceConfig.getInstance().shutdown();
+        ServiceConfig.shutdown();
         log.info("Service destroyed");
     }
 }
