@@ -3,13 +3,13 @@ package dk.kb.storage.util;
 import java.io.File;
 import java.util.Locale;
 
-import dk.kb.storage.storage.DsStorage;
-import dk.kb.storage.storage.DsStorageForUnitTest;
+import dk.kb.storage.storage.RecordStorage;
+import dk.kb.storage.storage.RecordStorageForUnitTest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 
 import dk.kb.storage.config.ServiceConfig;
-import dk.kb.shared.util.DbUtil;
+import dk.kb.shared.util.DatabaseUnitTestUtil;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -44,17 +44,17 @@ public abstract class DsStorageUnitTestUtil {
             Thread.currentThread().getContextClassLoader().getResource("logback-test.xml").getPath()
     ).getParentFile().getAbsolutePath();
 
-    protected static DsStorageForUnitTest storage = null;
+    protected static RecordStorageForUnitTest storage = null;
 
     protected static void setupDatabaseForClass(Class<?> clazz) throws Exception {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
         URL = getJdbcUrlForSchema(schemaName);
 
         ServiceConfig.initialize("conf/ds-storage-behaviour.yaml");
-        DbUtil.runFlywayMigrations(URL, DRIVER, USERNAME, PASSWORD, schemaName, MODULE);
-        DsStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
+        DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
+        RecordStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
 
-        storage = new DsStorageForUnitTest();
+        storage = new RecordStorageForUnitTest();
     }
 
     /**
@@ -63,7 +63,7 @@ public abstract class DsStorageUnitTestUtil {
      */
     @BeforeEach
     public void beforeEach() throws Exception {
-        storage.clearMappingAndRecordTable();
+        storage.clearTableRecords();
         storage.commit();
     }
 
@@ -72,6 +72,6 @@ public abstract class DsStorageUnitTestUtil {
         // No reason to delete DB data file after test, since we clear table it before each test.
         // This way you can open the DB in a DB-browser after the unittest and see the result.
         // Just run that single test and look in the DB
-        DsStorage.shutdown();
+        RecordStorage.shutdown();
     }
 }

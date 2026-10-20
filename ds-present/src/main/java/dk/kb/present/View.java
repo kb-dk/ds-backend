@@ -397,7 +397,7 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
             return;
         }
 
-        boolean useTranscriptions = ServiceConfig.getConfig().getBoolean("index.useTransriptions");
+        boolean useTranscriptions = ServiceConfig.isUseTranscriptionsEnabled();
         if (!useTranscriptions) {
             return;
         }
