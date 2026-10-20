@@ -1,0 +1,14 @@
+opencollection: 1.0.0
+info:
+  name: "ds-backend"
+  type: workspace
+
+collections:
+  - name: "ds-storage"
+    path: "collections/ds-storage"
+  - name: "authentication"
+    path: "collections/authentication"
+
+specs:
+
+docs: ''

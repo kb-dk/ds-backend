@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
+
+## [8.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.0) - 2026-10-13
+
 ## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
 
 ### Added
@@ -14,7 +18,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added `TopContentDtoMappperTest`
 
 ### Changed
-- Removed kb-util dependency and moved classes to ds-shared
+
+- Removed `kb-util` dependency and moved classes to `ds-shared`.
 - Changed `TopContentDto` so it now have a couple of extra fields. Future unexpected fields will now be ignored.
 - Changed `uploadFile` method to split data into smaller chunks enable to enhance upload job stability.
 

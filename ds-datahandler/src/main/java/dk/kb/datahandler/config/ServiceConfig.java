@@ -534,6 +534,56 @@ public class ServiceConfig {
         return serviceConfig.getOptionalValue("db.connectionPoolSize", Integer.class).orElse(10); //Default 10
     }
 
+    // --- The getDatabase*/getJdbcUrl names below are aliases kept for dk.kb.datahandler.webservice.ContextListener
+    // (which calls them under these names from origin/main's new rerun-cluster support); they delegate to the
+    // original getDB*/getConnectionPoolSize methods above rather than duplicating the lookup logic. ---
+
+    public static String getDatabaseDriver() {
+        return getDBDriver();
+    }
+
+    public static String getJdbcUrl() {
+        return getDBUrl();
+    }
+
+    public static String getDatabaseUsername() {
+        return getDBUserName();
+    }
+
+    public static String getDatabasePassword() {
+        return getDBPassword();
+    }
+
+    public static int getDatabaseConnectionPoolSize() {
+        return getConnectionPoolSize();
+    }
+
+    // --- P3Rerun is a second, independent database (see RerunClusterStorage) added on origin/main. These were
+    // rewritten against the SmallRye Config API (serviceConfig.getValue/getOptionalValue) to match this class's
+    // migration, instead of origin/main's pre-migration serviceConfig.getString()/getInteger() calls, which no
+    // longer compile now that serviceConfig is a SmallRyeConfig/Config rather than the old kb-util YAML. ---
+
+    public static String getP3RerunDatabaseDriver() {
+        return serviceConfig.getValue("db_p3rerun.driver", String.class);
+    }
+
+    public static String getP3RerunJdbcUrl() {
+        return serviceConfig.getValue("db_p3rerun.url", String.class);
+    }
+
+    public static String getP3RerunDatabaseUsername() {
+        return serviceConfig.getValue("db_p3rerun.username", String.class);
+    }
+
+    public static String getP3RerunDatabasePassword() {
+        // Same empty-password handling as getDBPassword() above.
+        return serviceConfig.getOptionalValue("db_p3rerun.password", String.class).orElse("");
+    }
+
+    public static int getP3RerunDatabaseConnectionPoolSize() {
+        return serviceConfig.getOptionalValue("db_p3rerun.connectionPoolSize", Integer.class).orElse(10);
+    }
+
     /**
      * Set (or overwrite) a single configuration property at runtime, without touching any configuration file
      * and without restarting the service. See {@code ds-storage}'s {@code ServiceConfig} for the full rationale.

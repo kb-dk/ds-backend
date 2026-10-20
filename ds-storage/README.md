@@ -53,7 +53,7 @@ Install Tomcat9 server
 
 Install PostgreSql (or any JDBC database).
 
-Create a database tablespace and define the tables using the file: resources/ddl/create_ds_storage.ddl
+Create a database tablespace.
 
 Configure tomcat with the context enviroment file conf/ocp/ds-storage.xml. Notice it points to the location on the file system where the yaml and logback file are located.
 

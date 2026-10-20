@@ -16,6 +16,7 @@ package dk.kb.present.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
+import dk.kb.storage.model.v1.RerunClusterResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Proxy for a ds-storage https://github.com/kb-dk/ds-storage instance.
@@ -87,19 +89,26 @@ public class DSStorage implements Storage {
         try {
             return storageClient.getRecord(id,false);
         } catch (ServiceException e) {
-            log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve record with id: '{}'. URL: '{}'. Exception: ",
+                id, storageUrl, e);
            throw e;
         }
     }
 
     @Override
-    public TranscriptionDto getTranscription(String fileId) throws ServiceException{
-        log.debug("getTranscription(fileid='{}') called", fileId);
+    public TranscriptionDto getTranscriptionByFileId(String fileId) throws ServiceException{
+        log.debug("getTranscriptionByFileId(fileid='{}') called", fileId);
         try {
-             return storageClient.getTranscription(fileId);
+             return storageClient.getTranscriptionByFileId(fileId);
+        } catch (NotFoundServiceException e) {
+            // No transcription for this fileId. It is to be expected
+            throw e;
         } catch (ServiceException e) {
-            log.debug("Unable to retrieve transcription '" + fileId + "' from " + storageUrl + "...", e);
-           throw e;
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve transcription with fileId: '{}'. URL: '{}'. Exception: ",
+                fileId, storageUrl, e);
+            throw e;
         }
     }
 
@@ -113,8 +122,10 @@ public class DSStorage implements Storage {
                 throw new IllegalArgumentException("Requests for anything else than deliverableUnits are not allowed.");
             }
             return record;
-        } catch (ServiceException e){
-            log.debug("Unable to retrieve record '" + id + "' from " + storageUrl + "...", e);
+        } catch (ServiceException e) {
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve record with id: '{}'. URL: '{}'. Exception: ",
+                id, storageUrl, e);
             throw e;
         }
     }
@@ -133,6 +144,28 @@ public class DSStorage implements Storage {
                 origin, recordType, mTime, maxRecords);
 
         return getDsRecordDtoStream(mTime, maxRecords, origin, recordType);
+    }
+
+    /**
+     * Return a RerunClusterResponseDto from fileId.
+     *
+     * @param fileId UUID of fileId.
+     * @return RerunClusterResponseDto
+     */
+    @Override
+    public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
+        log.debug("getRerunClusterByFileId(fileId='{}') called", fileId);
+        try {
+            return storageClient.getRerunClusterByFileId(fileId);
+        } catch (NotFoundServiceException e) {
+            // No rerun cluster for this fileId. It is to be expected
+            throw e;
+        } catch (ServiceException e) {
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve rerunClusterResponseDto with fileId: '{}'. URL: '{}'. Exception: ",
+                fileId, storageUrl, e);
+            throw e;
+        }
     }
 
     private ContinuationStream<DsRecordDto, Long> getDsRecordDtoStream(
