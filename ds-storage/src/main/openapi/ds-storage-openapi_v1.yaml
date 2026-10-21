@@ -517,7 +517,7 @@ paths:
         '204':
           description: No Content - The request has been executed correct and the server did not deliver any content.
 
-  /rerun-cluster:
+  /rerun-clusters:
     post:
       tags:
         - 'RerunCluster'
@@ -576,7 +576,7 @@ paths:
       security:
         - KBOAuth:
             - any
-      operationId: latestCreated
+      operationId: latestCreatedRerunCluster
       responses:
         '200':
           description: 'Latest created datetime from rerun_clusters table.'

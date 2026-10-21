@@ -45,6 +45,20 @@ solr:
   queryUrl: http://localhost:10011/solr/ds
   batchSize: 500
 
+db:
+  url: "jdbc:postgresql://changemer:changeme/changeme"
+  driver: org.postgresql.Driver
+  username: "changeme"
+  password: "changeme"
+  connectionPoolSize: 50
+
+db_p3rerun:
+  url: "jdbc:postgresql://changeme:changeme/changeme"
+  driver: org.postgresql.Driver
+  username: "changeme"
+  password: "changeme"
+  connectionPoolSize: 3
+
 # The ds-present server used for xslt
 present:
   url: http://localhost:9073/ds-present/v1

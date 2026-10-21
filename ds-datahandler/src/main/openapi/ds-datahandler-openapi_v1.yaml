@@ -284,7 +284,7 @@ paths:
         '204':
           description: No Content - The job finished and the server did not deliver any content.
 
-  /rerun-cluster:
+  /rerun-clusters:
     post:
       tags:
         - '${project.name}'

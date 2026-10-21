@@ -1,11 +1,11 @@
 info:
-  name: POST rerun-cluster - missing required fileId returns 400
+  name: POST rerun-clusters - missing required fileId returns 400
   type: http
   seq: 5
 
 http:
   method: POST
-  url: "{{baseUrl}}/rerun-cluster"
+  url: "{{baseUrl}}/rerun-clusters"
   headers:
     - name: Content-Type
       value: application/json

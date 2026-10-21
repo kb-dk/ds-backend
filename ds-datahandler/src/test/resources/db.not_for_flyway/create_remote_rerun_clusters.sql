@@ -9,7 +9,6 @@ CREATE TABLE clusters (
     job_id CHARACTER VARYING NOT NULL
 );
 
-CREATE INDEX clusters_file_id_idx ON clusters(file_id);
 CREATE INDEX clusters_rerun_cluster_id_idx ON clusters(rerun_cluster_id);
 CREATE INDEX clusters_created_idx ON clusters(created);
 

@@ -173,7 +173,7 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsPopulated_thenReturnLatestCreated() {
+  public void latestCreatedRerunCluster_whenTableIsPopulated_thenReturnLatestCreated() {
     // Arrange
     OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
@@ -199,7 +199,7 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
         rerunClusterApiServiceImpl.updateRerunClusters(rerunClusterRequestDtoList);
 
     // Act
-    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreated();
+    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreatedRerunCluster();
 
     // Assert
     assertNotNull(createdDto);
@@ -207,9 +207,9 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated() {
+  public void latestCreatedRerunCluster_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated() {
     // Act
-    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreated();
+    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreatedRerunCluster();
 
     // Assert
     assertNotNull(createdDto);

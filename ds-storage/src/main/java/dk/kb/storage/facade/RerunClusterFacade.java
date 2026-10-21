@@ -60,10 +60,10 @@ public class RerunClusterFacade {
    *
    * @return CreatedDto with latest created datetime
    */
-  public static CreatedDto latestCreated() {
-    return BaseModuleStorage.performStorageAction("latestCreated()", RerunClusterStorage.class,
+  public static CreatedDto latestCreatedRerunCluster() {
+    return BaseModuleStorage.performStorageAction("latestCreatedRerunCluster()", RerunClusterStorage.class,
         storage -> {
-          CreatedDto createdDto = ((RerunClusterStorage) storage).latestCreated();
+          CreatedDto createdDto = ((RerunClusterStorage) storage).latestCreatedRerunCluster();
           return createdDto;
         });
   }
