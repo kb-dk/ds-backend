@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Rename method `latestCreated` to `latestCreatedRerunCluster` so it does not collide when `summaries` is implemented.
+- Renamed endpoint `POST rerun-cluster` -> `POST rerun-clusters`.
+
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
 
 ### Fixed
@@ -17,13 +22,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Added endpoint `POST /rerun_clusters` that calls `ds-storage` via DsStorageClient that fetch `latestCreated` timestamp
-  (can be null) in our `rerun_cluster` table, then `ds-datahandler` uses the fetched `latestCreated` timestamp to fetch
-  all new rows (unique `file_id`) from remote `p3rerun` database in table `clusters` table and convert it to a list of
-  `RerunClusterRequestDto`, and sends it to `ds-storage`, that saves it in our `rerun_clusters` table, update `mtime` in
-  `ds_records` table and return number of rows inserted or updated in `rerun_clusters` table in a `RecordsCountDto`
-  object to `ds-datahandler`, that saves the number in `jobs` table.
-- Added new database connection to remote `p3rerun` database. OPS need to add extra database connection properties in
+- Added endpoint `POST /rerun_clusters` that calls `ds-storage` via DsStorageClient that fetch
+  `latestCreatedRerunCluster` timestamp (can be null) in our `rerun_cluster` table, then `ds-datahandler` uses the
+  fetched `latestCreatedRerunCluster` timestamp to fetch all new rows (unique `file_id`) from remote `p3reruns` database
+  in table `clusters` table and convert it to a list of `RerunClusterRequestDto`, and sends it to `ds-storage`, that
+  saves it in our `rerun_clusters` table, update `mtime` in `ds_records` table and return number of rows inserted or
+  updated in `rerun_clusters` table in a `RecordsCountDto` object to `ds-datahandler`, that saves the number in `jobs`
+  table.
+- Added new database connection to remote `p3reruns` database. OPS need to add extra database connection properties in
   `ds-datahandler-*.yaml` file.
 
 ### Changed

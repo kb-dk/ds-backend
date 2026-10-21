@@ -103,7 +103,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
             RerunClusterStorage.class, (mock, context) -> Mockito.when(mock.getRerunClusters(any()))
                 .thenReturn(rerunClusterRequestDtoList))) {
 
-          Mockito.when(dsStorageClient.latestCreated()).thenReturn(createdDto);
+          Mockito.when(dsStorageClient.latestCreatedRerunCluster()).thenReturn(createdDto);
           Mockito.when(dsStorageClient.updateRerunClusters(rerunClusterRequestDtoList))
               .thenReturn(recordsCountDto);
 
@@ -187,7 +187,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
             RerunClusterStorage.class, (mock, context) -> Mockito.when(mock.getRerunClusters(any()))
                 .thenReturn(rerunClusterRequestDtoList))) {
 
-          Mockito.when(dsStorageClient.latestCreated()).thenReturn(createdDto);
+          Mockito.when(dsStorageClient.latestCreatedRerunCluster()).thenReturn(createdDto);
           Mockito.when(dsStorageClient.updateRerunClusters(rerunClusterRequestDtoList))
               .thenReturn(recordsCountDto);
 

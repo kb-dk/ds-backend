@@ -284,7 +284,7 @@ paths:
         '204':
           description: No Content - The job finished and the server did not deliver any content.
 
-  /rerun-cluster:
+  /rerun-clusters:
     post:
       tags:
         - '${project.name}'
@@ -296,23 +296,6 @@ paths:
       responses:
         '201':
           description: 'Return the number of rows inserted or updated in rerun_clusters table'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordsCount'
-
-  /summaries:
-    post:
-      tags:
-        - '${project.name}'
-      summary: 'Returns new rows from remote p3summaries database in summaries table, then calls ds-storage via DsStorageClient that save the rows in our summaries table, update mtime in ds_records table and return number of rows inserted or updated in summaries table in a RecordsCountDto object.'
-      security:
-        - KBOAuth:
-            - any
-      operationId: updateSummaries
-      responses:
-        '201':
-          description: 'Return the number of rows inserted or updated in summaries table'
           content:
             application/json:
               schema:
@@ -619,7 +602,6 @@ components:
         - kaltura upload
         - transcriptions
         - rerun clusters
-        - summaries
       x-enum-varnames:
         - OAI_HARVEST        
         - SOLR_INDEX
@@ -627,7 +609,6 @@ components:
         - KALTURA_UPLOAD
         - TRANSCRIPTIONS
         - RERUN_CLUSTERS
-        - SUMMARIES
       x-enum-descriptions:
         - oai harvest
         - solr index
@@ -635,7 +616,6 @@ components:
         - kaltura upload
         - transcriptions
         - rerun clusters
-        - summaries
 
     JobStatus:
       type: string

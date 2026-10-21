@@ -350,14 +350,15 @@ public class DsDatahandlerFacade {
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         DsStorageClient dsStorageApiClient = getDsStorageApiClient();
 
-        CreatedDto latestCreated = latestCreated();
-        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, latestCreated.getCreated(), user);
+        CreatedDto latestCreatedRerunCluster = latestCreatedRerunCluster();
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, latestCreatedRerunCluster.getCreated(), user);
 
         try {
+            log.info("Fetching rows from p3reruns table");
             List<RerunClusterRequestDto> rerunClusterRequestDtoList =
                 RerunClusterStorage.performStorageAction("getRerunClusters()",
                     RerunClusterStorage.class, storage -> {
-                        return storage.getRerunClusters(latestCreated.getCreated());
+                        return ((RerunClusterStorage) storage).getRerunClusters(latestCreatedRerunCluster.getCreated());
                     });
 
             // tomcat in dev environment could not handle one big request body, so need to split
@@ -389,12 +390,15 @@ public class DsDatahandlerFacade {
             updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
                 allRecordsCountDto.getCount(), null);
 
+            log.info("Successfully updated ds-storage reruns table with '{}' rows", allRecordsCountDto.getCount());
+
             return allRecordsCountDto;
         } catch (Exception exception) {
             log.error("Inserting/updating rerun_clusters table failed with jobId='{}'. Exception: ",
                 jobDto.getId(), exception);
             updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(),
-                OffsetDateTime.now(ZoneOffset.UTC), null, null);
+                OffsetDateTime.now(ZoneOffset.UTC), null,
+                latestCreatedRerunCluster.getCreated());
             throw exception;
         }
     }
@@ -405,11 +409,11 @@ public class DsDatahandlerFacade {
      *
      * @return CreatedDto latest created datetime
      */
-    public static CreatedDto latestCreated() {
+    public static CreatedDto latestCreatedRerunCluster() {
         try {
             DsStorageClient dsStorageApiClient = getDsStorageApiClient();
             CreatedDto createdDto =
-                dsStorageApiClient.latestCreated();
+                dsStorageApiClient.latestCreatedRerunCluster();
 
             log.info("Latest created datetime from ds-storage rerun_clusters table:'{}'",
                 createdDto.getCreated());

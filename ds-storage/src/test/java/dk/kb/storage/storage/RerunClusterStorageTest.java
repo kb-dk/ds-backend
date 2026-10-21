@@ -346,7 +346,7 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsPopulated_thenReturnLatestCreated() throws Exception {
+  public void latestCreatedRerunCluster_whenTableIsPopulated_thenReturnLatestCreated() throws Exception {
     // Arrange
     OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
@@ -373,7 +373,7 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
         rerunClusterStorage.updateRerunClusters(rerunClusterRequestDtoList);
 
     // Act
-    CreatedDto createdDto = rerunClusterStorage.latestCreated();
+    CreatedDto createdDto = rerunClusterStorage.latestCreatedRerunCluster();
 
     // Assert
     assertNotNull(recordsCountDto);
@@ -384,10 +384,10 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated()
+  public void latestCreatedRerunCluster_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated()
       throws Exception {
     // Act
-    CreatedDto createdDto = rerunClusterStorage.latestCreated();
+    CreatedDto createdDto = rerunClusterStorage.latestCreatedRerunCluster();
 
     // Assert
     assertNotNull(createdDto);

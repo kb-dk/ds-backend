@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Rename method `latestCreated` to `latestCreatedRerunCluster` so it does not collide when `summaries` is implemented.
+- Renamed endpoint `POST rerun-cluster` -> `POST rerun-clusters`.
+
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
 
 ## [8.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.0) - 2026-10-13
@@ -14,12 +19,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added support for OffsetDateTime with OpenAPI generation.
-- Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found in
-  `create_rerun_clusters.ddl`*).
+- Added rerun_clusters table (*Remember: OPS need to run `Flyway` migration*).
 - Added endpoint `POST /rerun_clusters` that takes a List of `RerunClusterRequestDto` and save it to our
   `rerun_clusters` table, update `mtime` in `ds_records` table and return number of rows inserted or updated in
   `rerun_clusters` table.
-- Added endpoint `GET /rerun_clusters/{fileId}` that returns a `RerunClusterResponseDto` matching the fileId. Returns a
+- Added endpoint `GET /rerun_cluster/{fileId}` that returns a `RerunClusterResponseDto` matching the `fileId`. Returns a
   `HTTP 404` if no match was found.
 - Added endpoint `GET /rerun-cluster/created/latest` that return latest `created` datetime from `rerun_clusters` table.
   It can be null, if `rerun_clusters` table is empty.

@@ -32,6 +32,7 @@ public class RerunClusterApiServiceImpl extends ImplBase implements RerunCluster
   public RecordsCountDto updateRerunClusters(
       @Valid List<RerunClusterRequestDto> rerunClusterRequestDtoList) {
     try {
+      log.info("Updating reruns table");
       return RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
     } catch (Exception exception) {
       throw handleException(exception);
@@ -59,9 +60,9 @@ public class RerunClusterApiServiceImpl extends ImplBase implements RerunCluster
    * @return CreatedDto with latest created datetime
    */
   @Override
-  public CreatedDto latestCreated() {
+  public CreatedDto latestCreatedRerunCluster() {
     try {
-      return RerunClusterFacade.latestCreated();
+      return RerunClusterFacade.latestCreatedRerunCluster();
     } catch (Exception exception) {
       throw handleException(exception);
     }

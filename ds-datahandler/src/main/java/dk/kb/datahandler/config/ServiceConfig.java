@@ -558,11 +558,6 @@ public class ServiceConfig {
         return getConnectionPoolSize();
     }
 
-    // --- P3Rerun is a second, independent database (see RerunClusterStorage) added on origin/main. These were
-    // rewritten against the SmallRye Config API (serviceConfig.getValue/getOptionalValue) to match this class's
-    // migration, instead of origin/main's pre-migration serviceConfig.getString()/getInteger() calls, which no
-    // longer compile now that serviceConfig is a SmallRyeConfig/Config rather than the old kb-util YAML. ---
-
     public static String getP3RerunDatabaseDriver() {
         return serviceConfig.getValue("db_p3rerun.driver", String.class);
     }
@@ -576,12 +571,11 @@ public class ServiceConfig {
     }
 
     public static String getP3RerunDatabasePassword() {
-        // Same empty-password handling as getDBPassword() above.
-        return serviceConfig.getOptionalValue("db_p3rerun.password", String.class).orElse("");
+        return serviceConfig.getValue("db_p3rerun.password", String.class);
     }
 
     public static int getP3RerunDatabaseConnectionPoolSize() {
-        return serviceConfig.getOptionalValue("db_p3rerun.connectionPoolSize", Integer.class).orElse(10);
+        return serviceConfig.getValue("db_p3rerun.connectionPoolSize", Integer.class);
     }
 
     /**
