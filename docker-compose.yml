@@ -319,7 +319,7 @@ services:
       - no-new-privileges:true
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.7.0-1
+    image: quay.io/keycloak/keycloak:26.8.1
     command: [ "start-dev", "--import-realm", "--http-port=8087" ]
     cap_drop:
       - ALL
