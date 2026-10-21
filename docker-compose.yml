@@ -333,12 +333,12 @@ services:
       KC_HOSTNAME: http://keycloak.local:8087
       KC_HEALTH_ENABLED: true
     healthcheck:
-      test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(new java.net.URI(args[0])).build(), java.net.http.HttpResponse.BodyHandlers.discarding()).statusCode() == 200 ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
-      interval: 60s
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      interval: 10s
       timeout: 5s
-      retries: 55
+      retries: 15
       start_interval: 5s
-      start_period: 25s
+      start_period: 5s
     ports:
       - "8087:8087"
     networks:
