@@ -1,0 +1,26 @@
+# Devops/operations properties override file for ds-license.
+#
+# This is the explicit, per-service override file configured via the 'application-properties-config' Tomcat
+# context environment entry (see conf/ocp/ds-license.xml) / Jetty EnvEntry (see src/test/jetty/jetty-env.xml),
+# and loaded by ServiceConfig.initialize(configFile, propertiesOverrideFile). It is meant for devops/operations
+# secrets and per-environment values that must never be committed to git - most importantly the real database
+# credentials, since ds-license-behaviour.yaml (checked into git) has NO 'db:' section at all.
+#
+# Copy this file to 'ds-license-application.properties' (same folder, without the '.SAMPLE' suffix) and fill in
+# your own values. This filename is already covered by the repository's generic '*-application.properties'
+# .gitignore rule.
+#
+# Any key present in ds-license-behaviour.yaml can be overridden here, using the same dotted path. Only the keys
+# below are the ones commonly overridden per environment/operator - uncomment and set the ones you need.
+
+# db.url=jdbc:postgresql://localhost:5432/ds-license
+# db.driver=org.postgresql.Driver
+# db.username=ds_license_user
+# db.password=changeme
+
+# keycloak.clientSecret=changeme
+# keycloak.rsaPublicKey=changeme
+
+# security.client.secret=changeme
+
+# openapi.serverurl=http://localhost:9076/ds-license/v1

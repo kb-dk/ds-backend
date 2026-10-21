@@ -1,9 +1,9 @@
 package dk.kb.present;
 
+import dk.kb.present.config.OriginConfig;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.util.Resolver;
-import dk.kb.util.yaml.YAML;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -33,13 +33,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class ViewTest {
     private static final Logger log = LoggerFactory.getLogger(ViewTest.class);
 
-    private static YAML config;
-
     @BeforeAll
     static void setup() {
         try {
             ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "internal-test-setup.yaml");
-            config = ServiceConfig.getConfig();
         } catch (IOException e) {
             fail();
         }
@@ -47,9 +44,9 @@ class ViewTest {
 
     @Test
     void identity() throws Exception {
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML dsflConf = conf.getYAMLList(".origins").get(0);
-        View view = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(0), dsflConf.getSubMap("dsfl").getString("origin"));
+        ServiceConfig.initialize("test_setup.yaml");
+        OriginConfig dsflConf = ServiceConfig.getOrigins().get(0);
+        View view = new View(dsflConf.getViews().get(0), dsflConf.getOrigin());
         DsRecordDto record = new DsRecordDto().mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
         record.setData("SameAsInput");
         assertEquals("SameAsInput", view.apply(record)); // Identity view
@@ -58,9 +55,9 @@ class ViewTest {
     // Should still work after update of XSLT to JSON-LD, might fail and need reassessment
     @Test
     void jsonldMods() throws Exception {
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML dsflConf = conf.getYAMLList(".origins").get(0);
-        View jsonldView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(1), dsflConf.getSubMap("dsfl").getString("origin"));
+        ServiceConfig.initialize("test_setup.yaml");
+        OriginConfig dsflConf = ServiceConfig.getOrigins().get(0);
+        View jsonldView = new View(dsflConf.getViews().get(1), dsflConf.getOrigin());
         String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
         DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100")
@@ -87,7 +84,7 @@ class ViewTest {
                                     "\"value\":\"randomKalturaId\""));
         assertTrue(jsonld.contains("\"kb:platform\":\"DRARKIV\""));
     }
-    
+
     @Test
     @Tag("integration")
     void testNoKalturaIdPvica() throws Exception {
@@ -149,9 +146,9 @@ class ViewTest {
 
     @Test
     void solrJson() throws Exception {
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML dsflConf = conf.getYAMLList(".origins").get(0);
-        View solrView = new View(dsflConf.getSubMap("dsfl").getYAMLList("views").get(2), dsflConf.getSubMap("dsfl").getString("origin"));
+        ServiceConfig.initialize("test_setup.yaml");
+        OriginConfig dsflConf = ServiceConfig.getOrigins().get(0);
+        View solrView = new View(dsflConf.getViews().get(2), dsflConf.getOrigin());
         String mods = Resolver.resolveUTF8String(TestFiles.CUMULUS_RECORD_40221e30);
 
         DsRecordDto recordDto = new DsRecordDto().data(mods).id("test.id").mTimeHuman("2023-11-29 13:45:49+0100").mTime(1701261949625000L);
@@ -167,8 +164,8 @@ class ViewTest {
     @Tag("integration")
     void testConcurrency() throws InterruptedException, ExecutionException, IOException {
         String pvica = Resolver.resolveUTF8String(TestFiles.PVICA_HOMEMADE_DOMS_MIG_WITH_TVMETER_ADDED);
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML tvConf = conf.getYAMLList(".origins").get(3);
+        ServiceConfig.initialize("test_setup.yaml");
+        OriginConfig tvConf = ServiceConfig.getOrigins().get(3);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         //Use CountDownLatches to make sure threads are executed in parallel
@@ -177,8 +174,7 @@ class ViewTest {
 
         Future<String> future1 = executorService.submit(() -> {
             try {
-                View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
-                        tvConf.getSubMap("\"ds.tv\"").getString("origin"));
+                View solrView = new View(tvConf.getViews().get(2), tvConf.getOrigin());
                 DsRecordDto recordDto = new DsRecordDto().data(pvica).mTimeHuman("2023-11-29 13:45:49+0100").id("test.id1").mTime(1701111111111000L).origin("ds.tv");
                 readyLatch.countDown();
                 startLatch.await();
@@ -191,8 +187,7 @@ class ViewTest {
 
         Future<String> future2 = executorService.submit(() -> {
             try {
-                View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
-                        tvConf.getSubMap("\"ds.tv\"").getString("origin"));
+                View solrView = new View(tvConf.getViews().get(2), tvConf.getOrigin());
                 DsRecordDto recordDto = new DsRecordDto().data(pvica).mTimeHuman("2023-11-30 13:45:49+0100").id("test.id2").mTime(1702222222222000L).origin("ds.tv");
                 readyLatch.countDown();
                 startLatch.await();
@@ -502,11 +497,9 @@ class ViewTest {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML radioConf = conf.getYAMLList("origins").get(2);
-        View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(1),
-                radioConf.getSubMap("\"ds.radio\"").getString("origin"));
-        return jsonldView;
+        ServiceConfig.initialize("test_setup.yaml");
+        OriginConfig radioConf = ServiceConfig.getOrigins().get(2);
+        return new View(radioConf.getViews().get(1), radioConf.getOrigin());
     }
 
     /**
@@ -518,10 +511,9 @@ class ViewTest {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML tvConf = conf.getYAMLList("origins").get(3);
-        return new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(1),
-                tvConf.getSubMap("\"ds.tv\"").getString("origin"));
+        ServiceConfig.initialize("test_setup.yaml");
+        OriginConfig tvConf = ServiceConfig.getOrigins().get(3);
+        return new View(tvConf.getViews().get(1), tvConf.getOrigin());
     }
 
     /**
@@ -530,11 +522,9 @@ class ViewTest {
      * @return solr view for preservica records.
      */
     private static View getSolrTvViewForPreservicaRecord() throws IOException {
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML tvConf = conf.getYAMLList(".origins").get(3);
-        View solrView = new View(tvConf.getSubMap("\"ds.tv\"").getYAMLList("views").get(2),
-                tvConf.getSubMap("\"ds.tv\"").getString("origin"));
-        return solrView;
+        ServiceConfig.initialize("test_setup.yaml");
+        OriginConfig tvConf = ServiceConfig.getOrigins().get(3);
+        return new View(tvConf.getViews().get(2), tvConf.getOrigin());
     }
 
     /**
@@ -546,10 +536,8 @@ class ViewTest {
         if (Resolver.getPathFromClasspath(TestFiles.PVICA_RECORD_df3dc9cf) == null){
             fail("Missing internal test files");
         }
-        YAML conf = YAML.resolveLayeredConfigs("test_setup.yaml");
-        YAML radioConf = conf.getYAMLList("origins").get(2);
-        View jsonldView = new View(radioConf.getSubMap("\"ds.radio\"").getYAMLList("views").get(2),
-                radioConf.getSubMap("\"ds.radio\"").getString("origin"));
-        return jsonldView;
+        ServiceConfig.initialize("test_setup.yaml");
+        OriginConfig radioConf = ServiceConfig.getOrigins().get(2);
+        return new View(radioConf.getViews().get(2), radioConf.getOrigin());
     }
 }

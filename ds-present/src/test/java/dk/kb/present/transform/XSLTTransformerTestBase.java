@@ -16,15 +16,13 @@ package dk.kb.present.transform;
 
 import dk.kb.present.TestUtil;
 import dk.kb.present.config.ServiceConfig;
+import dk.kb.present.config.XsltConfig;
 import dk.kb.present.util.TestFileProvider;
-import dk.kb.util.yaml.YAML;
 import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -130,12 +128,8 @@ public abstract class XSLTTransformerTestBase {
         }
         String solrString;
         try {
-            String yamlStr =
-                    "stylesheet: '" + getXSLT() + "'\n" +
-                            "injections:\n" +
-                            "  - origin: 'ds.test'\n";
-            YAML yaml = YAML.parse(new ByteArrayInputStream(yamlStr.getBytes(StandardCharsets.UTF_8)));
-            solrString = TestUtil.getTransformedFromConfigWithAccessFields(yaml, record);
+            XsltConfig config = new XsltConfig("xslt", getXSLT(), Map.of("origin", "ds.test"));
+            solrString = TestUtil.getTransformedFromConfigWithAccessFields(config, record);
         } catch (Exception e) {
             throw new RuntimeException(
                     "Unable to fetch and transform '" + record + "' using XSLT '" + getXSLT() + "'", e);

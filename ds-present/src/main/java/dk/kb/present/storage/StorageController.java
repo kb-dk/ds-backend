@@ -14,7 +14,8 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.BackendConfig;
+import dk.kb.present.config.StorageConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,64 +34,27 @@ import java.util.stream.Collectors;
 public class StorageController {
     private static final Logger log = LoggerFactory.getLogger(StorageController.class);
 
-    public static final String DEFAULT_KEY = "default";
-    public static final String ORDER_KEY = "order";
-    public static final String BACKENDS_KEY = "backends";
-
     private static final Map<String, StorageFactory> factories = getFactories();
 
     /**
-     * Create a storage with the given configuration, there the configuration contains a single key which is the
-     * storage ID, with the value being the configuration to use for the storage.
+     * Create a storage with the given configuration.
      * If the config contains multiple backends, those are wrapped in a {@link MultiStorage}.
      *
      * @return a configured storage for the given ID, ready for use.
      * @throws NullPointerException if no storage with the given id could be located.
      * @throws Exception if the storage could not be created.
      */
-    //     - test:
-    //        default: true
-    //        order: sequential
-    //        backends:
-    //          - folder:
-    //              root: '/use/only/for/test/purposes'
-    //          - folder:
-    //              root: '/some/other/path'
-    public static Storage createStorage(YAML conf) throws Exception {
-        if (conf.size() != 1) {
-            throw new IllegalArgumentException(
-                    "Expected a configuration with a single key/value, where the key is storage ID and the value is " +
-                    "the configuration for that storage");
+    public static Storage createStorage(StorageConfig conf) throws Exception {
+        List<BackendConfig> backends = conf.getBackends();
+        if (backends.isEmpty()) {
+            throw new IllegalArgumentException("No backends defined for storage " + conf.getId());
         }
-        String mainID = conf.keySet().stream().findFirst().orElseThrow();
-        conf = conf.getSubMap(mainID); // There must be some properties for a storage
-        //        default: true
-        //        order: sequential
-        //        backends:
-        //          - folder:
-        //              root: '/use/only/for/test/purposes'
-        //          - folder:
-        //              root: '/some/other/path'
-        boolean isDefault = conf.getBoolean(DEFAULT_KEY, false); // TODO: Enable this
-        MultiStorage.ORDER order =
-                MultiStorage.ORDER.valueOf(conf.getString(ORDER_KEY, MultiStorage.ORDER.getDefault().toString()));
-        List<YAML> backendsYAML = conf.getYAMLList(BACKENDS_KEY);
-        if (backendsYAML.isEmpty()) {
-            throw new IllegalArgumentException("No backends defined for storage " + mainID);
+        List<Storage> storages = new ArrayList<>(backends.size());
+        for (BackendConfig backend : backends) {
+            storages.add(createStorage(backend.getType(), conf.getId(), backend, conf.isDefault()));
         }
-        List<Storage> storages = new ArrayList<>(backendsYAML.size());
-        //          - folder:
-        //              root: '/use/only/for/test/purposes'
-        //          - folder:
-        //              root: '/some/other/path'
-        for (YAML subStorage: backendsYAML) {
-            //          - folder:
-            //              root: '/use/only/for/test/purposes'
-            String subStorageType = subStorage.keySet().stream().findFirst().orElseThrow();
-            YAML subStorageConf = subStorage.containsKey(subStorageType) ? subStorage.getSubMap(subStorageType) : new YAML(); // Some storages might not have a config
-            storages.add(createStorage(subStorageType, mainID, subStorageConf, isDefault));
-        }
-        return storages.size() > 1 ? new MultiStorage(mainID, storages, order, isDefault) : storages.get(0);
+        return storages.size() > 1 ? new MultiStorage(conf.getId(), storages, conf.getOrder(), conf.isDefault()) :
+                storages.get(0);
     }
 
     /**
@@ -103,7 +67,8 @@ public class StorageController {
      * @throws NullPointerException if no storage with the given id could be located.
      * @throws Exception if the storage could not be created.
      */
-    public static Storage createStorage(String storageType, String storageID, YAML conf, boolean isDefault) throws Exception {
+    public static Storage createStorage(String storageType, String storageID, BackendConfig conf, boolean isDefault)
+            throws Exception {
         StorageFactory factory = factories.get(storageType);
         if (factory == null) {
             throw new NullPointerException(String.format(

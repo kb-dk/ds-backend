@@ -39,7 +39,7 @@ public abstract class TestcontainersUtil {
         schemaName = clazz.getSimpleName().toLowerCase(Locale.ROOT);
         URL = getJdbcUrlForSchema(schemaName);
 
-        ServiceConfig.initialize("conf/ds-storage*.yaml");
+        ServiceConfig.initialize("conf/ds-storage-behaviour.yaml");
         DatabaseUnitTestUtil.initializeFlyway(URL, USERNAME, PASSWORD, schemaName, MODULE);
         BaseModuleStorage.initialize(DRIVER, URL, USERNAME, PASSWORD);
     }

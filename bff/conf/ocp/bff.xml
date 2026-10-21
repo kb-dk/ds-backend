@@ -5,8 +5,15 @@
         value="/app/conf/bff-logback.xml"
         type="java.lang.String"
         override="false"/>
+    <!-- ServiceConfig loads a single YAML file (no more base/environment globbing). -->
     <Environment name="application-config"
-        value="/app/conf/bff*.yaml"
+        value="/app/conf/bff-base.yaml"
+        type="java.lang.String"
+        override="false"/>
+    <!-- Optional devops/operations properties override file - carries secrets such as keycloak.secret and
+         secretSalt, kept entirely outside git. See ds-storage/SMALLRYE_CONFIG_MIGRATION.md. -->
+    <Environment name="application-properties-config"
+        value="/app/conf/bff-application.properties"
         type="java.lang.String"
         override="false"/>
 

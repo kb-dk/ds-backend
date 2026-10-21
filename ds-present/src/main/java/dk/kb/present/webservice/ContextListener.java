@@ -13,6 +13,7 @@ import javax.naming.NamingException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import dk.kb.present.PresentFacade;
 import dk.kb.present.config.ServiceConfig;
 import dk.kb.util.BuildInfoManager;
 import dk.kb.util.Files;
@@ -36,21 +37,24 @@ public class ContextListener implements ServletContextListener {
 
     public static final String LOGBACK_ENV = "java:/comp/env/ds-present-logback-config";
     public static final String CONFIG_ENV = "java:/comp/env/application-config";
+    public static final String PROPERTIES_CONFIG_ENV = "java:/comp/env/application-properties-config";
 
     /**
      * On context initialisation this
      * i) Initialises the logging framework (logback).
      * ii) Initialises the configuration class.
+     * iii) Warms up {@link PresentFacade}'s {@code OriginHandler}, so that a misconfigured origin/storage fails
+     * loudly at startup instead of on the first incoming request.
      *
      * @param sce context provided by the web server upon initialization.
      * @throws java.lang.RuntimeException if anything at all goes wrong.
      */
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-    	 // Workaround for logback problem. This should be called before any logging takes place
+     // Workaround for logback problem. This should be called before any logging takes place
         initLogging();
         BuildInfoManager.loadBuildInfo("ds-present.build.properties");
-    	try {
+    try {
             RuntimeMXBean mxBean = ManagementFactory.getRuntimeMXBean();
             if (mxBean.getInputArguments().stream().noneMatch(arg -> arg.startsWith("-Xmx"))) {
                 log.warn("Xmx is not specified. In stage or production this is almost always an error");
@@ -65,9 +69,19 @@ public class ContextListener implements ServletContextListener {
                      BuildInfoManager.getGitCommitChecksum(), BuildInfoManager.getGitCommitTime(),
                      BuildInfoManager.getGitClosestTag());
             InitialContext ctx = new InitialContext();
-            String configFile = (String) ctx.lookup("java:/comp/env/application-config");
+            String configFile = (String) ctx.lookup(CONFIG_ENV);
+            String propertiesFile = null;
+            try {
+                propertiesFile = (String) ctx.lookup(PROPERTIES_CONFIG_ENV);
+                log.info("Resolved devops/operations properties override file from JNDI '{}': '{}'",
+                         PROPERTIES_CONFIG_ENV, propertiesFile);
+            } catch (NamingException e) {
+                log.info("No '{}' JNDI entry configured; continuing without a devops/operations properties " +
+                          "override file", PROPERTIES_CONFIG_ENV);
+            }
             //TODO this should not refer to something in template. Should we perhaps use reflection here?
-            ServiceConfig.initialize(configFile);
+            ServiceConfig.initializeWithPropertiesOverride(configFile, propertiesFile);
+            PresentFacade.warmUp(); // Fail early: build the OriginHandler now, not on the first request
         } catch (NamingException e) {
             throw new RuntimeException("Failed to lookup settings", e);
         } catch (IOException e) {

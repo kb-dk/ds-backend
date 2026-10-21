@@ -369,7 +369,7 @@ public class SolrService {
             throw new InvalidArgumentServiceException("suggestDictionary is mandatory but was missing");
         }
 
-    	int minimumSuggestLength=ServiceConfig.getConfig().getInteger("solr.suggestMinimumLength");
+    	int minimumSuggestLength=ServiceConfig.getConfig().getValue("solr.suggestMinimumLength", Integer.class);
         if (suggestQuery.trim().length() < minimumSuggestLength ) {
            throw new InvalidArgumentServiceException("suggestQuery must have length >"+ minimumSuggestLength);
         }
@@ -699,7 +699,7 @@ public class SolrService {
             filterQuery = licenseClient.getUserLicenseQuery(licenseQueryDto);
         } catch (Exception e) {
             log.warn("Unable to get response from ds-license at URL '" +
-                    ServiceConfig.getConfig().getString("licensemodule.url") + "'", e);
+                    ServiceConfig.getConfig().getValue("licensemodule.url", String.class) + "'", e);
             throw new InternalServiceException("Unable to contact license server");
         }
 

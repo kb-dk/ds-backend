@@ -1,0 +1,29 @@
+# Devops/operations override file for ds-storage.
+#
+# Copy this to 'ds-storage-application.properties' (same folder, without the '.SAMPLE' suffix) and fill in
+# your own values, then point the Tomcat context environment entry 'application-properties-config' at it
+# (see conf/ocp/ds-storage.xml) - in production this is typically ${user.home}/services/conf/ds-storage-application.properties,
+# a plain file living entirely outside this git repository.
+#
+# This file (unlike SmallRye's own implicit 'config/application.properties' convention, see
+# config/application.properties.SAMPLE) is read from the exact path configured for THIS service alone, so it is
+# safe to use even when several WAR files share one Tomcat instance (as the development server does) - each
+# service gets its own distinct 'application-properties-config' entry and its own distinct file.
+#
+# This file must never be committed to git - it is the intended place for secrets, most importantly the real
+# database password.
+#
+# Any key present in ds-storage-behaviour.yaml can be overridden here, using the same dotted path. Only the keys
+# below are the ones commonly overridden per environment/operator - uncomment and set the ones you need.
+
+# db.url=jdbc:postgresql://localhost:5432/ds-storage
+# db.driver=org.postgresql.Driver
+# db.username=ds_storage_user
+# db.password=changeme
+# db.connectionPoolSize=10
+
+# security.baseurl=https://keycloak.example.org/realms
+# security.client.id=some_client
+# security.client.secret=changeme
+
+# openapi.serverurl=http://localhost:9072/ds-storage/v1

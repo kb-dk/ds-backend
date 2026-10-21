@@ -14,7 +14,8 @@
  */
 package dk.kb.present.storage;
 
-import dk.kb.util.yaml.YAML;
+import dk.kb.present.config.BackendConfig;
+import dk.kb.present.config.FailBackendConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,18 +26,14 @@ public class FailStorageFactory implements StorageFactory {
     private static final Logger log = LoggerFactory.getLogger(FailStorageFactory.class);
     private static final String TYPE = "fail";
 
-    public static final String MESSAGE_KEY = "message";
-    public static final String MESSAGE_DEFAULT = "No records can be delivered from this Storage";
-
     @Override
     public String getStorageType() {
         return TYPE;
     }
 
     @Override
-    public Storage createStorage(String id, YAML conf, boolean isDefault) throws Exception {
-        String message = conf.getString(MESSAGE_KEY, MESSAGE_DEFAULT);
-
-        return new FailStorage(id, message, isDefault);
+    public Storage createStorage(String id, BackendConfig conf, boolean isDefault) throws Exception {
+        FailBackendConfig c = (FailBackendConfig) conf;
+        return new FailStorage(id, c.getMessage(), isDefault);
     }
 }
