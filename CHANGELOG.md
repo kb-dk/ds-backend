@@ -9,6 +9,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
 
+### Added
+
+- Added documentation about how to use `Flyway` migration.
+
 ## [8.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.0) - 2026-10-13
 
 ## [7.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v7.0.0) - 2026-09-28
