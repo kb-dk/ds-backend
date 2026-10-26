@@ -110,8 +110,11 @@ public abstract class ImplBase {
     private ServiceException handleException(Exception e, boolean logWarning, boolean wrapServiceExceptions) {
         final String call = getCallDetails();
         if (e instanceof NotFoundServiceException) {
-            // Expected outcome (resource does not exist), only visible with debug logging
-            log.debug("Not found processing " + call, e);
+            // Expected, routine outcome (resource does not exist) - a single short line, deliberately without the
+            // exception's stack trace: there is nothing to diagnose here, and logging the trace at any level that
+            // is actually enabled just buries real problems in noise. Not conditioned on 'logWarning': a "not
+            // found" is never escalated to a warning regardless of that flag.
+            log.info("Not found processing {}: {}", call, e.getMessage());
         }
         else if (logWarning || !(e instanceof ServiceException)) {
             log.warn("Exception processing " + call, e);

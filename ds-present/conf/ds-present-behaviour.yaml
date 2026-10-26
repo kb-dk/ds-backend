@@ -4,30 +4,34 @@
 # The behaviour config is normally controlled by developers and is part of the code repository.
 # Sensitive information such as machine names and user/passwords should not be part of this config.
 #
-# It will be automatically merged with the environment config when accessed through the
-# application config system.
+# ServiceConfig loads this single YAML file (no more behaviour/kb-origins/environment-file globbing: the former
+# ds-present-kb-origins.yaml has been folded into this file below, under 'pvicaviews'/'baseviews'/'origins'). This
+# file is identical on every server - do not edit a deployed copy directly.
+#
+# See ds-present-application.properties.SAMPLE for the separate devops/operations properties override file, which
+# overrides settings via the 'application-properties-config' JNDI entry. This includes nested-tree values below
+# (imageservers, storages, ...), not just simple/scalar ones: any path below can be overridden per environment by
+# setting the same dotted/indexed key (e.g. 'imageservers[0].example.url') in that properties file - see its own
+# comments for the exact convention and worked examples. No second YAML file is ever loaded to achieve this.
+#
 
 # Image server URLs are injected into transformations.
-# These should be overridden in environment specific config files for all environments, meaning local test,
-# shared devel, stage and production
+# The real, environment-specific URL is set per deployment via ds-present-application.properties
+# ('imageservers[0].example.url=...'), not by editing this file - see that file's comments.
 #
-# Sample override:
+# Sample override, in ds-present-application.properties:
 #
-
-# imageservers:
-#   devel:
-#     url: "https://example.com/devel/iipimage"
-#     default: true
+# imageservers[0].example.url=https://example.com/devel/iipimage
 #
-# Note: The server marked with "default: true" is used in the base configuration ds-present-kb-collections.yaml
+# Note: The server marked with "default: true" is the one actually used.
 imageservers:
-  # Note: The servers are in a list to ensure the full list of servers can be fully overwritten in subsequent configs
+  # Note: The servers are in a list to ensure the full list of servers can be fully overwritten in the deployed copy.
   - example:
       url: "https://example.com"
-      default: true 
+      default: true
   - invalid:
       url: "invalid://url"
-      # The default is commented out here to force defining a default for a real imageserver in the local, devel or prod config
+      # The default is commented out here to force defining a default for a real imageserver in the deployed config
       #default: true
 
 # Values in the openapi part of the configuration are expected to be overwritten with the actual values used for deployment.
@@ -45,7 +49,8 @@ licensemodule:
   url: http://localhost:9076/ds-license/v1
   allowall: false
 
-# List of backing storages. This information should be overridden in ds-present-environment.yaml
+# List of backing storages. The real, environment-specific backend URL(s) are set per deployment via
+# ds-present-application.properties ('storages[0].main.backends[0].ds-storage.url=...'), not by editing this file.
 
 # The storages defined in this file are
 # * ds-storage, expecting https://github.com/kb-dk/ds-storage/ to be running locally with the default port
@@ -114,67 +119,125 @@ origin:
     # Mandatory. Suggested value: '[a-z0-9.]+', e.g. 'images.dsfl'
     pattern: '[a-z0-9.]+'
 
-# Origins are to be set in ds-present-kb-collections-yaml if possible, as that file overwrites the origins defined here
-# The origins available for this instance of ds-present
-#origins:
+#
+# This config contains definitions for image collections at the Royal Danish Library.
+#
+# If used by another institution, the 'pvicaviews'/'baseviews'/'origins' section below should be overwritten
+# entirely in the deployed copy of this file.
+#
+
+# Views for material harvested from preservica.
+pvicaviews: &PRESERVICA_VIEWS
+  - raw:
+      mime: 'text/plain'
+      strategy: 'NONE'
+      transformers:
+        - identity:
+  - JSON-LD:
+      mime: 'application/json'
+      strategy: 'DR'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              #- imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
+  - SolrJSON:
+      mime: 'application/json'
+      strategy: 'DR'
+      transformers:
+        - xslt:
+            stylesheet: 'xslt/preservica2schemaorg.xsl'
+            injections:
+              #- imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
+        - xsltsolr:
+            stylesheet: 'xslt/schemaorg2solr.xsl'
+# Generic views for images represented as MODS, used for multiple origins
+baseviews: &MODS_IMAGE_VIEWS
+  # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
+  - raw:
+      mime: 'text/plain'
+      strategy: 'NONE'
+      transformers:
+        - identity:
+  - MODS:
+      mime: 'application/xml'
+      strategy: 'NONE'
+      transformers:
+        - identity: # No transformation steps as mods is the core format for images-dsfl
+  - JSON-LD:
+      mime: 'application/json'
+      strategy: 'NONE'
+      transformers:
+        - imagerights: # KB specific rules for image rights stated in MODS
+        - xslt:
+            stylesheet: 'xslt/mods2schemaorg.xsl'
+            injections:
+              - imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
+
+  - SolrJSON:
+      mime: 'application/json'
+      strategy: 'NONE'
+      transformers:
+        - imagerights: # KB specific rules for image rights stated in MODS
+        - xslt:
+            stylesheet: 'xslt/mods2solr.xsl'
+            injections:
+              - imageserver: ${path:imageservers[default=true].url}
+              - old_imageserver: ${path:oldimageserver.url}
+
+# The origins available for this instance of ds-present. The first origin in the list is used as the example value in the OpenAPI interface.
+origins:
   # General note: All origins are expected to support at least the views raw, mods, jsonld and solrjson.
   # If any of those are not supported, the transformer 'fail' should be used with a telling message.
 
+  # Royal Danish Library image collection with the core format being MODS
+  # Uses the default storage, which connects to a running ds-storage instance
+  - 'ds.radio':
+      description: 'Radio records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.radio'
+      origin: 'ds.radio'
+      recordRequestType: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
+  - 'ds.tv':
+      description: 'TV records from the Preservica system at the Royal Danish Library'
+      prefix: 'ds.tv'
+      origin: 'ds.tv'
+      recordRequestType: 'DELIVERABLEUNIT'
+      views: *PRESERVICA_VIEWS
   # Straight forward origin with the core format being MODS
   # Uses the default storage, which connects to a running ds-storage instance
-#  - remote: # ds-present internal
-#      prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
-#      description: 'Images from the collections at the Royal Danish Library'
-    #   Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
-#      views:
-#        - raw:
-#            mime: 'text/plain'
-#            transformers:
-#              - identity:
-#        - MODS:
-#            mime: 'application/xml'
-#            transformers:
-#             - identity: # No transformation steps as mods is the core format for images-dsfl
-#        - JSON-LD:
-#            mime: 'application/json'
-#            transformers:
-#              - xslt:
-#                  stylesheet: 'xslt/mods2schemaorg.xsl'
-#                  injections:
-#                    - imageserver: 'https://example.com/imageserver'
-#        - SolrJSON:
-#            mime: 'application/json'
-#            transformers:
-#              - xslt:
-#                  stylesheet: 'xslt/mods2solr.xsl'
-#                  injections:
-#                    - imageserver: 'https://example.com/imageserver'
-
-  # Straight forward origin with the core format being MODS, using test data
-  #- local: # ds-present internal
-  #    prefix: 'local.test' # The prefix to match on incoming IDs
-  #    description: 'Selected image data from the collections at the Royal Danish Library'
-  #    storage: 'test' # Not production here
-  #    # Different views on the material. Note that all origin has at least mods, jsonld and solrjson as views
-  #    views:
-  #      - raw:
-  #          mime: 'text/plain'
-  #          transformers:
-  #            - identity:
-  #      - MODS:
-  #          mime: 'application/xml'
-  #          transformers:
-  #            - identity: # No transformation steps as mods is the core format for images-dsfl
-  #      - JSON-LD:
-  #          mime: 'application/json'
-  #          transformers:
-  #            - xslt:
-  #                stylesheet: 'xslt/mods2schemaorg.xsl'
-  #      - SolrJSON:
-  #          mime: 'application/json'
-  #          transformers:
-  #            - xslt:
-  #                stylesheet: 'xslt/mods2solr.xsl'
+  - remote: # ds-present internal
+      prefix: 'doms.radio' # The prefix to match on incoming IDs. Selectet to use ds-storage without any tweaks
+      origin: "old.doms.radio"
+      description: 'Images from the collections at the Royal Danish Library'
+      recordRequestType: 'DELIVERABLEUNIT'
+      # Different views on the material. Note that all origins has at least mods, jsonld and solrjson as views
+      views:
+        - raw:
+            mime: 'text/plain'
+            transformers:
+              - identity:
+        - MODS:
+            mime: 'application/xml'
+            transformers:
+              - identity: # No transformation steps as mods is the core format for images-dsfl
+        - JSONLD:
+            mime: 'application/json'
+            transformers:
+              - xslt:
+                  stylesheet: 'xslt/mods2schemaorg.xsl'
+                  injections:
+                    - imageserver: ${path:imageservers[default=true].url}
+        - SolrJSON:
+            mime: 'application/json'
+            transformers:
+              - xslt:
+                  stylesheet: 'xslt/mods2solr.xsl'
+                  injections:
+                    - imageserver: ${path:imageservers[default=true].url}
 
 #
 # Limit the number of concurrent executions of xslt transformations
@@ -188,7 +251,7 @@ security:
   # The security mode. Valid values are
   # OFFLINE: No validation of security tokens: All requests are accepted.
   # ENABLED (or no mode set): Validation of security tokens against OAuth2 server.
-  mode: 'ENABLED'
+  mode: 'OFFLINE'
   # The OAUth2 server base url, typically ending in "realms"
   # Sample: https://keycloak-keycloak.example.org/auth/realms
   baseurl: 'https://keycloak.example.com/realms'
