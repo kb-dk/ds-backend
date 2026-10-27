@@ -129,7 +129,41 @@ public class OaiHarvestClient {
     }
 
     public ArrayList<OaiRecord> extractRecordsFromXml( Document document ) {
-        NodeList nList = document.getElementsByTagName("ListRecords"); //This is the OAI tag, not part of preservica data.
+        return extractRecordsFromXml(document, "ListRecords");
+    }
+
+    /**
+     * Fetch a single record with GetRecord. Holds no harvest state, so it can be called from several threads at once.
+     *
+     * @param identifier OAI identifier, for Preservica {@code oai:io:<uuid>}
+     * @return the record, or null if the OAI server does not know the identifier
+     */
+    public OaiRecord getRecord(String identifier) throws IOException {
+        String uri = oaiTarget.getUrl() + "?verb=GetRecord&metadataPrefix=" + oaiTarget.getMetadataprefix() +
+                     "&identifier=" + identifier;
+        try {
+            return parseGetRecord(getHttpResponse(uri, oaiTarget.getUsername(), oaiTarget.getPassword()), uri);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InternalServiceException("Interrupted during OAI GetRecord: " + uri, e);
+        }
+    }
+
+    public OaiRecord parseGetRecord(String xmlResponse, String uri) {
+        Document document = sanitizeXml(xmlResponse, uri);
+        String errorCode = getErrorCode(document);
+        if ("idDoesNotExist".equals(errorCode)) {
+            return null;
+        }
+        if (errorCode != null) {
+            throw new InternalServiceException("OAI GetRecord failed with error '" + errorCode + "': " +
+                                               getErrorMessage(document) + " for " + uri);
+        }
+        return extractRecordsFromXml(document, "GetRecord").get(0);
+    }
+
+    private ArrayList<OaiRecord> extractRecordsFromXml(Document document, String verb) {
+        NodeList nList = document.getElementsByTagName(verb); //This is the OAI tag, not part of preservica data.
         Element recordsElement = (Element) nList.item(0); //always one.
         List<Element> elementList = new ArrayList<Element>();
         elementList.add(recordsElement);
@@ -175,6 +209,11 @@ public class OaiHarvestClient {
             //Ignore, no error tag was found            
         }
        return null;        
+    }
+
+    private String getErrorCode(Document document) {
+        NodeList errors = document.getElementsByTagName("error");
+        return errors.getLength() == 0 ? null : ((Element) errors.item(0)).getAttribute("code");
     }
 
     /**
