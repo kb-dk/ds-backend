@@ -198,9 +198,12 @@
       <xsl:when test="$channelCode = 'drp4f' or $channelCode = 'drp4fyn'">
         <xsl:value-of select="'DR P4 FYN'"/>
       </xsl:when>
-      <xsl:when test="$channelCode = 'drp4k' or $channelCode = 'drp4k94'">
-        <xsl:value-of select="'DR P4 KANAL 94 VEJLE'"/>
+      <xsl:when test="$channelCode = 'drp4k'">
+        <xsl:value-of select="'DR P4 København'"/>
       </xsl:when>
+      <xsl:when test="$channelCode = 'drp4k94'">
+        <xsl:value-of select="'DR P4 KANAL 94 VEJLE'"/>
+      </xsl:when>                  
       <xsl:when test="$channelCode = 'drp4miv' or $channelCode = 'drp4mv'">
         <xsl:value-of select="'DR P4 MIDT &amp; VEST'"/>
       </xsl:when>
