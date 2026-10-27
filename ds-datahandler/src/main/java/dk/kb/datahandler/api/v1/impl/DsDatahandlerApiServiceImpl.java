@@ -1,5 +1,6 @@
 package dk.kb.datahandler.api.v1.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kb.datahandler.api.v1.DsDatahandlerApi;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.facade.DsDatahandlerFacade;
@@ -41,6 +42,7 @@ import java.util.List;
 @InInterceptors(interceptors = "dk.kb.datahandler.webservice.KBAuthorizationInterceptor")
 public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandlerApi {
     private static final Logger log = LoggerFactory.getLogger(DsDatahandlerApiServiceImpl.class);
+    private static final ObjectMapper JSON = new ObjectMapper();
 
     // How to access the various web contexts. See https://cxf.apache.org/docs/jax-rs-basics.html#JAX-RSBasics-Contextannotations
     @Context
@@ -88,6 +90,33 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
         }
     }
     
+    /**
+     * @return a copy of the target with passwords masked. The configured target is used for harvesting and is not changed.
+     */
+    public static OaiTargetDto withMaskedPasswords(OaiTargetDto target) {
+        OaiTargetDto copy = JSON.convertValue(target, OaiTargetDto.class);
+        copy.setPassword(mask(copy.getPassword()));
+        if (copy.getSearch() != null) {
+            copy.getSearch().setPassword(mask(copy.getSearch().getPassword()));
+        }
+        return copy;
+    }
+
+    private static String mask(String password) {
+        return password == null || password.isEmpty() ? password : "********";
+    }
+
+    @Override
+    public Integer preservicaIngestFull(String oaiTarget, String fromCreated) {
+        log.debug("preservicaIngestFull(oaiTarget='{}', fromCreated='{}') called with call details: {}",
+                  oaiTarget, fromCreated, getCallDetails());
+        try {
+            return DsDatahandlerFacade.preservicaIngestFull(oaiTarget, fromCreated);
+        } catch (Exception e){
+            throw handleException(e);
+        }
+    }
+
     @Override
     public Integer oaiIngestDelta(String oaiTarget) {
         log.debug("oaiIngestDelta(oaiTarget='{}') called with call details: {}", oaiTarget, getCallDetails());
@@ -107,7 +136,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
             List<OaiTargetDto> targets = new ArrayList<OaiTargetDto>();
             HashMap<String, OaiTargetDto> oaiTargets = ServiceConfig.getOaiTargets();            
             for (String target : oaiTargets.keySet()) {
-                targets.add(oaiTargets.get(target));                               
+                targets.add(withMaskedPasswords(oaiTargets.get(target)));
             }
             return targets;
         } catch (Exception e) {
