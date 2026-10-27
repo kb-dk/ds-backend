@@ -205,21 +205,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
 
 
-        boolean useTranscriptions = ServiceConfig.isUseTranscriptionsEnabled();
-        boolean hasTranscription=false;
-        //Transcription text.
-        String refrenceId = record.getReferenceId();
-        if (refrenceId != null && useTranscriptions) {
-           String transcriptionText=getTranscriptionText(record.getReferenceId());
-           if (transcriptionText != null) {
-              log.debug("Found transcription text for fileId:"+refrenceId);
-              metadata.put("has_transcription", "true");
-              metadata.put("transcription", transcriptionText);
-              hasTranscription=true;
-           }
-        }
-        metadata.put("has_transcription", ""+hasTranscription);
-
         String referenceId = record.getReferenceId();
 
         updateMetadataMapWithRerunCluster(metadata, referenceId);
@@ -355,11 +340,6 @@ public class View extends ArrayList<DSTransformer> implements Function<DsRecordD
         }
     }
 
-
-   private String getTranscriptionText(String fileId) {
-      TranscriptionDto transcription = getStorage().getTranscriptionByFileId(fileId);
-      return transcription.getTranscription(); // can not be null. Will be empty DTO
-   }
 
     /**
      * Updates the provided metadata map with rerun cluster data for the fileId. Nothing is added if

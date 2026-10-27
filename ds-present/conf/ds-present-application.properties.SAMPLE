@@ -9,14 +9,26 @@
 # your own values. This filename is already covered by the repository's generic '*-application.properties'
 # .gitignore rule.
 #
-# NOTE: only simple/scalar settings can be overridden here - this file affects ServiceConfig.getFlatConfig() only,
-# not the nested origins/storages/views/transformers configuration (ServiceConfig.getConfig()), which is not
-# readable through the flat properties syntax. See ServiceConfig's class javadoc for why. Environment-specific
-# overrides for the nested tree still go in a separate YAML file, merged via the 'application-config' glob
-# (see conf/ocp/ds-present.xml).
+# NOTE: ANY key present in ds-present-behaviour.yaml can be overridden here, using the same dotted/indexed path -
+# simple/scalar settings (including indexed lists, e.g. security.realms[0]) AND nested-tree values (imageservers,
+# storages, origins, ...) alike, e.g. imageservers[0].example.url or storages[0].main.backends[0].ds-storage.url.
+# 'application-config' (see conf/ocp/ds-present.xml) still names exactly one YAML file, identical on every server -
+# ServiceConfig writes any override found here back into its in-memory copy of that tree before it is used, rather
+# than reading a second YAML file, so the deployed ds-present-behaviour.yaml itself never needs editing. See
+# ServiceConfig's class javadoc for how.
 #
-# Any flat key present in ds-present-behaviour.yaml can be overridden here, using the same dotted path. The keys
-# below are the ones commonly set per environment/operator - uncomment and set the ones you need.
+# The path must match the deployed ds-present-behaviour.yaml's structure exactly, including list position and any
+# descriptive key (e.g. the 'example' in 'imageservers[0].example.url' mirrors the '- example:' entry in that
+# file) - if that file's structure changes, the matching override keys below must be updated too.
+#
+# The keys below are the ones commonly set per environment/operator - uncomment and set the ones you need.
+
+# The real image server URL for this environment (see ds-present-behaviour.yaml's 'imageservers' section - the
+# entry marked 'default: true' is the one actually used).
+# imageservers[0].example.url=https://example.com/devel/iipimage
+
+# The real ds-storage backend URL for this environment (see ds-present-behaviour.yaml's 'storages' section).
+# storages[0].main.backends[0].ds-storage.url=http://example.com:9072/ds-storage/v1/
 
 # licensemodule.url=http://example.com:9076/ds-license/v1
 # licensemodule.allowall=false
@@ -25,4 +37,8 @@
 
 # oldimageserver.url=http://example.com
 
+# security.mode=OFFLINE
+# security.baseurl=https://example.com/realms
+# security.realms[0]=DS
+# security.client.id=changeme
 # security.client.secret=changeme
