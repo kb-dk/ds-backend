@@ -1,6 +1,7 @@
 package dk.kb.datahandler.config;
 
 import dk.kb.datahandler.model.v1.OaiTargetDto;
+import dk.kb.datahandler.model.v1.OaiTargetSearchDto;
 import dk.kb.datahandler.model.v1.OaiTargetDto.DateStampFormatEnum;
 import dk.kb.util.Resolver;
 import org.apache.http.client.utils.URIBuilder;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -354,6 +356,8 @@ public class ServiceConfig {
                 log.warn("dateStampFormat not 'day' or 'date':"+dateStampFormat);
             }
             oaiTarget.setFragmentServiceUrl(fragmentServiceUrl);
+            oaiTarget.setParallel(serviceConfig.getOptionalValue(prefix + "parallel", Integer.class).orElse(8));
+            oaiTarget.setSearch(loadOaiTargetSearch(prefix + "search."));
 
             oaiTargets.put(name, oaiTarget);
 
@@ -361,6 +365,24 @@ public class ServiceConfig {
         }
 
         log.info("Number of OAI targets loaded:"+oaiTargets.size());
+    }
+
+    /**
+     * @param prefix the {@code search.} block of an OAI target, e.g. {@code "oaiTargets[0].search."}.
+     * @return the Preservica search configuration, or null if the target has none.
+     */
+    private static OaiTargetSearchDto loadOaiTargetSearch(String prefix) {
+        Optional<String> apiUrl = serviceConfig.getOptionalValue(prefix + "apiUrl", String.class);
+        if (apiUrl.isEmpty()) {
+            return null;
+        }
+        OaiTargetSearchDto search = new OaiTargetSearchDto();
+        search.setApiUrl(apiUrl.get());
+        search.setUsername(serviceConfig.getOptionalValue(prefix + "user", String.class).orElse(null));
+        search.setPassword(serviceConfig.getOptionalValue(prefix + "password", String.class).orElse(null));
+        search.setQuery(serviceConfig.getValue(prefix + "query", String.class));
+        search.setPageSize(serviceConfig.getOptionalValue(prefix + "pageSize", Integer.class).orElse(1000));
+        return search;
     }
 
     /**

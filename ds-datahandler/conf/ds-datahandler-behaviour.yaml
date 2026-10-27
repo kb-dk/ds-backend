@@ -21,6 +21,23 @@ oaiTargets:
     metadataPrefix: XIP_full_schema
     description: Radio- og TV-udsendelser
     filter: dr
+    # Number of parallel OAI GetRecord calls, used by /preservica/import/full
+    #parallel: 8
+    # Optional Preservica Content API search, used by /preservica/import/full to list the records
+    #search:
+    #  apiUrl: https://XXXXXXXXX.statsbiblioteket.dk
+    #  user: XXXXXXXXX
+    #  password: XXXXXXXXX
+    #  # Preservica search expression as JSON. q and sort are set by the harvester, which pages on xip.created.
+    #  # The security descriptor matches what the OAI endpoint delivers; trashed objects are tagged 'deleted'.
+    #  query: >-
+    #    {"fields": [
+    #      {"name": "xip.document_type", "values": ["IO"]},
+    #      {"name": "xip.security_descriptor", "values": ["pligtafleveringRadioTvOpenProgram"]},
+    #      {"name": "pbcore.PBchannel", "values": ["dr*"]},
+    #      {"name": "pbcore.PBformatmedia", "values": ["Moving Image", "Sound"]}
+    #    ]}
+    #  pageSize: 1000
 
 # Settings for OAI-PMH harvest
 oaiSettings:

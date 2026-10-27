@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -36,6 +37,9 @@ import dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl;
 import dk.kb.datahandler.config.ServiceConfig;
 
 import dk.kb.datahandler.oai.OaiHarvestClient;
+import dk.kb.datahandler.oai.OaiIdIngester;
+import dk.kb.datahandler.preservica.PreservicaApiClient;
+import dk.kb.datahandler.preservica.PreservicaSearchPager;
 import dk.kb.datahandler.kaltura.KalturaDeltaUploadJob;
 import dk.kb.datahandler.oai.OaiRecord;
 import dk.kb.datahandler.oai.OaiResponse;
@@ -270,6 +274,90 @@ public class DsDatahandlerFacade {
     }
 
     /**
+     * Full ingest of an OAI target where the records are listed with the Preservica Content API search, in
+     * {@code xip.created} order, and fetched with OAI GetRecord. Each search page is ingested completely before the
+     * next is searched, so the {@code xip.created} of the first hit in a failed page is a safe point to resume from.
+     *
+     * @param oaiTargetName The name for the OAI target in the configuration. It must have a search configuration.
+     * @param fromCreated   Optional {@code xip.created} to resume from (inclusive).
+     * @return Number of records processed by the filter.
+     */
+    public static Integer preservicaIngestFull(String oaiTargetName, String fromCreated) {
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
+        OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);
+        if (oaiTargetDto == null) {
+            throw new InvalidArgumentServiceException("No target found in configuration with name: '" + oaiTargetName +
+                    "'. See the config method for list of configured targets.");
+        }
+        OaiTargetSearchDto search = oaiTargetDto.getSearch();
+        if (search == null) {
+            throw new InvalidArgumentServiceException("OAI target '" + oaiTargetName + "' has no search configuration");
+        }
+        Instant from = null;
+        if (fromCreated != null && !fromCreated.isBlank()) {
+            try {
+                from = Instant.parse(fromCreated);
+            } catch (DateTimeParseException e) {
+                throw new InvalidArgumentServiceException("fromCreated must be an ISO-8601 UTC timestamp, e.g. " +
+                        "2025-03-01T10:00:00.123Z, but was '" + fromCreated + "'");
+            }
+        }
+
+        PreservicaSearchPager pager = new PreservicaSearchPager(new PreservicaApiClient(search), search.getPageSize(), from);
+        OaiHarvestClient oaiClient = new OaiHarvestClient(oaiTargetDto, null);
+        OaiResponseFilter filter = createOaiFilter(oaiTargetDto, getDsStorageApiClient());
+
+        Instant startTime = Instant.now();
+        JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.OAI_HARVEST, oaiTargetName,
+                                 from == null ? null : from.atOffset(ZoneOffset.UTC), user);
+        log.info("Starting Preservica search ingest of target '{}' from xip.created {}, jobId '{}'",
+                 oaiTargetName, from == null ? "start" : PreservicaSearchPager.iso(from), jobDto.getId());
+
+        Instant pageStart = from;
+        long hits = 0;
+        try (OaiIdIngester ingester = new OaiIdIngester(oaiClient, filter, oaiTargetDto.getParallel())) {
+            for (List<PreservicaSearchPager.Hit> page = pager.next(); !page.isEmpty(); page = pager.next()) {
+                pageStart = page.get(0).created();
+                ingester.ingest(page.stream().map(hit -> "oai:io:" + hit.id()).toList());
+                hits += page.size();
+                log.info("Ingested {}/{} search hits for target '{}', processed={}, notFound={}, last xip.created={}",
+                         hits, pager.getTotalHits(), oaiTargetName, ingester.getProcessed(), ingester.getNotFound(),
+                         PreservicaSearchPager.iso(page.get(page.size() - 1).created()));
+            }
+
+            long objects = hits - pager.getDuplicates();
+            StringBuilder message = new StringBuilder("hits=" + objects + ", duplicates=" + pager.getDuplicates() +
+                                                      ", notFound=" + ingester.getNotFound());
+            if (objects != pager.getTotalHits()) {
+                log.warn("Preservica search for target '{}' returned {} objects while paging, but reported {} at the start",
+                         oaiTargetName, objects, pager.getTotalHits());
+                message.append(", totalHits at start=").append(pager.getTotalHits());
+            }
+            // Objects created during the run are harvested, so the datestamp can be set from the start time
+            String datestamp = startTime.minus(1, ChronoUnit.HOURS).truncatedTo(ChronoUnit.SECONDS).toString();
+            if (from == null) {
+                HarvestTimeUtil.updateDatestampForOaiTarget(oaiTargetDto, datestamp);
+                message.append(", OAI datestamp set to ").append(datestamp);
+            } else {
+                message.append(", resumed run: OAI datestamp not updated, set it to the start of the first run minus a margin");
+            }
+            updateJob(jobDto, JobStatusDto.COMPLETED, message.toString(), OffsetDateTime.now(ZoneOffset.UTC),
+                      ingester.getProcessed(), null);
+            log.info("Preservica search ingest of target '{}' completed: {}", oaiTargetName, message);
+            return ingester.getProcessed();
+        } catch (Exception e) {
+            String resume = pageStart == null ? "the start" : PreservicaSearchPager.iso(pageStart);
+            log.error("Preservica search ingest of target '{}' failed, jobId '{}'. Resume with fromCreated={}",
+                      oaiTargetName, jobDto.getId(), resume, e);
+            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage() + " Resume with fromCreated=" + resume,
+                      OffsetDateTime.now(ZoneOffset.UTC), filter.getProcessed(),
+                      pageStart == null ? null : pageStart.atOffset(ZoneOffset.UTC));
+            throw new InternalServiceException("Preservica search ingest of target '" + oaiTargetName +
+                    "' failed, jobId: " + jobDto.getId() + ". Resume with fromCreated=" + resume, e);
+        }
+    }
+
+    /**
      * Starts a delta OAI harvest job for the target. The job will continue from last timestamp
      * saved on the file system for that target.
      * If OAI strategy for the target is dayOnly, the harvest process will be split into days instead of a single job.
@@ -448,23 +536,7 @@ public class DsDatahandlerFacade {
         OaiHarvestClient client = new OaiHarvestClient(oaiTargetDto, from);
         OaiResponse response = client.next();
 
-        OaiResponseFilter oaiFilter;
-        if (oaiTargetDto.getFilter() == null) {
-            throw new IllegalStateException("The filter for OaiTargetDto '" + targetName + "' was null");
-        }
-        switch (oaiTargetDto.getFilter()) {
-            case DIRECT:
-                oaiFilter = new OaiResponseFilter(origin, dsAPI);
-                break;
-            case DR:
-                oaiFilter = new OaiResponseFilterDrArchive(origin, dsAPI);
-                break;
-            case PRESERVICA:
-                oaiFilter = new OaiResponseFilterPreservicaSeven(origin, dsAPI);
-                break;
-            default: throw new UnsupportedOperationException(
-                    "Unknown filter '" + oaiTargetDto.getFilter() + "' for target '" + targetName + "'");
-        }
+        OaiResponseFilter oaiFilter = createOaiFilter(oaiTargetDto, dsAPI);
 
         while (response.getRecords().size() > 0) {
             OaiRecord lastRecord = response.getRecords().get(response.getRecords().size()-1);
@@ -504,6 +576,23 @@ public class DsDatahandlerFacade {
         log.info("creating kaltura client for partnerID:" + partnerId);
         return new DsKalturaClient(kalturaUrl, userId, partnerId, token, tokenId, adminSecret,
                 sessionDurationSeconds, sessionRefreshThreshold, conversionQueueThreshold, conversionQueueDelaySeconds);
+    }
+
+    private static OaiResponseFilter createOaiFilter(OaiTargetDto oaiTargetDto, DsStorageClient dsAPI) {
+        String origin = oaiTargetDto.getDatasource();
+        if (oaiTargetDto.getFilter() == null) {
+            throw new IllegalStateException("The filter for OaiTargetDto '" + oaiTargetDto.getName() + "' was null");
+        }
+        switch (oaiTargetDto.getFilter()) {
+            case DIRECT:
+                return new OaiResponseFilter(origin, dsAPI);
+            case DR:
+                return new OaiResponseFilterDrArchive(origin, dsAPI);
+            case PRESERVICA:
+                return new OaiResponseFilterPreservicaSeven(origin, dsAPI);
+            default: throw new UnsupportedOperationException(
+                    "Unknown filter '" + oaiTargetDto.getFilter() + "' for target '" + oaiTargetDto.getName() + "'");
+        }
     }
 
     public static DsStorageClient getDsStorageApiClient() {

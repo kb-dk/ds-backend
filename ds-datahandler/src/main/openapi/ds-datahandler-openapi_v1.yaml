@@ -199,6 +199,48 @@ paths:
                 type: integer
                 format: int32
 
+  /preservica/import/full:
+    get:
+      tags:
+        - '${project.name}'
+      summary: 'EXPERIMENTAL: Full ingest of an OAI target, listing records with the Preservica Content API search and fetching each with OAI GetRecord.'
+      description: |
+        Alternative to `/oai/import/full` for OAI targets with a `search` configuration. Information objects matching
+        the configured search restrictions are paged in `xip.created` order, fetched with OAI GetRecord and passed
+        through the same filter as the OAI harvest.
+
+        Only live objects are written: deletions in Preservica are not detected, they arrive with the OAI delta import.
+        The job finishes even if the socket is closed from the client triggering the call.
+
+        If the run fails, the job's restart value is the `fromCreated` to resume from. The OAI datestamp for the target
+        is only updated after a successful run that was not resumed.
+      security:
+        - KBOAuth:
+            - any
+      operationId: preservicaIngestFull
+      parameters:
+        - name: oaiTarget
+          in: query
+          description: 'Name of the OAI target. It must have a search configuration.'
+          required: true
+          schema:
+            type: string
+            enum: [ "${config:oaiTargets[*].name}" ]
+        - name: fromCreated
+          in: query
+          description: 'Resume from this xip.created value (inclusive), e.g. 2025-03-01T10:00:00.123Z'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. Returns total number of records processed.
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+
   /solr/index:
     get:
       tags:
@@ -526,6 +568,40 @@ components:
           type: string
           description: BaseURL for the enrichment fragment service
           example: 'http://example.com/'
+        parallel:
+          type: integer
+          format: int32
+          description: 'Number of parallel OAI GetRecord calls when records are fetched one at a time.'
+          default: 8
+        search:
+          $ref: '#/components/schemas/OaiTargetSearch'
+
+    OaiTargetSearch:
+      type: object
+      description: 'Preservica Content API search used to list the records of an OAI target.'
+      required:
+        - apiUrl
+        - query
+      properties:
+        apiUrl:
+          type: string
+          description: 'Base URL of the Preservica API.'
+          example: 'https://preservica.example.com'
+        username:
+          type: string
+        password:
+          type: string
+        query:
+          type: string
+          description: |
+            Preservica search expression as JSON, see the search endpoint of the Preservica Content API.
+            `q` and `sort` are set by the harvester, which pages on `xip.created`. All other keys, e.g. `fields`, are
+            sent as configured.
+          example: '{"fields":[{"name":"xip.document_type","values":["IO"]},{"name":"xip.security_descriptor","values":["pligtafleveringRadioTvOpenProgram"]},{"name":"pbcore.PBchannel","values":["dr*"]},{"name":"pbcore.PBformatmedia","values":["Moving Image","Sound"]}]}'
+        pageSize:
+          type: integer
+          format: int32
+          default: 1000
 
     Job:
       type: object

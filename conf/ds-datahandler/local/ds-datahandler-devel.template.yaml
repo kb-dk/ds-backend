@@ -24,6 +24,31 @@ oaiTargets:
     filter: dr
     dateStampFormat: datetime
 
+  - name: devel_preservica_dr_arkiv
+    datasource: ds.radiotv
+    url: "${preservica_devel_url}"
+    user: "${preservica_devel_username}"
+    password: "${preservica_devel_password}"
+    metadataPrefix: xip
+    description: Radio- og TV-udsendelser (devel)
+    filter: dr
+    dateStampFormat: datetime
+    parallel: 8
+    # Used by /preservica/import/full to list the records, which are then fetched with OAI GetRecord from the url above
+    search:
+      apiUrl: "${preservica_api_url}"
+      user: "${preservica_api_username}"
+      password: "${preservica_api_password}"
+      # Preservica search expression as JSON. q and sort are set by the harvester, which pages on xip.created.
+      query: >-
+        {"fields": [
+          {"name": "xip.document_type", "values": ["IO"]},
+          {"name": "xip.security_descriptor", "values": ["pligtafleveringRadioTvOpenProgram"]},
+          {"name": "pbcore.PBchannel", "values": ["dr*"]},
+          {"name": "pbcore.PBformatmedia", "values": ["Moving Image", "Sound"]}
+        ]}
+      pageSize: 1000
+
 # Settings for OAI-PMH harvest
 oaiSettings:
   # If response is not HTTP 200, retry after x times after sleeping for x seconds
