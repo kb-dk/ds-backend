@@ -14,14 +14,9 @@
 # setting the same dotted/indexed key (e.g. 'imageservers[0].example.url') in that properties file - see its own
 # comments for the exact convention and worked examples. No second YAML file is ever loaded to achieve this.
 #
-
-# Image server URLs are injected into transformations.
+# Image server URLs are injected into transformations. Image is only used for Cumulus image-collection.
 # The real, environment-specific URL is set per deployment via ds-present-application.properties
 # ('imageservers[0].example.url=...'), not by editing this file - see that file's comments.
-#
-# Sample override, in ds-present-application.properties:
-#
-# imageservers[0].example.url=https://example.com/devel/iipimage
 #
 # Note: The server marked with "default: true" is the one actually used.
 imageservers:

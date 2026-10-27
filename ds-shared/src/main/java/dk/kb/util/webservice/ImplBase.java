@@ -112,9 +112,8 @@ public abstract class ImplBase {
         if (e instanceof NotFoundServiceException) {
             // Expected, routine outcome (resource does not exist) - a single short line, deliberately without the
             // exception's stack trace: there is nothing to diagnose here, and logging the trace at any level that
-            // is actually enabled just buries real problems in noise. Not conditioned on 'logWarning': a "not
-            // found" is never escalated to a warning regardless of that flag.
-            log.info("Not found processing {}: {}", call, e.getMessage());
+            // is actually enabled just buries real problems in noise.
+            log.debug("Not found processing {}: {}", call, e.getMessage());
         }
         else if (logWarning || !(e instanceof ServiceException)) {
             log.warn("Exception processing " + call, e);
