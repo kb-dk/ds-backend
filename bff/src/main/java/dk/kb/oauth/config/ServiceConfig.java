@@ -10,12 +10,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.smallrye.config.PropertiesConfigSource;
 import io.smallrye.config.SmallRyeConfig;
@@ -264,18 +268,33 @@ public class ServiceConfig {
     }
 
     /**
-     * Returns every configured {@code messages.*} entry as a plain map ({@code messages.msg1: "..."} becomes
-     * {@code "msg1" -> "..."}), for JSON serialization (see {@link dk.kb.oauth.api.v1.impl.BffApiServiceImpl#getMessages()}).
+     * Matches a single flattened path segment that ends in an indexed-list suffix, e.g. {@code April[0]} ->
+     * group 1 {@code April}, group 2 {@code 0}. See {@link #setNestedValue(Map, String, String)}.
+     */
+    private static final Pattern INDEXED_SEGMENT = Pattern.compile("^(.*)\\[(\\d+)]$");
+
+    /**
+     * Returns every configured {@code messages.*} entry, reconstructed as a properly nested
+     * {@code Map}/{@code List} structure (so {@code messages.msg1: "..."} becomes {@code "msg1" -> "..."} but
+     * {@code messages.curatedItems.April[0]: "..."} becomes {@code "curatedItems" -> {"April" -> ["...", ...]}}),
+     * for JSON serialization (see {@link dk.kb.oauth.api.v1.impl.BffApiServiceImpl#getMessages()}).
+     * <p>
      * Previously returned the raw kb-util {@code YAML} submap for {@code messages} directly; MicroProfile
      * {@link Config} has no equivalent "read back the whole sub-tree as a generic structure" operation, so this
-     * reconstructs the same flat shape by hand from the merged configuration's property names. Reflects the
-     * current (possibly auto-reloaded) configuration on every call.
+     * reconstructs the tree by hand from the merged configuration's property names - the exact reverse of how
+     * every {@code ds-backend} module's own YAML-to-{@code Config} flattening (e.g. ds-present's
+     * {@code ServiceConfig#flatten(YAML, String, Map)}) turned a nested tree into dotted/indexed flat keys in the
+     * first place. A flat key with no {@code .} or {@code [n]} (e.g. a plain {@code messages.msg1}) round-trips
+     * to a plain top-level entry exactly as before - this is a superset of the previous behaviour, not a
+     * breaking change for existing flat messages. Reflects the current (possibly auto-reloaded) configuration on
+     * every call.
      * <p>
-     * The value type is {@code Object} (each value is actually a {@code String}) to match
-     * {@code BffApi.getMessages()}'s declared return type {@code Map<String, Object>}.
+     * The value type is {@code Object} (a nested value is actually a {@code String}, {@code Map<String, Object>}
+     * or {@code List<Object>}) to match {@code BffApi.getMessages()}'s declared return type
+     * {@code Map<String, Object>}.
      *
-     * @return a map of message key to message text, in configuration order. Empty if no {@code messages} section
-     *         is configured.
+     * @return a map of message key to message text/structure, in configuration order. Empty if no {@code messages}
+     *         section is configured.
      */
     public static Map<String, Object> getMessagesConfig() {
         Config conf = getConfig();
@@ -283,10 +302,57 @@ public class ServiceConfig {
         for (String propName : new TreeSet<>(setOf(conf.getPropertyNames()))) {
             if (propName.startsWith("messages.")) {
                 String key = propName.substring("messages.".length());
-                conf.getOptionalValue(propName, String.class).ifPresent(value -> messages.put(key, value));
+                conf.getOptionalValue(propName, String.class).ifPresent(value -> setNestedValue(messages, key, value));
             }
         }
         return messages;
+    }
+
+    /**
+     * Writes {@code value} into {@code root} at the nested location described by {@code path} (dot-separated
+     * segments, with an optional trailing {@code [n]} index on a segment denoting a list element - the same
+     * convention every other {@code ds-backend} module uses when flattening a nested YAML tree, e.g.
+     * {@code origins[0].ds.radio}). Intermediate maps/lists are created on demand. A list is grown (padded with
+     * {@code null}) as needed and the value is placed directly at its index, so the result is correct regardless
+     * of the order {@code path}s belonging to the same list happen to be processed in - unlike a naive lexicographic
+     * sort of the index suffix, which would misorder a list past 10 elements (e.g. {@code [10]} sorting before
+     * {@code [2]}).
+     *
+     * @param root  the map to write into - the top-level call passes the {@code messages} map itself.
+     * @param path  the flattened path, relative to {@code root} (e.g. {@code curatedItems.April[0]}).
+     * @param value the scalar value to place at that path.
+     */
+    @SuppressWarnings("unchecked")
+    private static void setNestedValue(Map<String, Object> root, String path, String value) {
+        String[] segments = path.split("\\.");
+        Map<String, Object> currentMap = root;
+        for (int i = 0; i < segments.length; i++) {
+            String segment = segments[i];
+            boolean lastSegment = (i == segments.length - 1);
+            Matcher indexed = INDEXED_SEGMENT.matcher(segment);
+            if (indexed.matches()) {
+                String key = indexed.group(1);
+                int index = Integer.parseInt(indexed.group(2));
+                List<Object> list = (List<Object>) currentMap.computeIfAbsent(key, k -> new ArrayList<>());
+                while (list.size() <= index) {
+                    list.add(null);
+                }
+                if (lastSegment) {
+                    list.set(index, value);
+                } else {
+                    Map<String, Object> next = (Map<String, Object>) list.get(index);
+                    if (next == null) {
+                        next = new LinkedHashMap<>();
+                        list.set(index, next);
+                    }
+                    currentMap = next;
+                }
+            } else if (lastSegment) {
+                currentMap.put(segment, value);
+            } else {
+                currentMap = (Map<String, Object>) currentMap.computeIfAbsent(segment, k -> new LinkedHashMap<>());
+            }
+        }
     }
 
     private static Set<String> setOf(Iterable<String> values) {
