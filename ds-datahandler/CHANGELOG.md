@@ -7,7 +7,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
+
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
+
+### Fixed
+
+- Fixed `DR` `OAI` filter skipping the remaining records in an `OAI` response page after a deleted record.
 
 ## [8.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.0) - 2026-10-13
 
@@ -33,7 +39,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Fixed `referenceId` so it now correctly get inserted as `NULL` in `ds_records` table, instead as before where it got
   inserted as `blank`.
-- Fixed DR OAI filter skipping the remaining records in an OAI response page after a deleted record.
 
 ### Removed
 
