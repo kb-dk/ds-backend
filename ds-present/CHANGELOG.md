@@ -10,6 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Fixed radio channel mapping `drp4k94` -> `DR P4 KANAL 94 VEJLE`
+- Fixed `access_individual_prohibition` always being `false` in Solr (since 2.1.4). It is now `true` when `individuelt_forbud` is `Ja` and `false` otherwise, also when the element is missing. **Requires a full Solr reindex.**
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 
