@@ -42,14 +42,14 @@ public class AuditLogModuleStorageTestDsLicense extends TestcontainersUtil {
     }
 
     /**
-     * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
+     * Delete all records between each unittest. The clearTable is only defined on the unittest extension of the storage module
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
         List<String> tables = new ArrayList<>();
         tables.add("AUDITLOG");
-        auditStorage.clearTableRecords(tables);
+        auditStorage.clearTables(tables);
     }
 
     @Test

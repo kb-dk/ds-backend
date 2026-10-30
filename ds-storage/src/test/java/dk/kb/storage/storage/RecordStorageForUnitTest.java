@@ -14,22 +14,19 @@ import org.slf4j.LoggerFactory;
 public class RecordStorageForUnitTest extends RecordStorage {
     private static final Logger log = LoggerFactory.getLogger(RecordStorageForUnitTest.class);
 
-    private static String clearTableRecordsStatement = "DELETE FROM DS_RECORDS";
-
     public RecordStorageForUnitTest() throws SQLException {
         super();
     }
 
     /**
-     * Will clear data in ds_records and transcriptions tables.
-     * Unit test functionality only.
+     * Will clear data in table. Unit test functionality only.
      */
-    public void clearTableRecords() throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(clearTableRecordsStatement)) {
-            stmt.execute(); //No result set to close
+    public void clearTable() throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM DS_RECORDS")) {
+            stmt.executeUpdate();
         }
 
         connection.commit();
-        log.info("Tables cleared for unittest");
+        log.info("Table cleared for unittest");
     }
 }

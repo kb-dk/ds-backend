@@ -39,7 +39,7 @@ public class RerunClusterStorageTest {
 
   @BeforeEach
   public void beforeEach() throws SQLException {
-    rerunClusterStorage.clearTables();
+    rerunClusterStorage.clearTable();
   }
 
   /**
