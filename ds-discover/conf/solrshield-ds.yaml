@@ -41,7 +41,7 @@ unlistedFields:
 # How to handle parameters not specified in SolrShield.
 # This is shared between all components
 unlistedParams:
-  allowed: false
+  allowed: true
   weightConstant: 1000 # Not used when allowed=false
 
 # The component section covers the major Solr handlers, such as faceting and highlighting.
