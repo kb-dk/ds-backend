@@ -18,8 +18,8 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import dk.kb.discover.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.yaml.YAML;
 import dk.kb.util.oauth2.TimeMap;
+import org.eclipse.microprofile.config.Config;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.interceptor.Fault;
@@ -40,12 +40,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.RSAPublicKeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,38 +81,68 @@ public class KBOAuth2Handler {
      * will fail, unless the role {@code public} is specified in the {@link KBAuthorization} annotation.
      */
     private KBOAuth2Handler() {
-        YAML conf;
-        if (!ServiceConfig.getConfig().containsKey("security")) {
+        Config conf = ServiceConfig.getConfig();
+        boolean hasSecuritySection = false;
+        for (String propertyName : conf.getPropertyNames()) {
+            if (propertyName.startsWith("security.")) {
+                hasSecuritySection = true;
+                break;
+            }
+        }
+        if (!hasSecuritySection) {
             log.warn("Authorization interceptor enabled, but there is no security setup in configuration at " +
-                     "key .security");
-            conf = new YAML();
-        } else {
-            conf = ServiceConfig.getConfig().getSubMap("security");
+                     "key 'security'");
         }
 
-        mode = MODE.valueOf(conf.getString("mode", MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
+        mode = MODE.valueOf(conf.getOptionalValue("security.mode", String.class)
+                                 .orElse(MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
         if (mode == MODE.OFFLINE) {
             log.warn("Authorization mode is {}. Access tokens will not be properly checked. " +
                      "Set security.mode to ENABLED to activate full access token validation", MODE.OFFLINE);
         }
 
-        baseurl = trimTrailingSlash(conf.getString("baseurl", null));
+        baseurl = trimTrailingSlash(conf.getOptionalValue("security.baseurl", String.class).orElse(null));
         if (baseurl == null && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
                      "No security.baseurl defined and security.mode=" + mode);
         }
 
-        realms = new HashSet<>(conf.getList("realms", Collections.emptyList()));
+        realms = new HashSet<>(getIndexedStringList(conf, "security.realms"));
         if (realms.isEmpty() && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
-                     "No .security.realms defined and security.mode=" + mode);
+                     "No security.realms defined and security.mode=" + mode);
         }
 
-        keysTTL = conf.getInteger(".public_keys.ttl_seconds", 600);
+        keysTTL = conf.getOptionalValue("security.public_keys.ttl_seconds", Integer.class).orElse(600);
 
         realmKeys = new TimeMap<>(keysTTL*1000L); // The TimeMap operates in milliseconds
 
         log.info("Created " + this);
+    }
+
+    /**
+     * Reads a YAML sequence of plain scalars (e.g. {@code security.realms}), which SmallRye Config's YAML source
+     * flattens into indexed properties ({@code keyPrefix[0]}, {@code keyPrefix[1]}, ...) rather than a single
+     * comma-separated value. Indices are probed sequentially from 0 on the fully merged configuration, so a
+     * higher-ordinal source (environment variable, properties override file, runtime injection) can redefine an
+     * individual entry. Mirrors {@code ServiceConfig}'s private helper of the same shape.
+     *
+     * @param config the configuration to read from.
+     * @param keyPrefix the list's dotted property path, without the trailing {@code [i]}.
+     * @return the list's values, in index order; empty if the key is not configured at all.
+     */
+    private static List<String> getIndexedStringList(Config config, String keyPrefix) {
+        List<String> result = new ArrayList<>();
+        int i = 0;
+        while (true) {
+            Optional<String> value = config.getOptionalValue(keyPrefix + "[" + i + "]", String.class);
+            if (value.isEmpty()) {
+                break;
+            }
+            result.add(value.get());
+            i++;
+        }
+        return result;
     }
 
     /**

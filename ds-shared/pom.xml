@@ -139,8 +139,40 @@
             <artifactId>snakeyaml</artifactId>
             <version>2.2</version>
         </dependency>
-        <!--YAML end-->    
-    
+        <!--YAML end-->
+
+        <!-- MicroProfile Config API only (interface, no implementation): OpenApiResource accepts a
+             org.eclipse.microprofile.config.Config instance from whichever project configures it, without
+             ds-shared depending on a concrete implementation such as SmallRye Config. -->
+        <dependency>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <!-- Test-scope only: a concrete MicroProfile Config implementation, to exercise OpenApiResource's
+             config-placeholder substitution (OpenApiResourceWildcardTest) against a real Config instead of a
+             hand-rolled test double. ds-shared's own production code still only depends on the API above. -->
+        <dependency>
+            <groupId>io.smallrye.config</groupId>
+            <artifactId>smallrye-config</artifactId>
+            <version>3.12.4</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Test-scope only: adds support for loading YAML files as MicroProfile Config sources, needed by
+             ApplicationPropertiesOverrideTest (moved here from ds-storage - see that test's javadoc). -->
+        <dependency>
+            <groupId>io.smallrye.config</groupId>
+            <artifactId>smallrye-config-source-yaml</artifactId>
+            <version>3.12.4</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Unit test - ds-shared had no test dependency at all before OpenApiResourceWildcardTest; version is
+             managed by the parent (ds-backend/pom.xml), which also sets scope=test. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+
         <!--Logging-->
         <dependency>
             <groupId>org.slf4j</groupId>

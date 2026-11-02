@@ -1,112 +1,318 @@
 package dk.kb.image.config;
 
-import com.damnhandy.uri.template.UriTemplate;
-import dk.kb.util.yaml.AutoYAML;
-import dk.kb.util.yaml.YAML;
+import dk.kb.util.Resolver;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.InternalServerErrorException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import io.smallrye.config.PropertiesConfigSource;
+import io.smallrye.config.SmallRyeConfig;
+import io.smallrye.config.SmallRyeConfigBuilder;
+import io.smallrye.config.source.yaml.YamlConfigSource;
 
 /**
- * Sample configuration class using the Singleton and Observer patterns.
- * See <a href="https://en.wikipedia.org/wiki/Observer_pattern">Wiki</a>
- * If wanted, changes to the configuration source (typically files) can result in an update of the ServiceConfig and
- * a callback to relevant classes. To enable this, add autoupdate keys to the YAML config:
- * <pre>
- * autoupdate:
- *   enabled: true
- *   intervalms: 60000
- * </pre>
- * Notifications on config changes can be received using {@link #registerObserver(Observer)}.
- * Alternatively {@link #AUTO_UPDATE_DEFAULT} and {@link #AUTO_UPDATE_MS_DEFAULT} can be set so that auto-update is
- * enabled by default for the application.
- * Implementation note: Watching for changes is a busy-wait, i.e. the ServiceConfig actively reloads the configuration
- * each x milliseconds and checks if is has changed. This is necessary as the source for the configuration is not
- * guaranteed to be a file (it could be a URL or packed in a WAR instead), so watching for file system changes is not
- * solid enough. This also means that the check does have a non-trivial overhead so setting the autoupdate interval to
- * less than a minute is not recommended.
+ * Configuration class backed by <a href="https://smallrye.io/smallrye-config/">SmallRye Config</a> (a standalone
+ * implementation of MicroProfile Config; this project does not use Quarkus).
+ * <p>
+ * This replaces the previous kb-util {@code YAML}/{@code AutoYAML}-backed implementation. {@link
+ * #initialize(String, String)} takes a single YAML file (resolved via {@link Resolver#resolveURL(String)}:
+ * verbatim as a file, then on the classpath, then under the user's home), typically the one path configured
+ * outside the project in the Tomcat context environment (see {@code conf/ocp/ds-image.xml}). This is a
+ * deliberate simplification over the old behaviour/environment/local three-file layering convention (previously
+ * driven by a {@code ds-image*.yaml} glob): environment- or operator-specific overrides are now expressed with
+ * SmallRye Config's own layering instead of a second or third YAML file.
+ * <p>
+ * The old {@code AutoYAML} base class's busy-wait file-watching/{@code Observer} callback mechanism (enabled via
+ * an {@code autoupdate:} YAML section) has been dropped: it defaulted to disabled, no {@code autoupdate:} key was
+ * ever configured for this service, and nothing registered an observer - it was unused template scaffolding
+ * (along with the demonstration {@code getHelloLines()} property, also dropped).
+ * <p>
+ * <b>The devops/operations override file.</b> A second, optional properties file - also configured outside the
+ * project, via its own Tomcat context environment entry (see {@code conf/ocp/ds-image.xml}) - carries values
+ * operations control per environment, most importantly secrets such as the Kaltura admin secret (previously in
+ * {@code ds-image-environment.yaml}). This is deliberately <em>not</em> SmallRye's own implicit {@code
+ * config/application.properties} convention (part of {@code addDefaultSources()} below): that convention is
+ * keyed off the JVM's current working directory, which is shared by every webapp in a Tomcat instance that hosts
+ * several WARs (as the development server does) - so it cannot tell one service's override file apart from
+ * another's. The explicit path instead flows through the same per-webapp JNDI mechanism as the YAML file itself.
+ * See {@code ds-storage/SMALLRYE_CONFIG_MIGRATION.md} for the full picture, including why the implicit
+ * convention is still left enabled (harmless as long as no file is ever placed at that shared location) and
+ * other ways to inject configuration - environment variables, system properties, and/or {@link
+ * #setRuntimeProperty(String, String)} - all of which sit above the single YAML file in priority.
+ * <p>
+ * <b>Runtime property injection.</b> Besides the YAML file, the properties override file, environment variables
+ * and system properties, this class registers a small in-memory {@link ConfigSource} ({@link RuntimeConfigSource})
+ * with the highest ordinal of all sources. Properties set with {@link #setRuntimeProperty(String, String)} are
+ * therefore visible to every subsequent config lookup immediately, without a restart and without touching any
+ * file: unlike the old {@code YAML} class (which produced an immutable snapshot), SmallRye Config re-reads all
+ * sources on every {@code getValue}/{@code getOptionalValue} call.
  */
-public class ServiceConfig extends AutoYAML {
+public class ServiceConfig {
     private static final Logger log = LoggerFactory.getLogger(ServiceConfig.class);
 
-    private static final boolean AUTO_UPDATE_DEFAULT = false;
-    private static final long AUTO_UPDATE_MS_DEFAULT = 60*1000; // every minute
-
-    private static ServiceConfig instance;
+    /**
+     * Ordinal for the runtime-injected overrides ({@link #setRuntimeProperty(String, String)}). This is higher
+     * than system properties (400), environment variables (300) and everything below, so a runtime override
+     * always wins.
+     */
+    public static final int RUNTIME_ORDINAL = 500;
 
     /**
-     * Construct a ServiceConfig without a concrete YAML assigned. In order to use the ServiceConfig,
-     * {@link #initialize(String)} must be called.
-     *
-     * @throws IOException if initialization failed.
+     * Ordinal for the explicit, per-service devops/operations properties override file (see
+     * {@link #initialize(String, String)}). This is deliberately above SmallRye's own implicit
+     * {@code config/application.properties} convention (ordinal 260, part of {@code addDefaultSources()}), so
+     * that if a file is ever accidentally left at that shared location in a multi-webapp Tomcat instance, it can
+     * never silently outrank the correct, explicitly-configured file for a given service.
      */
-    public ServiceConfig() throws IOException {
-        super(null, AUTO_UPDATE_DEFAULT, AUTO_UPDATE_MS_DEFAULT);
+    private static final int PROPERTIES_OVERRIDE_ORDINAL = 270;
+
+    /**
+     * Ordinal for the single configured YAML file (see {@link #initialize(String, String)}). This is comfortably
+     * below environment variables (300) and system properties (400), so operations can override any individual
+     * configured value without editing YAML at all.
+     */
+    private static final int YAML_ORDINAL = 100;
+
+    private static final RuntimeConfigSource runtimeSource = new RuntimeConfigSource(RUNTIME_ORDINAL);
+
+    private static SmallRyeConfig serviceConfig;
+
+    /**
+     * Initializes the configuration from the provided configFile, without a devops/operations properties
+     * override file. Equivalent to {@code initialize(configFile, null)}.
+     * <p>
+     * This overload exists mainly for tests and other callers that don't need/have an override file; production
+     * start-up (see {@link dk.kb.image.webservice.ContextListener}) should use
+     * {@link #initialize(String, String)} instead.
+     *
+     * @param configFile the single YAML file which the configuration is loaded from; see
+     *                    {@link #initialize(String, String)}.
+     * @throws IOException if the configuration could not be located, loaded or parsed.
+     */
+    public static synchronized void initialize(String configFile) throws IOException {
+        initialize(configFile, null);
     }
 
     /**
-     * @return singleton instance of ServiceConfig.
+     * Initializes the configuration from the provided configFile and (optional) devops/operations properties
+     * override file.
+     * This should normally be called from {@link dk.kb.image.webservice.ContextListener} as
+     * part of web server initialization of the container, using the two paths configured outside the project
+     * (Tomcat context environment entries {@code application-config} and {@code application-properties-config},
+     * see {@code conf/ocp/ds-image.xml}).
+     *
+     * @param configFile the single YAML file which the configuration is loaded from: a plain file path, a
+     *                    classpath resource name, or a path relative to the user's home
+     *                    (see {@link Resolver#resolveURL(String)}).
+     * @param propertiesOverrideFile the devops/operations properties override file (same path syntax as
+     *                    {@code configFile}), or {@code null}/blank if none is configured. If a path is given but
+     *                    cannot be resolved to an existing file, this is logged as an error and startup continues
+     *                    without that source - values that were meant to come from it (most importantly secrets
+     *                    such as the Kaltura admin secret) will then be missing or fall back to the YAML file.
+     * @throws IOException if the YAML configuration could not be located, loaded or parsed. A missing/unresolvable
+     *                    {@code propertiesOverrideFile} does <em>not</em> throw - see above.
      */
-    public static synchronized ServiceConfig getInstance() {
-        if (instance == null) {
+    public static synchronized void initialize(String configFile, String propertiesOverrideFile) throws IOException {
+        URL configUrl = Resolver.resolveURL(configFile);
+
+        SmallRyeConfigBuilder builder = new SmallRyeConfigBuilder()
+                // Enables ${other.property} / ${other.property:default} expression resolution.
+                .addDefaultInterceptors()
+                // System properties (400), environment variables (300), an optional .env file (295), an optional
+                // config/application.properties (260, see the class javadoc for why this is not what
+                // propertiesOverrideFile below uses) or classpath application.properties (250), and
+                // META-INF/microprofile-config.properties (100), if present.
+                .addDefaultSources()
+                .withSources(runtimeSource)
+                .withSources(new YamlConfigSource(configUrl, YAML_ORDINAL));
+
+        if (propertiesOverrideFile == null || propertiesOverrideFile.isBlank()) {
+            log.info("No devops/operations properties override file configured; continuing with only the YAML " +
+                      "file '{}' (plus environment variables/system properties/runtime injection)", configFile);
+        } else {
             try {
-                instance = new ServiceConfig();
-            } catch (IOException e) {
-                throw new RuntimeException("Exception constructing instance", e);
+                URL propertiesUrl = Resolver.resolveURL(propertiesOverrideFile);
+                builder.withSources(new PropertiesConfigSource(propertiesUrl, PROPERTIES_OVERRIDE_ORDINAL));
+                log.info("Loaded devops/operations properties override file '{}'", propertiesOverrideFile);
+            } catch (FileNotFoundException | MalformedURLException e) {
+                log.error("Configured devops/operations properties override file '{}' could not be found. " +
+                           "Continuing without it - values that were meant to come from it (most importantly " +
+                           "secrets such as the Kaltura admin secret) will be missing or fall back to the YAML " +
+                           "file.", propertiesOverrideFile, e);
             }
         }
-        return instance;
+
+        serviceConfig = builder.build();
     }
 
     /**
-     * Set the instance. Typically used for testing.
-     */
-    public static synchronized void setInstance(ServiceConfig instance) {
-        ServiceConfig.instance = instance;
-    }
-
-    /**
-     * Direct access to the backing YAML-class is used for configurations with more flexible content
-     * and/or if the service developer prefers key-based property access.
-     * @see #getHelloLines() for alternative.
+     * Direct access to the backing MicroProfile {@link Config}, for configurations with more flexible content
+     * and/or if the service developer prefers key-based property access (e.g. {@code getConfig().getValue(
+     * "images.noAccess", String.class)} or reading the {@code security.*} keys used by
+     * {@link dk.kb.image.webservice.KBOAuth2Handler}).
      *
-     * @return the backing YAML-handler for the configuration.
+     * @return the backing SmallRye Config-handler for the configuration.
      */
-    public static YAML getConfig() {
-        if (getInstance().getYAML() == null) {
+    public static Config getConfig() {
+        if (serviceConfig == null) {
             throw new IllegalStateException("The configuration should have been loaded, but was not");
         }
-        return getInstance().getYAML();
+        return serviceConfig;
     }
 
     /**
-     * Demonstration of a first-class property, meaning that an explicit method has been provided.
-     * @see #getConfig() for alternative.
-     *
-     * @return the "Hello World" lines defined in the config file.
+     * @param key a configuration property path.
+     * @return true if the given key is defined in the configuration.
      */
-    public static List<String> getHelloLines() {
-        return getConfig().getList("helloLines");
+    public static boolean containsKey(String key) {
+        return getConfig().getOptionalValue(key, String.class).isPresent();
     }
 
     /**
-     * Equivalent to {@code ServiceConfig.getConfig().getString(KEY_IIIF_SERVER)} but guarantees that
+     * Equivalent to {@code ServiceConfig.getConfig().getValue(serverKey, String.class)} but guarantees that
      * the retrieved value DOES NOT end with {@code /}.
-     * This is used with {@link UriTemplate} to ensure valid URIs.
+     * This is used with {@code UriTemplate} to ensure valid URIs.
      *
-     * @param serverKey YAML key for a server stated in the configuration.
+     * @param serverKey configuration key for a server stated in the configuration.
      * @return the server for the given {@code serverKey}, guaranteeing that it does not end with {@code /}.
      */
     public static String getServer(String serverKey) {
-        String server = getConfig().getString(serverKey, null);
+        String server = getConfig().getOptionalValue(serverKey, String.class).orElse(null);
         if (server == null) {
             // log.error as the service does not work at all without knowing the servers
             log.error("The server key '{}' was not defined in the configuration", serverKey);
             throw new InternalServerErrorException("Unable to resolve server for operation");
         }
         return server.endsWith("/") ? server.substring(0, server.length()-1) : server;
+    }
+
+    /**
+     * Set (or overwrite) a single configuration property at runtime, without touching any configuration file
+     * and without restarting the service.
+     * <p>
+     * The change is visible to every subsequent config lookup immediately: it takes precedence over every
+     * other configuration source (the YAML file, the properties override file, environment variables and
+     * system properties, see {@link #RUNTIME_ORDINAL}). This is intended for short-lived operational overrides
+     * (temporarily raising a limit, flipping a behaviour flag, etc.) or for exercising the config system from a
+     * test. It is <em>not</em> persisted: restarting the service reverts to the values from the configuration
+     * file.
+     *
+     * @param key   dotted property path, using the exact same syntax as the YAML configuration
+     *              (e.g. {@code "thumbnail.width.max"}).
+     * @param value the value to use, or {@code null} to remove a previously injected override.
+     */
+    public static void setRuntimeProperty(String key, String value) {
+        if (value == null) {
+            clearRuntimeProperty(key);
+            return;
+        }
+        String logValue = looksSensitive(key) ? "<redacted>" : value;
+        log.info("Setting runtime configuration override '{}' = '{}'", key, logValue);
+        runtimeSource.set(key, value);
+    }
+
+    /**
+     * Removes a previously injected runtime override for the given key, reverting to whatever value the
+     * YAML file, environment variables or system properties provide.
+     *
+     * @param key dotted property path previously passed to {@link #setRuntimeProperty(String, String)}.
+     */
+    public static void clearRuntimeProperty(String key) {
+        log.info("Clearing runtime configuration override '{}'", key);
+        runtimeSource.clear(key);
+    }
+
+    /**
+     * @return the keys currently overridden at runtime through {@link #setRuntimeProperty(String, String)}.
+     */
+    public static Set<String> getRuntimePropertyNames() {
+        return runtimeSource.getPropertyNames();
+    }
+
+    /**
+     * Package-private escape hatch for {@code dk.kb.image.config.ConfigAdjuster} (test-only): captures the whole
+     * current configuration object, so it can temporarily be swapped for a different one (e.g. a small
+     * test-fixture YAML file) and later restored verbatim - mirroring what {@code ConfigAdjuster} previously did
+     * by swapping whole kb-util {@code ServiceConfig}/{@code YAML} instances via {@code getInstance()}/
+     * {@code setInstance()}, before this class became a purely static singleton (matching the other ds-backend
+     * modules) rather than an instantiable {@code AutoYAML} subclass.
+     *
+     * @return the current backing SmallRye Config, or {@code null} if not yet initialized.
+     */
+    static SmallRyeConfig getRawConfig() {
+        return serviceConfig;
+    }
+
+    /**
+     * Package-private escape hatch for {@code dk.kb.image.config.ConfigAdjuster} (test-only); see
+     * {@link #getRawConfig()}.
+     *
+     * @param config the configuration object to restore (previously captured with {@link #getRawConfig()}).
+     */
+    static void setRawConfig(SmallRyeConfig config) {
+        serviceConfig = config;
+    }
+
+    private static boolean looksSensitive(String key) {
+        String lower = key.toLowerCase(Locale.ROOT);
+        return lower.contains("password") || lower.contains("secret") || lower.contains("token");
+    }
+
+    /**
+     * A tiny mutable {@link ConfigSource} that allows properties to be injected or changed at runtime. See
+     * {@link #setRuntimeProperty(String, String)}.
+     */
+    static final class RuntimeConfigSource implements ConfigSource {
+        private final Map<String, String> properties = new ConcurrentHashMap<>();
+        private final int ordinal;
+
+        RuntimeConfigSource(int ordinal) {
+            this.ordinal = ordinal;
+        }
+
+        void set(String key, String value) {
+            properties.put(key, value);
+        }
+
+        void clear(String key) {
+            properties.remove(key);
+        }
+
+        @Override
+        public Map<String, String> getProperties() {
+            return Collections.unmodifiableMap(properties);
+        }
+
+        @Override
+        public Set<String> getPropertyNames() {
+            return properties.keySet();
+        }
+
+        @Override
+        public String getValue(String propertyName) {
+            return properties.get(propertyName);
+        }
+
+        @Override
+        public String getName() {
+            return "ServiceConfig runtime overrides";
+        }
+
+        @Override
+        public int getOrdinal() {
+            return ordinal;
+        }
     }
 }

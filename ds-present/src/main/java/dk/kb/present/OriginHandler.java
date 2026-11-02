@@ -14,11 +14,12 @@
  */
 package dk.kb.present;
 
+import dk.kb.present.config.OriginConfig;
+import dk.kb.present.config.StorageConfig;
 import dk.kb.present.model.v1.FormatDto;
 import dk.kb.present.storage.Storage;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
-import dk.kb.util.yaml.YAML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +36,6 @@ import java.util.stream.Collectors;
  */
 public class OriginHandler {
     private static final Logger log = LoggerFactory.getLogger(OriginHandler.class);
-    private static final String ORIGINS_KEY = ".origins";
-    private static final String RECORD_ID_PATTERN_KEY = ".record.id.pattern";
-    private static final String ORIGIN_ID_PATTERN_KEY = ".origin.prefix.pattern";
 
     private final StorageHandler storageHandler;
     private final Map<String, DSOrigin> originsByPrefix; // prefix, origin
@@ -47,35 +45,44 @@ public class OriginHandler {
 
     /**
      * Creates a {@link StorageHandler} and a set of {@link Storage}s based on the given configuration.
-     * @param conf top-level configuration. The parts for this handler is expected to be found at
-     * {@code .origins} and {@code .record.id.pattern}
+     *
+     * @param origins the configured origins; see {@link dk.kb.present.config.ServiceConfig#getOrigins()}.
+     * @param originPrefixPattern the pattern every origin's prefix must match; see
+     *                            {@link dk.kb.present.config.ServiceConfig#getOriginPrefixPattern()}.
+     * @param recordIdPattern the pattern every incoming record ID must match; see
+     *                        {@link dk.kb.present.config.ServiceConfig#getRecordIdPattern()}.
+     * @param storages the configured storages, used to create this handler's own {@link StorageHandler}; see
+     *                 {@link dk.kb.present.config.ServiceConfig#getStorages()}.
      */
-    public OriginHandler(YAML conf) {
+    public OriginHandler(List<OriginConfig> origins, String originPrefixPattern, String recordIdPattern,
+                          List<StorageConfig> storages) {
+        Pattern compiledOriginPrefixPattern;
         try {
-            originPrefixPattern = Pattern.compile(conf.getString(ORIGIN_ID_PATTERN_KEY));
+            compiledOriginPrefixPattern = Pattern.compile(originPrefixPattern);
         } catch (Exception e) {
-            String message = "Unable to create pattern from configuration, expected key " + RECORD_ID_PATTERN_KEY;
+            String message = "Unable to compile origin prefix pattern '" + originPrefixPattern + "'";
             log.warn(message, e);
             throw new RuntimeException(e);
         }
+        this.originPrefixPattern = compiledOriginPrefixPattern;
 
-        storageHandler = new StorageHandler(conf);
-        originsByPrefix = conf.getYAMLList(ORIGINS_KEY).stream()
+        storageHandler = new StorageHandler(storages);
+        originsByPrefix = origins.stream()
                 .map(originConf -> new DSOrigin(originConf, storageHandler))
                 .peek(origin -> {
-                    if (!originPrefixPattern.matcher(origin.getPrefix()).matches()) {
+                    if (!compiledOriginPrefixPattern.matcher(origin.getPrefix()).matches()) {
                         throw new IllegalStateException(
                                 "The configured origin prefix '" + origin.getPrefix() + "' for origin '" +
                                 origin.getId() + "' does not match the origin prefix pattern '" +
-                                originPrefixPattern.pattern() + "'");
+                                compiledOriginPrefixPattern.pattern() + "'");
                     }})
                 .collect(Collectors.toMap(DSOrigin::getPrefix, storage -> storage));
         originsByID = originsByPrefix.values().stream()
                 .collect(Collectors.toMap(DSOrigin::getId, storage -> storage));
         try {
-            recordIDPattern = Pattern.compile(conf.getString(RECORD_ID_PATTERN_KEY));
+            recordIDPattern = Pattern.compile(recordIdPattern);
         } catch (Exception e) {
-            String message = "Unable to create pattern from configuration, expected key " + RECORD_ID_PATTERN_KEY;
+            String message = "Unable to compile record ID pattern '" + recordIdPattern + "'";
             log.warn(message, e);
             throw new RuntimeException(e);
         }

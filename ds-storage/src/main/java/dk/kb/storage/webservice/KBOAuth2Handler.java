@@ -18,11 +18,11 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.util.webservice.exception.InternalServiceException;
-import dk.kb.util.yaml.YAML;
 import dk.kb.util.oauth2.TimeMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.interceptor.Fault;
+import org.eclipse.microprofile.config.Config;
 import org.json.JSONTokener;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
@@ -44,6 +44,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -63,10 +64,10 @@ public class KBOAuth2Handler {
 
     private final MODE mode;
     private final String baseurl;
-    private final Set<String > realms; //Realms defined on the Keycloak server 
+    private final Set<String > realms; //Realms defined on the Keycloak server
     private final int keysTTL;
 
-    //Map with realm+kid as key the PublicKey as values 
+    //Map with realm+kid as key the PublicKey as values
     //See https://www.rfc-editor.org/rfc/rfc7515#section-4.1.4
     final Map<String, PublicKey> realmKeys; //Map
     private static KBOAuth2Handler instance;
@@ -77,34 +78,44 @@ public class KBOAuth2Handler {
      * will fail, unless the role {@code public} is specified in the {@link KBAuthorization} annotation.
      */
     private KBOAuth2Handler() {
-        YAML conf;
-        if (!ServiceConfig.getConfig().containsKey("security")) {
+        Config conf = ServiceConfig.getConfig();
+
+        boolean hasSecuritySection = false;
+        for (String name : conf.getPropertyNames()) {
+            if (name.equals("security") || name.startsWith("security.")) {
+                hasSecuritySection = true;
+                break;
+            }
+        }
+        if (!hasSecuritySection) {
             log.warn("Authorization interceptor enabled, but there is no security setup in configuration at " +
                      "key .security");
-            conf = new YAML();
-        } else {
-            conf = ServiceConfig.getConfig().getSubMap("security");
         }
 
-        mode = MODE.valueOf(conf.getString("mode", MODE.ENABLED.toString()).toUpperCase(Locale.ROOT));
+        mode = MODE.valueOf(
+                conf.getOptionalValue("security.mode", String.class)
+                        .orElse(MODE.ENABLED.toString())
+                        .toUpperCase(Locale.ROOT));
         if (mode == MODE.OFFLINE) {
             log.warn("Authorization mode is {}. Access tokens will not be properly checked. " +
                      "Set security.mode to ENABLED to activate full access token validation", MODE.OFFLINE);
         }
 
-        baseurl = trimTrailingSlash(conf.getString("baseurl", null));
+        baseurl = trimTrailingSlash(conf.getOptionalValue("security.baseurl", String.class).orElse(null));
         if (baseurl == null && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
                      "No security.baseurl defined and security.mode='{}'", mode);
         }
 
-        realms = new HashSet<>(conf.getList("realms", Collections.emptyList()));
+        List<String> realmsList = conf.getOptionalValues("security.realms", String.class)
+                .orElse(Collections.emptyList());
+        realms = new HashSet<>(realmsList);
         if (realms.isEmpty() && mode != MODE.OFFLINE) {
             log.warn("OAuth-enabled endpoints will fail: " +
                      "No .security.realms defined and security.mode='{}'", mode);
         }
 
-        keysTTL = conf.getInteger(".public_keys.ttl_seconds", 600);
+        keysTTL = conf.getOptionalValue("security.public_keys.ttl_seconds", Integer.class).orElse(600);
 
         realmKeys = new TimeMap<>(keysTTL*1000L); // The TimeMap operates in milliseconds
 
@@ -210,7 +221,7 @@ public class KBOAuth2Handler {
                                  " one of the roles " + endpointRoles;
                     log.warn(message);
                     throw new Fault(new ValidationException(message));
-                    
+
                 }
                 String message="Authorization failed as there were no Authorization defined in request and " +
                         "endpoint " + endpoint + " requires it to be present with one of the roles " + endpointRoles;
@@ -311,8 +322,8 @@ public class KBOAuth2Handler {
 
         // Note: Timestamps in token is in seconds since Epoch. Date().getTime is milliseconds
 
-        if (trusted.isExpired()) {             
-            // Check Expiration  
+        if (trusted.isExpired()) {
+            // Check Expiration
             long overtime = now/1000 - trusted.getExp();
             throw new VerificationException("AccessToken expired (" + overtime + " seconds too old)");
         }
@@ -376,9 +387,9 @@ public class KBOAuth2Handler {
     }
 
      /**
-      * The Base64 strings that come from a JWKS need some manipulation before they can be decoded.   
-      * TODO: Why is replacement even required? See OahtUtil in ds-license. Just splitting on '.' to get the 3 terms is correct by using a OOAuth library.     
-      * 
+      * The Base64 strings that come from a JWKS need some manipulation before they can be decoded.
+      * TODO: Why is replacement even required? See OahtUtil in ds-license. Just splitting on '.' to get the 3 terms is correct by using a OOAuth library.
+      *
       * @param base64 String base64 encoded
       * @return decoded byte array
       */

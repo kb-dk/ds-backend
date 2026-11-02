@@ -9,6 +9,7 @@ import org.apache.cxf.interceptor.InInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -247,7 +248,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public List<String> getIdTypes(PlatformEnumDto platform) {
         try {
-            return ServiceConfig.getRightsPlatformConfig(platform.getValue()).getList("idTypes");
+            return ServiceConfig.getRightsPlatformIdTypes(platform.getValue());
         } catch (Exception e) {
             throw handleException(e);
         }
@@ -256,7 +257,7 @@ public class DsRightsApiServiceImpl extends ImplBase implements DsRightsApi {
     @Override
     public List<Object> getPlatforms() {
         try {
-            return ServiceConfig.getConfig().getList("rights.platforms");
+            return new ArrayList<>(ServiceConfig.getRightsPlatforms());
         } catch (Exception e) {
             throw handleException(e);
         }

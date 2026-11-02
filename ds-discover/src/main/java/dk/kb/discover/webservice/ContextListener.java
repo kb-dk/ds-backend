@@ -38,6 +38,7 @@ public class ContextListener implements ServletContextListener {
 
     public static final String LOGBACK_ENV = "java:/comp/env/ds-discover-logback-config";
     public static final String CONFIG_ENV = "java:/comp/env/application-config";
+    public static final String PROPERTIES_CONFIG_ENV = "java:/comp/env/application-properties-config";
 
     /**
      * On context initialisation this
@@ -67,13 +68,19 @@ public class ContextListener implements ServletContextListener {
                     BuildInfoManager.getGitCommitChecksum(), BuildInfoManager.getGitCommitTime(),
                     BuildInfoManager.getGitClosestTag());
             InitialContext ctx = new InitialContext();
-            String configFile = (String) ctx.lookup("java:/comp/env/application-config");
-            //TODO this should not refer to something in template. Should we perhaps use reflection here?
-            ServiceConfig.getInstance().initialize(configFile);
+            String configFile = (String) ctx.lookup(CONFIG_ENV);
+            String propertiesFile = null;
+            try {
+                propertiesFile = (String) ctx.lookup(PROPERTIES_CONFIG_ENV);
+            } catch (NamingException e) {
+                log.info("No optional devops/operations properties override file configured at '{}'. " +
+                          "Continuing with YAML-only configuration.", PROPERTIES_CONFIG_ENV);
+            }
+            ServiceConfig.initialize(configFile, propertiesFile);
             // Set the configdir in the SolrManager to enable load of solrshield config relative to configDir
             Path configDir = Paths.get(configFile).getParent();
             SolrManager.getInstance().setConfigBaseDir(configDir);
-            SolrManager.getInstance().setConfig(ServiceConfig.getInstance().getYAML());// also inititalize SolrManager yaml
+            SolrManager.getInstance().loadSolrServices();
 
             // SolrShield instances are now loaded lazily per collection via SolrManager.getShield()
 
