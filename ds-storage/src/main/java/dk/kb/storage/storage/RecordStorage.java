@@ -388,7 +388,7 @@ public class RecordStorage extends BaseModuleStorage {
             mtime > ?
     """;
 
-    //SELECT id,mTime,referenceId,kalturaId,deleted FROM ds_records WHERE origin= 'ds.tv' and mTime > 0 AND kalturaId IS NOT NULL AND kalturaId NOT LIKE 'ERROR_%' ORDER BY mtime ASC LIMIT 50
+    //SELECT id,mTime,referenceId,kalturaId,deleted FROM ds_records WHERE origin= 'ds.tv' and mTime > 0 AND kalturaId IS NOT NULL AND kalturaId NOT LIKE 'ERROR\_%' ESCAPE '\' ORDER BY mtime ASC LIMIT 50
     // Upload error markers (StreamErrorType, e.g. ERROR_FILE_MISSING) are stored in kalturaId, but are not Kaltura ids
     private static String kalturaRecordsStatement = """
                 SELECT
@@ -406,7 +406,7 @@ public class RecordStorage extends BaseModuleStorage {
                     AND
                     kalturaid IS NOT NULL
                     AND
-                    kalturaid NOT LIKE 'ERROR_%'
+                    kalturaid NOT LIKE 'ERROR\\_%' ESCAPE '\\'
                 ORDER BY
                     mtime ASC
                 LIMIT ?

@@ -14,7 +14,6 @@ import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.storage.RerunClusterStorage;
 import dk.kb.datahandler.transcriptions.TranscriptionJob;
-import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.datahandler.oai.OaiHarvestClient;
@@ -29,14 +28,6 @@ import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -197,6 +188,7 @@ public class DsDatahandlerFacade {
      * <li>Kaltura API error. Very rare this happens. Have not seen it yet.</li>
      * </ul>
      * It is important to mark the records as failed or a new delta upload job will start processing the same streams with errors every time.
+     * The job can not be started while a kaltura validation job is running.
      * A solr delta indexing job will be started if both the job completes succesfully or fails. 
      *  
      * @throws InternalServiceException
@@ -208,7 +200,8 @@ public class DsDatahandlerFacade {
         
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
-        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom,user);
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom, user,
+                CategoryDto.KALTURA_VALIDATION);
 
         log.info("Starting kaltura delta upload");
         try {
@@ -244,16 +237,17 @@ public class DsDatahandlerFacade {
      * exists but is not READY, the Kaltura entry is deleted (if present) and the kaltura_id is cleared on the storage
      * record, making it eligible for kalturaDeltaUpload again.
      * No solr index job is started. Changed records get a new mTime and are picked up by the next solr delta index.
+     * The job can not be started while a kaltura upload job is running, as validation would delete entries the upload
+     * has just created and that are still being processed by Kaltura.
      *
      * @param dryRun If true, nothing is changed in Kaltura or storage.
      *               A summary of the kaltura_ids that would be changed is logged.
      * @throws InternalServiceException
      */
     public static void kalturaValidate(boolean dryRun) throws InternalServiceException {
-        // mTimeFrom is in microseconds
-        OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
-        JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION, null, offsetDateModifiedTimeFrom, user);
+        JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION, null, null, user,
+                CategoryDto.KALTURA_UPLOAD);
 
         log.info("Starting kaltura validation. dryRun={}", dryRun);
         try {
@@ -575,6 +569,23 @@ public class DsDatahandlerFacade {
      * @return jobDto JobDto that is running
      */
     public static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user) {
+        return startJob(typeDto, categoryDto, source, modifiedTimeFrom, user, new CategoryDto[0]);
+    }
+
+    /**
+     * Creates new a new running job, unless a job of the same category and source, or a job of one of the
+     * blocking categories (any source), is already running.
+     * @param typeDto
+     * @param categoryDto
+     * @param source
+     * @param modifiedTimeFrom
+     * @param user
+     * @param blockingCategories categories of jobs that must not be running when this job is started
+     * @return jobDto JobDto that is running
+     * @throws InvalidArgumentServiceException if a conflicting job is running
+     */
+    public static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user,
+                                  CategoryDto... blockingCategories) {
         JobDto jobDto = new JobDto();
 
         jobDto.setId(UUID.randomUUID());
@@ -591,6 +602,11 @@ public class DsDatahandlerFacade {
         UUID jobId = BaseModuleStorage.performStorageAction(databaseMessage, JobStorage.class, storage -> {
             if (((JobStorage) storage).hasRunningJob(categoryDto, source)) {
                 throw new InvalidArgumentServiceException("There is already a/an " + categoryDto + " job running");
+            }
+            for (CategoryDto blocking : blockingCategories) {
+                if (((JobStorage) storage).hasRunningJob(blocking, null)) {
+                    throw new InvalidArgumentServiceException("Cannot start " + categoryDto + " job while a/an " + blocking + " job is running");
+                }
             }
             return ((JobStorage) storage).createJob(jobDto);
         });

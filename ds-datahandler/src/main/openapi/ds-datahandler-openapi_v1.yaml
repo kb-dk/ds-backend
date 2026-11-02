@@ -259,7 +259,8 @@ paths:
         - '${project.name}'
       summary: 'Start job that uploading streams to kaltura that does not have an kaltura_id already and are not marked with access_malfunction.
        Will only extract records from solr with access_malfuction:false and production_code_allowed:true
-       Storage records will be updated with the kalturaid. An solr delta index will be started after the job finishes. Also if it finishes unexpected'
+       Storage records will be updated with the kalturaid. An solr delta index will be started after the job finishes. Also if it finishes unexpected.
+       The job can not be started while a kaltura validation job is running.'
       security:
         - KBOAuth:
             - any
@@ -277,7 +278,8 @@ paths:
        If the Kaltura entry is in status ERROR_CONVERTING or ERROR_IMPORTING, the entry is kept and the kaltura_id is set to ERROR_KALTURA_TRANSCODING or ERROR_KALTURA_IMPORT.
        Otherwise, if a kaltura_id does not exist in Kaltura, or exists but is not READY, the Kaltura entry is deleted (if present) and the kaltura_id is cleared on the storage record.
        No solr index job is started. Changed records are picked up by the next solr delta index.
-       With dryRun=true nothing is changed. A summary of kaltura_ids that would be changed is logged.'
+       With dryRun=true nothing is changed. A summary of kaltura_ids that would be changed is logged.
+       The job can not be started while a kaltura upload job is running, as it would delete entries that are still being processed by Kaltura.'
       security:
         - KBOAuth:
             - any

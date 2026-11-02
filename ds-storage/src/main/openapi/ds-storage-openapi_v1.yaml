@@ -320,7 +320,7 @@ paths:
   /record/clearKalturaId:
     post:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Clear the Kaltura id for a record. '
       security:
         - KBOAuth:
@@ -494,7 +494,7 @@ paths:
   /records/kaltura:
     get:
       tags:
-        - '${project.name}'
+        - 'Record'
       summary: 'Get a batch of records with a Kaltura entry id after a given lastModified time'
       security:
         - KBOAuth:

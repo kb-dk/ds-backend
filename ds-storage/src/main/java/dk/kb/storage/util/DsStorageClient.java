@@ -16,6 +16,7 @@ package dk.kb.storage.util;
 
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.OriginDto;
