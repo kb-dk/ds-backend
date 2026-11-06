@@ -2,6 +2,8 @@ package dk.kb.kaltura.client;
 
 import com.kaltura.client.enums.EntryStatus;
 import com.kaltura.client.types.APIException;
+import com.kaltura.client.types.FilterPager;
+import com.kaltura.client.types.MediaEntryFilter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -14,57 +16,87 @@ class DsKalturaClientEntryStatusesTest {
 
     @Test
     void getEntryStatuses_thenFiltersOnIdsWithPageSizeOfBatch() throws Exception {
+        // Arrange
         EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of());
 
+        // Act
         client.getEntryStatuses(List.of("0_a", "0_b"));
+        MediaEntryFilter filter = client.getLastFilter();
+        FilterPager pager = client.getLastPager();
 
-        assertEquals("0_a,0_b", client.getLastFilter().getIdIn());
-        assertNull(client.getLastFilter().getStatusIn());
-        assertEquals(2, client.getLastPager().getPageSize());
+        // Assert
+        assertEquals("0_a,0_b", filter.getIdIn());
+        assertNull(filter.getStatusIn());
+        assertEquals(2, pager.getPageSize());
     }
 
     @Test
     void getEntryStatuses_whenEmpty_thenReturnsEmptyWithoutRequest() throws Exception {
+        // Arrange
         EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of("0_a", EntryStatus.READY));
 
-        assertTrue(client.getEntryStatuses(List.of()).isEmpty());
-        assertNull(client.getLastFilter());
+        // Act
+        Map<String, EntryStatus> result = client.getEntryStatuses(List.of());
+        MediaEntryFilter filter = client.getLastFilter();
+
+        // Assert
+        assertTrue(result.isEmpty());
+        assertNull(filter);
     }
 
     @Test
     void getEntryStatuses_whenMoreIdsThanBatchSize_thenThrows() throws Exception {
+        // Arrange
         EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of());
         List<String> ids = Collections.nCopies(client.getBatchSize() + 1, "0_a");
 
+        // Act and Assert
         assertThrows(IllegalArgumentException.class, () -> client.getEntryStatuses(ids));
     }
 
     @Test
     void getEntryStatus_whenEntryExists_thenReturnsStatus() throws Exception {
+        // Arrange
         EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of("0_a", EntryStatus.PENDING));
 
-        assertEquals(EntryStatus.PENDING, client.getEntryStatus("0_a"));
+        // Act
+        EntryStatus result = client.getEntryStatus("0_a");
+
+        // Assert
+        assertEquals(EntryStatus.PENDING, result);
     }
 
     @Test
     void getEntryStatus_whenEntryNotFound_thenReturnsNull() throws Exception {
+        // Arrange
         EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of());
 
-        assertNull(client.getEntryStatus("0_missing"));
+        // Act
+        EntryStatus result = client.getEntryStatus("0_missing");
+
+        // Assert
+        assertNull(result);
     }
 
     @Test
     void getEntryStatus_whenEntryDeleted_thenReturnsNull() throws Exception {
+        // Arrange
         EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of("0_a", EntryStatus.DELETED));
 
-        assertNull(client.getEntryStatus("0_a"));
+        // Act
+        EntryStatus result = client.getEntryStatus("0_a");
+
+        // Assert
+        assertNull(result);
     }
 
     @Test
     void getEntryStatus_whenOtherApiError_thenThrows() throws Exception {
+        // Arrange
         EntryStatusStubKalturaClient client = new EntryStatusStubKalturaClient(Map.of());
         client.setGetError(new APIException(APIException.FailureStep.OnResponse, "Service unavailable", "SERVICE_UNAVAILABLE"));
 
+        // Act and Assert
         assertThrows(APIException.class, () -> client.getEntryStatus("0_a"));
     }
 }

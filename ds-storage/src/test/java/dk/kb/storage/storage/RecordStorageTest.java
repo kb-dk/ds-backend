@@ -158,6 +158,7 @@ public class RecordStorageTest extends TestcontainersUtil {
 
     @Test
     public void testGetKalturaRecords() throws Exception {
+        // Arrange
         String origin = "kaltura.test";
         createRecordWithKalturaId(origin, "kaltura.test:valid", "ref_valid", "0_valid");
         createRecordWithKalturaId(origin, "kaltura.test:no_kaltura_id", "ref_none", null);
@@ -165,8 +166,10 @@ public class RecordStorageTest extends TestcontainersUtil {
         createRecordWithKalturaId(origin, "kaltura.test:deleted", "ref_deleted", "0_deleted");
         recordStorage.markRecordForDelete("kaltura.test:deleted");
 
+        // Act
         List<DsRecordKalturaDto> records = recordStorage.getKalturaRecords(origin, 0L, 100);
 
+        // Assert
         // Records without a kaltura id and upload error markers are not returned. Ordered by mTime.
         assertEquals(2, records.size());
         assertEquals("kaltura.test:valid", records.get(0).getId());
@@ -178,9 +181,12 @@ public class RecordStorageTest extends TestcontainersUtil {
         assertTrue(records.get(0).getmTime() < records.get(1).getmTime());
 
         // Batch size and mTime paging
+        // Act
         List<DsRecordKalturaDto> firstBatch = recordStorage.getKalturaRecords(origin, 0L, 1);
-        assertEquals(1, firstBatch.size());
         List<DsRecordKalturaDto> nextBatch = recordStorage.getKalturaRecords(origin, firstBatch.get(0).getmTime(), 1);
+
+        // Assert
+        assertEquals(1, firstBatch.size());
         assertEquals("kaltura.test:deleted", nextBatch.get(0).getId());
     }
 

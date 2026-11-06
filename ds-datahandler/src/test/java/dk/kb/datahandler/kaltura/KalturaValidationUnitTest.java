@@ -206,7 +206,7 @@ class KalturaValidationUnitTest {
     }
 
     @Test
-    void testValidateKalturaIds_whenEntryMissingFromBatchButReady_thenRecordIsNotCleared() {//This
+    void testValidateKalturaIds_whenEntryMissingFromBatchButReady_thenRecordIsNotCleared() {
         // Since Kaltura media.list can not be trusted to always return all ID's, each missing entry must be double
         // checked separately with media.get.
 

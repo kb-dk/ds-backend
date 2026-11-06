@@ -290,8 +290,10 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
    */
   @Test
   public void kalturaValidate_whenKalturaUploadJobIsRunning_thenThrowInvalidArgumentServiceException() {
+    // Arrange
     createRunningJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD);
 
+    // Act/Assert
     Exception exception = Assertions.assertThrows(InvalidArgumentServiceException.class,
         () -> DsDatahandlerFacade.kalturaValidate(true));
 
@@ -303,8 +305,10 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
    */
   @Test
   public void kalturaDeltaUpload_whenKalturaValidationJobIsRunning_thenThrowInvalidArgumentServiceException() {
+    // Arrange
     createRunningJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION);
 
+    // Act/Assert
     Exception exception = Assertions.assertThrows(InvalidArgumentServiceException.class,
         () -> DsDatahandlerFacade.kalturaDeltaUpload());
 
