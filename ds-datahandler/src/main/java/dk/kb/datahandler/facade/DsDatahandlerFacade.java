@@ -232,6 +232,7 @@ public class DsDatahandlerFacade {
      * Start job that validates that kaltura_id values registered on records in ds-storage still point to a
      * Kaltura entry with status READY.
      * This is not a delta job, so all records with a kaltura_id are (re)checked on every run.
+     * Upload error markers (ERROR_*, e.g. ERROR_FILE_MISSING) and records marked for delete are skipped.
      * If the Kaltura entry is in status ERROR_CONVERTING or ERROR_IMPORTING, the kaltura_id is set to
      * ERROR_KALTURA_TRANSCODING or ERROR_KALTURA_IMPORT. Otherwise, if a kaltura_id does not exist in Kaltura, or
      * exists but is not READY, the Kaltura entry is deleted (if present) and the kaltura_id is cleared on the storage
@@ -573,7 +574,7 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * Creates new a new running job, unless a job of the same category and source, or a job of one of the
+     * Creates a new running job, unless a job of the same category and source, or a job of one of the
      * blocking categories (any source), is already running.
      * @param typeDto
      * @param categoryDto

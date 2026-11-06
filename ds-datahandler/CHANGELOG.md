@@ -9,10 +9,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- `/kaltura/validate` checks the kaltura_ids of `ds.tv` and `ds.radio` records against Kaltura. Missing or
-  non-READY entries are deleted and their kaltura_id is cleared, so they are uploaded again. Entries that failed
-  transcoding or import are marked `ERROR_KALTURA_TRANSCODING` or `ERROR_KALTURA_IMPORT`. Supports `dryRun`.
-  Solr is not reindexed by the job; changed records are picked up by the next delta index.
+- `/kaltura/validate` checks the kaltura_ids of `ds.tv` and `ds.radio` records against Kaltura. Entries that
+  failed transcoding or import are kept and the kaltura_id is marked `ERROR_KALTURA_TRANSCODING` or
+  `ERROR_KALTURA_IMPORT`. Other non-READY entries are deleted, and the kaltura_id is cleared for those and for
+  kaltura_ids not found in Kaltura. Supports `dryRun`.
+  Solr is not reindexed by the job; changed records are picked up by the next delta index, after which cleared
+  records are uploaded again by `/kaltura/deltaupload`.
 - `/kaltura/validate` and `/kaltura/deltaupload` can not run at the same time. Starting one while the other is
   running is rejected.
 

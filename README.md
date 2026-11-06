@@ -134,6 +134,16 @@ curl --request POST "http://localhost:8084/ds-datahandler/v1/kaltura/deltaupload
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
+### Kaltura validation
+
+Checks that the kaltura_ids in ds-storage point to READY entries in Kaltura. Can not run while a Kaltura upload is
+running. Use `dryRun=true` to only log what would be changed.
+
+```shell
+curl --request POST "http://localhost:8084/ds-datahandler/v1/kaltura/validate?dryRun=true" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
+```
+
 ### Reindex Solr
 
 So kaltura_id can be found in Solr
