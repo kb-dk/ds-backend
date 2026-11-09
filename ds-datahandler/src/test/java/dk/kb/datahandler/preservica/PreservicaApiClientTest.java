@@ -124,6 +124,8 @@ public class PreservicaApiClientTest {
         client.search(null, 10);
 
         assertEquals(List.of("login", "search:t1", "refresh", "search:t2"), calls);
+        assertEquals(2, client.getSearchCalls());
+        assertEquals(2, client.getAuthCalls());
     }
 
     @Test
@@ -134,6 +136,9 @@ public class PreservicaApiClientTest {
         client.search(null, 10);
 
         assertEquals(List.of("login", "search:t1", "search:t1", "login", "search:t2"), calls);
+        // The resend after a 401 is part of the same search
+        assertEquals(2, client.getSearchCalls());
+        assertEquals(2, client.getAuthCalls());
     }
 
     @Test

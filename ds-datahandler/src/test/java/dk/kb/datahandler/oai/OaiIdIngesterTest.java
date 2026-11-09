@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OaiIdIngesterTest {
 
@@ -60,6 +61,7 @@ public class OaiIdIngesterTest {
 
             assertEquals(identifiers.size(), ingester.getProcessed());
             assertEquals(0, ingester.getNotFound());
+            assertEquals(identifiers.size(), ingester.getGetRecordCalls());
         }
         assertEquals(identifiers, filter.stored);
     }
@@ -75,6 +77,7 @@ public class OaiIdIngesterTest {
 
             assertEquals(3, ingester.getProcessed());
             assertEquals(2, ingester.getNotFound());
+            assertEquals(5, ingester.getGetRecordCalls());
         }
         assertEquals(List.of("oai:io:0", "oai:io:2", "oai:io:0"), filter.stored);
     }
@@ -93,6 +96,8 @@ public class OaiIdIngesterTest {
             InternalServiceException e = assertThrows(InternalServiceException.class,
                                                       () -> ingester.ingest(identifiers(10)));
             assertEquals(IOException.class, e.getCause().getClass());
+            // Later fetches may have been cancelled, but the ones up to the failing record ran
+            assertTrue(ingester.getGetRecordCalls() >= 4, "calls: " + ingester.getGetRecordCalls());
         }
         assertEquals(List.of("oai:io:0", "oai:io:1", "oai:io:2"), filter.stored);
     }

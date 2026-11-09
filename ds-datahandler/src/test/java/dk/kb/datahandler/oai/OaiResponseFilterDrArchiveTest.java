@@ -57,6 +57,7 @@ public class OaiResponseFilterDrArchiveTest {
         verify(storage).markRecordForDelete("ds.tv:oai:io:3333");
         verify(storage).markRecordForDelete("ds.radio:oai:io:3333");
         verifyNoMoreInteractions(storage);
+        assertEquals(6, filter.getStorageCalls());
     }
 
     @Test
@@ -85,6 +86,7 @@ public class OaiResponseFilterDrArchiveTest {
         assertNull(stored.getValue().getParentId());
         assertNull(stored.getValue().getReferenceId());
         assertEquals(1, filter.getProcessed());
+        assertEquals(1, filter.getStorageCalls());
     }
 
     @Test

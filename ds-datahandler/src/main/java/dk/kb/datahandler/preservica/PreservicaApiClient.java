@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Client for the Preservica Content API search, used to list information objects in {@code xip.created} order.
@@ -46,6 +47,10 @@ public class PreservicaApiClient {
     private String refreshToken;
     private Instant expiresAt = Instant.MIN;
 
+    private final AtomicLong searchCalls = new AtomicLong();
+    private final AtomicLong searchNanos = new AtomicLong();
+    private final AtomicLong authCalls = new AtomicLong();
+
     public PreservicaApiClient(OaiTargetSearchDto search) {
         this.search = search;
         this.configuredQuery = parseQuery(search.getQuery());
@@ -64,7 +69,14 @@ public class PreservicaApiClient {
         String query = query(from);
         String uri = baseUrl + "/api/content/search?q=" + urlEncode(query) + "&start=0&max=" + max +
                      "&metadata=" + urlEncode("xip.created");
-        HttpResponse<String> response = get(uri);
+        long start = System.nanoTime();
+        HttpResponse<String> response;
+        try {
+            response = get(uri);
+        } finally {
+            searchCalls.incrementAndGet();
+            searchNanos.addAndGet(System.nanoTime() - start);
+        }
         if (response.statusCode() != 200) {
             throw new InternalServiceException("Preservica search failed with HTTP " + response.statusCode() +
                                                " for query: " + query);
@@ -81,6 +93,27 @@ public class PreservicaApiClient {
         return configuredQuery.deepCopy()
                 .put("q", from == null ? "" : "xip.created:[" + PreservicaSearchPager.iso(from) + " TO *]")
                 .toString();
+    }
+
+    /**
+     * @return the number of searches, including the ones that failed.
+     */
+    public long getSearchCalls() {
+        return searchCalls.get();
+    }
+
+    /**
+     * @return the time spent in searches, including retries and token login or refresh.
+     */
+    public long getSearchNanos() {
+        return searchNanos.get();
+    }
+
+    /**
+     * @return the number of logins and token refreshes.
+     */
+    public long getAuthCalls() {
+        return authCalls.get();
     }
 
     private static ObjectNode parseQuery(String query) {
@@ -173,6 +206,7 @@ public class PreservicaApiClient {
             return;
         }
         String form = "username=" + urlEncode(search.getUsername()) + "&password=" + urlEncode(search.getPassword());
+        authCalls.incrementAndGet();
         if (!storeToken(post("/api/accesstoken/login", form, null))) {
             throw new InternalServiceException("Login to Preservica at " + baseUrl + " failed");
         }
@@ -180,6 +214,7 @@ public class PreservicaApiClient {
     }
 
     private synchronized void refresh() {
+        authCalls.incrementAndGet();
         try {
             if (storeToken(post("/api/accesstoken/refresh", "refreshToken=" + urlEncode(refreshToken), token))) {
                 log.debug("Refreshed Preservica access token");
