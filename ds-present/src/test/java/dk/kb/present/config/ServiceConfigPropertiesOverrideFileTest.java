@@ -32,8 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * {@link dk.kb.present.webservice.ContextListener} and {@code conf/ocp/ds-present.xml}). Mirrors the same test for
  * {@code ds-storage}/{@code ds-datahandler}/{@code ds-license}/{@code ds-image}/{@code ds-discover}.
  * <p>
- * Unlike those services, the override file here only ever affects {@link ServiceConfig#getConfig()} - the
- * nested {@link ServiceConfig#getYamlConfig()} tree is untouched by it. See {@link ServiceConfig}'s class javadoc.
+ * Unlike those services, the override file here is also written back into the nested
+ * {@link ServiceConfig#getYamlConfig()} tree (not only {@link ServiceConfig#getConfig()}), so it can override a
+ * nested-tree value (imageservers, storages, ...) too - without a second YAML file ever being read. See
+ * {@link ServiceConfig}'s class javadoc and {@code ServiceConfig#applyOverridesToTree}.
  * <p>
  * {@code licensemodule.url} is used as the overridden key here purely as a convenient, non-sensitive example; in
  * production the override file's main purpose is secrets such as {@code security.client.secret}.
@@ -62,11 +64,11 @@ class ServiceConfigPropertiesOverrideFileTest {
                     "index.useTransriptions should still come from ds-present-behaviour.yaml, unaffected by the " +
                     "override file");
 
-            // The nested tree is unaffected by the flat-config-only override file.
-            assertEquals("http://localhost:9076/ds-license/v1",
+            // The nested tree is ALSO overridden, via the write-back in initializeWithPropertiesOverride() - this
+            // is what lets the override file reach a nested-tree value (imageservers, storages, ...) too.
+            assertEquals("http://overridden.example.com/ds-license/v1",
                     ServiceConfig.getYamlConfig().getString("licensemodule.url"),
-                    "The nested YAML tree (getYamlConfig()) should be unaffected by the properties override file, " +
-                    "which only applies to getConfig()");
+                    "The nested YAML tree (getYamlConfig()) should be overridden too, not just getConfig()");
         } finally {
             Files.deleteIfExists(overrideFile);
             ServiceConfig.initialize(yamlFile);

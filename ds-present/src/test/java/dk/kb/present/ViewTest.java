@@ -36,7 +36,7 @@ class ViewTest {
     @BeforeAll
     static void setup() {
         try {
-            ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "internal-test-setup.yaml");
+            ServiceConfig.initialize("conf/ds-present-behaviour.yaml");
         } catch (IOException e) {
             fail();
         }

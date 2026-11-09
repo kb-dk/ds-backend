@@ -52,17 +52,18 @@ class ServiceConfigTest {
 
     @Test
     void testImageserverAbstraction2() throws IOException {
-        Path knownFile = Path.of(Resolver.resolveURL("logback-test.xml").getPath());
-        String projectRoot = knownFile.getParent().getParent().getParent().toString();
-
-        // Note: These are test configs to avoid locking the structure of the real configs
+        // Note: These are test configs to avoid locking the structure of the real configs. This exercises kb-util's
+        // generic multi-file layered YAML merge and '${path:...}' self-extrapolation directly via
+        // YAML.resolveLayeredConfigs(String...) - not ServiceConfig, which (like every other ds-backend module)
+        // only ever loads a single file, see ServiceConfig#initialize(String). The fixtures below use a schema
+        // ('collections', not 'origins') that doesn't match ds-present's own configuration at all, confirming this
+        // is purely a test of the underlying kb-util library capability.
         Path behaviour = Resolver.getPathFromClasspath("config/imageserver/ds-present-behaviour.yaml");
         Path collections = Resolver.getPathFromClasspath("config/imageserver/ds-present-kb-collections.yaml");
         Path servers = Resolver.getPathFromClasspath("config/imageserver/ds-present-servers.yaml");
 
-        ServiceConfig.initialize(behaviour.toString(), collections.toString());
-        ServiceConfig.initialize(behaviour.toString(), collections.toString(), servers.toString());
-        YAML yaml = ServiceConfig.getYamlConfig();
+        YAML.resolveLayeredConfigs(behaviour.toString(), collections.toString());
+        YAML yaml = YAML.resolveLayeredConfigs(behaviour.toString(), collections.toString(), servers.toString());
 
         // Behaviour has an 'invalid' imageserver, but Servers overrides the list to only contain 'local'
         //System.out.println(yaml.getYAMLList("imageservers"));
@@ -82,8 +83,7 @@ class ServiceConfigTest {
                 "Requesting path substituted values from a sub map should work");
 
         // Reset the YAML structure to ensure clean test of submap
-        ServiceConfig.initialize(behaviour.toString(), collections.toString(), servers.toString());
-        yaml = ServiceConfig.getYamlConfig();
+        yaml = YAML.resolveLayeredConfigs(behaviour.toString(), collections.toString(), servers.toString());
 
         assertEquals("the_right_url",
                 yaml.getSubMap("collections[4].samlingsbilleder.views[3].SolrJSON").
