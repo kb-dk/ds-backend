@@ -52,7 +52,7 @@ db:
   password: "changeme"
   connectionPoolSize: 50
 
-db_p3rerun:
+db_p3reruns:
   url: "jdbc:postgresql://changeme:changeme/changeme"
   driver: org.postgresql.Driver
   username: "changeme"
