@@ -42,7 +42,7 @@ public class AuditLogModuleStorageTestDsLicense extends TestcontainersUtil {
     }
 
     /**
-     * Delete all records between each unittest. The clearTable is only defined on the unittest extension of the storage module
+     * Delete all records between each unittest. The clearTables is only defined on the unittest extension of the storage module
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
