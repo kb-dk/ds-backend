@@ -44,12 +44,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * data-driven cardinality) that SmallRye Config's flat property model has no direct equivalent for.
  * <ul>
  *     <li>{@link #getYamlConfig()} - the original kb-util {@link YAML} tree, produced by
- *     {@link YAML#resolveLayeredConfigs(String...)}, including the multi-file glob merge ({@code
- *     ds-present-behaviour.yaml} + {@code ds-present-kb-origins.yaml} + an optional environment-specific file,
- *     merged in alphanumeric order - see {@code conf/ocp/ds-present.xml}) and the {@code ${path:...}}
- *     self-referencing extrapolation syntax. This is internal to {@code ServiceConfig} - no other class in
- *     ds-present should need it (a few tests that exercise generic YAML/library behaviour using fixtures unrelated
- *     to ds-present's own configuration schema are the only remaining exceptions).</li>
+ *     {@link YAML#resolveLayeredConfigs(String...)} from the single {@code ds-present-behaviour.yaml} (the former
+ *     separate {@code ds-present-kb-origins.yaml} has been folded into it, and {@code application-config} in
+ *     {@code conf/ocp/ds-present.xml} is a plain filename, not a glob, like every other module - exactly one YAML
+ *     file is ever loaded), and the {@code ${path:...}} self-referencing extrapolation syntax. This is internal to
+ *     {@code ServiceConfig} - no other class in ds-present should need it (a few tests that exercise generic
+ *     YAML/library behaviour using fixtures unrelated to ds-present's own configuration schema are the only
+ *     remaining exceptions).</li>
  *     <li>{@link #getOrigins()}, {@link #getStorages()} and the other typed getters below - plain Java DTOs (see
  *     the {@code dk.kb.present.config} package) built on demand from the tree above by {@link ConfigParser}, the
  *     only other class that walks the nested {@link YAML} tree (it never touches {@link #getYamlConfig()} itself -
@@ -67,6 +68,19 @@ import java.util.concurrent.ConcurrentHashMap;
  *     runtime injection, system properties, environment variables, an optional {@code .env} file, and the optional
  *     devops/operations properties override file.</li>
  * </ul>
+ * <p>
+ * Nested-tree values ({@code imageservers}, {@code storages}, ...) are not exempt from being overridden per
+ * environment - they just reach it differently than a scalar setting does. Any path reachable via
+ * {@link #flatten(YAML, String, Map)} (flat or nested, e.g. both {@code licensemodule.url} and
+ * {@code imageservers[0].example.url}) that a higher-ordinal source (the devops/operations properties override
+ * file, an environment variable, a system property, or {@link #setRuntimeProperty(String, String)}) supplies a
+ * different value for is written back into {@link #serviceConfig} itself by
+ * {@link #applyOverridesToTree(Map, String, Map)}, so {@link ConfigParser} and the {@code ${path:...}}
+ * self-extrapolation syntax (which only ever read {@link #serviceConfig}, never {@link #flatConfig}) see the
+ * override too - see {@link #initializeWithPropertiesOverride(String, String)}. This is the <em>only</em> override
+ * mechanism for the nested tree: {@code serviceConfig} is still loaded from exactly the one file named by {@code
+ * application-config} (see {@code conf/ocp/ds-present.xml}); no second YAML file is ever read.
+ * <p>
  * See the ds-storage module's {@code SMALLRYE_CONFIG_MIGRATION.md} for the general single-YAML-file pattern this
  * follows for every other service, and for the devops/operations properties override file mechanism reused here.
  */
@@ -105,27 +119,25 @@ public class ServiceConfig {
     private static SmallRyeConfig flatConfig;
 
     /**
-     * Initializes the configuration from the provided configFiles, without a devops/operations properties override
-     * file for {@link #getConfig()}. Equivalent to how this method worked before this migration: multiple
-     * globs/paths are resolved and merged, in order, into a single nested {@link YAML} tree.
+     * Initializes the configuration from the single given configFile, without a devops/operations properties
+     * override file for {@link #getConfig()}.
      * <p>
      * This overload exists mainly for tests and other callers that don't need/have an override file; production
      * start-up (see {@link dk.kb.present.webservice.ContextListener}) uses
      * {@link #initializeWithPropertiesOverride(String, String)} instead.
      *
-     * @param configFiles globs/paths for the YAML configurations to load and merge, in order; see
-     *                    {@link YAML#resolveLayeredConfigs(String...)}.
-     * @throws IOException if the configurations could not be loaded or parsed.
+     * @param configFile the single YAML configuration file to load; see {@link YAML#resolveLayeredConfigs(String...)}.
+     *                   Exactly one file, like every other {@code ds-backend} module - see the class javadoc.
+     * @throws IOException if the configuration could not be loaded or parsed.
      */
-    public static synchronized void initialize(String... configFiles) throws IOException {
-        serviceConfig = YAML.resolveLayeredConfigs(configFiles);
+    public static synchronized void initialize(String configFile) throws IOException {
+        serviceConfig = YAML.resolveLayeredConfigs(configFile);
         rebuildFlatConfig(null);
         serviceConfig.setExtrapolate(true);
     }
 
     /**
-     * Initializes the configuration from a single configFile (itself possibly a glob resolving to several YAML
-     * files, merged as before - see {@link #initialize(String...)}) and an optional devops/operations properties
+     * Initializes the configuration from a single configFile and an optional devops/operations properties
      * override file for {@link #getConfig()}.
      * <p>
      * This should normally be called from {@link dk.kb.present.webservice.ContextListener} as part of web server
@@ -134,11 +146,11 @@ public class ServiceConfig {
      * {@code conf/ocp/ds-present.xml}).
      * <p>
      * Note: this is deliberately a separate, distinctly-named method rather than a second {@code initialize}
-     * overload, so that it cannot be confused with (or accidentally shadow) the multi-file glob-merge form above,
-     * which several existing tests already call with two or three YAML file arguments.
+     * overload, so the two-argument form cannot be confused with (or accidentally called instead of) the
+     * single-file form above.
      *
-     * @param configFile the YAML configuration (glob or plain path) which the nested tree is loaded from; see
-     *                    {@link #initialize(String...)}.
+     * @param configFile the single YAML configuration file which the nested tree is loaded from; see
+     *                    {@link #initialize(String)}.
      * @param propertiesOverrideFile the devops/operations properties override file for {@link #getConfig()}
      *                    (a plain file path, a classpath resource name, or a path relative to the user's home, see
      *                    {@link Resolver#resolveURL(String)}), or {@code null}/blank if none is configured. If a
@@ -152,23 +164,40 @@ public class ServiceConfig {
     public static synchronized void initializeWithPropertiesOverride(String configFile, String propertiesOverrideFile)
             throws IOException {
         serviceConfig = YAML.resolveLayeredConfigs(configFile);
-        // Deliberately flatten (see rebuildFlatConfig/flatten) BEFORE extrapolating serviceConfig below, not after:
-        // this way, a "${keycloak_realm}"-style placeholder reaches getConfig()'s backing MapConfigSource still
-        // literally unresolved, and is resolved by SmallRye Config's own ExpressionConfigSourceInterceptor (enabled
-        // via addDefaultInterceptors() in rebuildFlatConfig) against the *whole* MicroProfile Config source stack -
-        // including environment variables - exactly like every other module's SmallRye-native YamlConfigSource
-        // does. Resolving it here instead, via kb-util YAML's own extrapolate(), would only ever check it against
-        // JVM system properties for a bare (unprefixed) name - never environment variables - which is a real,
-        // previously-undetected difference from every other module despite an identical YAML `security:` section.
+
+        // Captured before rebuildFlatConfig() layers anything else on top, so applyOverridesToTree() below can
+        // tell, for every path, whether a higher-ordinal source changed it - see that method's javadoc.
+        Map<String, String> originalFlattened = new LinkedHashMap<>();
+        flatten(serviceConfig, "", originalFlattened);
+
+        // Deliberately flatten (again, inside rebuildFlatConfig - see flatten()) BEFORE extrapolating serviceConfig
+        // below, not after: this way, a "${keycloak_realm}"-style placeholder reaches getConfig()'s backing
+        // MapConfigSource still literally unresolved, and is resolved by SmallRye Config's own
+        // ExpressionConfigSourceInterceptor (enabled via addDefaultInterceptors() in rebuildFlatConfig) against the
+        // *whole* MicroProfile Config source stack - including environment variables - exactly like every other
+        // module's SmallRye-native YamlConfigSource does. Resolving it here instead, via kb-util YAML's own
+        // extrapolate(), would only ever check it against JVM system properties for a bare (unprefixed) name -
+        // never environment variables - which is a real, previously-undetected difference from every other module
+        // despite an identical YAML `security:` section.
         rebuildFlatConfig(propertiesOverrideFile);
+
+        // Write back, into serviceConfig itself, any value that a higher-ordinal source (the properties override
+        // file, an environment variable, a system property, or a runtime override) now supplies for a path that
+        // also exists in the YAML tree - flat or nested (imageservers, storages, ...). See the class javadoc and
+        // applyOverridesToTree()'s own javadoc: this is the only override mechanism for the nested tree, and it
+        // never reads a second YAML file.
+        applyOverridesToTree(serviceConfig, "", originalFlattened);
+
         // Only now extrapolate the nested tree itself (kb-util's own engine), for getYamlConfig()/ConfigParser
-        // consumers - e.g. the ${path:...} self-referencing syntax used in the origins/views/transformers graph.
+        // consumers - e.g. the ${path:...} self-referencing syntax used in the origins/views/transformers graph -
+        // so a self-reference like ${path:imageservers[default=true].url} resolves against the overridden URL,
+        // not the checked-in default.
         serviceConfig.setExtrapolate(true);
     }
 
     /**
      * (Re)builds {@link #flatConfig} from the current {@link #serviceConfig} tree plus the standard override
-     * layers. Called from both {@link #initialize(String...)} (with no properties override file) and
+     * layers. Called from both {@link #initialize(String)} (with no properties override file) and
      * {@link #initializeWithPropertiesOverride(String, String)}.
      *
      * @param propertiesOverrideFile see {@link #initializeWithPropertiesOverride(String, String)}, or {@code null}.
@@ -200,14 +229,17 @@ public class ServiceConfig {
             } catch (IOException e) {
                 // Broad IOException, not just FileNotFoundException/MalformedURLException: unlike initialize(...)
                 // (which declares throws IOException for the YAML tree), this private helper must not propagate -
-                // it is also called with propertiesOverrideFile=null from plain initialize(String...), where no
+                // it is also called with propertiesOverrideFile=null from plain initialize(String), where no
                 // exception should ever be possible, so any failure resolving/parsing the override file here is
                 // logged and swallowed instead, matching this method's "does not throw" contract (see
-                // initializeWithPropertiesOverride's javadoc).
-                log.error("Configured devops/operations properties override file '{}' could not be found. " +
+                // initializeWithPropertiesOverride's javadoc). This genuinely deserves ERROR (unlike a routine
+                // NotFoundServiceException elsewhere - see ImplBase.handleException) since it means a configured
+                // file - possibly secrets - is silently missing; but the message alone (e.getMessage(), not e
+                // itself) already says exactly what went wrong, so the stack trace is omitted as pure noise.
+                log.error("Configured devops/operations properties override file '{}' could not be found: {}. " +
                            "Continuing without it - values that were meant to come from it (most importantly " +
                            "secrets) will be missing from getConfig() or fall back to the YAML file.",
-                           propertiesOverrideFile, e);
+                           propertiesOverrideFile, e.getMessage());
             }
         }
 
@@ -243,16 +275,25 @@ public class ServiceConfig {
      * @param target the flat map to add {@code prefix}-relative properties to.
      */
     private static void flatten(YAML yaml, String prefix, Map<String, String> target) {
-        for (String key : yaml.keySet()) {
+        for (Map.Entry<String, Object> mapEntry : yaml.entrySet()) {
+            String key = mapEntry.getKey();
             String path = prefix.isEmpty() ? key : prefix + "." + key;
             try {
-                Object value = yaml.get(key);
+                // Read the value straight off the Map.Entry, not via yaml.get(key): YAML overrides get(Object) to
+                // always parse its argument as a dotted/indexed PATH (see YPath), never as a single literal key, so
+                // yaml.get("ds.radio") would be misread as the two-segment path "ds" -> "radio" and (correctly)
+                // fail to find it - even though "ds.radio" is one single, literal top-level key here. entrySet()
+                // (unlike get(Object), not overridden by YAML - it is plain LinkedHashMap behaviour) sidesteps that
+                // entirely. getSubMap(String)/getYAMLList(String) below still go through the same path parser, so a
+                // key that might itself contain a dot is quoted first (quotePathSegment(key)) to keep it a single
+                // literal segment regardless - see that method's javadoc.
+                Object value = mapEntry.getValue();
                 if (value instanceof Map) {
-                    flatten(yaml.getSubMap(key), path, target);
+                    flatten(yaml.getSubMap(quotePathSegment(key)), path, target);
                 } else if (value instanceof List) {
                     List<?> rawList = (List<?>) value;
                     if (!rawList.isEmpty() && rawList.get(0) instanceof Map) {
-                        List<YAML> subList = yaml.getYAMLList(key);
+                        List<YAML> subList = yaml.getYAMLList(quotePathSegment(key));
                         for (int i = 0; i < subList.size(); i++) {
                             flatten(subList.get(i), path + "[" + i + "]", target);
                         }
@@ -271,6 +312,145 @@ public class ServiceConfig {
                 log.debug("Skipping configuration key '{}' while building the flat configuration view", path, e);
             }
         }
+    }
+
+    /**
+     * Wraps {@code key} in single quotes so a {@link YAML} path-based accessor ({@link YAML#get(Object)},
+     * {@link YAML#getSubMap(String)}, {@link YAML#getYAMLList(String)}) treats it as one literal path segment,
+     * even if {@code key} itself contains a {@code .} (e.g. the origin key {@code ds.radio} in
+     * {@code ds-present-behaviour.yaml}) - see kb-util's {@code YPath} class: a quoted segment
+     * ({@code 'ds.radio'}) is never split on its internal dots, while an unquoted one always is. Quoting a key
+     * that has no dot is a harmless no-op - it still parses as that same single segment - so this is always safe
+     * to apply, not just for keys known to contain a dot.
+     */
+    private static String quotePathSegment(String key) {
+        return "'" + key + "'";
+    }
+
+    /**
+     * Writes any value that {@link #flatConfig} (already built by {@link #rebuildFlatConfig(String)} by the time
+     * this is called) now holds differently from {@code originalFlattened} back into the actual nested
+     * map/list objects making up {@code node} - i.e. a path that a higher-ordinal source (the devops/operations
+     * properties override file, an environment variable, a system property, or
+     * {@link #setRuntimeProperty(String, String)}) overrides. This is what lets such a source override a
+     * nested-tree value such as {@code imageservers[0].example.url} or a {@code storages} backend URL - using
+     * exactly the same dotted/indexed path {@link #flatten(YAML, String, Map)} already uses for every flat
+     * setting - without a second YAML file ever being read: {@link #serviceConfig} is still loaded from exactly
+     * the one file named by {@code application-config} (see {@code conf/ocp/ds-present.xml}); only its in-memory
+     * values change.
+     * <p>
+     * Mirrors {@link #flatten(YAML, String, Map)}'s own traversal (same key/path/list-index conventions), but
+     * walks the <em>raw</em> {@link Map}/{@link List} objects rather than {@link YAML#getSubMap(String)}/
+     * {@link YAML#getYAMLList(String)} (which each return a shallow copy - fine for a read, but a write into a
+     * copy would never be seen again, since {@link ConfigParser} and every other reader re-derive their own fresh
+     * copy from {@link #serviceConfig} on every call). Writing into the raw nested objects instead means the
+     * change is visible to every subsequent read, exactly as if it had been in the checked-in YAML file itself.
+     * <p>
+     * Must be called after {@link #rebuildFlatConfig(String)} and before {@link YAML#setExtrapolate(boolean)} is
+     * enabled on {@link #serviceConfig} - see {@link #initializeWithPropertiesOverride(String, String)}.
+     *
+     * @param node a {@link Map} (sub)tree of {@link #serviceConfig} - the top-level call passes
+     *             {@code serviceConfig} itself (a {@link YAML} is itself a {@code Map<String, Object>}).
+     * @param prefix the property-name prefix for {@code node}, using {@link #flatten(YAML, String, Map)}'s
+     *               convention (empty for the root).
+     * @param originalFlattened the flat map {@link #flatten(YAML, String, Map)} built from {@link #serviceConfig}
+     *               before anything was layered on top of it - used to detect whether {@link #flatConfig} now
+     *               disagrees with it for a given path.
+     */
+    @SuppressWarnings("unchecked")
+    private static void applyOverridesToTree(Map<String, Object> node, String prefix,
+                                              Map<String, String> originalFlattened) {
+        for (Map.Entry<String, Object> mapEntry : node.entrySet()) {
+            String key = mapEntry.getKey();
+            String path = prefix.isEmpty() ? key : prefix + "." + key;
+            try {
+                // entrySet()/getValue(), not node.get(key): node may be the actual YAML tree itself (a subclass of
+                // Map), and YAML.get(Object) always parses its argument as a dotted path - "ds.radio" would be
+                // misread as "ds" -> "radio" - which entrySet() (plain, unoverridden Map behaviour) avoids. See
+                // flatten()'s identical fix just above for the full explanation.
+                Object value = mapEntry.getValue();
+                if (value instanceof Map) {
+                    applyOverridesToTree((Map<String, Object>) value, path, originalFlattened);
+                } else if (value instanceof List) {
+                    List<Object> rawList = (List<Object>) value;
+                    for (int i = 0; i < rawList.size(); i++) {
+                        String indexedPath = path + "[" + i + "]";
+                        Object element = rawList.get(i);
+                        if (element instanceof Map) {
+                            applyOverridesToTree((Map<String, Object>) element, indexedPath, originalFlattened);
+                        } else if (element != null) {
+                            applyLeafOverride(rawList, i, indexedPath, originalFlattened);
+                        }
+                    }
+                } else if (value != null) {
+                    applyLeafOverride(node, key, path, originalFlattened);
+                }
+            } catch (RuntimeException e) {
+                log.debug("Skipping configuration key '{}' while applying overrides to the configuration tree",
+                           path, e);
+            }
+        }
+    }
+
+    /**
+     * Overwrites a single scalar leaf, keyed by {@code key} in the enclosing {@link Map} {@code target}, if
+     * {@link #flatConfig} now holds a different value for {@code path} than {@code originalFlattened} did. See
+     * {@link #applyOverridesToTree(Map, String, Map)}.
+     */
+    private static void applyLeafOverride(Map<String, Object> target, String key, String path,
+                                           Map<String, String> originalFlattened) {
+        String original = originalFlattened.get(path);
+        String current = flatConfig.getOptionalValue(path, String.class).orElse(null);
+        if (current != null && !current.equals(original)) {
+            logOverride(path, original, current);
+            target.put(key, convertOverrideValue(target.get(key), current));
+        }
+    }
+
+    /**
+     * Overwrites a single scalar leaf, at {@code index} in the enclosing scalar {@link List} {@code target}, if
+     * {@link #flatConfig} now holds a different value for {@code path} than {@code originalFlattened} did. See
+     * {@link #applyOverridesToTree(Map, String, Map)}.
+     */
+    private static void applyLeafOverride(List<Object> target, int index, String path,
+                                           Map<String, String> originalFlattened) {
+        String original = originalFlattened.get(path);
+        String current = flatConfig.getOptionalValue(path, String.class).orElse(null);
+        if (current != null && !current.equals(original)) {
+            logOverride(path, original, current);
+            target.set(index, convertOverrideValue(target.get(index), current));
+        }
+    }
+
+    /**
+     * Converts {@code overrideStr} (always a {@link String}, coming from {@link #flatConfig}) to the same Java
+     * type as {@code originalValue} (as SnakeYAML parsed it - {@link Boolean}, {@link Integer}, {@link Long},
+     * {@link Double}, or already {@link String}), so replacing a leaf in the nested tree does not change its type
+     * and break a typed getter ({@code getBoolean(...)}, {@code getInteger(...)}, ...) elsewhere. Falls back to
+     * the override string itself if it cannot be parsed as {@code originalValue}'s type.
+     */
+    private static Object convertOverrideValue(Object originalValue, String overrideStr) {
+        try {
+            if (originalValue instanceof Boolean) {
+                return Boolean.parseBoolean(overrideStr);
+            } else if (originalValue instanceof Integer) {
+                return Integer.parseInt(overrideStr);
+            } else if (originalValue instanceof Long) {
+                return Long.parseLong(overrideStr);
+            } else if (originalValue instanceof Double) {
+                return Double.parseDouble(overrideStr);
+            }
+        } catch (NumberFormatException e) {
+            log.warn("Override value '{}' could not be parsed as a {}; using it as a literal String instead",
+                      overrideStr, originalValue.getClass().getSimpleName());
+        }
+        return overrideStr;
+    }
+
+    private static void logOverride(String path, String original, String current) {
+        boolean sensitive = looksSensitive(path);
+        log.info("Overriding configuration tree value at '{}': '{}' -> '{}'", path,
+                  sensitive ? "<redacted>" : original, sensitive ? "<redacted>" : current);
     }
 
     /**
@@ -370,9 +550,9 @@ public class ServiceConfig {
     // -----------------------------------------------------------------------------------------------------------
 
     /**
-     * @return the configured origins, in the order they are defined in {@code conf/ds-present-kb-origins.yaml}
-     * (or whichever file(s) {@link #initialize(String...)}/{@link #initializeWithPropertiesOverride(String, String)}
-     * were called with).
+     * @return the configured origins, in the order they are defined in {@code ds-present-behaviour.yaml} (or
+     * whichever file {@link #initialize(String)}/{@link #initializeWithPropertiesOverride(String, String)} was
+     * called with).
      */
     public static List<OriginConfig> getOrigins() {
         return ConfigParser.parseOrigins(getYamlConfig());
