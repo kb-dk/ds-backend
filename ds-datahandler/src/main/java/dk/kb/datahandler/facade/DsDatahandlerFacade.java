@@ -305,7 +305,8 @@ public class DsDatahandlerFacade {
                          oaiTargetName, from);
             }
         } else {
-            throw new InvalidArgumentServiceException("mode must be 'resume' or 'restart', but was '" + mode + "'");
+            // The value is not echoed: it is client input and would be reflected in the response and the log
+            throw new InvalidArgumentServiceException("mode must be 'resume' or 'restart'");
         }
 
         PreservicaApiClient searchClient = new PreservicaApiClient(search);
@@ -324,7 +325,11 @@ public class DsDatahandlerFacade {
         long hits = 0;
         OaiIdIngester ingester = new OaiIdIngester(oaiClient, filter, oaiTargetDto.getParallel());
         try (ingester) {
-            for (List<PreservicaApiClient.Hit> page = pager.next(); !page.isEmpty(); page = pager.next()) {
+            while (true) {
+                List<PreservicaApiClient.Hit> page = pager.next();
+                if (page.isEmpty()) {
+                    break;
+                }
                 ingester.ingest(page.stream().map(hit -> "oai:io:" + hit.id()).toList());
                 hits += page.size();
                 progress = page.get(page.size() - 1).created();

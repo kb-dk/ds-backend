@@ -16,7 +16,7 @@ import java.util.List;
  * Not thread safe.
  */
 public class PreservicaSearchPager {
-    private final PreservicaApiClient source;
+    private final PreservicaApiClient preservicaApiClient;
     private final int pageSize;
     // Inclusive xip.created the next search starts from: the last xip.created of the previous page
     private Instant fromCreated;
@@ -29,11 +29,11 @@ public class PreservicaSearchPager {
     /**
      * @param from inclusive {@code xip.created} to start from, or null to start from the beginning.
      */
-    public PreservicaSearchPager(PreservicaApiClient source, int pageSize, Instant from) {
+    public PreservicaSearchPager(PreservicaApiClient preservicaApiClient, int pageSize, Instant from) {
         if (pageSize < 2) {
             throw new IllegalArgumentException("pageSize must be at least 2, was " + pageSize);
         }
-        this.source = source;
+        this.preservicaApiClient = preservicaApiClient;
         this.pageSize = pageSize;
         this.fromCreated = from;
     }
@@ -45,7 +45,7 @@ public class PreservicaSearchPager {
         if (done) {
             return List.of();
         }
-        PreservicaApiClient.SearchResult result = source.search(fromCreated, pageSize);
+        PreservicaApiClient.SearchResult result = preservicaApiClient.search(fromCreated, pageSize);
         if (totalHits < 0) {
             totalHits = result.totalHits();
         }
