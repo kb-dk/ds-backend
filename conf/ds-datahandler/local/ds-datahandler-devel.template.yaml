@@ -54,11 +54,11 @@ db:
   password: "${datahandler_database_password}"
   connectionPoolSize: 50
 
-db_p3rerun:
-  url: "jdbc:postgresql://${p3rerun_host}:5432/${p3rerun_database}"
+db_p3reruns:
+  url: "jdbc:postgresql://${p3reruns_host}:5432/${p3reruns_database}"
   driver: org.postgresql.Driver
-  username: "${p3rerun_database_username}"
-  password: "${p3rerun_database_password}"
+  username: "${p3reruns_database_username}"
+  password: "${p3reruns_database_password}"
   connectionPoolSize: 3
 
 db_p3summaries:

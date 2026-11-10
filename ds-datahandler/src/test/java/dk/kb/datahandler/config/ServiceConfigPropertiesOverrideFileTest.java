@@ -50,9 +50,9 @@ class ServiceConfigPropertiesOverrideFileTest {
 
             ServiceConfig.initialize(yamlFile, overrideFile.toString());
 
-            assertEquals("dummy-test-password", ServiceConfig.getDBPassword(),
+            assertEquals("dummy-test-password", ServiceConfig.getDatabasePassword(),
                     "db.password should come from the explicit properties override file, not the YAML file");
-            assertEquals(88, ServiceConfig.getConnectionPoolSize(),
+            assertEquals(88, ServiceConfig.getDatabaseConnectionPoolSize(),
                     "db.connectionPoolSize should come from the explicit properties override file, not the YAML file");
 
             // A key NOT present in the override file should still fall back to the YAML file, unaffected.
@@ -76,7 +76,7 @@ class ServiceConfigPropertiesOverrideFileTest {
         assertDoesNotThrow(() -> ServiceConfig.initialize(yamlFile, nonExistentFile));
 
         // Without the override file, db.password falls back to whatever the YAML file provides (empty if unset).
-        assertEquals("", ServiceConfig.getDBPassword());
+        assertEquals("", ServiceConfig.getDatabasePassword());
 
         ServiceConfig.initialize(yamlFile);
     }

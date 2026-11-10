@@ -63,8 +63,8 @@ public class RightsModuleFacadeTest extends TestcontainersUtil {
         mocked.close();
     }
 
-    /*
-     * Delete all records between each unittest. The clearTable is only called from here.
+    /**
+     * Delete all records between each unittest. The clearTables is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach

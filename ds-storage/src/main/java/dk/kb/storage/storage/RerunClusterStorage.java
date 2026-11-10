@@ -111,6 +111,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
         stmt.setObject(3, rerunClusterRequestDto.getRerunClusterId());
         stmt.setObject(4, rerunClusterRequestDto.getCreated());
         stmt.setString(5, rerunClusterRequestDto.getJobId());
+        stmt.setLong(6, uniqueTimestamp);
 
         stmt.addBatch();
       }

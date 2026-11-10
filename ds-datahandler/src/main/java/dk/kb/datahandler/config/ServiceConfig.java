@@ -510,19 +510,19 @@ public class ServiceConfig {
         return streamPathPreservicaRadio;
     }
 
-    public static  String getDBDriver() {
+    public static String getDatabaseDriver() {
         return serviceConfig.getValue("db.driver", String.class);
     }
 
-    public static  String getDBUrl() {
+    public static String getJdbcUrl() {
         return serviceConfig.getValue("db.url", String.class);
     }
 
-    public static  String getDBUserName() {
+    public static String getDatabaseUsername() {
         return serviceConfig.getValue("db.username", String.class);
     }
 
-    public static  String getDBPassword() {
+    public static String getDatabasePassword() {
         // An empty password is a legitimate, intentional value (e.g. local databases with no authentication).
         // SmallRye's built-in String converter treats "" as "no value", which makes the non-optional getValue(...)
         // throw NoSuchElementException (SRCFG00040) instead of returning "" - so this uses getOptionalValue(...)
@@ -530,52 +530,28 @@ public class ServiceConfig {
         return serviceConfig.getOptionalValue("db.password", String.class).orElse("");
     }
 
-    public static int getConnectionPoolSize() {
+    public static int getDatabaseConnectionPoolSize() {
         return serviceConfig.getOptionalValue("db.connectionPoolSize", Integer.class).orElse(10); //Default 10
     }
 
-    // --- The getDatabase*/getJdbcUrl names below are aliases kept for dk.kb.datahandler.webservice.ContextListener
-    // (which calls them under these names from origin/main's new rerun-cluster support); they delegate to the
-    // original getDB*/getConnectionPoolSize methods above rather than duplicating the lookup logic. ---
-
-    public static String getDatabaseDriver() {
-        return getDBDriver();
-    }
-
-    public static String getJdbcUrl() {
-        return getDBUrl();
-    }
-
-    public static String getDatabaseUsername() {
-        return getDBUserName();
-    }
-
-    public static String getDatabasePassword() {
-        return getDBPassword();
-    }
-
-    public static int getDatabaseConnectionPoolSize() {
-        return getConnectionPoolSize();
-    }
-
     public static String getP3RerunDatabaseDriver() {
-        return serviceConfig.getValue("db_p3rerun.driver", String.class);
+        return serviceConfig.getValue("db_p3reruns.driver", String.class);
     }
 
     public static String getP3RerunJdbcUrl() {
-        return serviceConfig.getValue("db_p3rerun.url", String.class);
+        return serviceConfig.getValue("db_p3reruns.url", String.class);
     }
 
     public static String getP3RerunDatabaseUsername() {
-        return serviceConfig.getValue("db_p3rerun.username", String.class);
+        return serviceConfig.getValue("db_p3reruns.username", String.class);
     }
 
     public static String getP3RerunDatabasePassword() {
-        return serviceConfig.getValue("db_p3rerun.password", String.class);
+        return serviceConfig.getValue("db_p3reruns.password", String.class);
     }
 
     public static int getP3RerunDatabaseConnectionPoolSize() {
-        return serviceConfig.getValue("db_p3rerun.connectionPoolSize", Integer.class);
+        return serviceConfig.getValue("db_p3reruns.connectionPoolSize", Integer.class);
     }
 
     public static String getP3SummariesDatabaseDriver() {

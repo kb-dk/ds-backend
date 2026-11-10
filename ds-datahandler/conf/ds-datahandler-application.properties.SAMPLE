@@ -23,11 +23,11 @@
 # db.password=changeme
 # db.connectionPoolSize=10
 
-# db_p3rerun.url=jdbc:postgresql://changeme:changeme/changeme
-# db_p3rerun.driver=org.postgresql.Driver
-# db_p3rerun.username=changeme
-# db_p3rerun.password=changeme
-# db_p3rerun.connectionPoolSize=3
+# db_p3reruns.url=jdbc:postgresql://changeme:changeme/changeme
+# db_p3reruns.driver=org.postgresql.Driver
+# db_p3reruns.username=changeme
+# db_p3reruns.password=changeme
+# db_p3reruns.connectionPoolSize=3
 
 # db_p3summaries.url=jdbc:postgresql://changeme:changeme/changeme
 # db_p3summaries.driver=org.postgresql.Driver
