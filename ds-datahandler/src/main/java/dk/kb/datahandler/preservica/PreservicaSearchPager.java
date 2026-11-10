@@ -1,10 +1,8 @@
 package dk.kb.datahandler.preservica;
 
+import dk.kb.datahandler.preservica.PreservicaApiClient.Hit;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Pages through search hits in {@code xip.created} order using key-based paging: each page is searched with
@@ -18,20 +16,12 @@ import java.util.Locale;
  * Not thread safe.
  */
 public class PreservicaSearchPager {
-    private static final DateTimeFormatter ISO_MILLIS =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT).withZone(ZoneOffset.UTC);
-
-    public record Hit(String id, Instant created) {
-    }
-
-    public record Page(List<Hit> hits, long totalHits) {
-    }
-
     private final PreservicaApiClient source;
     private final int pageSize;
-    private Instant key;
-    // Number of hits at key that have already been returned
-    private int returnedAtKey = 0;
+    // Inclusive xip.created the next search starts from: the last xip.created of the previous page
+    private Instant fromCreated;
+    // Number of hits at fromCreated that have already been returned
+    private int returnedAtFromCreated = 0;
     private long duplicates = 0;
     private boolean done = false;
     private long totalHits = -1;
@@ -45,7 +35,7 @@ public class PreservicaSearchPager {
         }
         this.source = source;
         this.pageSize = pageSize;
-        this.key = from;
+        this.fromCreated = from;
     }
 
     /**
@@ -55,11 +45,11 @@ public class PreservicaSearchPager {
         if (done) {
             return List.of();
         }
-        Page page = source.search(key, pageSize);
+        PreservicaApiClient.SearchResult result = source.search(fromCreated, pageSize);
         if (totalHits < 0) {
-            totalHits = page.totalHits();
+            totalHits = result.totalHits();
         }
-        List<Hit> hits = page.hits();
+        List<Hit> hits = result.hits();
         done = hits.size() < pageSize;
         if (hits.isEmpty()) {
             return hits;
@@ -67,12 +57,13 @@ public class PreservicaSearchPager {
 
         Instant last = hits.get(hits.size() - 1).created();
         if (!done && hits.get(0).created().equals(last)) {
-            throw new IllegalStateException("A full page of " + pageSize + " hits all have xip.created " + iso(last) +
+            throw new IllegalStateException("A full page of " + pageSize + " hits all have xip.created " + last +
                                             ", which key-based paging cannot step past. Increase search.pageSize");
         }
-        duplicates += Math.min(returnedAtKey, countCreatedAt(hits, key));
-        key = last;
-        returnedAtKey = countCreatedAt(hits, last);
+        // fromCreated is still the start of this search, so hits at it were partly returned by the previous page
+        duplicates += Math.min(returnedAtFromCreated, countCreatedAt(hits, fromCreated));
+        fromCreated = last;
+        returnedAtFromCreated = countCreatedAt(hits, last);
         return hits;
     }
 
@@ -88,10 +79,6 @@ public class PreservicaSearchPager {
      */
     public long getDuplicates() {
         return duplicates;
-    }
-
-    public static String iso(Instant instant) {
-        return ISO_MILLIS.format(instant);
     }
 
     private static int countCreatedAt(List<Hit> hits, Instant created) {

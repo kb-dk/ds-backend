@@ -313,19 +313,19 @@ public class DsDatahandlerFacade {
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.OAI_HARVEST, oaiTargetName,
                                  from == null ? null : from.atOffset(ZoneOffset.UTC), user);
         log.info("Starting Preservica search ingest of target '{}' from xip.created {}, jobId '{}'",
-                 oaiTargetName, from == null ? "start" : PreservicaSearchPager.iso(from), jobDto.getId());
+                 oaiTargetName, from == null ? "start" : from, jobDto.getId());
 
         Instant pageStart = from;
         long hits = 0;
         OaiIdIngester ingester = new OaiIdIngester(oaiClient, filter, oaiTargetDto.getParallel());
         try (ingester) {
-            for (List<PreservicaSearchPager.Hit> page = pager.next(); !page.isEmpty(); page = pager.next()) {
+            for (List<PreservicaApiClient.Hit> page = pager.next(); !page.isEmpty(); page = pager.next()) {
                 pageStart = page.get(0).created();
                 ingester.ingest(page.stream().map(hit -> "oai:io:" + hit.id()).toList());
                 hits += page.size();
                 log.info("Ingested {}/{} search hits for target '{}', processed={}, notFound={}, last xip.created={}",
                          hits, pager.getTotalHits(), oaiTargetName, ingester.getProcessed(), ingester.getNotFound(),
-                         PreservicaSearchPager.iso(page.get(page.size() - 1).created()));
+                         page.get(page.size() - 1).created());
             }
 
             long objects = hits - pager.getDuplicates();
@@ -350,7 +350,7 @@ public class DsDatahandlerFacade {
             log.info("Preservica search ingest of target '{}' completed: {}", oaiTargetName, message);
             return ingester.getProcessed();
         } catch (Exception e) {
-            String resume = pageStart == null ? "the start" : PreservicaSearchPager.iso(pageStart);
+            String resume = pageStart == null ? "the start" : pageStart.toString();
             String timing = searchIngestSummary(searchClient, ingester, startNanos);
             log.error("Preservica search ingest of target '{}' failed, jobId '{}'. Resume with fromCreated={}. {}",
                       oaiTargetName, jobDto.getId(), resume, timing, e);

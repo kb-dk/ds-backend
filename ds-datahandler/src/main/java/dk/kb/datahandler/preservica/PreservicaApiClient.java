@@ -38,6 +38,18 @@ public class PreservicaApiClient {
     private static final Duration RETRY_BASE_DELAY = Duration.ofSeconds(2);
     private static final Duration REFRESH_MARGIN = Duration.ofMinutes(1);
 
+    /**
+     * A search hit: the information object id and its {@code xip.created}.
+     */
+    public record Hit(String id, Instant created) {
+    }
+
+    /**
+     * The hits of one search and the total number of objects matching it.
+     */
+    public record SearchResult(List<Hit> hits, long totalHits) {
+    }
+
     private final OaiTargetSearchDto search;
     private final ObjectNode configuredQuery;
     private final String baseUrl;
@@ -65,7 +77,7 @@ public class PreservicaApiClient {
      * @param from inclusive lower bound for {@code xip.created}, or null for no lower bound.
      * @return the first {@code max} hits, sorted ascending on {@code xip.created}.
      */
-    public PreservicaSearchPager.Page search(Instant from, int max) {
+    public SearchResult search(Instant from, int max) {
         String query = query(from);
         String uri = baseUrl + "/api/content/search?q=" + urlEncode(query) + "&start=0&max=" + max +
                      "&metadata=" + urlEncode("xip.created");
@@ -88,10 +100,10 @@ public class PreservicaApiClient {
      * @param from inclusive lower bound for {@code xip.created}, or null for no lower bound.
      * @return the configured search expression with {@code q} set to the range and sorted on {@code xip.created}.
      */
-    String query(Instant from) {
-        // The search only accepts ISO timestamps with milliseconds in ranges, not epoch milliseconds
+    public String query(Instant from) {
+        // The search accepts ISO-8601 timestamps in ranges, not epoch milliseconds
         return configuredQuery.deepCopy()
-                .put("q", from == null ? "" : "xip.created:[" + PreservicaSearchPager.iso(from) + " TO *]")
+                .put("q", from == null ? "" : "xip.created:[" + from + " TO *]")
                 .toString();
     }
 
@@ -127,7 +139,7 @@ public class PreservicaApiClient {
         throw new InternalServiceException("The configured Preservica search query is not a JSON object: " + query);
     }
 
-    static PreservicaSearchPager.Page parseSearchResponse(String body) {
+    private static SearchResult parseSearchResponse(String body) {
         try {
             JsonNode root = JSON.readTree(body);
             if (!root.path("success").asBoolean(false)) {
@@ -135,12 +147,12 @@ public class PreservicaApiClient {
             }
             JsonNode value = root.path("value");
             JsonNode objectIds = value.path("objectIds");
-            List<PreservicaSearchPager.Hit> hits = new ArrayList<>();
+            List<Hit> hits = new ArrayList<>();
             for (int i = 0; i < objectIds.size(); i++) {
                 String id = objectIds.get(i).asText().replaceFirst("^sdb:[A-Z]+\\|", "");
-                hits.add(new PreservicaSearchPager.Hit(id, created(id, value.path("metadata").path(i))));
+                hits.add(new Hit(id, created(id, value.path("metadata").path(i))));
             }
-            return new PreservicaSearchPager.Page(hits, value.path("totalHits").asLong());
+            return new SearchResult(hits, value.path("totalHits").asLong());
         } catch (IOException e) {
             throw new InternalServiceException("Could not parse Preservica search response", e);
         }
