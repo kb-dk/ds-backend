@@ -233,16 +233,19 @@ public class DsDatahandlerFacade {
      * Kaltura entry with status READY.
      * This is not a delta job, so all records with a kaltura_id are (re)checked on every run.
      * Upload error markers (ERROR_*, e.g. ERROR_FILE_MISSING) and records marked for delete are skipped.
-     * If the Kaltura entry is in status ERROR_CONVERTING or ERROR_IMPORTING, the kaltura_id is set to
-     * ERROR_KALTURA_TRANSCODING or ERROR_KALTURA_IMPORT. Otherwise, if a kaltura_id does not exist in Kaltura, or
-     * exists but is not READY, the Kaltura entry is deleted (if present) and the kaltura_id is cleared on the storage
-     * record, making it eligible for kalturaDeltaUpload again.
+     * Entries in status IMPORT, PRECONVERT, PENDING or MODERATE are skipped.
+     * Entries in status ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE or INFECTED are kept, and the
+     * kaltura_id is set to ERROR_KALTURA_TRANSCODING, ERROR_KALTURA_IMPORT, ERROR_KALTURA_BLOCKED or
+     * ERROR_KALTURA_SCAN. To retry such a record, delete the entry in Kaltura first and then clear the kaltura_id,
+     * otherwise kalturaDeltaUpload links the failed entry again.
+     * Entries in status NO_CONTENT are deleted and the kaltura_id is cleared. A kaltura_id not found in Kaltura is
+     * cleared. A cleared kaltura_id makes the record eligible for kalturaDeltaUpload again.
      * No solr index job is started. Changed records get a new mTime and are picked up by the next solr delta index.
-     * The job can not be started while a kaltura upload job is running, as validation would delete entries the upload
-     * has just created and that are still being processed by Kaltura.
+     * The job can not be started while a kaltura upload job is running, and blocks kaltura upload while it runs.
      *
      * @param dryRun If true, nothing is changed in Kaltura or storage.
-     *               A summary of the kaltura_ids that would be changed is logged.
+     *               A summary of the kaltura_ids that would be changed is logged, with the number of entries that
+     *               had to be confirmed one at a time with media.get.
      * @throws InternalServiceException
      */
     public static void kalturaValidate(boolean dryRun) throws InternalServiceException {
@@ -575,7 +578,9 @@ public class DsDatahandlerFacade {
 
     /**
      * Creates a new running job, unless a job of the same category and source, or a job of one of the
-     * blocking categories (any source), is already running.
+     * blocking categories without a source, is already running.
+     * The check and the insert are not atomic, and running jobs are marked failed when an instance starts. This
+     * assumes a single ds-datahandler instance, with jobs not started at the exact same time.
      * @param typeDto
      * @param categoryDto
      * @param source

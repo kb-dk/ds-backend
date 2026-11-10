@@ -1,6 +1,7 @@
 package dk.kb.datahandler.kaltura;
 
 import com.kaltura.client.enums.EntryStatus;
+import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -28,13 +29,16 @@ class KalturaValidationUnitTest {
 
     @BeforeEach
     void initSetup() {
+        // initKalturaClient now throws when the client can not be created, and a stub of it would call the real
+        // method while stubbing (CALLS_REAL_METHODS). Setting the client makes initKalturaClient return early instead.
+        KalturaValidationJob.kalturaClient = mock(DsKalturaClient.class);
         service = mockStatic(KalturaValidationJob.class, CALLS_REAL_METHODS);
-        service.when(() -> KalturaValidationJob.initKalturaClient()).then(inv -> null);
     }
 
     @AfterEach
     void tearDown() {
         service.close();
+        KalturaValidationJob.kalturaClient = null;
     }
 
     // ─── validateKalturaIds ────────────────────────────────────────────────────
@@ -77,7 +81,7 @@ class KalturaValidationUnitTest {
     }
 
     @Test
-    void testValidateKalturaIds_whenEntryExistsButNotReady_thenEntryIsDeletedAndKalturaIdIsCleared() {
+    void testValidateKalturaIds_whenEntryHasNoContent_thenEntryIsDeletedAndKalturaIdIsCleared() {
         // Arrange
         List<DsRecordKalturaDto> records = List.of(buildRecord());
         List<DsRecordKalturaDto> emptyRecords = List.of();
@@ -85,7 +89,7 @@ class KalturaValidationUnitTest {
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
-                .thenReturn(Map.of(KALTURA_ID, EntryStatus.PENDING));
+                .thenReturn(Map.of(KALTURA_ID, EntryStatus.NO_CONTENT));
         service.when(() -> KalturaValidationJob.deleteStream(any())).thenAnswer(inv -> null);
         service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
 
@@ -106,6 +110,68 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenEntryErrorImporting_thenKalturaIdIsMarkedWithImportError() {
         assertKalturaErrorIsMarked(EntryStatus.ERROR_IMPORTING, StreamErrorTypeDto.KALTURA_IMPORT);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryBlocked_thenKalturaIdIsMarkedWithBlockedError() {
+        assertKalturaErrorIsMarked(EntryStatus.BLOCKED, StreamErrorTypeDto.KALTURA_BLOCKED);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryScanFailure_thenKalturaIdIsMarkedWithScanError() {
+        assertKalturaErrorIsMarked(EntryStatus.SCAN_FAILURE, StreamErrorTypeDto.KALTURA_SCAN);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryInfected_thenKalturaIdIsMarkedWithScanError() {
+        assertKalturaErrorIsMarked(EntryStatus.INFECTED, StreamErrorTypeDto.KALTURA_SCAN);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryImporting_thenRecordIsSkipped() {
+        assertStatusIsSkipped(EntryStatus.IMPORT);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryPreconvert_thenRecordIsSkipped() {
+        assertStatusIsSkipped(EntryStatus.PRECONVERT);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryPending_thenRecordIsSkipped() {
+        assertStatusIsSkipped(EntryStatus.PENDING);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryWaitingForModeration_thenRecordIsSkipped() {
+        assertStatusIsSkipped(EntryStatus.MODERATE);
+    }
+
+    @Test
+    void testValidateKalturaIds_whenEntryHasUnhandledStatus_thenRecordIsSkipped() {
+        // DELETED is the only status without an action. Kaltura should not return it, as deleted entries are
+        // filtered out, but any status the job does not handle must never cause a delete.
+        assertStatusIsSkipped(EntryStatus.DELETED);
+    }
+
+    private void assertStatusIsSkipped(EntryStatus status) {
+        // Arrange
+        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordKalturaDto> emptyRecords = List.of();
+
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(records, emptyRecords);
+        service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
+                .thenReturn(Map.of(KALTURA_ID, status));
+
+        // Act
+        int result = KalturaValidationJob.validateKalturaIds(false);
+
+        // Assert
+        assertEquals(0, result);
+        service.verify(() -> KalturaValidationJob.deleteStream(any()), never());
+        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
+        service.verify(() -> KalturaValidationJob.updateKalturaIdForRecordWithError(any(), any(), any()), never());
     }
 
     private void assertKalturaErrorIsMarked(EntryStatus status, StreamErrorTypeDto expectedError) {
@@ -162,7 +228,7 @@ class KalturaValidationUnitTest {
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
-                .thenReturn(Map.of("kaltura-1", EntryStatus.PENDING, "kaltura-2", EntryStatus.PENDING));
+                .thenReturn(Map.of("kaltura-1", EntryStatus.NO_CONTENT, "kaltura-2", EntryStatus.NO_CONTENT));
         service.when(() -> KalturaValidationJob.deleteStream(any())).thenAnswer(inv -> null);
         service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
 
@@ -298,7 +364,7 @@ class KalturaValidationUnitTest {
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(List.of(deleted, active), List.of());
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
-                .thenReturn(Map.of("kaltura-2", EntryStatus.PENDING));
+                .thenReturn(Map.of("kaltura-2", EntryStatus.NO_CONTENT));
         service.when(() -> KalturaValidationJob.deleteStream(any())).thenAnswer(inv -> null);
         service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
 
@@ -339,6 +405,47 @@ class KalturaValidationUnitTest {
         service.verify(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-1")), times(1));
         service.verify(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-2")), times(1));
         service.verify(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.radio"), eq(0L), anyInt()), times(1));
+    }
+
+    // ─── validateRecord ──────────────────────────────────────────────────────
+
+    @Test
+    void testValidateRecord_whenEntryMissingFromBatch_thenFallbackLookupIsCounted() {
+        // Arrange
+        ValidationSummary summary = new ValidationSummary();
+        service.when(() -> KalturaValidationJob.getEntryStatus(KALTURA_ID)).thenReturn(EntryStatus.READY);
+
+        // Act
+        KalturaValidationJob.validateRecord(null, ID, FILE_ID, KALTURA_ID, null, false, summary);
+
+        // Assert
+        assertEquals(1, summary.getFallbackLookups());
+        assertEquals(0, summary.size());
+    }
+
+    @Test
+    void testValidateRecord_whenEntryFoundInBatch_thenNoFallbackLookup() {
+        // Arrange
+        ValidationSummary summary = new ValidationSummary();
+
+        // Act
+        KalturaValidationJob.validateRecord(null, ID, FILE_ID, KALTURA_ID, EntryStatus.READY, false, summary);
+
+        // Assert
+        assertEquals(0, summary.getFallbackLookups());
+        service.verify(() -> KalturaValidationJob.getEntryStatus(any()), never());
+    }
+
+    // ─── initKalturaClient ───────────────────────────────────────────────────
+
+    @Test
+    void testInitKalturaClient_whenClientCanNotBeCreated_thenThrowsInternalServiceException() {
+        // Arrange
+        // No Kaltura configuration is loaded in this unit test, so creating the client fails.
+        KalturaValidationJob.kalturaClient = null;
+
+        // Act and Assert
+        assertThrows(InternalServiceException.class, KalturaValidationJob::initKalturaClient);
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────

@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +26,9 @@ public class KalturaValidationJob {
     private static final Logger log = LoggerFactory.getLogger(KalturaValidationJob.class);
     // Origins with streams uploaded to Kaltura
     static final List<String> ORIGINS = List.of("ds.tv", "ds.radio");
+    // Entries still being processed by Kaltura, or waiting for a moderator. Left alone.
+    static final Set<EntryStatus> SKIPPED_STATUSES =
+            Set.of(EntryStatus.IMPORT, EntryStatus.PRECONVERT, EntryStatus.PENDING, EntryStatus.MODERATE);
 
     /**
      * Start job that validates all records with a registered kaltura_id.
@@ -37,12 +41,21 @@ public class KalturaValidationJob {
      * always starts at 0.
      * 2) Look up the entry status in Kaltura for the whole batch in a single media.list call. Kaltura paging is
      * not trusted, so entries missing from the batch result are confirmed one at a time with media.get.
-     * 3) If the entry is in status ERROR_CONVERTING or ERROR_IMPORTING, the entry is kept and the record's kaltura_id
-     * is set to the matching error marker. Otherwise, if no entry exists in Kaltura for the kaltura_id, or the entry
-     * exists but is not in status READY, the Kaltura entry is deleted (if it exists) and the record's kaltura_id is
-     * cleared (set to null) in storage. A cleared kaltura_id makes the record eligible for upload again by
-     * KalturaDeltaUploadJob.
-     * 4) A summary of the kaltura_ids that were cleared or marked with an error is logged at the end.
+     * 3) Act on the entry status:
+     * <ul>
+     * <li>READY: nothing is done.</li>
+     * <li>IMPORT, PRECONVERT, PENDING, MODERATE: skipped. The entry is still being processed or is waiting for a
+     * moderator. Entries that never finish must be deleted manually in Kaltura; the next run then clears them.</li>
+     * <li>ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE, INFECTED: the entry is kept and the record's
+     * kaltura_id is set to the matching error marker (see {@link KalturaUtil#getStreamError}). The marker stops the
+     * record from being uploaded again.</li>
+     * <li>NO_CONTENT: the Kaltura entry is deleted and the record's kaltura_id is cleared (set to null).</li>
+     * <li>Not found in Kaltura: the record's kaltura_id is cleared.</li>
+     * <li>Any other status: skipped with a warning, so a status unknown to this job never causes a delete.</li>
+     * </ul>
+     * A cleared kaltura_id makes the record eligible for upload again by KalturaDeltaUploadJob.
+     * 4) A summary of the kaltura_ids that were cleared or marked with an error, and the number of entries that had to
+     * be confirmed with media.get, is logged at the end.
      *
      * @param dryRun If true, no Kaltura entries are deleted and no kaltura_ids are cleared in storage. Only the
      *               summary of what would have been done is logged.
@@ -115,10 +128,8 @@ public class KalturaValidationJob {
     }
 
     /**
-     * Validate a single record's kaltura_id against Kaltura. If the Kaltura entry is in an error state
-     * (ERROR_CONVERTING or ERROR_IMPORTING), the kaltura_id is replaced with the matching error marker. Otherwise, if
-     * the kaltura_id does not exist in Kaltura, or exists but is not in status READY, the Kaltura entry is deleted
-     * (if it exists) and the kaltura_id is cleared for the record in storage.
+     * Validate a single record's kaltura_id against Kaltura. See {@link #validateKalturaIds} for the action taken
+     * for each entry status.
      *
      * @param batchStatus The status found for the kaltura_id by the batch lookup, or null if it was not found.
      * @param dryRun      If true, nothing is deleted or cleared. The record is only added to the summary.
@@ -130,10 +141,15 @@ public class KalturaValidationJob {
             EntryStatus status = batchStatus;
             if (status == null) {
                 // Kaltura paging is not reliable, so confirm a missing entry with media.get before clearing.
+                summary.addFallbackLookup();
                 status = getEntryStatus(kalturaId);
             }
             if (status == EntryStatus.READY) {
                 return; //Valid mapping. Nothing to do.
+            }
+            if (status != null && SKIPPED_STATUSES.contains(status)) { //Set.of does not allow contains(null)
+                log.debug("Kaltura entry='{}' for id='{}' has status='{}'. Skipped.", kalturaId, id, status);
+                return;
             }
 
             String prefix = dryRun ? "DRY RUN: " : "";
@@ -146,21 +162,23 @@ public class KalturaValidationJob {
                     updateKalturaIdForRecordWithError(storageClient, fileId, streamError);
                 }
                 summary.addMarkedError(id, kalturaId, status, streamError);
-            } else if (status != null) { //Entry exists in Kaltura but is not ready. Remove it.
-                log.warn("{}Kaltura entry='{}' for id='{}' has status='{}', not READY. {} delete entry and clear kaltura_id.",
+            } else if (status == EntryStatus.NO_CONTENT) { //Entry exists in Kaltura but has no stream. Remove it.
+                log.warn("{}Kaltura entry='{}' for id='{}' has status='{}'. {} delete entry and clear kaltura_id.",
                         prefix, kalturaId, id, status, verb);
                 if (!dryRun) {
                     deleteStream(kalturaId);
                     clearKalturaIdForRecord(storageClient, fileId);
                 }
-                summary.addNotReady(id, kalturaId, status);
-            } else {
+                summary.addNoContent(id, kalturaId);
+            } else if (status == null) {
                 log.warn("{}Kaltura entry='{}' for id='{}' does not exist in Kaltura. {} clear kaltura_id.",
                         prefix, kalturaId, id, verb);
                 if (!dryRun) {
                     clearKalturaIdForRecord(storageClient, fileId);
                 }
                 summary.addNotFound(id, kalturaId);
+            } else { //Never delete on a status this job does not know
+                log.warn("Kaltura entry='{}' for id='{}' has unhandled status='{}'. Skipped.", kalturaId, id, status);
             }
         } catch (Exception e) {
             //Totally stop all validation if a single call fails. Change strategy if this does seem to happen sporadic
@@ -233,23 +251,28 @@ public class KalturaValidationJob {
         }
     }
 
+    /**
+     * @throws InternalServiceException If the client can not be created, e.g. because of missing configuration or
+     *                                  invalid credentials.
+     */
     static void initKalturaClient() {
         if (kalturaClient != null) {
             return; // already inititalised
         }
 
-        String kalturaUrl = ServiceConfig.getKalturaUrl();
-        int partnerId = ServiceConfig.getKalturaPartnerId();
-        String adminSecret = null;// We use appTokens instead
-        String userId = ServiceConfig.getKalturaUserId();
-        String token = ServiceConfig.getKalturaToken();
-        String tokenId = ServiceConfig.getKalturaTokenId();
-        int sessionDurationSeconds = ServiceConfig.getKalturaSessionDurationSeconds();
-        int sessionRefreshThreshold = ServiceConfig.getKalturaSessionRefreshThreshold();
-        int conversionQueueThreshold = ServiceConfig.getConversionQueueThreshold();
-        int conversionQueueDelaySeconds = ServiceConfig.getConversionQueueDelaySeconds();
-
         try {
+            // Config is read inside the try, so missing configuration also gives a clear error
+            String kalturaUrl = ServiceConfig.getKalturaUrl();
+            int partnerId = ServiceConfig.getKalturaPartnerId();
+            String adminSecret = null;// We use appTokens instead
+            String userId = ServiceConfig.getKalturaUserId();
+            String token = ServiceConfig.getKalturaToken();
+            String tokenId = ServiceConfig.getKalturaTokenId();
+            int sessionDurationSeconds = ServiceConfig.getKalturaSessionDurationSeconds();
+            int sessionRefreshThreshold = ServiceConfig.getKalturaSessionRefreshThreshold();
+            int conversionQueueThreshold = ServiceConfig.getConversionQueueThreshold();
+            int conversionQueueDelaySeconds = ServiceConfig.getConversionQueueDelaySeconds();
+
             kalturaClient = new DsKalturaClient(
                     kalturaUrl,
                     userId,
@@ -264,6 +287,7 @@ public class KalturaValidationJob {
             );
         } catch (Exception e) {
             log.error("Could not instantiate DsKaltura client.", e);
+            throw new InternalServiceException("Could not instantiate DsKaltura client", e);
         }
     }
 }

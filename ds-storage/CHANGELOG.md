@@ -11,7 +11,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `/records/kaltura` (`DsStorageClient.getKalturaRecords`) returns the records for an origin that have a kaltura_id.
 - `/record/clearKalturaId` (`DsStorageClient.clearKalturaIdForRecord`) clears the kaltura_id of the records with a given referenceId.
-- `StreamErrorType` values `ERROR_KALTURA_TRANSCODING` and `ERROR_KALTURA_IMPORT`.
+- `StreamErrorType` values `ERROR_KALTURA_TRANSCODING`, `ERROR_KALTURA_IMPORT`, `ERROR_KALTURA_BLOCKED` and
+  `ERROR_KALTURA_SCAN`.
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 

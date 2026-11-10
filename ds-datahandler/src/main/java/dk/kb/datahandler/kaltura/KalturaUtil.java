@@ -32,15 +32,34 @@ public class KalturaUtil {
      * Map a Kaltura entry status to the error marker stored as kaltura_id for the record.
      *
      * @param status Status of the Kaltura entry.
+     * <ul>
+     * <li>ERROR_CONVERTING: ERROR_KALTURA_TRANSCODING</li>
+     * <li>ERROR_IMPORTING: ERROR_KALTURA_IMPORT</li>
+     * <li>BLOCKED: ERROR_KALTURA_BLOCKED</li>
+     * <li>SCAN_FAILURE, INFECTED: ERROR_KALTURA_SCAN</li>
+     * </ul>
+     * Entries are not rejected manually in Kaltura, so BLOCKED is assumed to always mean that Kaltura rejected the
+     * stream.
+     *
      * @return The matching error, or null if the status is not a Kaltura error.
      */
     public static StreamErrorTypeDto getStreamError(EntryStatus status) {
-        if (status == EntryStatus.ERROR_CONVERTING) {
-            return StreamErrorTypeDto.KALTURA_TRANSCODING;
-        } else if (status == EntryStatus.ERROR_IMPORTING) {
-            return StreamErrorTypeDto.KALTURA_IMPORT;
+        if (status == null) {
+            return null;
         }
-        return null;
+        switch (status) {
+            case ERROR_CONVERTING:
+                return StreamErrorTypeDto.KALTURA_TRANSCODING;
+            case ERROR_IMPORTING:
+                return StreamErrorTypeDto.KALTURA_IMPORT;
+            case BLOCKED:
+                return StreamErrorTypeDto.KALTURA_BLOCKED;
+            case SCAN_FAILURE:
+            case INFECTED:
+                return StreamErrorTypeDto.KALTURA_SCAN;
+            default:
+                return null;
+        }
     }
 
     /**

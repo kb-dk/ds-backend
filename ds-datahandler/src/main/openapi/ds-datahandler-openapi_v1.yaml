@@ -275,11 +275,13 @@ paths:
         - '${project.name}'
       summary: 'Start job that validates that kaltura_id values registered on records in ds-storage still point to a Kaltura entry with status READY.
        This is not a delta job, so all records in ds-storage with a kaltura_id are (re)checked on every run. Upload error markers (ERROR_*, e.g. ERROR_FILE_MISSING) and records marked for delete are skipped.
-       If the Kaltura entry is in status ERROR_CONVERTING or ERROR_IMPORTING, the entry is kept and the kaltura_id is set to ERROR_KALTURA_TRANSCODING or ERROR_KALTURA_IMPORT.
-       Otherwise, if a kaltura_id does not exist in Kaltura, or exists but is not READY, the Kaltura entry is deleted (if present) and the kaltura_id is cleared on the storage record.
+       Entries in status IMPORT, PRECONVERT, PENDING or MODERATE are skipped. Entries that never finish must be deleted manually in Kaltura; the next run then clears the kaltura_id.
+       Entries in status ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE or INFECTED are kept and the kaltura_id is set to ERROR_KALTURA_TRANSCODING, ERROR_KALTURA_IMPORT, ERROR_KALTURA_BLOCKED or ERROR_KALTURA_SCAN.
+       To retry such a record, delete the entry in Kaltura first and then clear the kaltura_id. Otherwise the upload links the failed entry again.
+       Entries in status NO_CONTENT are deleted and the kaltura_id is cleared. A kaltura_id that does not exist in Kaltura is cleared. Any other status is skipped with a warning.
        No solr index job is started. Changed records are picked up by the next solr delta index.
-       With dryRun=true nothing is changed. A summary of kaltura_ids that would be changed is logged.
-       The job can not be started while a kaltura upload job is running, as it would delete entries that are still being processed by Kaltura.'
+       With dryRun=true nothing is changed. A summary of kaltura_ids that would be changed is logged, including how many entries had to be confirmed with media.get.
+       The job can not be started while a kaltura upload job is running, and kaltura upload can not be started while it runs.'
       security:
         - KBOAuth:
             - any
