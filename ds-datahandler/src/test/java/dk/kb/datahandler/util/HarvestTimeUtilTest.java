@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Locale;
@@ -50,6 +51,21 @@ public class HarvestTimeUtilTest {
             e.printStackTrace();
             fail("Error with oai targets file persistence",e);
         }
+    }
+
+    @Test
+    void fullIngestProgress_whenWrittenAndDeleted_thenLoadedUntilDeleted() throws Exception {
+        String file = new File("target/").getAbsolutePath() + "/testOai.fullingest.txt";
+        HarvestTimeUtil.deleteFullIngestProgress(file);
+        assertNull(HarvestTimeUtil.loadFullIngestProgress(file));
+
+        HarvestTimeUtil.writeFullIngestProgress(file, Instant.parse("2025-04-29T08:20:45.647Z"));
+        HarvestTimeUtil.writeFullIngestProgress(file, Instant.parse("2025-04-30T00:00:00Z"));
+        assertEquals(Instant.parse("2025-04-30T00:00:00Z"), HarvestTimeUtil.loadFullIngestProgress(file));
+        assertFalse(Files.exists(Paths.get(file + ".tmp")));
+
+        HarvestTimeUtil.deleteFullIngestProgress(file);
+        assertNull(HarvestTimeUtil.loadFullIngestProgress(file));
     }
 
     @Test

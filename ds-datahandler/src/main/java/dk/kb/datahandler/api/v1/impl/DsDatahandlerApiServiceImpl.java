@@ -107,11 +107,11 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     }
 
     @Override
-    public Integer preservicaIngestFull(String oaiTarget, String fromCreated) {
-        log.debug("preservicaIngestFull(oaiTarget='{}', fromCreated='{}') called with call details: {}",
-                  oaiTarget, fromCreated, getCallDetails());
+    public Integer preservicaIngestFull(String oaiTarget, String mode) {
+        log.debug("preservicaIngestFull(oaiTarget='{}', mode='{}') called with call details: {}",
+                  oaiTarget, mode, getCallDetails());
         try {
-            return DsDatahandlerFacade.preservicaIngestFull(oaiTarget, fromCreated);
+            return DsDatahandlerFacade.preservicaIngestFull(oaiTarget, mode);
         } catch (Exception e){
             throw handleException(e);
         }

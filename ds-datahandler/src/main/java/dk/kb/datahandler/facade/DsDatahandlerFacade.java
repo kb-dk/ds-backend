@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -276,13 +275,16 @@ public class DsDatahandlerFacade {
     /**
      * Full ingest of an OAI target where the records are listed with the Preservica Content API search, in
      * {@code xip.created} order, and fetched with OAI GetRecord. Each search page is ingested completely before the
-     * next is searched, so the {@code xip.created} of the first hit in a failed page is a safe point to resume from.
+     * next is searched. The last {@code xip.created} of each ingested page is stored as the target's full ingest
+     * progress. A successful run sets the OAI datestamp to the last ingested {@code xip.created}, so the delta import
+     * continues from there, and removes the progress.
      *
      * @param oaiTargetName The name for the OAI target in the configuration. It must have a search configuration.
-     * @param fromCreated   Optional {@code xip.created} to resume from (inclusive).
+     * @param mode          {@code resume} (the default if null) continues from the stored progress, or from the start
+     *                      if there is none. {@code restart} discards the progress and starts from the start.
      * @return Number of records processed by the filter.
      */
-    public static Integer preservicaIngestFull(String oaiTargetName, String fromCreated) {
+    public static Integer preservicaIngestFull(String oaiTargetName, String mode) {
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);
         if (oaiTargetDto == null) {
@@ -294,13 +296,16 @@ public class DsDatahandlerFacade {
             throw new InvalidArgumentServiceException("OAI target '" + oaiTargetName + "' has no search configuration");
         }
         Instant from = null;
-        if (fromCreated != null && !fromCreated.isBlank()) {
-            try {
-                from = Instant.parse(fromCreated);
-            } catch (DateTimeParseException e) {
-                throw new InvalidArgumentServiceException("fromCreated must be an ISO-8601 UTC timestamp, e.g. " +
-                        "2025-03-01T10:00:00.123Z, but was '" + fromCreated + "'");
+        if ("restart".equals(mode)) {
+            HarvestTimeUtil.deleteFullIngestProgress(oaiTargetDto);
+        } else if (mode == null || "resume".equals(mode)) {
+            from = HarvestTimeUtil.loadFullIngestProgress(oaiTargetDto);
+            if (from != null) {
+                log.info("Resuming the unfinished full search ingest of target '{}' from xip.created {}",
+                         oaiTargetName, from);
             }
+        } else {
+            throw new InvalidArgumentServiceException("mode must be 'resume' or 'restart', but was '" + mode + "'");
         }
 
         PreservicaApiClient searchClient = new PreservicaApiClient(search);
@@ -308,24 +313,25 @@ public class DsDatahandlerFacade {
         OaiHarvestClient oaiClient = new OaiHarvestClient(oaiTargetDto, null);
         OaiResponseFilter filter = createOaiFilter(oaiTargetDto, getDsStorageApiClient());
 
-        Instant startTime = Instant.now();
         long startNanos = System.nanoTime();
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.OAI_HARVEST, oaiTargetName,
                                  from == null ? null : from.atOffset(ZoneOffset.UTC), user);
         log.info("Starting Preservica search ingest of target '{}' from xip.created {}, jobId '{}'",
                  oaiTargetName, from == null ? "start" : from, jobDto.getId());
 
-        Instant pageStart = from;
+        // The xip.created everything up to has been ingested; the next page starts from it
+        Instant progress = from;
         long hits = 0;
         OaiIdIngester ingester = new OaiIdIngester(oaiClient, filter, oaiTargetDto.getParallel());
         try (ingester) {
             for (List<PreservicaApiClient.Hit> page = pager.next(); !page.isEmpty(); page = pager.next()) {
-                pageStart = page.get(0).created();
                 ingester.ingest(page.stream().map(hit -> "oai:io:" + hit.id()).toList());
                 hits += page.size();
+                progress = page.get(page.size() - 1).created();
+                HarvestTimeUtil.updateFullIngestProgress(oaiTargetDto, progress);
                 log.info("Ingested {}/{} search hits for target '{}', processed={}, notFound={}, last xip.created={}",
                          hits, pager.getTotalHits(), oaiTargetName, ingester.getProcessed(), ingester.getNotFound(),
-                         page.get(page.size() - 1).created());
+                         progress);
             }
 
             long objects = hits - pager.getDuplicates();
@@ -336,29 +342,30 @@ public class DsDatahandlerFacade {
                          oaiTargetName, objects, pager.getTotalHits());
                 message.append(", totalHits at start=").append(pager.getTotalHits());
             }
-            // Objects created during the run are harvested, so the datestamp can be set from the start time
-            String datestamp = startTime.minus(1, ChronoUnit.HOURS).truncatedTo(ChronoUnit.SECONDS).toString();
-            if (from == null) {
+            // The delta import continues from the newest ingested object. It misses changes made during the run to
+            // objects already ingested if they are older than that, which only happens when objects are created during
+            // the run.
+            if (progress != null) {
+                String datestamp = progress.truncatedTo(ChronoUnit.SECONDS).toString();
                 HarvestTimeUtil.updateDatestampForOaiTarget(oaiTargetDto, datestamp);
                 message.append(", OAI datestamp set to ").append(datestamp);
-            } else {
-                message.append(", resumed run: OAI datestamp not updated, set it to the start of the first run minus a margin");
             }
+            HarvestTimeUtil.deleteFullIngestProgress(oaiTargetDto);
             message.append(", ").append(searchIngestSummary(searchClient, ingester, startNanos));
             updateJob(jobDto, JobStatusDto.COMPLETED, message.toString(), OffsetDateTime.now(ZoneOffset.UTC),
                       ingester.getProcessed(), null);
             log.info("Preservica search ingest of target '{}' completed: {}", oaiTargetName, message);
             return ingester.getProcessed();
         } catch (Exception e) {
-            String resume = pageStart == null ? "the start" : pageStart.toString();
+            String resume = "Call again to resume from xip.created " + (progress == null ? "the start" : progress);
             String timing = searchIngestSummary(searchClient, ingester, startNanos);
-            log.error("Preservica search ingest of target '{}' failed, jobId '{}'. Resume with fromCreated={}. {}",
+            log.error("Preservica search ingest of target '{}' failed, jobId '{}'. {}. {}",
                       oaiTargetName, jobDto.getId(), resume, timing, e);
-            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage() + " Resume with fromCreated=" + resume + ". " + timing,
+            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage() + " " + resume + ". " + timing,
                       OffsetDateTime.now(ZoneOffset.UTC), filter.getProcessed(),
-                      pageStart == null ? null : pageStart.atOffset(ZoneOffset.UTC));
+                      progress == null ? null : progress.atOffset(ZoneOffset.UTC));
             throw new InternalServiceException("Preservica search ingest of target '" + oaiTargetName +
-                    "' failed, jobId: " + jobDto.getId() + ". Resume with fromCreated=" + resume, e);
+                    "' failed, jobId: " + jobDto.getId() + ". " + resume, e);
         }
     }
 

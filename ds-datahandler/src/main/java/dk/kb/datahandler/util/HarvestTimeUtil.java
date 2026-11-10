@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -109,8 +110,65 @@ public class HarvestTimeUtil {
         log.info("Updated last harvest datestamp for oai target: '{}' with datestamp: '{}'", oaiTargetNameFile, datestamp);
     }
 
-    protected static String getFileNameFromOaiTarget(OaiTargetDto oaiTarget) {        
+    protected static String getFileNameFromOaiTarget(OaiTargetDto oaiTarget) {
         return ServiceConfig.getOaiTimestampFolder() + "/" + oaiTarget.getName() + ".txt";
+    }
+
+    /**
+     * @return the {@code xip.created} an unfinished full search ingest of the target has completed up to, or null if
+     *         no full search ingest is in progress.
+     */
+    public static synchronized Instant loadFullIngestProgress(OaiTargetDto oaiTarget) {
+        return loadFullIngestProgress(getFullIngestFileName(oaiTarget));
+    }
+
+    /**
+     * Stores how far a full search ingest of the target has come, so a stopped run can be resumed from there.
+     */
+    public static synchronized void updateFullIngestProgress(OaiTargetDto oaiTarget, Instant created) {
+        writeFullIngestProgress(getFullIngestFileName(oaiTarget), created);
+    }
+
+    /**
+     * Removes the progress of a full search ingest of the target, so the next full search ingest starts from the start.
+     */
+    public static synchronized void deleteFullIngestProgress(OaiTargetDto oaiTarget) {
+        deleteFullIngestProgress(getFullIngestFileName(oaiTarget));
+    }
+
+    protected static Instant loadFullIngestProgress(String fileName) {
+        Path path = Paths.get(fileName);
+        if (!Files.exists(path)) {
+            return null;
+        }
+        try {
+            return Instant.parse(Files.readString(path, UTF8).trim());
+        } catch (IOException | DateTimeParseException e) {
+            throw new InternalServiceException("Could not read full ingest progress from file: " + fileName, e);
+        }
+    }
+
+    // Written to a temporary file and moved in place, so a run killed while writing never leaves a partial timestamp
+    protected static void writeFullIngestProgress(String fileName, Instant created) {
+        Path tmp = Paths.get(fileName + ".tmp");
+        try {
+            Files.writeString(tmp, created.toString(), UTF8);
+            Files.move(tmp, Paths.get(fileName), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException e) {
+            throw new InternalServiceException("Could not write full ingest progress to file: " + fileName, e);
+        }
+    }
+
+    protected static void deleteFullIngestProgress(String fileName) {
+        try {
+            Files.deleteIfExists(Paths.get(fileName));
+        } catch (IOException e) {
+            throw new InternalServiceException("Could not delete full ingest progress file: " + fileName, e);
+        }
+    }
+
+    protected static String getFullIngestFileName(OaiTargetDto oaiTarget) {
+        return ServiceConfig.getOaiTimestampFolder() + "/" + oaiTarget.getName() + ".fullingest.txt";
     }
 
     protected static String getFirstLineFromFile(String fileName) throws IOException {

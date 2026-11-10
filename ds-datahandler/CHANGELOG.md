@@ -12,8 +12,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - endpoint `GET /preservica/import/full` for a full ingest of an OAI target: the records are listed with
   the Preservica Content API search, paged by `xip.created`, and fetched one at a time with OAI GetRecord. It requires a
   new optional `search` block (`apiUrl`, `user`, `password`, `query` with the Preservica search expression as JSON,
-  `pageSize`) and an optional `parallel` (default 8) on the OAI target. Deleted records are not harvested. A failed run
-  can be resumed with `fromCreated`. The number of calls to the search, GetRecord and ds-storage and the time spent
+  `pageSize`) and an optional `parallel` (default 8) on the OAI target. Deleted records are not harvested. The progress
+  is stored per page in `<target>.fullingest.txt` in the OAI timestamp folder. With `mode=resume` (the default) a
+  stopped run continues from it; `mode=restart` starts from the start. A successful run sets the OAI datestamp to the newest ingested
+  `xip.created`, so the delta import continues from there. The number of calls to the search, GetRecord and ds-storage and the time spent
   in them are summarised in the log and the job message at the end of the run.
 
 ### Security
