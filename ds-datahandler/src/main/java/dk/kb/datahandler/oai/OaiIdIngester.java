@@ -66,7 +66,6 @@ public class OaiIdIngester implements AutoCloseable {
                     log.info("OAI record '{}' does not exist, skipping it", identifiers.get(i));
                     continue;
                 }
-                //Maybe run the store part in parallel too
                 store(record);
             }
         } catch (ExecutionException e) {
