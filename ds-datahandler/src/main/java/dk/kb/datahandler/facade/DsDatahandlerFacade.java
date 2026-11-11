@@ -314,7 +314,6 @@ public class DsDatahandlerFacade {
         OaiHarvestClient oaiClient = new OaiHarvestClient(oaiTargetDto, null);
         OaiResponseFilter filter = createOaiFilter(oaiTargetDto, getDsStorageApiClient());
 
-        long startNanos = System.nanoTime();
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.OAI_HARVEST, oaiTargetName,
                                  from == null ? null : from.atOffset(ZoneOffset.UTC), user);
         log.info("Starting Preservica search ingest of target '{}' from xip.created {}, jobId '{}'",
@@ -323,8 +322,7 @@ public class DsDatahandlerFacade {
         // The xip.created everything up to has been ingested; the next page starts from it
         Instant progress = from;
         long hits = 0;
-        OaiIdIngester ingester = new OaiIdIngester(oaiClient, filter, oaiTargetDto.getParallel());
-        try (ingester) {
+        try (OaiIdIngester ingester = new OaiIdIngester(oaiClient, filter, oaiTargetDto.getParallel())) {
             while (true) {
                 List<PreservicaApiClient.Hit> page = pager.next();
                 if (page.isEmpty()) {
@@ -356,54 +354,24 @@ public class DsDatahandlerFacade {
                 message.append(", OAI datestamp set to ").append(datestamp);
             }
             HarvestTimeUtil.deleteFullIngestProgress(oaiTargetDto);
-            message.append(", ").append(searchIngestSummary(searchClient, ingester, startNanos));
+            message.append(", search=").append(searchClient.getSearchCalls())
+                   .append(", getRecord=").append(ingester.getGetRecordCalls())
+                   .append(", storage=").append(ingester.getStorageCalls())
+                   .append(", logins/refreshes=").append(searchClient.getAuthCalls());
             updateJob(jobDto, JobStatusDto.COMPLETED, message.toString(), OffsetDateTime.now(ZoneOffset.UTC),
                       ingester.getProcessed(), null);
             log.info("Preservica search ingest of target '{}' completed: {}", oaiTargetName, message);
             return ingester.getProcessed();
         } catch (Exception e) {
             String resume = "Call again to resume from xip.created " + (progress == null ? "the start" : progress);
-            String timing = searchIngestSummary(searchClient, ingester, startNanos);
-            log.error("Preservica search ingest of target '{}' failed, jobId '{}'. {}. {}",
-                      oaiTargetName, jobDto.getId(), resume, timing, e);
-            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage() + " " + resume + ". " + timing,
+            log.error("Preservica search ingest of target '{}' failed, jobId '{}'. {}",
+                      oaiTargetName, jobDto.getId(), resume, e);
+            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage() + " " + resume,
                       OffsetDateTime.now(ZoneOffset.UTC), filter.getProcessed(),
                       progress == null ? null : progress.atOffset(ZoneOffset.UTC));
             throw new InternalServiceException("Preservica search ingest of target '" + oaiTargetName +
                     "' failed, jobId: " + jobDto.getId() + ". " + resume, e);
         }
-    }
-
-    /**
-     * Call counts and times of a Preservica search ingest. GetRecord time is summed over the fetch threads, so it can
-     * exceed the wall time. other is the calling thread's time outside search, waiting and storage: mostly the DR
-     * filter's parsing.
-     */
-    private static String searchIngestSummary(PreservicaApiClient searchClient, OaiIdIngester ingester, long startNanos) {
-        long wallNanos = System.nanoTime() - startNanos;
-        long searchCalls = searchClient.getSearchCalls();
-        long searchNanos = searchClient.getSearchNanos();
-        long getRecordCalls = ingester.getGetRecordCalls();
-        long getRecordNanos = ingester.getGetRecordNanos();
-        long waitNanos = ingester.getWaitNanos();
-        long storageCalls = ingester.getStorageCalls();
-        long storageNanos = ingester.getStorageNanos();
-        return String.format(Locale.ROOT, "wall=%ds, search=%d calls/%ds (avg %.0fms), getRecord=%d calls " +
-                             "(avg %.0fms, parallelism %.1f), wait=%ds, storage=%d calls/%ds (avg %.1fms), " +
-                             "other=%ds, logins/refreshes=%d",
-                             seconds(wallNanos), searchCalls, seconds(searchNanos), avgMillis(searchNanos, searchCalls),
-                             getRecordCalls, avgMillis(getRecordNanos, getRecordCalls),
-                             wallNanos == 0 ? 0.0 : (double) getRecordNanos / wallNanos,
-                             seconds(waitNanos), storageCalls, seconds(storageNanos), avgMillis(storageNanos, storageCalls),
-                             seconds(wallNanos - searchNanos - waitNanos - storageNanos), searchClient.getAuthCalls());
-    }
-
-    private static long seconds(long nanos) {
-        return nanos / 1_000_000_000;
-    }
-
-    private static double avgMillis(long nanos, long calls) {
-        return calls == 0 ? 0.0 : nanos / 1e6 / calls;
     }
 
     /**

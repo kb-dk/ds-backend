@@ -60,7 +60,6 @@ public class PreservicaApiClient {
     private Instant expiresAt = Instant.MIN;
 
     private final AtomicLong searchCalls = new AtomicLong();
-    private final AtomicLong searchNanos = new AtomicLong();
     private final AtomicLong authCalls = new AtomicLong();
 
     public PreservicaApiClient(OaiTargetSearchDto search) {
@@ -81,13 +80,11 @@ public class PreservicaApiClient {
         String query = query(from);
         String uri = baseUrl + "/api/content/search?q=" + urlEncode(query) + "&start=0&max=" + max +
                      "&metadata=" + urlEncode("xip.created");
-        long start = System.nanoTime();
         HttpResponse<String> response;
         try {
             response = get(uri);
         } finally {
             searchCalls.incrementAndGet();
-            searchNanos.addAndGet(System.nanoTime() - start);
         }
         if (response.statusCode() != 200) {
             throw new InternalServiceException("Preservica search failed with HTTP " + response.statusCode() +
@@ -112,13 +109,6 @@ public class PreservicaApiClient {
      */
     public long getSearchCalls() {
         return searchCalls.get();
-    }
-
-    /**
-     * @return the time spent in searches, including retries and token login or refresh.
-     */
-    public long getSearchNanos() {
-        return searchNanos.get();
     }
 
     /**

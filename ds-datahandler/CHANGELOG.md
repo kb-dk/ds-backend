@@ -15,8 +15,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `pageSize`) and an optional `parallel` (default 8) on the OAI target. Deleted records are not harvested. The progress
   is stored per page in `<target>.fullingest.txt` in the OAI timestamp folder. With `mode=resume` (the default) a
   stopped run continues from it; `mode=restart` starts from the start. A successful run sets the OAI datestamp to the newest ingested
-  `xip.created`, so the delta import continues from there. The number of calls to the search, GetRecord and ds-storage and the time spent
-  in them are summarised in the log and the job message at the end of the run.
+  `xip.created`, so the delta import continues from there. The number of calls to the search, GetRecord and ds-storage
+  are summarised in the log and the job message at the end of a successful run.
 
 ### Security
 

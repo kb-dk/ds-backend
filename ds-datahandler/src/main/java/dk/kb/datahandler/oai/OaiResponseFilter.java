@@ -34,9 +34,8 @@ public class OaiResponseFilter {
     protected final DsStorageClient storage;
     protected final String datasource;
     protected int processed = 0;
-    // Calls to ds-storage and the time they took, as seen from ds-datahandler
+    // Calls to ds-storage that stored or marked a record for deletion
     private int storageCalls = 0;
-    private long storageNanos = 0;
 
     /**
      * @param datasource source for records. Default implementation uses this for {@code origin}.
@@ -84,23 +83,16 @@ public class OaiResponseFilter {
         log.debug("adding with ref id "+oaiRecord.getId()+" "+referenceId);
 
         if (oaiRecord.isDeleted()) {
-            long start = System.nanoTime();
             storage.markRecordForDelete(storageId);
-            addStorageTime(start);
+            storageCalls++;
         } else if (origin.isEmpty()){
             log.warn("OAI Record with ID: '{}', has empty origin, it is not added to DS-Storage.", oaiRecord.getId());
         }
         else {
             String parentID = getParentID(oaiRecord, origin);
-            long start = System.nanoTime();
             addOrUpdateRecord(oaiRecord, storageId, parentID, origin,referenceId);
-            addStorageTime(start);
+            storageCalls++;
         }
-    }
-
-    private void addStorageTime(long startNanos) {
-        storageNanos += System.nanoTime() - startNanos;
-        storageCalls++;
     }
 
     /**
@@ -148,13 +140,6 @@ public class OaiResponseFilter {
      */
     public int getStorageCalls() {
         return storageCalls;
-    }
-
-    /**
-     * @return the time spent in calls to ds-storage, as seen from ds-datahandler.
-     */
-    public long getStorageNanos() {
-        return storageNanos;
     }
 
     /**
