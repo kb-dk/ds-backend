@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Client for the Preservica Content API search, used to list information objects in {@code xip.created} order.
+ * Client for the Preservica Content API search, used to list information objects in {@code xip.updated} order.
+ * {@code xip.updated} is the time of the last change and equals the OAI datestamp of the object.
  * <p>
  * Access tokens are valid for {@code validFor} minutes. They are refreshed shortly before they expire, since a
  * refresh token is single-use and only accepted while its access token is still valid. A failed refresh or a 401
@@ -37,11 +38,13 @@ public class PreservicaApiClient {
     private static final int MAX_ATTEMPTS = 5;
     private static final Duration RETRY_BASE_DELAY = Duration.ofSeconds(2);
     private static final Duration REFRESH_MARGIN = Duration.ofMinutes(1);
+    // The field the search is sorted and ranged on. It is the OAI datestamp, so paging follows the OAI delta clock
+    private static final String PAGING_FIELD = "xip.updated";
 
     /**
-     * A search hit: the information object id and its {@code xip.created}.
+     * A search hit: the information object id and its {@code xip.updated}.
      */
-    public record Hit(String id, Instant created) {
+    public record Hit(String id, Instant updated) {
     }
 
     /**
@@ -66,20 +69,20 @@ public class PreservicaApiClient {
         this.search = search;
         this.configuredQuery = parseQuery(search.getQuery());
         ObjectNode sort = configuredQuery.putArray("sort").addObject();
-        sort.putArray("sortFields").add("xip.created");
+        sort.putArray("sortFields").add(PAGING_FIELD);
         sort.put("sortOrder", "asc");
         this.baseUrl = search.getApiUrl().replaceAll("/+$", "");
         this.http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(30)).build();
     }
 
     /**
-     * @param from inclusive lower bound for {@code xip.created}, or null for no lower bound.
-     * @return the first {@code max} hits, sorted ascending on {@code xip.created}.
+     * @param from inclusive lower bound for {@code xip.updated}, or null for no lower bound.
+     * @return the first {@code max} hits, sorted ascending on {@code xip.updated}.
      */
     public SearchResult search(Instant from, int max) {
         String query = query(from);
         String uri = baseUrl + "/api/content/search?q=" + urlEncode(query) + "&start=0&max=" + max +
-                     "&metadata=" + urlEncode("xip.created");
+                     "&metadata=" + urlEncode(PAGING_FIELD);
         HttpResponse<String> response;
         try {
             response = get(uri);
@@ -94,13 +97,13 @@ public class PreservicaApiClient {
     }
 
     /**
-     * @param from inclusive lower bound for {@code xip.created}, or null for no lower bound.
-     * @return the configured search expression with {@code q} set to the range and sorted on {@code xip.created}.
+     * @param from inclusive lower bound for {@code xip.updated}, or null for no lower bound.
+     * @return the configured search expression with {@code q} set to the range and sorted on {@code xip.updated}.
      */
     public String query(Instant from) {
         // The search accepts ISO-8601 timestamps in ranges, not epoch milliseconds
         return configuredQuery.deepCopy()
-                .put("q", from == null ? "" : "xip.created:[" + from + " TO *]")
+                .put("q", from == null ? "" : PAGING_FIELD + ":[" + from + " TO *]")
                 .toString();
     }
 
@@ -140,7 +143,7 @@ public class PreservicaApiClient {
             List<Hit> hits = new ArrayList<>();
             for (int i = 0; i < objectIds.size(); i++) {
                 String id = objectIds.get(i).asText().replaceFirst("^sdb:[A-Z]+\\|", "");
-                hits.add(new Hit(id, created(id, value.path("metadata").path(i))));
+                hits.add(new Hit(id, updated(id, value.path("metadata").path(i))));
             }
             return new SearchResult(hits, value.path("totalHits").asLong());
         } catch (IOException e) {
@@ -148,14 +151,14 @@ public class PreservicaApiClient {
         }
     }
 
-    // The metadata of a hit is a list of {name, value}; xip.created is epoch milliseconds
-    private static Instant created(String id, JsonNode hitMetadata) {
+    // The metadata of a hit is a list of {name, value}; xip.updated is epoch milliseconds
+    private static Instant updated(String id, JsonNode hitMetadata) {
         for (JsonNode field : hitMetadata) {
-            if ("xip.created".equals(field.path("name").asText()) && field.path("value").isNumber()) {
+            if (PAGING_FIELD.equals(field.path("name").asText()) && field.path("value").isNumber()) {
                 return Instant.ofEpochMilli(field.path("value").asLong());
             }
         }
-        throw new InternalServiceException("Search hit '" + id + "' has no numeric xip.created");
+        throw new InternalServiceException("Search hit '" + id + "' has no numeric " + PAGING_FIELD);
     }
 
     private HttpResponse<String> get(String uri) {

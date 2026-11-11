@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PreservicaSearchPagerTest {
 
     /**
-     * Search over a fixed list of hits, sorted on created and then id, like the order Preservica returns ties in.
+     * Search over a fixed list of hits, sorted on updated and then id, like the order Preservica returns ties in.
      */
     private static class FakeSource extends PreservicaApiClient {
         private final List<PreservicaApiClient.Hit> hits;
@@ -36,7 +37,7 @@ public class PreservicaSearchPagerTest {
         public PreservicaApiClient.SearchResult search(Instant from, int max) {
             searches++;
             List<PreservicaApiClient.Hit> matching = hits.stream()
-                    .filter(hit -> from == null || !hit.created().isBefore(from))
+                    .filter(hit -> from == null || !hit.updated().isBefore(from))
                     .toList();
             return new PreservicaApiClient.SearchResult(matching.subList(0, Math.min(max, matching.size())),
                                                         matching.size());
@@ -44,12 +45,12 @@ public class PreservicaSearchPagerTest {
     }
 
     /**
-     * @param createdMillis xip.created per hit; the ids are h0, h1, ...
+     * @param updatedMillis xip.updated per hit; the ids are h0, h1, ...
      */
-    private static List<PreservicaApiClient.Hit> hits(long... createdMillis) {
+    private static List<PreservicaApiClient.Hit> hits(long... updatedMillis) {
         List<PreservicaApiClient.Hit> hits = new ArrayList<>();
-        for (int i = 0; i < createdMillis.length; i++) {
-            hits.add(new PreservicaApiClient.Hit("h" + i, Instant.ofEpochMilli(createdMillis[i])));
+        for (int i = 0; i < updatedMillis.length; i++) {
+            hits.add(new PreservicaApiClient.Hit("h" + i, Instant.ofEpochMilli(updatedMillis[i])));
         }
         return hits;
     }
@@ -77,7 +78,7 @@ public class PreservicaSearchPagerTest {
     }
 
     @Test
-    public void next_whenDistinctCreated_thenLastHitOfEachPageRepeated() {
+    public void next_whenDistinctUpdated_thenLastHitOfEachPageRepeated() {
         List<PreservicaApiClient.Hit> hits = hits(1, 2, 3, 4, 5, 6, 7);
         PreservicaSearchPager pager = new PreservicaSearchPager(new FakeSource(hits), 3, null);
 
@@ -127,5 +128,19 @@ public class PreservicaSearchPagerTest {
         PreservicaSearchPager pager = new PreservicaSearchPager(new FakeSource(hits), 3, Instant.ofEpochMilli(3));
 
         assertAllHitsInOrder(hits.subList(2, hits.size()), pager);
+    }
+
+    @Test
+    public void next_whenHitUpdatedAfterItWasReturned_thenReturnedAgainAtTheEnd() {
+        List<PreservicaApiClient.Hit> hits = new ArrayList<>(hits(1, 2, 3, 4, 5, 6));
+        PreservicaSearchPager pager = new PreservicaSearchPager(new FakeSource(hits), 3, null);
+
+        assertEquals(List.of("h0", "h1", "h2"), ids(pager.next()));
+        // h0 changes during the run, so it gets a later xip.updated and moves behind the paging
+        hits.set(0, new PreservicaApiClient.Hit("h0", Instant.ofEpochMilli(7)));
+        hits.sort(Comparator.comparing(PreservicaApiClient.Hit::updated));
+        List<String> rest = drain(pager);
+
+        assertEquals(List.of("h2", "h3", "h4", "h5", "h0"), rest.stream().distinct().toList());
     }
 }

@@ -206,15 +206,16 @@ paths:
       summary: 'EXPERIMENTAL: Full ingest of an OAI target, listing records with the Preservica Content API search and fetching each with OAI GetRecord.'
       description: |
         Alternative to `/oai/import/full` for OAI targets with a `preservicaSearch` configuration. Information
-        objects matching the configured search restrictions are paged in `xip.created` order, fetched with OAI
-        GetRecord and passed through the same filter as the OAI harvest.
+        objects matching the configured search restrictions are paged in `xip.updated` order, fetched with OAI
+        GetRecord and passed through the same filter as the OAI harvest. `xip.updated` is the OAI datestamp, so an
+        object changed during the run is fetched again when paging reaches its new `xip.updated`.
 
         Only live objects are written: deletions in Preservica are not detected, they arrive with the OAI delta import.
         The job finishes even if the socket is closed from the client triggering the call.
 
-        After each page, the last `xip.created` ingested is stored as the target's full ingest progress. With
+        After each page, the last `xip.updated` ingested is stored as the target's full ingest progress. With
         `type=resume` a stopped run continues from the stored progress; `type=full` discards it and starts from the
-        start. A successful run sets the target's OAI datestamp to the last `xip.created` ingested, so the OAI delta
+        start. A successful run sets the target's OAI datestamp to the last `xip.updated` ingested, so the OAI delta
         import continues from there, and removes the progress.
       security:
         - KBOAuth:
@@ -599,7 +600,7 @@ components:
           type: string
           description: |
             Preservica search expression as JSON, see the search endpoint of the Preservica Content API.
-            `q` and `sort` are set by the harvester, which pages on `xip.created`. All other keys, e.g. `fields`, are
+            `q` and `sort` are set by the harvester, which pages on `xip.updated`. All other keys, e.g. `fields`, are
             sent as configured.
           example: '{"fields":[{"name":"xip.document_type","values":["IO"]},{"name":"xip.security_descriptor","values":["pligtafleveringRadioTvOpenProgram"]},{"name":"pbcore.PBchannel","values":["dr*"]},{"name":"pbcore.PBformatmedia","values":["Moving Image","Sound"]}]}'
         pageSize:

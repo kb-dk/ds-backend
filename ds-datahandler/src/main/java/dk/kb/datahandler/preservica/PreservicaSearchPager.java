@@ -5,12 +5,13 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * Pages through search hits in {@code xip.created} order using key-based paging: each page is searched with
- * {@code xip.created >= lastKey} and start 0, so offsets never grow.
+ * Pages through search hits in {@code xip.updated} order using key-based paging: each page is searched with
+ * {@code xip.updated >= lastKey} and start 0, so offsets never grow. An object that changes during the run gets a
+ * later {@code xip.updated}, so it moves ahead of the paging and is returned again in its new state.
  * <p>
- * Several objects can share a {@code xip.created} value, so each page starts with the hits at the boundary key that
+ * Several objects can share a {@code xip.updated} value, so each page starts with the hits at the boundary key that
  * the previous page ended with. They are returned again, which is harmless as storing a record is an upsert, and
- * counted in {@link #getDuplicates()}. A full page with a single {@code xip.created} value cannot be paged past and
+ * counted in {@link #getDuplicates()}. A full page with a single {@code xip.updated} value cannot be paged past and
  * fails the harvest.
  * <p>
  * Not thread safe.
@@ -18,16 +19,16 @@ import java.util.List;
 public class PreservicaSearchPager {
     private final PreservicaApiClient preservicaApiClient;
     private final int pageSize;
-    // Inclusive xip.created the next search starts from: the last xip.created of the previous page
-    private Instant fromCreated;
-    // Number of hits at fromCreated that have already been returned
-    private int returnedAtFromCreated = 0;
+    // Inclusive xip.updated the next search starts from: the last xip.updated of the previous page
+    private Instant fromUpdated;
+    // Number of hits at fromUpdated that have already been returned
+    private int returnedAtFromUpdated = 0;
     private long duplicates = 0;
     private boolean done = false;
     private long totalHits = -1;
 
     /**
-     * @param from inclusive {@code xip.created} to start from, or null to start from the beginning.
+     * @param from inclusive {@code xip.updated} to start from, or null to start from the beginning.
      */
     public PreservicaSearchPager(PreservicaApiClient preservicaApiClient, int pageSize, Instant from) {
         if (pageSize < 2) {
@@ -35,17 +36,17 @@ public class PreservicaSearchPager {
         }
         this.preservicaApiClient = preservicaApiClient;
         this.pageSize = pageSize;
-        this.fromCreated = from;
+        this.fromUpdated = from;
     }
 
     /**
-     * @return the next hits in {@code xip.created} order. Empty when all hits have been returned.
+     * @return the next hits in {@code xip.updated} order. Empty when all hits have been returned.
      */
     public List<Hit> next() {
         if (done) {
             return List.of();
         }
-        PreservicaApiClient.SearchResult result = preservicaApiClient.search(fromCreated, pageSize);
+        PreservicaApiClient.SearchResult result = preservicaApiClient.search(fromUpdated, pageSize);
         if (totalHits < 0) {
             totalHits = result.totalHits();
         }
@@ -55,21 +56,22 @@ public class PreservicaSearchPager {
             return hits;
         }
 
-        Instant last = hits.get(hits.size() - 1).created();
-        if (!done && hits.get(0).created().equals(last)) {
-            throw new IllegalStateException("A full page of " + pageSize + " hits all have xip.created " + last +
+        Instant last = hits.get(hits.size() - 1).updated();
+        if (!done && hits.get(0).updated().equals(last)) {
+            throw new IllegalStateException("A full page of " + pageSize + " hits all have xip.updated " + last +
                                             ", which key-based paging cannot step past. " +
                                             "Increase preservicaSearch.pageSize");
         }
-        // fromCreated is still the start of this search, so hits at it were partly returned by the previous page
-        duplicates += Math.min(returnedAtFromCreated, countCreatedAt(hits, fromCreated));
-        fromCreated = last;
-        returnedAtFromCreated = countCreatedAt(hits, last);
+        // fromUpdated is still the start of this search, so hits at it were partly returned by the previous page
+        duplicates += Math.min(returnedAtFromUpdated, countUpdatedAt(hits, fromUpdated));
+        fromUpdated = last;
+        returnedAtFromUpdated = countUpdatedAt(hits, last);
         return hits;
     }
 
     /**
-     * @return the number of hits reported by the first search, or -1 before the first call to {@link #next()}.
+     * @return the number of hits reported by the first search, an estimate of the run's size: objects that change
+     *         during the run are returned again. -1 before the first call to {@link #next()}.
      */
     public long getTotalHits() {
         return totalHits;
@@ -82,7 +84,7 @@ public class PreservicaSearchPager {
         return duplicates;
     }
 
-    private static int countCreatedAt(List<Hit> hits, Instant created) {
-        return (int) hits.stream().filter(hit -> hit.created().equals(created)).count();
+    private static int countUpdatedAt(List<Hit> hits, Instant updated) {
+        return (int) hits.stream().filter(hit -> hit.updated().equals(updated)).count();
     }
 }

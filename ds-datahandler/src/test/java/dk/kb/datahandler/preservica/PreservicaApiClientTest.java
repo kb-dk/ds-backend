@@ -30,7 +30,7 @@ public class PreservicaApiClientTest {
     private static final String SEARCH_RESPONSE = """
             {"success":true,"value":{"totalHits":2,
               "objectIds":["sdb:IO|aaaa","sdb:IO|bbbb"],
-              "metadata":[[{"name":"xip.created","value":1532076564174}],[{"name":"xip.created","value":1532076564177}]]}}""";
+              "metadata":[[{"name":"xip.updated","value":1532076564174}],[{"name":"xip.updated","value":1532076564177}]]}}""";
 
     private static final String QUERY = """
             {"fields": [
@@ -98,7 +98,7 @@ public class PreservicaApiClientTest {
     }
 
     @Test
-    public void search_whenOk_thenHitsWithCreated() {
+    public void search_whenOk_thenHitsWithUpdated() {
         PreservicaApiClient.SearchResult result = client().search(null, 10);
 
         assertEquals(2, result.totalHits());
@@ -145,10 +145,10 @@ public class PreservicaApiClientTest {
     public void query_whenRange_thenIsoAndConfiguredFields() throws IOException {
         JsonNode query = JSON.readTree(client().query(Instant.ofEpochMilli(1532076564000L)));
 
-        assertEquals("xip.created:[2018-07-20T08:49:24Z TO *]", query.path("q").asText());
+        assertEquals("xip.updated:[2018-07-20T08:49:24Z TO *]", query.path("q").asText());
         assertEquals(JSON.readTree(QUERY).path("fields"), query.path("fields"));
         assertEquals(1, query.path("sort").size());
-        assertEquals("xip.created", query.path("sort").get(0).path("sortFields").get(0).asText());
+        assertEquals("xip.updated", query.path("sort").get(0).path("sortFields").get(0).asText());
         assertEquals("asc", query.path("sort").get(0).path("sortOrder").asText());
     }
 

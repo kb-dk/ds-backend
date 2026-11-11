@@ -28,7 +28,7 @@ oaiTargets:
     #  apiUrl: https://XXXXXXXXX.statsbiblioteket.dk
     #  user: XXXXXXXXX
     #  password: XXXXXXXXX
-    #  # Preservica search expression as JSON. q and sort are set by the harvester, which pages on xip.created.
+    #  # Preservica search expression as JSON. q and sort are set by the harvester, which pages on xip.updated.
     #  # The security descriptor matches what the OAI endpoint delivers; trashed objects are tagged 'deleted'.
     #  query: >-
     #    {"fields": [

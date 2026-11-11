@@ -274,9 +274,9 @@ public class DsDatahandlerFacade {
 
     /**
      * Full ingest of an OAI target where the records are listed with the Preservica Content API search, in
-     * {@code xip.created} order, and fetched with OAI GetRecord. Each search page is ingested completely before the
-     * next is searched. The last {@code xip.created} of each ingested page is stored as the target's full ingest
-     * progress. A successful run sets the OAI datestamp to the last ingested {@code xip.created}, so the delta import
+     * {@code xip.updated} order, and fetched with OAI GetRecord. Each search page is ingested completely before the
+     * next is searched. The last {@code xip.updated} of each ingested page is stored as the target's full ingest
+     * progress. A successful run sets the OAI datestamp to the last ingested {@code xip.updated}, so the delta import
      * continues from there, and removes the progress.
      * <p>
      * This discards any stored progress and starts from the start. Use {@link #preservicaIngestResume} to continue
@@ -322,10 +322,10 @@ public class DsDatahandlerFacade {
 
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.OAI_HARVEST, oaiTargetName,
                                  from == null ? null : from.atOffset(ZoneOffset.UTC), user);
-        log.info("Starting Preservica search ingest of target '{}' from xip.created {}{}, jobId '{}'",
+        log.info("Starting Preservica search ingest of target '{}' from xip.updated {}{}, jobId '{}'",
                  oaiTargetName, from == null ? "start" : from, from == null ? "" : " (resumed)", jobDto.getId());
 
-        // The xip.created everything up to has been ingested; the next page starts from it
+        // The xip.updated everything up to has been ingested; the next page starts from it
         Instant progress = from;
         long hits = 0;
         try (OaiIdIngester ingester = new OaiIdIngester(oaiClient, filter, oaiTargetDto.getParallel())) {
@@ -341,9 +341,9 @@ public class DsDatahandlerFacade {
                 }
                 ingester.ingest(page.stream().map(hit -> "oai:io:" + hit.id()).toList());
                 hits += page.size();
-                progress = page.get(page.size() - 1).created();
+                progress = page.get(page.size() - 1).updated();
                 HarvestTimeUtil.updateFullIngestProgress(oaiTargetDto, progress);
-                log.info("Ingested {}/{} search hits for target '{}', processed={}, notFound={}, last xip.created={}",
+                log.info("Ingested {}/{} search hits for target '{}', processed={}, notFound={}, last xip.updated={}",
                          hits, pager.getTotalHits(), oaiTargetName, ingester.getProcessed(), ingester.getNotFound(),
                          progress);
             }
@@ -351,14 +351,8 @@ public class DsDatahandlerFacade {
             long objects = hits - pager.getDuplicates();
             StringBuilder message = new StringBuilder("hits=" + objects + ", duplicates=" + pager.getDuplicates() +
                                                       ", notFound=" + ingester.getNotFound());
-            if (objects != pager.getTotalHits()) {
-                log.warn("Preservica search for target '{}' returned {} objects while paging, but reported {} at the start",
-                         oaiTargetName, objects, pager.getTotalHits());
-                message.append(", totalHits at start=").append(pager.getTotalHits());
-            }
-            // The delta import continues from the newest ingested object. It misses changes made during the run to
-            // objects already ingested if they are older than that, which only happens when objects are created during
-            // the run.
+            // xip.updated is the OAI datestamp, and objects changed during the run are fetched again when paging
+            // reaches them, so the delta import continues from the last ingested one
             if (progress != null) {
                 String datestamp = progress.truncatedTo(ChronoUnit.SECONDS).toString();
                 HarvestTimeUtil.updateDatestampForOaiTarget(oaiTargetDto, datestamp);
@@ -374,7 +368,7 @@ public class DsDatahandlerFacade {
             log.info("Preservica search ingest of target '{}' completed: {}", oaiTargetName, message);
             return ingester.getProcessed();
         } catch (Exception e) {
-            String hint = "Call again with type=resume to continue from xip.created " +
+            String hint = "Call again with type=resume to continue from xip.updated " +
                           (progress == null ? "the start" : progress);
             log.error("Preservica search ingest of target '{}' failed, jobId '{}'. {}",
                       oaiTargetName, jobDto.getId(), hint, e);

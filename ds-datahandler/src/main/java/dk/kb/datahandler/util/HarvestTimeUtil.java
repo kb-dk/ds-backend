@@ -115,7 +115,7 @@ public class HarvestTimeUtil {
     }
 
     /**
-     * @return the {@code xip.created} an unfinished full search ingest of the target has completed up to, or null if
+     * @return the {@code xip.updated} an unfinished full search ingest of the target has completed up to, or null if
      *         no full search ingest is in progress.
      */
     public static synchronized Instant loadFullIngestProgress(OaiTargetDto oaiTarget) {
@@ -125,8 +125,8 @@ public class HarvestTimeUtil {
     /**
      * Stores how far a full search ingest of the target has come, so a stopped run can be resumed from there.
      */
-    public static synchronized void updateFullIngestProgress(OaiTargetDto oaiTarget, Instant created) {
-        writeFullIngestProgress(getFullIngestFileName(oaiTarget), created);
+    public static synchronized void updateFullIngestProgress(OaiTargetDto oaiTarget, Instant updated) {
+        writeFullIngestProgress(getFullIngestFileName(oaiTarget), updated);
     }
 
     /**
@@ -149,10 +149,10 @@ public class HarvestTimeUtil {
     }
 
     // Written to a temporary file and moved in place, so a run killed while writing never leaves a partial timestamp
-    protected static void writeFullIngestProgress(String fileName, Instant created) {
+    protected static void writeFullIngestProgress(String fileName, Instant updated) {
         Path tmp = Paths.get(fileName + ".tmp");
         try {
-            Files.writeString(tmp, created.toString(), UTF8);
+            Files.writeString(tmp, updated.toString(), UTF8);
             Files.move(tmp, Paths.get(fileName), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException e) {
             throw new InternalServiceException("Could not write full ingest progress to file: " + fileName, e);
