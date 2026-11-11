@@ -368,7 +368,8 @@ public class ServiceConfig {
     }
 
     /**
-     * @param prefix the {@code preservicaSearch.} block of an OAI target, e.g. {@code "oaiTargets[0].search."}.
+     * @param prefix the {@code preservicaSearch.} block of an OAI target,
+     *               e.g. {@code "oaiTargets[0].preservicaSearch."}.
      * @return the Preservica search configuration, or null if the target has none.
      */
     private static PreservicaSearchDto loadPreservicaSearch(String prefix) {

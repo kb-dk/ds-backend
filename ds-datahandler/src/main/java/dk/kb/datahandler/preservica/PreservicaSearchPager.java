@@ -58,7 +58,8 @@ public class PreservicaSearchPager {
         Instant last = hits.get(hits.size() - 1).created();
         if (!done && hits.get(0).created().equals(last)) {
             throw new IllegalStateException("A full page of " + pageSize + " hits all have xip.created " + last +
-                                            ", which key-based paging cannot step past. Increase search.pageSize");
+                                            ", which key-based paging cannot step past. " +
+                                            "Increase preservicaSearch.pageSize");
         }
         // fromCreated is still the start of this search, so hits at it were partly returned by the previous page
         duplicates += Math.min(returnedAtFromCreated, countCreatedAt(hits, fromCreated));

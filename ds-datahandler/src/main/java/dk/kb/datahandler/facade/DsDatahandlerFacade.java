@@ -312,16 +312,8 @@ public class DsDatahandlerFacade {
             throw new InvalidArgumentServiceException("OAI target '" + oaiTargetName +
                                                       "' has no preservicaSearch configuration");
         }
-        Instant from = null;
-        if (resume) {
-            from = HarvestTimeUtil.loadFullIngestProgress(oaiTargetDto);
-            if (from != null) {
-                log.info("Resuming the unfinished full search ingest of target '{}' from xip.created {}",
-                         oaiTargetName, from);
-            }
-        } else {
-            HarvestTimeUtil.deleteFullIngestProgress(oaiTargetDto);
-        }
+        // Only read here: the job records where it starts, and startJob may still reject the call
+        Instant from = resume ? HarvestTimeUtil.loadFullIngestProgress(oaiTargetDto) : null;
 
         PreservicaApiClient searchClient = new PreservicaApiClient(search);
         PreservicaSearchPager pager = new PreservicaSearchPager(searchClient, search.getPageSize(), from);
@@ -330,13 +322,18 @@ public class DsDatahandlerFacade {
 
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.OAI_HARVEST, oaiTargetName,
                                  from == null ? null : from.atOffset(ZoneOffset.UTC), user);
-        log.info("Starting Preservica search ingest of target '{}' from xip.created {}, jobId '{}'",
-                 oaiTargetName, from == null ? "start" : from, jobDto.getId());
+        log.info("Starting Preservica search ingest of target '{}' from xip.created {}{}, jobId '{}'",
+                 oaiTargetName, from == null ? "start" : from, from == null ? "" : " (resumed)", jobDto.getId());
 
         // The xip.created everything up to has been ingested; the next page starts from it
         Instant progress = from;
         long hits = 0;
         try (OaiIdIngester ingester = new OaiIdIngester(oaiClient, filter, oaiTargetDto.getParallel())) {
+            if (!resume) {
+                // Only after startJob, which rejects the call while a run of this target is going, so its progress
+                // is kept
+                HarvestTimeUtil.deleteFullIngestProgress(oaiTargetDto);
+            }
             while (true) {
                 List<PreservicaApiClient.Hit> page = pager.next();
                 if (page.isEmpty()) {
