@@ -62,7 +62,7 @@ components:
       fq:
         weightConstant: 0.0
         weightFactor: 10   # There can be multiple filter queries
-        maxChars: 1000
+        maxChars: 1050
 
       fl:
         defaultEnabled: true

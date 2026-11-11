@@ -15,6 +15,7 @@
 package dk.kb.discover.util;
 
 import dk.kb.discover.config.ServiceConfig;
+import io.smallrye.config.NameIterator;
 import org.eclipse.microprofile.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -413,6 +414,18 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
          * (which may itself contain dots, as Solr param names commonly do) as the map key. A child may be a plain
          * scalar or a YAML list of scalars (flattened by SmallRye Config's YAML source into
          * {@code keyPrefix.paramName[0]}, {@code keyPrefix.paramName[1]}, ...).
+         * <p>
+         * A YAML key that itself contains a literal dot (e.g. {@code spellcheck.maxCollationRetries}, written
+         * plainly under {@code defaultParams}) is flattened by SmallRye's {@code YamlConfigSource} into a
+         * property name where that whole segment is wrapped in double quotes - e.g.
+         * {@code solr.select.defaultParams."spellcheck.maxCollationRetries"} - SmallRye's own convention for
+         * telling its structured property-name parsing (used by e.g. {@code @ConfigMapping}) that the dot is
+         * part of the key, not a path separator. A plain {@link String#substring(int)} after {@code keyPrefix}
+         * would carry those literal quote characters into the resulting Solr param name, which Solr then echoes
+         * back verbatim in its response - breaking deserialization of anything that reads that response back
+         * (confirmed to be the cause of the {@code spellcheck.maxCollationRetries} suggest-endpoint bug).
+         * {@link NameIterator} is SmallRye's own supported way to walk a property name segment-by-segment with
+         * that quoting already stripped, so it is used here instead.
          *
          * @param keyPrefix the location in the config for the params.
          * @return a Solr param map. Empty if nothing is configured under {@code keyPrefix}.
@@ -420,6 +433,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
         private static Map<String, List<String>> getParams(String keyPrefix) {
             Config config = ServiceConfig.getConfig();
             String prefix = keyPrefix + ".";
+            int prefixSegmentCount = keyPrefix.split("\\.").length;
 
             Map<String, String> scalars = new LinkedHashMap<>();
             Map<String, SortedMap<Integer, String>> indexed = new LinkedHashMap<>();
@@ -428,7 +442,7 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
                 if (!propertyName.startsWith(prefix)) {
                     continue;
                 }
-                String remainder = propertyName.substring(prefix.length());
+                String remainder = remainderAfterPrefix(propertyName, prefixSegmentCount);
                 Matcher indexedMatcher = INDEXED_ENTRY_PATTERN.matcher(remainder);
                 String value = config.getOptionalValue(propertyName, String.class).orElse(null);
                 if (value == null || value.isEmpty()) {
@@ -447,6 +461,33 @@ public class SolrParamMerger extends LinkedHashMap<String, List<String>> {
             scalars.forEach((paramName, value) -> result.put(paramName, Collections.singletonList(value)));
             indexed.forEach((paramName, valuesByIndex) -> result.put(paramName, new ArrayList<>(valuesByIndex.values())));
             return result;
+        }
+
+        /**
+         * Reconstructs the literal Solr param name from everything in {@code propertyName} after its first
+         * {@code prefixSegmentCount} segments, using {@link NameIterator} so that a segment SmallRye wrapped in
+         * double quotes (because it itself contains a literal dot) comes back unquoted - see {@link #getParams}.
+         *
+         * @param propertyName      the full flattened property name, e.g.
+         *                          {@code solr.select.defaultParams."spellcheck.maxCollationRetries"}.
+         * @param prefixSegmentCount the number of leading segments to skip (the segment count of {@code keyPrefix}).
+         * @return the remaining segments, unquoted, joined with literal dots - e.g.
+         *         {@code spellcheck.maxCollationRetries}.
+         */
+        private static String remainderAfterPrefix(String propertyName, int prefixSegmentCount) {
+            NameIterator iterator = new NameIterator(propertyName);
+            for (int i = 0; i < prefixSegmentCount; i++) {
+                iterator.next();
+            }
+            StringBuilder remainder = new StringBuilder();
+            while (iterator.hasNext()) {
+                iterator.next();
+                if (remainder.length() > 0) {
+                    remainder.append('.');
+                }
+                remainder.append(iterator.getPreviousSegment());
+            }
+            return remainder.toString();
         }
     }
 }

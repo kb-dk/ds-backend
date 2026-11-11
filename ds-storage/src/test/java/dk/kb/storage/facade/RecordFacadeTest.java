@@ -28,12 +28,12 @@ public class RecordFacadeTest extends TestcontainersUtil {
     }
 
     /**
-     * Delete all records between each unittest. The clearTableRecords is only called from here.
+     * Delete all records between each unittest. The clearTable is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
     public void beforeEach() throws SQLException {
-        recordStorage.clearTableRecords();
+        recordStorage.clearTable();
     }
 
     //THIS UNITTEST MUST BE UPDATED WHEN VALIDATION RULES ARE MORE CLEAR!

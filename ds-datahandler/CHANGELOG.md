@@ -7,22 +7,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Added
-
-- endpoint `GET /preservica/import` for a full ingest of an OAI target: the records are listed with
-  the Preservica Content API search, paged by `xip.created`, and fetched one at a time with OAI GetRecord. It requires
-  a new optional `preservicaSearch` block (`apiUrl`, `user`, `password`, `query` with the Preservica search
-  expression as JSON, `pageSize`) and an optional `parallel` (default 8) on the OAI target. Deleted records are not
-  harvested. The progress is stored per page in `<target>.fullingest.txt` in the OAI timestamp folder. With
-  `type=resume` a stopped run continues from it; `type=full` starts from the start. A successful run sets the OAI
-  datestamp to the newest ingested `xip.created`, so the delta import continues from there. The number of calls to
-  the search, GetRecord and ds-storage are summarised in the log and the job message at the end of a successful run.
-
-### Security
-
-- `GET /oai/config` no longer returns the passwords of the OAI targets.
+## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
+
+### Fixed
+
+- Fixed `DR` `OAI` filter skipping the remaining records in an `OAI` response page after a deleted record.
 
 ## [8.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.0) - 2026-10-13
 
@@ -48,7 +39,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Fixed `referenceId` so it now correctly get inserted as `NULL` in `ds_records` table, instead as before where it got
   inserted as `blank`.
-- Fixed DR OAI filter skipping the remaining records in an OAI response page after a deleted record.
 
 ### Removed
 

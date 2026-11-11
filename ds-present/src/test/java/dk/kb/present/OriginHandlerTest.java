@@ -25,7 +25,7 @@ class OriginHandlerTest {
     @BeforeAll
     static void setup() {
         try {
-            ServiceConfig.initialize("conf/ds-present-behaviour.yaml", "test_setup.yaml");
+            ServiceConfig.initialize("test_setup.yaml");
         } catch (IOException e) {
             log.error("test_setup.yaml could not be loaded");
             fail();
