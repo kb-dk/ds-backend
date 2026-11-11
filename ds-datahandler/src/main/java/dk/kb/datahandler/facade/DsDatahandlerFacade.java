@@ -2,7 +2,7 @@ package dk.kb.datahandler.facade;
 
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
-
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -347,82 +347,97 @@ public class DsDatahandlerFacade {
      * @return RecordsCountDto number of rows inserted or updated
      */
     public static RecordsCountDto getRerunClusters() {
+        int limit = 1000;
+        RecordsCountDto allRecordsCountDto = new RecordsCountDto();
+        // Start the count at 0
+        allRecordsCountDto.setCount(0);
+
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         DsStorageClient dsStorageApiClient = getDsStorageApiClient();
 
-        CreatedDto latestCreatedRerunCluster = latestCreatedRerunCluster();
-        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, latestCreatedRerunCluster.getCreated(), user);
+        Optional<CreatedDto> latestCreatedRerunCluster = latestCreatedRerunCluster();
+        UUID latestCreatedId = null;
+        OffsetDateTime latestCreatedDateTime = null;
+
+        if (latestCreatedRerunCluster.isPresent()) {
+            latestCreatedId = latestCreatedRerunCluster.get().getId();
+            latestCreatedDateTime = latestCreatedRerunCluster.get().getCreated();
+        }
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.RERUN_CLUSTERS, null, latestCreatedDateTime, user);
 
         try {
             log.info("Fetching rows from p3reruns table");
-            List<RerunClusterRequestDto> rerunClusterRequestDtoList =
-                RerunClusterStorage.performStorageAction("getRerunClusters()",
-                    RerunClusterStorage.class, storage -> {
-                        return ((RerunClusterStorage) storage).getRerunClusters(latestCreatedRerunCluster.getCreated());
-                    });
 
-            // tomcat in dev environment could not handle one big request body, so need to split
-            // request in batches of 1000 objects at a time.
-            int partitionSize = 1000;
-            List<List<RerunClusterRequestDto>> partitions = new ArrayList<>();
+            while (true) {
+                // The lambda needs variables that never change, so copy the current cursor position
+                final UUID afterId = latestCreatedId;
+                final OffsetDateTime afterCreated = latestCreatedDateTime;
 
-            for (int i = 0; i < rerunClusterRequestDtoList.size(); i += partitionSize) {
-                partitions.add(rerunClusterRequestDtoList.subList(i, Math.min(i + partitionSize,
-                    rerunClusterRequestDtoList.size())));
-            }
+                List<RerunClusterRequestDto> rerunClusterRequestDtoList =
+                    RerunClusterStorage.performStorageAction("getRerunClusters()", RerunClusterStorage.class,
+                        storage -> {
+                            return storage.getRerunClusters(afterId, afterCreated, limit);
+                        });
 
-            RecordsCountDto allRecordsCountDto = new RecordsCountDto();
-            // Start the count at 0
-            allRecordsCountDto.setCount(0);
+                if (rerunClusterRequestDtoList.isEmpty()) {
+                    break;
+                }
 
-            for (List<RerunClusterRequestDto> partitionRerunClusterRequestDtoList : partitions) {
                 dk.kb.storage.model.v1.RecordsCountDto returnedRecordsCountDto =
-                    dsStorageApiClient.updateRerunClusters(partitionRerunClusterRequestDtoList);
+                    dsStorageApiClient.updateRerunClusters(rerunClusterRequestDtoList);
 
-                allRecordsCountDto.setCount(allRecordsCountDto.getCount() +
-                    returnedRecordsCountDto.getCount());
-            }
+                if (rerunClusterRequestDtoList.size() != returnedRecordsCountDto.getCount()) {
+                    throw new InternalServiceException(
+                        "Expected to save " + rerunClusterRequestDtoList.size() + " rerun clusters, but " +
+                            returnedRecordsCountDto.getCount() + " were saved");
+                }
 
-            if (rerunClusterRequestDtoList.size() != allRecordsCountDto.getCount()) {
-                throw new InternalServiceException("Expected to save " + rerunClusterRequestDtoList.size() + " rerun clusters, but " + allRecordsCountDto.getCount() + " were saved");
+                allRecordsCountDto.setCount(
+                    allRecordsCountDto.getCount() + returnedRecordsCountDto.getCount());
+
+                RerunClusterRequestDto latestRerunClusterRequestDto = rerunClusterRequestDtoList.get(rerunClusterRequestDtoList.size() - 1);
+                latestCreatedId = latestRerunClusterRequestDto.getId();
+                latestCreatedDateTime = latestRerunClusterRequestDto.getCreated();
+
+                if (rerunClusterRequestDtoList.size() < limit) {
+                    break;
+                }
             }
 
             updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
                 allRecordsCountDto.getCount(), null);
 
-            log.info("Successfully updated ds-storage reruns table with '{}' rows", allRecordsCountDto.getCount());
+            log.info("Successfully updated ds-storage rerun_clusters table with '{}' rows", allRecordsCountDto.getCount());
 
             return allRecordsCountDto;
         } catch (Exception exception) {
             log.error("Inserting/updating rerun_clusters table failed with jobId='{}'. Exception: ",
                 jobDto.getId(), exception);
             updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(),
-                OffsetDateTime.now(ZoneOffset.UTC), null,
-                latestCreatedRerunCluster.getCreated());
+                OffsetDateTime.now(ZoneOffset.UTC), null, latestCreatedDateTime);
             throw exception;
         }
     }
 
     /**
-     * Calls ds-storage via DsStorageClient that return latest created datetime from rerun_clusters
+     * Calls ds-storage via DsStorageClient that return latest row from rerun_clusters
      * table. Can be null.
      *
      * @return CreatedDto latest created datetime
      */
-    public static CreatedDto latestCreatedRerunCluster() {
+    public static Optional<CreatedDto> latestCreatedRerunCluster() {
         try {
-            DsStorageClient dsStorageApiClient = getDsStorageApiClient();
-            CreatedDto createdDto =
-                dsStorageApiClient.latestCreatedRerunCluster();
+           CreatedDto createdDto = getDsStorageApiClient().latestCreatedRerunCluster();
 
-            log.info("Latest created datetime from ds-storage rerun_clusters table:'{}'",
+            log.info("Latest rerun_cluster in ds-storage: id='{}', created='{}'", createdDto.getId(),
                 createdDto.getCreated());
 
-            return createdDto;
+            return Optional.of(createdDto);
+        } catch (NotFoundServiceException exception) {
+            log.info("No rows in ds-storage yet, all rows will be fetched from p3reruns");
+            return Optional.empty();
         } catch (Exception exception) {
-            log.error(
-                "Failed fetching latest created datetime from ds-storage rerun_clusters table. Exception: ",
-                exception);
+            log.error("Failed fetching latest rerun_clusters from ds-storage. Exception: ", exception);
             throw exception;
         }
     }

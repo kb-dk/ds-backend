@@ -32,8 +32,8 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   }
 
   /**
-   * Delete all records between each unittest. The clearTable is only called from here. The
-   * facade class is responsible for committing transactions. So clean up between unittests.
+   * Delete all records between each unittest. The clearTable is only called from here. The facade
+   * class is responsible for committing transactions. So clean up between unittests.
    */
   @BeforeEach
   public void beforeEach() throws SQLException {
@@ -346,8 +346,10 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreatedRerunCluster_whenTableIsPopulated_thenReturnLatestCreated() throws Exception {
+  public void latestCreatedRerunCluster_whenTableIsPopulated_thenReturnLatestCreated()
+      throws Exception {
     // Arrange
+    UUID secondId = UUID.randomUUID();
     OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
 
@@ -359,7 +361,7 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     firstRerunClusterRequestDto.setJobId("test run 1");
 
     RerunClusterRequestDto secondRerunClusterRequestDto = new RerunClusterRequestDto();
-    secondRerunClusterRequestDto.setId(UUID.randomUUID());
+    secondRerunClusterRequestDto.setId(secondId);
     secondRerunClusterRequestDto.setFileId(UUID.randomUUID());
     secondRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
     secondRerunClusterRequestDto.setCreated(secondCreated);
@@ -380,17 +382,16 @@ public class RerunClusterStorageTest extends TestcontainersUtil {
     assertEquals(2, recordsCountDto.getCount());
 
     assertNotNull(createdDto);
+    assertEquals(secondId, createdDto.getId());
     assertEquals(secondCreated, createdDto.getCreated());
   }
 
   @Test
-  public void latestCreatedRerunCluster_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated()
-      throws Exception {
+  public void latestCreatedRerunCluster_whenTableIsEmpty_thenReturnNull() throws Exception {
     // Act
     CreatedDto createdDto = rerunClusterStorage.latestCreatedRerunCluster();
 
     // Assert
-    assertNotNull(createdDto);
-    assertNull(createdDto.getCreated());
+    assertNull(createdDto);
   }
 }

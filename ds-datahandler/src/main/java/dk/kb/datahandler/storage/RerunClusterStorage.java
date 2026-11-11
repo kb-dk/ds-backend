@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class RerunClusterStorage implements AutoCloseable {
   private final static RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper =
       new RerunClusterRequestDtoMapper();
   private static final String getRerunClustersStatement = """
-                                                          SELECT DISTINCT ON (c.file_id) -- there can be multiple of the same file_id (history) and we want the newest inserted file_id
+                                                          SELECT
                                                               c.id,
                                                               c.file_id,
                                                               c.rerun_cluster_id,
@@ -30,15 +31,25 @@ public class RerunClusterStorage implements AutoCloseable {
                                                               c.job_id
                                                           FROM
                                                               clusters c
-                                                          WHERE
-                                                              (
-                                                                  CAST(? AS TIMESTAMP WITH TIME ZONE) IS NULL -- takes care if the rerun_clusters table is empty
-                                                                  OR
-                                                                  c.created >= ? -- match with matching created if job has failed midway in loading rerun cluster data
-                                                              )
+                                                          WHERE (c.created, c.id) > (
+                                                              COALESCE(CAST(? AS TIMESTAMP WITH TIME ZONE), '-infinity'::timestamptz), -- default value if input is null
+                                                              COALESCE(CAST(? AS UUID), '00000000-0000-0000-0000-000000000000'::uuid) -- default value if input is null
+                                                          )
+                                                          AND NOT EXISTS ( -- keep only the newest version per file_id
+                                                              SELECT
+                                                                  1
+                                                              FROM
+                                                                  clusters newest_file_id
+                                                              WHERE
+                                                                  newest_file_id.file_id = c.file_id
+                                                                  AND
+                                                                  (newest_file_id.created, newest_file_id.id) > (c.created, c.id)
+                                                          )
                                                           ORDER BY
-                                                              c.file_id ASC,
-                                                              c.created DESC
+                                                              c.created,
+                                                              c.id
+                                                          LIMIT
+                                                              ?
                                                           """;
   private static BasicDataSource dataSource;
   protected Connection connection;
@@ -147,28 +158,33 @@ public class RerunClusterStorage implements AutoCloseable {
   /**
    * Return new rows from remote p3rerun database in clusters table.
    *
+   * @param id      id of the latest id in our database
    * @param created latest created time in our database
+   * @param limit   how many rows are we returning
    * @return List<RerunClusterRequestDto> of rows
    * @throws Exception
    */
-  public List<RerunClusterRequestDto> getRerunClusters(OffsetDateTime created) throws Exception {
-    List<RerunClusterRequestDto> rerunClusterRequestDtoList = new ArrayList<>();
-
+  public List<RerunClusterRequestDto> getRerunClusters(UUID id, OffsetDateTime created, int limit)
+      throws Exception {
     try (PreparedStatement stmt = connection.prepareStatement(getRerunClustersStatement)) {
       stmt.setObject(1, created);
-      stmt.setObject(2, created);
-      ResultSet resultSet = stmt.executeQuery();
+      stmt.setObject(2, id);
+      stmt.setInt(3, limit);
 
-      while (resultSet.next()) {
-        RerunClusterRequestDto rerunClusterRequestDto = rerunClusterRequestDtoMapper.map(resultSet);
-        rerunClusterRequestDtoList.add(rerunClusterRequestDto);
+      try (ResultSet resultSet = stmt.executeQuery()) {
+        List<RerunClusterRequestDto> rerunClusterRequestDtoList = new ArrayList<>();
+        while (resultSet.next()) {
+          RerunClusterRequestDto rerunClusterRequestDto =
+              rerunClusterRequestDtoMapper.map(resultSet);
+          rerunClusterRequestDtoList.add(rerunClusterRequestDto);
+        }
+
+        return rerunClusterRequestDtoList;
       }
-
-      return rerunClusterRequestDtoList;
     } catch (SQLException e) {
       String message = "SQL Exception in getRerunClusters: " + e.getMessage();
       log.error(message);
-      throw new SQLException(message, e);
+      throw new SQLException(message, e.getSQLState(), e);
     }
   }
 
