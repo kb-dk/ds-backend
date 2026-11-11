@@ -82,9 +82,15 @@ public class RerunClusterStorage extends BaseModuleStorage {
 
   private static final String latestCreatedRerunClusterStatement = """
                                                                    SELECT
-                                                                       max(rc.created) AS latest_created -- find the latest created datetime
+                                                                       rc.id,
+                                                                       rc.created
                                                                    FROM
                                                                        rerun_clusters rc
+                                                                   ORDER BY
+                                                                       rc.created DESC,
+                                                                       rc.id DESC   -- same tiebreaker as the paging query
+                                                                   LIMIT
+                                                                       1
                                                                    """;
 
   public RerunClusterStorage() throws SQLException {

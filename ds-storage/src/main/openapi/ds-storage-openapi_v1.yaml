@@ -730,10 +730,14 @@ components:
       required:
         - created
       properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Unique UUID.'
         created:
           type: string
           format: date-time
-          description: 'Latest created datetime from rerun_clusters table. Can be null!'
+          description: 'Latest created datetime. Can be null!'
           example: '2021-01-30T08:30:00Z'
 
     Origin:
