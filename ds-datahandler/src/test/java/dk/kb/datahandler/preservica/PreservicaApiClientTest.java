@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import de.thetaphi.forbiddenapis.SuppressForbidden;
-import dk.kb.datahandler.model.v1.OaiTargetSearchDto;
+import dk.kb.datahandler.model.v1.PreservicaSearchDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +89,7 @@ public class PreservicaApiClientTest {
     }
 
     private PreservicaApiClient client() {
-        OaiTargetSearchDto search = new OaiTargetSearchDto();
+        PreservicaSearchDto search = new PreservicaSearchDto();
         search.setApiUrl("http://localhost:" + server.getAddress().getPort() + "/");
         search.setUsername("user");
         search.setPassword("secret");
@@ -159,7 +159,7 @@ public class PreservicaApiClientTest {
 
     @Test
     public void constructor_whenQueryNotJsonObject_thenInternalError() {
-        OaiTargetSearchDto search = new OaiTargetSearchDto();
+        PreservicaSearchDto search = new PreservicaSearchDto();
         search.setApiUrl("http://localhost");
         search.setQuery("{\"fields\": [");
         assertThrows(InternalServiceException.class, () -> new PreservicaApiClient(search));

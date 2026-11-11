@@ -3,7 +3,7 @@ package dk.kb.datahandler.preservica;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import dk.kb.datahandler.model.v1.OaiTargetSearchDto;
+import dk.kb.datahandler.model.v1.PreservicaSearchDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class PreservicaApiClient {
     public record SearchResult(List<Hit> hits, long totalHits) {
     }
 
-    private final OaiTargetSearchDto search;
+    private final PreservicaSearchDto search;
     private final ObjectNode configuredQuery;
     private final String baseUrl;
     private final HttpClient http;
@@ -62,7 +62,7 @@ public class PreservicaApiClient {
     private final AtomicLong searchCalls = new AtomicLong();
     private final AtomicLong authCalls = new AtomicLong();
 
-    public PreservicaApiClient(OaiTargetSearchDto search) {
+    public PreservicaApiClient(PreservicaSearchDto search) {
         this.search = search;
         this.configuredQuery = parseQuery(search.getQuery());
         ObjectNode sort = configuredQuery.putArray("sort").addObject();

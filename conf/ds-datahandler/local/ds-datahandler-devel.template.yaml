@@ -34,8 +34,8 @@ oaiTargets:
     filter: dr
     dateStampFormat: datetime
     parallel: 8
-    # Used by /preservica/import/full to list the records, which are then fetched with OAI GetRecord from the url above
-    search:
+    # Used by /preservica/import to list the records, which are then fetched with OAI GetRecord from the url above
+    preservicaSearch:
       apiUrl: "${preservica_api_url}"
       user: "${preservica_api_username}"
       password: "${preservica_api_password}"

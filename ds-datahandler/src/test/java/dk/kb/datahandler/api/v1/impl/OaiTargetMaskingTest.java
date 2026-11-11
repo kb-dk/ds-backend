@@ -1,7 +1,7 @@
 package dk.kb.datahandler.api.v1.impl;
 
 import dk.kb.datahandler.model.v1.OaiTargetDto;
-import dk.kb.datahandler.model.v1.OaiTargetSearchDto;
+import dk.kb.datahandler.model.v1.PreservicaSearchDto;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +11,7 @@ public class OaiTargetMaskingTest {
 
     @Test
     public void withMaskedPasswords_whenPasswords_thenMaskedInCopyOnly() {
-        OaiTargetSearchDto search = new OaiTargetSearchDto();
+        PreservicaSearchDto search = new PreservicaSearchDto();
         search.setApiUrl("https://example.com");
         search.setUsername("api-user");
         search.setPassword("api-secret");
@@ -19,16 +19,16 @@ public class OaiTargetMaskingTest {
         target.setName("target");
         target.setUsername("oai-user");
         target.setPassword("oai-secret");
-        target.setSearch(search);
+        target.setPreservicaSearch(search);
 
         OaiTargetDto masked = DsDatahandlerApiServiceImpl.withMaskedPasswords(target);
 
         assertEquals("********", masked.getPassword());
-        assertEquals("********", masked.getSearch().getPassword());
+        assertEquals("********", masked.getPreservicaSearch().getPassword());
         assertEquals("oai-user", masked.getUsername());
-        assertEquals("api-user", masked.getSearch().getUsername());
+        assertEquals("api-user", masked.getPreservicaSearch().getUsername());
         assertEquals("oai-secret", target.getPassword());
-        assertEquals("api-secret", target.getSearch().getPassword());
+        assertEquals("api-secret", target.getPreservicaSearch().getPassword());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class OaiTargetMaskingTest {
         OaiTargetDto masked = DsDatahandlerApiServiceImpl.withMaskedPasswords(target);
 
         assertNull(masked.getPassword());
-        assertNull(masked.getSearch());
+        assertNull(masked.getPreservicaSearch());
         assertEquals("target", masked.getName());
     }
 }

@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class ServiceConfigOaiTargetSearchTest {
+class ServiceConfigPreservicaSearchTest {
 
     @Test
     void searchBlockIsLoadedWithLists() throws IOException {
@@ -27,7 +27,7 @@ class ServiceConfigOaiTargetSearchTest {
                 """
                     filter: dr
                     parallel: 3
-                    search:
+                    preservicaSearch:
                       apiUrl: https://example.com
                       user: api-user
                       query: >-
@@ -43,17 +43,17 @@ class ServiceConfigOaiTargetSearchTest {
 
             OaiTargetDto target = ServiceConfig.getOaiTargets().get("ds.radiotv");
             assertEquals(3, target.getParallel());
-            assertEquals("https://example.com", target.getSearch().getApiUrl());
-            assertEquals("api-user", target.getSearch().getUsername());
-            assertNull(target.getSearch().getPassword());
-            JsonNode query = new ObjectMapper().readTree(target.getSearch().getQuery());
+            assertEquals("https://example.com", target.getPreservicaSearch().getApiUrl());
+            assertEquals("api-user", target.getPreservicaSearch().getUsername());
+            assertNull(target.getPreservicaSearch().getPassword());
+            JsonNode query = new ObjectMapper().readTree(target.getPreservicaSearch().getQuery());
             assertEquals("Sound", query.path("fields").get(1).path("values").get(1).asText());
-            assertEquals(1000, target.getSearch().getPageSize());
+            assertEquals(1000, target.getPreservicaSearch().getPageSize());
         } finally {
             Files.deleteIfExists(searchYaml);
             ServiceConfig.initialize(yamlFile);
         }
-        assertNull(ServiceConfig.getOaiTargets().get("ds.radiotv").getSearch());
+        assertNull(ServiceConfig.getOaiTargets().get("ds.radiotv").getPreservicaSearch());
         assertEquals(8, ServiceConfig.getOaiTargets().get("ds.radiotv").getParallel());
     }
 }

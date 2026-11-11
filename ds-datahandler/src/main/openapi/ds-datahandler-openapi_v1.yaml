@@ -205,9 +205,9 @@ paths:
         - '${project.name}'
       summary: 'EXPERIMENTAL: Full ingest of an OAI target, listing records with the Preservica Content API search and fetching each with OAI GetRecord.'
       description: |
-        Alternative to `/oai/import/full` for OAI targets with a `search` configuration. Information objects matching
-        the configured search restrictions are paged in `xip.created` order, fetched with OAI GetRecord and passed
-        through the same filter as the OAI harvest.
+        Alternative to `/oai/import/full` for OAI targets with a `preservicaSearch` configuration. Information
+        objects matching the configured search restrictions are paged in `xip.created` order, fetched with OAI
+        GetRecord and passed through the same filter as the OAI harvest.
 
         Only live objects are written: deletions in Preservica are not detected, they arrive with the OAI delta import.
         The job finishes even if the socket is closed from the client triggering the call.
@@ -223,7 +223,7 @@ paths:
       parameters:
         - name: oaiTarget
           in: query
-          description: 'Name of the OAI target. It must have a search configuration.'
+          description: 'Name of the OAI target. It must have a preservicaSearch configuration.'
           required: true
           schema:
             type: string
@@ -577,10 +577,10 @@ components:
           format: int32
           description: 'Number of parallel OAI GetRecord calls when records are fetched one at a time.'
           default: 8
-        search:
-          $ref: '#/components/schemas/OaiTargetSearch'
+        preservicaSearch:
+          $ref: '#/components/schemas/PreservicaSearch'
 
-    OaiTargetSearch:
+    PreservicaSearch:
       type: object
       description: 'Preservica Content API search used to list the records of an OAI target.'
       required:

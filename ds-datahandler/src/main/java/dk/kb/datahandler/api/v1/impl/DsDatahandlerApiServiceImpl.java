@@ -98,8 +98,8 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     public static OaiTargetDto withMaskedPasswords(OaiTargetDto target) {
         OaiTargetDto copy = JSON.convertValue(target, OaiTargetDto.class);
         copy.setPassword(mask(copy.getPassword()));
-        if (copy.getSearch() != null) {
-            copy.getSearch().setPassword(mask(copy.getSearch().getPassword()));
+        if (copy.getPreservicaSearch() != null) {
+            copy.getPreservicaSearch().setPassword(mask(copy.getPreservicaSearch().getPassword()));
         }
         return copy;
     }

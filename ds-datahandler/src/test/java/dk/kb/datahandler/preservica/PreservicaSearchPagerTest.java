@@ -1,6 +1,6 @@
 package dk.kb.datahandler.preservica;
 
-import dk.kb.datahandler.model.v1.OaiTargetSearchDto;
+import dk.kb.datahandler.model.v1.PreservicaSearchDto;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -25,8 +25,8 @@ public class PreservicaSearchPagerTest {
             this.hits = hits;
         }
 
-        private static OaiTargetSearchDto unusedSearchConfig() {
-            OaiTargetSearchDto search = new OaiTargetSearchDto();
+        private static PreservicaSearchDto unusedSearchConfig() {
+            PreservicaSearchDto search = new PreservicaSearchDto();
             search.setApiUrl("http://unused");
             search.setQuery("{}");
             return search;

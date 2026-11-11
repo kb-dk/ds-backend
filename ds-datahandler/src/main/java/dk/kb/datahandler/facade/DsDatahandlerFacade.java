@@ -282,7 +282,7 @@ public class DsDatahandlerFacade {
      * This discards any stored progress and starts from the start. Use {@link #preservicaIngestResume} to continue
      * from it.
      *
-     * @param oaiTargetName The name for the OAI target in the configuration. It must have a search configuration.
+     * @param oaiTargetName The name of the OAI target in the configuration. It must have a preservicaSearch block.
      * @return Number of records processed by the filter.
      */
     public static Integer preservicaIngestFull(String oaiTargetName) {
@@ -293,7 +293,7 @@ public class DsDatahandlerFacade {
      * Continue an unfinished {@link #preservicaIngestFull} from the stored progress, or start from the start if there
      * is none.
      *
-     * @param oaiTargetName The name for the OAI target in the configuration. It must have a search configuration.
+     * @param oaiTargetName The name of the OAI target in the configuration. It must have a preservicaSearch block.
      * @return Number of records processed by the filter.
      */
     public static Integer preservicaIngestResume(String oaiTargetName) {
@@ -307,9 +307,10 @@ public class DsDatahandlerFacade {
             throw new InvalidArgumentServiceException("No target found in configuration with name: '" + oaiTargetName +
                     "'. See the config method for list of configured targets.");
         }
-        OaiTargetSearchDto search = oaiTargetDto.getSearch();
+        PreservicaSearchDto search = oaiTargetDto.getPreservicaSearch();
         if (search == null) {
-            throw new InvalidArgumentServiceException("OAI target '" + oaiTargetName + "' has no search configuration");
+            throw new InvalidArgumentServiceException("OAI target '" + oaiTargetName +
+                                                      "' has no preservicaSearch configuration");
         }
         Instant from = null;
         if (resume) {

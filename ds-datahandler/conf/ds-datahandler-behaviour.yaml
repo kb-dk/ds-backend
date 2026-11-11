@@ -21,10 +21,10 @@ oaiTargets:
     metadataPrefix: XIP_full_schema
     description: Radio- og TV-udsendelser
     filter: dr
-    # Number of parallel OAI GetRecord calls, used by /preservica/import/full
+    # Number of parallel OAI GetRecord calls, used by /preservica/import
     #parallel: 8
-    # Optional Preservica Content API search, used by /preservica/import/full to list the records
-    #search:
+    # Optional Preservica Content API search, used by /preservica/import to list the records
+    #preservicaSearch:
     #  apiUrl: https://XXXXXXXXX.statsbiblioteket.dk
     #  user: XXXXXXXXX
     #  password: XXXXXXXXX

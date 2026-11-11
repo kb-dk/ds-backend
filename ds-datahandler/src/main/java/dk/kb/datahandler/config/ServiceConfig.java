@@ -1,7 +1,7 @@
 package dk.kb.datahandler.config;
 
 import dk.kb.datahandler.model.v1.OaiTargetDto;
-import dk.kb.datahandler.model.v1.OaiTargetSearchDto;
+import dk.kb.datahandler.model.v1.PreservicaSearchDto;
 import dk.kb.datahandler.model.v1.OaiTargetDto.DateStampFormatEnum;
 import dk.kb.util.Resolver;
 import org.apache.http.client.utils.URIBuilder;
@@ -357,7 +357,7 @@ public class ServiceConfig {
             }
             oaiTarget.setFragmentServiceUrl(fragmentServiceUrl);
             oaiTarget.setParallel(serviceConfig.getOptionalValue(prefix + "parallel", Integer.class).orElse(8));
-            oaiTarget.setSearch(loadOaiTargetSearch(prefix + "search."));
+            oaiTarget.setPreservicaSearch(loadPreservicaSearch(prefix + "preservicaSearch."));
 
             oaiTargets.put(name, oaiTarget);
 
@@ -368,15 +368,15 @@ public class ServiceConfig {
     }
 
     /**
-     * @param prefix the {@code search.} block of an OAI target, e.g. {@code "oaiTargets[0].search."}.
+     * @param prefix the {@code preservicaSearch.} block of an OAI target, e.g. {@code "oaiTargets[0].search."}.
      * @return the Preservica search configuration, or null if the target has none.
      */
-    private static OaiTargetSearchDto loadOaiTargetSearch(String prefix) {
+    private static PreservicaSearchDto loadPreservicaSearch(String prefix) {
         Optional<String> apiUrl = serviceConfig.getOptionalValue(prefix + "apiUrl", String.class);
         if (apiUrl.isEmpty()) {
             return null;
         }
-        OaiTargetSearchDto search = new OaiTargetSearchDto();
+        PreservicaSearchDto search = new PreservicaSearchDto();
         search.setApiUrl(apiUrl.get());
         search.setUsername(serviceConfig.getOptionalValue(prefix + "user", String.class).orElse(null));
         search.setPassword(serviceConfig.getOptionalValue(prefix + "password", String.class).orElse(null));
