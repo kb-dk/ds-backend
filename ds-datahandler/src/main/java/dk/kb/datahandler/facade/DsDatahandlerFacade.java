@@ -278,13 +278,29 @@ public class DsDatahandlerFacade {
      * next is searched. The last {@code xip.created} of each ingested page is stored as the target's full ingest
      * progress. A successful run sets the OAI datestamp to the last ingested {@code xip.created}, so the delta import
      * continues from there, and removes the progress.
+     * <p>
+     * This discards any stored progress and starts from the start. Use {@link #preservicaIngestResume} to continue
+     * from it.
      *
      * @param oaiTargetName The name for the OAI target in the configuration. It must have a search configuration.
-     * @param mode          {@code resume} (the default if null) continues from the stored progress, or from the start
-     *                      if there is none. {@code restart} discards the progress and starts from the start.
      * @return Number of records processed by the filter.
      */
-    public static Integer preservicaIngestFull(String oaiTargetName, String mode) {
+    public static Integer preservicaIngestFull(String oaiTargetName) {
+        return preservicaIngest(oaiTargetName, false);
+    }
+
+    /**
+     * Continue an unfinished {@link #preservicaIngestFull} from the stored progress, or start from the start if there
+     * is none.
+     *
+     * @param oaiTargetName The name for the OAI target in the configuration. It must have a search configuration.
+     * @return Number of records processed by the filter.
+     */
+    public static Integer preservicaIngestResume(String oaiTargetName) {
+        return preservicaIngest(oaiTargetName, true);
+    }
+
+    private static Integer preservicaIngest(String oaiTargetName, boolean resume) {
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         OaiTargetDto oaiTargetDto = ServiceConfig.getOaiTargets().get(oaiTargetName);
         if (oaiTargetDto == null) {
@@ -296,17 +312,14 @@ public class DsDatahandlerFacade {
             throw new InvalidArgumentServiceException("OAI target '" + oaiTargetName + "' has no search configuration");
         }
         Instant from = null;
-        if ("restart".equals(mode)) {
-            HarvestTimeUtil.deleteFullIngestProgress(oaiTargetDto);
-        } else if (mode == null || "resume".equals(mode)) {
+        if (resume) {
             from = HarvestTimeUtil.loadFullIngestProgress(oaiTargetDto);
             if (from != null) {
                 log.info("Resuming the unfinished full search ingest of target '{}' from xip.created {}",
                          oaiTargetName, from);
             }
         } else {
-            // The value is not echoed: it is client input and would be reflected in the response and the log
-            throw new InvalidArgumentServiceException("mode must be 'resume' or 'restart'");
+            HarvestTimeUtil.deleteFullIngestProgress(oaiTargetDto);
         }
 
         PreservicaApiClient searchClient = new PreservicaApiClient(search);
@@ -363,14 +376,15 @@ public class DsDatahandlerFacade {
             log.info("Preservica search ingest of target '{}' completed: {}", oaiTargetName, message);
             return ingester.getProcessed();
         } catch (Exception e) {
-            String resume = "Call again to resume from xip.created " + (progress == null ? "the start" : progress);
+            String hint = "Call again with type=resume to continue from xip.created " +
+                          (progress == null ? "the start" : progress);
             log.error("Preservica search ingest of target '{}' failed, jobId '{}'. {}",
-                      oaiTargetName, jobDto.getId(), resume, e);
-            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage() + " " + resume,
+                      oaiTargetName, jobDto.getId(), hint, e);
+            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage() + " " + hint,
                       OffsetDateTime.now(ZoneOffset.UTC), filter.getProcessed(),
                       progress == null ? null : progress.atOffset(ZoneOffset.UTC));
             throw new InternalServiceException("Preservica search ingest of target '" + oaiTargetName +
-                    "' failed, jobId: " + jobDto.getId() + ". " + resume, e);
+                    "' failed, jobId: " + jobDto.getId() + ". " + hint, e);
         }
     }
 

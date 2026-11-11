@@ -5,10 +5,12 @@ import dk.kb.datahandler.api.v1.DsDatahandlerApi;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.datahandler.facade.DsDatahandlerFacade;
 import dk.kb.datahandler.model.v1.RecordsCountDto;
+import dk.kb.datahandler.model.v1.SearchIngestTypeDto;
 import dk.kb.datahandler.model.v1.TypeDto;
 import dk.kb.datahandler.model.v1.OaiTargetDto;
 import dk.kb.datahandler.webservice.KBAuthorizationInterceptor;
 import dk.kb.util.webservice.ImplBase;
+import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 
 import org.apache.cxf.interceptor.InInterceptors;
 import org.apache.cxf.jaxrs.ext.MessageContext;
@@ -107,11 +109,17 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     }
 
     @Override
-    public Integer preservicaIngestFull(String oaiTarget, String mode) {
-        log.debug("preservicaIngestFull(oaiTarget='{}', mode='{}') called with call details: {}",
-                  oaiTarget, mode, getCallDetails());
+    public Integer preservicaIngestFull(String oaiTarget, SearchIngestTypeDto type) {
+        log.debug("preservicaIngestFull(oaiTarget='{}', type='{}') called with call details: {}",
+                  oaiTarget, type, getCallDetails());
         try {
-            return DsDatahandlerFacade.preservicaIngestFull(oaiTarget, mode);
+            if (type == null) {
+                throw new InvalidArgumentServiceException("type must be 'full' or 'resume'");
+            }
+            return switch (type) {
+                case FULL -> DsDatahandlerFacade.preservicaIngestFull(oaiTarget);
+                case RESUME -> DsDatahandlerFacade.preservicaIngestResume(oaiTarget);
+            };
         } catch (Exception e){
             throw handleException(e);
         }

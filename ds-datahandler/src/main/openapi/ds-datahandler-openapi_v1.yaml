@@ -199,7 +199,7 @@ paths:
                 type: integer
                 format: int32
 
-  /preservica/import/full:
+  /preservica/import:
     get:
       tags:
         - '${project.name}'
@@ -212,10 +212,10 @@ paths:
         Only live objects are written: deletions in Preservica are not detected, they arrive with the OAI delta import.
         The job finishes even if the socket is closed from the client triggering the call.
 
-        After each page, the last `xip.created` ingested is stored as the target's full ingest progress. In `resume` mode
-        a stopped run continues from the stored progress. A successful run
-        sets the target's OAI datestamp to the last `xip.created` ingested, so the OAI delta import continues from
-        there, and removes the progress. The next call then starts from the start.
+        After each page, the last `xip.created` ingested is stored as the target's full ingest progress. With
+        `type=resume` a stopped run continues from the stored progress; `type=full` discards it and starts from the
+        start. A successful run sets the target's OAI datestamp to the last `xip.created` ingested, so the OAI delta
+        import continues from there, and removes the progress.
       security:
         - KBOAuth:
             - any
@@ -228,16 +228,14 @@ paths:
           schema:
             type: string
             enum: [ "${config:oaiTargets[*].name}" ]
-        - name: mode
+        - name: type
           in: query
           description: |
+            * `full`: discard the stored progress and start from the start.
             * `resume`: continue from the stored progress, or start from the start if there is none.
-            * `restart`: discard the stored progress and start from the start.
-          required: false
+          required: true
           schema:
-            type: string
-            enum: [ 'resume', 'restart' ]
-            default: 'resume'
+            $ref: '#/components/schemas/SearchIngestType'
       responses:
         '200':
           description: OK. Returns total number of records processed.
@@ -674,6 +672,18 @@ components:
       x-enum-descriptions:
         - full
         - delta
+
+    SearchIngestType:
+      type: string
+      enum:
+        - full
+        - resume
+      x-enum-varnames:
+        - FULL
+        - RESUME
+      x-enum-descriptions:
+        - Discard the stored progress and start from the start
+        - Continue from the stored progress
 
     Category:
       type: string
