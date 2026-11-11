@@ -55,10 +55,15 @@ public class SummaryFacade {
    * Return latest created datetime from summaries table.
    */
   public static CreatedDto latestCreatedSummary() {
-    return BaseModuleStorage.performStorageAction("latestCreatedSummary()", SummaryStorage.class,
-        storage -> {
-          CreatedDto createdDto = ((SummaryStorage) storage).latestCreatedSummary();
-          return createdDto;
-        });
+    CreatedDto createdDto =
+        BaseModuleStorage.performStorageAction("latestCreatedSummary()", SummaryStorage.class,
+            storage -> {
+              return ((SummaryStorage) storage).latestCreatedSummary();
+            });
+    if (createdDto == null) {
+      throw new NotFoundServiceException("No rows were found in summaries table");
+    }
+
+    return createdDto;
   }
 }

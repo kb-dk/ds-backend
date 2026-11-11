@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,24 +22,34 @@ public class SummaryStorage implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(SummaryStorage.class);
   private final static SummaryRequestDtoMapper summaryRequestDtoMapper =
       new SummaryRequestDtoMapper();
+
   private static final String getSummariesStatement = """
-                                                      SELECT DISTINCT ON (s.file_id) -- there can be multiple of the same file_id (history) and we want the newest inserted file_id
+                                                      SELECT
                                                           s.id,
                                                           s.file_id,
                                                           s.summary,
                                                           s.created,
                                                           s.job_id
-                                                      FROM
-                                                          summaries s
-                                                      WHERE
-                                                          (
-                                                              CAST(? AS TIMESTAMP WITH TIME ZONE) IS NULL -- takes care if the summaries table is empty
-                                                              OR
-                                                              s.created >= ? -- match with matching created if job has failed midway in loading summary data
-                                                          )
+                                                      FROM summaries s
+                                                      WHERE (s.created, s.id) > (
+                                                          COALESCE(CAST(? AS TIMESTAMP WITH TIME ZONE), '-infinity'::timestamptz), -- default value if input is null
+                                                          COALESCE(CAST(? AS UUID), '00000000-0000-0000-0000-000000000000'::uuid) -- default value if input is null
+                                                      )
+                                                      AND NOT EXISTS (  -- keep only the newest version per file_id
+                                                          SELECT
+                                                              1
+                                                          FROM
+                                                              summaries newest_file_id
+                                                          WHERE
+                                                              newest_file_id.file_id = s.file_id
+                                                          AND
+                                                              (newest_file_id.created, newest_file_id.id) > (s.created, s.id)
+                                                      )
                                                       ORDER BY
-                                                          s.file_id ASC,
-                                                          s.created DESC
+                                                          s.created,
+                                                          s.id
+                                                      LIMIT
+                                                          ?
                                                       """;
   private static BasicDataSource dataSource;
   protected Connection connection;
@@ -146,28 +157,32 @@ public class SummaryStorage implements AutoCloseable {
   /**
    * Return new rows from remote p3rerun database in summaries table.
    *
+   * @param id id of the latest id in our database
    * @param created latest created time in our database
+   * @param limit how many rows are we returning
    * @return List<SummaryRequestDto> of rows
    * @throws Exception
    */
-  public List<SummaryRequestDto> getSummaries(OffsetDateTime created) throws Exception {
-    List<SummaryRequestDto> summaryRequestDtoList = new ArrayList<>();
-
+  public List<SummaryRequestDto> getSummaries(UUID id, OffsetDateTime created, int limit)
+      throws Exception {
     try (PreparedStatement stmt = connection.prepareStatement(getSummariesStatement)) {
       stmt.setObject(1, created);
-      stmt.setObject(2, created);
-      ResultSet resultSet = stmt.executeQuery();
+      stmt.setObject(2, id);
+      stmt.setInt(3, limit);
 
-      while (resultSet.next()) {
-        SummaryRequestDto summaryRequestDto = summaryRequestDtoMapper.map(resultSet);
-        summaryRequestDtoList.add(summaryRequestDto);
+      try (ResultSet resultSet = stmt.executeQuery()) {
+        List<SummaryRequestDto> summaryRequestDtoList = new ArrayList<>();
+        while (resultSet.next()) {
+          SummaryRequestDto summaryRequestDto = summaryRequestDtoMapper.map(resultSet);
+          summaryRequestDtoList.add(summaryRequestDto);
+        }
+
+        return summaryRequestDtoList;
       }
-
-      return summaryRequestDtoList;
     } catch (SQLException e) {
       String message = "SQL Exception in getSummaries: " + e.getMessage();
       log.error(message);
-      throw new SQLException(message, e);
+      throw new SQLException(message, e.getSQLState(), e);
     }
   }
 

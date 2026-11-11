@@ -8,8 +8,9 @@ CREATE TABLE summaries (
     updated TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE INDEX summaries_summary_idx ON summaries(summary);
-CREATE INDEX summaries_created_idx ON summaries(created);
+CREATE INDEX ON summaries(summary);
+CREATE INDEX ON summaries(created);
+CREATE INDEX ON summaries (created, id);
 
 COMMENT ON TABLE summaries IS 'Table of summaries data';
 COMMENT ON COLUMN summaries.id IS 'Unique UUID id';

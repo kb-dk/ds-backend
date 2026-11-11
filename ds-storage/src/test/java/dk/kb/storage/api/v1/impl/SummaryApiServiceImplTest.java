@@ -172,6 +172,7 @@ public class SummaryApiServiceImplTest extends TestcontainersUtil {
   @Test
   public void latestCreatedSummary_whenTableIsPopulated_thenReturnLatestCreated() {
     // Arrange
+    UUID secondId = UUID.randomUUID();
     OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
 
@@ -183,7 +184,7 @@ public class SummaryApiServiceImplTest extends TestcontainersUtil {
     firstSummaryRequestDto.setJobId("test run 1");
 
     SummaryRequestDto secondSummaryRequestDto = new SummaryRequestDto();
-    secondSummaryRequestDto.setId(UUID.randomUUID());
+    secondSummaryRequestDto.setId(secondId);
     secondSummaryRequestDto.setFileId(UUID.randomUUID());
     secondSummaryRequestDto.setSummary("Fin beskrivelse.");
     secondSummaryRequestDto.setCreated(secondCreated);
@@ -199,16 +200,39 @@ public class SummaryApiServiceImplTest extends TestcontainersUtil {
 
     // Assert
     assertNotNull(createdDto);
+    assertEquals(secondId, createdDto.getId());
     assertEquals(secondCreated, createdDto.getCreated());
   }
 
   @Test
-  public void latestCreatedSummary_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated() {
+  public void latestCreatedSummary_whenTableIsEmpty_thenThrowNotFoundServiceException() {
+    // Arrange
+    // The JAX-RS container injects HttpServletRequest via @Context. In unit tests we must do it ourselves,
+    // otherwise handleException -> getCallDetails() throws a NullPointerException
+    HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
+    HttpServletMapping httpServletMappingMock = mock(HttpServletMapping.class);
+
+    when(httpServletRequestMock.getMethod()).thenReturn("GET");
+    when(httpServletRequestMock.getContextPath()).thenReturn("/ds-storage");
+    when(httpServletRequestMock.getHttpServletMapping()).thenReturn(httpServletMappingMock);
+    when(httpServletMappingMock.getMatchValue()).thenReturn("v1");
+    when(httpServletRequestMock.getPathInfo()).thenReturn("/summary/created/latest");
+    when(httpServletRequestMock.getParameterMap()).thenReturn(Map.of());
+    when(httpServletRequestMock.getHeaders("Accept")).thenReturn(Collections.emptyEnumeration());
+
+    // Anonymous subclass, so we can set the protected field from ImplBase without reflection
+    summaryApiServiceImpl = new SummaryApiServiceImpl() {
+      {
+        httpServletRequest = httpServletRequestMock;
+      }
+    };
+
     // Act
-    CreatedDto createdDto = summaryApiServiceImpl.latestCreatedSummary();
+    NotFoundServiceException exception = assertThrows(NotFoundServiceException.class,
+        () -> summaryApiServiceImpl.latestCreatedSummary());
 
     // Assert
-    assertNotNull(createdDto);
-    assertNull(createdDto.getCreated());
+    String errorMessage = "No rows were found in summaries table";
+    assertEquals(errorMessage, exception.getMessage());
   }
 }

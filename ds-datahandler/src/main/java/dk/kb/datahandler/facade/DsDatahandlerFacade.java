@@ -6,6 +6,7 @@ import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 
 import dk.kb.storage.model.v1.SummaryRequestDto;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -453,47 +454,63 @@ public class DsDatahandlerFacade {
      * @return RecordsCountDto number of rows inserted or updated
      */
     public static RecordsCountDto getSummaries() {
+        int limit = 1000;
+        RecordsCountDto allRecordsCountDto = new RecordsCountDto();
+        // Start the count at 0
+        allRecordsCountDto.setCount(0);
+
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         DsStorageClient dsStorageApiClient = getDsStorageApiClient();
 
-        CreatedDto latestCreatedSummary = latestCreatedSummary();
+        Optional<CreatedDto> latestCreatedSummary = latestCreatedSummary();
+        UUID latestCreatedId = null;
+        OffsetDateTime latestCreatedDateTime = null;
+
+        if (latestCreatedSummary.isPresent()) {
+            latestCreatedId = latestCreatedSummary.get().getId();
+            latestCreatedDateTime = latestCreatedSummary.get().getCreated();
+        }
+
         JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.SUMMARIES, null,
-                latestCreatedSummary.getCreated(), user);
+            latestCreatedDateTime, user);
 
         try {
             log.info("Fetching rows from p3summaries table");
-            List<SummaryRequestDto> summaryRequestDtoList =
-                SummaryStorage.performStorageAction("getSummaries()", SummaryStorage.class,
-                    storage -> {
-                        return ((SummaryStorage) storage).getSummaries(latestCreatedSummary.getCreated());
-                    });
 
-            // tomcat in dev environment could not handle one big request body, so need to split
-            // request in batches of 1000 objects at a time.
-            int partitionSize = 1000;
-            List<List<SummaryRequestDto>> partitions = new ArrayList<>();
+            while (true) {
+                // The lambda needs variables that never change, so copy the current cursor position
+                final UUID afterId = latestCreatedId;
+                final OffsetDateTime afterCreated = latestCreatedDateTime;
 
-            for (int i = 0; i < summaryRequestDtoList.size(); i += partitionSize) {
-                partitions.add(summaryRequestDtoList.subList(i,
-                    Math.min(i + partitionSize, summaryRequestDtoList.size())));
-            }
+                List<SummaryRequestDto> summaryRequestDtoList =
+                    SummaryStorage.performStorageAction("getSummaries()", SummaryStorage.class,
+                        storage -> {
+                            return storage.getSummaries(afterId, afterCreated, limit);
+                        });
 
-            RecordsCountDto allRecordsCountDto = new RecordsCountDto();
-            // Start the count at 0
-            allRecordsCountDto.setCount(0);
+                if (summaryRequestDtoList.isEmpty()) {
+                    break;
+                }
 
-            for (List<SummaryRequestDto> partitionSummaryRequestDtoList : partitions) {
                 dk.kb.storage.model.v1.RecordsCountDto returnedRecordsCountDto =
-                    dsStorageApiClient.updateSummaries(partitionSummaryRequestDtoList);
+                    dsStorageApiClient.updateSummaries(summaryRequestDtoList);
+
+                if (summaryRequestDtoList.size() != returnedRecordsCountDto.getCount()) {
+                    throw new InternalServiceException(
+                        "Expected to save " + summaryRequestDtoList.size() + " summaries, but " +
+                            returnedRecordsCountDto.getCount() + " were saved");
+                }
 
                 allRecordsCountDto.setCount(
                     allRecordsCountDto.getCount() + returnedRecordsCountDto.getCount());
-            }
 
-            if (summaryRequestDtoList.size() != allRecordsCountDto.getCount()) {
-                throw new InternalServiceException(
-                    "Expected to save " + summaryRequestDtoList.size() + " summaries, but " +
-                        allRecordsCountDto.getCount() + " were saved");
+                SummaryRequestDto latestSummaryRequestDto = summaryRequestDtoList.get(summaryRequestDtoList.size() - 1);
+                latestCreatedId = latestSummaryRequestDto.getId();
+                latestCreatedDateTime = latestSummaryRequestDto.getCreated();
+
+                if (summaryRequestDtoList.size() < limit) {
+                    break;
+                }
             }
 
             updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
@@ -506,31 +523,29 @@ public class DsDatahandlerFacade {
             log.error("Inserting/updating summaries table failed with jobId='{}'. Exception: ",
                 jobDto.getId(), exception);
             updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(),
-                OffsetDateTime.now(ZoneOffset.UTC), null, latestCreatedSummary().getCreated());
+                OffsetDateTime.now(ZoneOffset.UTC), null, latestCreatedDateTime);
             throw exception;
         }
     }
 
     /**
-     * Calls ds-storage via DsStorageClient that return latest created datetime from summaries
-     * table. Can be null.
+     * Calls ds-storage via DsStorageClient that return latest row from summaries table.
      *
-     * @return CreatedDto latest created datetime
+     * @return CreatedDto latest created row
      */
-    public static CreatedDto latestCreatedSummary() {
+    public static Optional<CreatedDto> latestCreatedSummary() {
         try {
-            DsStorageClient dsStorageApiClient = getDsStorageApiClient();
-            CreatedDto createdDto =
-                dsStorageApiClient.latestCreatedSummary();
+            CreatedDto createdDto = getDsStorageApiClient().latestCreatedSummary();
 
-            log.info("Latest created datetime from ds-storage summaries table:'{}'",
+            log.info("Latest summary in ds-storage: id='{}', created='{}'", createdDto.getId(),
                 createdDto.getCreated());
 
-            return createdDto;
+            return Optional.of(createdDto);
+        } catch (NotFoundServiceException exception) {
+            log.info("No rows in ds-storage yet, all rows will be fetched from p3summaries");
+            return Optional.empty();
         } catch (Exception exception) {
-            log.error(
-                "Failed fetching latest created datetime from ds-storage summaries table. Exception: ",
-                exception);
+            log.error("Failed fetching latest summary from ds-storage. Exception: ", exception);
             throw exception;
         }
     }

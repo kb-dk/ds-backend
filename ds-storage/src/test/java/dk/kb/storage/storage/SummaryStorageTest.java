@@ -330,6 +330,7 @@ public class SummaryStorageTest extends TestcontainersUtil {
   @Test
   public void latestCreatedSummary_whenTableIsPopulated_thenReturnLatestCreated() throws Exception {
     // Arrange
+    UUID secondId = UUID.randomUUID();
     OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
 
@@ -341,7 +342,7 @@ public class SummaryStorageTest extends TestcontainersUtil {
     firstSummaryRequestDto.setJobId("test run 1");
 
     SummaryRequestDto secondSummaryRequestDto = new SummaryRequestDto();
-    secondSummaryRequestDto.setId(UUID.randomUUID());
+    secondSummaryRequestDto.setId(secondId);
     secondSummaryRequestDto.setFileId(UUID.randomUUID());
     secondSummaryRequestDto.setSummary("Fin beskrivelse 2.");
     secondSummaryRequestDto.setCreated(secondCreated);
@@ -361,17 +362,17 @@ public class SummaryStorageTest extends TestcontainersUtil {
     assertEquals(2, recordsCountDto.getCount());
 
     assertNotNull(createdDto);
+    assertEquals(secondId, createdDto.getId());
     assertEquals(secondCreated, createdDto.getCreated());
   }
 
   @Test
-  public void latestCreatedSummary_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated()
+  public void latestCreatedSummary_whenTableIsEmpty_thenReturnNull()
       throws Exception {
     // Act
     CreatedDto createdDto = summaryStorage.latestCreatedSummary();
 
     // Assert
-    assertNotNull(createdDto);
-    assertNull(createdDto.getCreated());
+    assertNull(createdDto);
   }
 }

@@ -81,9 +81,15 @@ public class SummaryStorage extends BaseModuleStorage {
 
   private static final String latestCreatedSummaryStatement = """
                                                               SELECT
-                                                                  max(s.created) AS latest_created -- find the latest created datetime
+                                                                  s.id,
+                                                                  s.created
                                                               FROM
                                                                   summaries s
+                                                              ORDER BY
+                                                                  s.created DESC,
+                                                                  s.id DESC   -- same tiebreaker as the paging query
+                                                              LIMIT
+                                                                  1
                                                               """;
 
   public SummaryStorage() throws SQLException {

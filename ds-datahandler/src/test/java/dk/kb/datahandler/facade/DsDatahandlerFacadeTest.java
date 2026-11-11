@@ -214,7 +214,8 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
   public void updateSummaries_whenGivenSummaryRequestDtoList_thenReturnHowManyRowsWasInsertedOrUpdated() {
     // Arrange
     dk.kb.storage.model.v1.CreatedDto createdDto = new dk.kb.storage.model.v1.CreatedDto();
-    createdDto.setCreated(OffsetDateTime.parse("2026-03-20T00:00:00.001Z"));
+    createdDto.setId(null);
+    createdDto.setCreated(null);
 
     UUID id = UUID.randomUUID();
     UUID fileId = UUID.randomUUID();
@@ -252,7 +253,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
             .thenReturn(dsStorageClient);
 
         try (MockedConstruction<SummaryStorage> mockedConstruction = Mockito.mockConstruction(
-            SummaryStorage.class, (mock, context) -> Mockito.when(mock.getSummaries(any()))
+            SummaryStorage.class, (mock, context) -> Mockito.when(mock.getSummaries(any(), any(), anyInt()))
                 .thenReturn(summaryRequestDtoList))) {
 
           Mockito.when(dsStorageClient.latestCreatedSummary()).thenReturn(createdDto);
@@ -298,7 +299,8 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
   public void updateSummaries_whenGivenSummaryRequestDtoListDoNotMatchSavedSummary_thenThrowInternalServiceException() {
     // Arrange
     dk.kb.storage.model.v1.CreatedDto createdDto = new dk.kb.storage.model.v1.CreatedDto();
-    createdDto.setCreated(OffsetDateTime.parse("2026-03-20T00:00:00.001Z"));
+    createdDto.setId(null);
+    createdDto.setCreated(null);
 
     UUID id = UUID.randomUUID();
     UUID fileId = UUID.randomUUID();
@@ -336,7 +338,7 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
             .thenReturn(dsStorageClient);
 
         try (MockedConstruction<SummaryStorage> mockedConstruction = Mockito.mockConstruction(
-            SummaryStorage.class, (mock, context) -> Mockito.when(mock.getSummaries(any()))
+            SummaryStorage.class, (mock, context) -> Mockito.when(mock.getSummaries(any(), any(), anyInt()))
                 .thenReturn(summaryRequestDtoList))) {
 
           Mockito.when(dsStorageClient.latestCreatedSummary()).thenReturn(createdDto);
