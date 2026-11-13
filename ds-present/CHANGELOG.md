@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
+
 ### Fixed
 
 - Fixed radio channel mapping `drp4k94` -> `DR P4 KANAL 94 VEJLE`
