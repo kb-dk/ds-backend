@@ -9,8 +9,8 @@ CREATE TABLE summaries (
     job_id CHARACTER VARYING NOT NULL
 );
 
-CREATE INDEX summaries_summary_idx ON summaries(summary);
-CREATE INDEX summaries_created_idx ON summaries(created);
+CREATE INDEX ON summaries (created, id);
+CREATE INDEX ON summaries (file_id, created, id);
 
 COMMENT ON TABLE summaries IS 'Table of summaries data';
 COMMENT ON COLUMN summaries.id IS 'Unique UUID id';

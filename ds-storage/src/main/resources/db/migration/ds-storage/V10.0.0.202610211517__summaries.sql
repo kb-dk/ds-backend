@@ -8,8 +8,6 @@ CREATE TABLE summaries (
     updated TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE INDEX ON summaries(summary);
-CREATE INDEX ON summaries(created);
 CREATE INDEX ON summaries (created, id);
 
 COMMENT ON TABLE summaries IS 'Table of summaries data';
