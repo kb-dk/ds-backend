@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Artificial test record: not real archive data -->
+<XIP>
+  <InformationObject>
+    <Ref>00000000-0000-0000-0000-000000000001</Ref>
+    <Title>Test record</Title>
+  </InformationObject>
+  <Metadata schemaUri="http://www.pbcore.org/PBCore/PBCoreNamespace.html">
+    <Content>
+      <PBCoreDescriptionDocument xmlns="http://www.pbcore.org/PBCore/PBCoreNamespace.html">
+        <pbcoreTitle>
+          <title>Test title</title>
+          <titleType>titel</titleType>
+        </pbcoreTitle>
+        <pbcoreInstantiation>
+          <formatMediaType>Sound</formatMediaType>
+        </pbcoreInstantiation>
+      </PBCoreDescriptionDocument>
+    </Content>
+  </Metadata>
+  <Metadata schemaUri="http://id.kb.dk/schemas/radiotv_access/access">
+    <Content>
+      <access>
+        <individuelt_forbud>Ja</individuelt_forbud>
+        <klausuleret>Nej</klausuleret>
+        <defekt>Nej</defekt>
+      </access>
+    </Content>
+  </Metadata>
+</XIP>

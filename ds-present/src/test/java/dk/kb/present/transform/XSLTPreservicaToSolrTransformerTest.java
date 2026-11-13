@@ -313,6 +313,26 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void testIndividualProhibitionJa() throws IOException {
+        assertIndividualProhibition(TestFiles.PVICA_INDIVIDUAL_PROHIBITION_JA, "true");
+    }
+
+    @Test
+    void testIndividualProhibitionNej() throws IOException {
+        assertIndividualProhibition(TestFiles.PVICA_INDIVIDUAL_PROHIBITION_NEJ, "false");
+    }
+
+    @Test
+    void testIndividualProhibitionMissing() throws IOException {
+        assertIndividualProhibition(TestFiles.PVICA_INDIVIDUAL_PROHIBITION_MISSING, "false");
+    }
+
+    private void assertIndividualProhibition(String record, String expected) throws IOException {
+        String solrDoc = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, record);
+        assertTrue(solrDoc.contains("\"access_individual_prohibition\":\"" + expected + "\""), solrDoc);
+    }
+
+    @Test
     void testPid(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"pid\":\"109.1.4\\/3945e2d1-83a2-40d8-af1c-30f7b3b94390\"");
     }
