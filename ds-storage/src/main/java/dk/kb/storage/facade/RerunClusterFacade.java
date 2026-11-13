@@ -60,11 +60,16 @@ public class RerunClusterFacade {
    *
    * @return CreatedDto with latest created datetime
    */
-  public static CreatedDto latestCreated() {
-    return BaseModuleStorage.performStorageAction("latestCreated()", RerunClusterStorage.class,
-        storage -> {
-          CreatedDto createdDto = ((RerunClusterStorage) storage).latestCreated();
-          return createdDto;
+  public static CreatedDto latestCreatedRerunCluster() {
+    CreatedDto createdDto = BaseModuleStorage.performStorageAction("latestCreatedRerunCluster()",
+        RerunClusterStorage.class, storage -> {
+          return ((RerunClusterStorage) storage).latestCreatedRerunCluster();
         });
+
+    if (createdDto == null) {
+      throw new NotFoundServiceException("No rows were found in rerun_clusters table");
+    }
+
+    return createdDto;
   }
 }

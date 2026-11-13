@@ -13,34 +13,44 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RerunClusterStorage implements AutoCloseable {
   private static final Logger log = LoggerFactory.getLogger(RerunClusterStorage.class);
-
-  private final static RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper = new RerunClusterRequestDtoMapper();
+  private final static RerunClusterRequestDtoMapper rerunClusterRequestDtoMapper =
+      new RerunClusterRequestDtoMapper();
   private static final String getRerunClustersStatement = """
-      SELECT DISTINCT ON (c.file_id) -- there can be multiple of the same file_id (history) and we want the newest inserted file_id
-          c.id,
-          c.file_id,
-          c.rerun_cluster_id,
-          c.created,
-          c.job_id
-      FROM
-          clusters c
-      WHERE
-          (
-              CAST(? AS TIMESTAMP WITH TIME ZONE) IS NULL -- takes care if the rerun_clusters table is empty
-              OR
-              c.created >= ? -- match with matching created if job has failed midway in loading rerun cluster data
-          )
-      ORDER BY
-          c.file_id ASC,
-          c.created DESC
-      """;
-
+                                                          SELECT
+                                                              c.id,
+                                                              c.file_id,
+                                                              c.rerun_cluster_id,
+                                                              c.created,
+                                                              c.job_id
+                                                          FROM
+                                                              clusters c
+                                                          WHERE (c.created, c.id) > (
+                                                              COALESCE(CAST(? AS TIMESTAMP WITH TIME ZONE), '-infinity'::timestamptz), -- default value if input is null
+                                                              COALESCE(CAST(? AS UUID), '00000000-0000-0000-0000-000000000000'::uuid) -- default value if input is null
+                                                          )
+                                                          AND NOT EXISTS ( -- keep only the newest version per file_id
+                                                              SELECT
+                                                                  1
+                                                              FROM
+                                                                  clusters newest_file_id
+                                                              WHERE
+                                                                  newest_file_id.file_id = c.file_id
+                                                                  AND
+                                                                  (newest_file_id.created, newest_file_id.id) > (c.created, c.id)
+                                                          )
+                                                          ORDER BY
+                                                              c.created,
+                                                              c.id
+                                                          LIMIT
+                                                              ?
+                                                          """;
   private static BasicDataSource dataSource;
   protected Connection connection;
 
@@ -50,13 +60,11 @@ public class RerunClusterStorage implements AutoCloseable {
 
   public static void initialize(String driver, String url, String username, String password,
                                 int connectionPoolSize) {
-
     dataSource = new BasicDataSource();
     dataSource.setDriverClassName(driver);
     dataSource.setUsername(username);
     dataSource.setPassword(password);
     dataSource.setUrl(url);
-    // Needs to be false because else unittests fails
     dataSource.setDefaultReadOnly(false);
     dataSource.setDefaultAutoCommit(false);
     dataSource.setMaxOpenPreparedStatements(connectionPoolSize);
@@ -65,39 +73,19 @@ public class RerunClusterStorage implements AutoCloseable {
         driver, url, connectionPoolSize);
   }
 
-  public void commit() throws SQLException {
-    connection.commit();
-  }
-
-  public void rollback() {
-    try {
-      connection.rollback();
-    } catch (Exception e) {
-      // nothing to do here
-    }
-  }
-
-  @Override
-  public void close() {
-    // Make sure connection is closed
-    try {
-      connection.close();
-    } catch (Exception e) {
-      //Nothing to do
-    }
-  }
-
   /**
-     * Start a storage transaction and performs the given action on it, returning the result from the action.
-     * If the action throws an exception, a {@link RerunClusterStorage#rollback()} is performed.
-     * If the action passes without exceptions, a {@link RerunClusterStorage#commit()} is performed.
-     *
-     * @param actionID     a debug-oriented ID for the action, typically the name of the calling method.
-     * @param storageClass what Storage class triggered the method
-     * @param action       the action to perform on the storage.
-     * @return return value from the action.
-     * @throws InternalServiceException if anything goes wrong.
-     */
+   * Start a storage transaction and performs the given action on it, returning the result from the
+   * action. If the action throws an exception, a {@link RerunClusterStorage#rollback()} is
+   * performed. If the action passes without exceptions, a {@link RerunClusterStorage#commit()} is
+   * performed.
+   *
+   * @param actionID     a debug-oriented ID for the action, typically the name of the calling
+   *                     method.
+   * @param storageClass what Storage class triggered the method
+   * @param action       the action to perform on the storage.
+   * @return return value from the action.
+   * @throws InternalServiceException if anything goes wrong.
+   */
   public static <T> T performStorageAction(String actionID,
                                            Class<? extends RerunClusterStorage> storageClass,
                                            RerunClusterStorage.StorageAction<T> action) {
@@ -145,50 +133,79 @@ public class RerunClusterStorage implements AutoCloseable {
     }
   }
 
-    /**
-     * Callback used with {@link #performStorageAction(String, Class, RerunClusterStorage.StorageAction)}.
-     *
-     * @param <T> the object returned from the {@link RerunClusterStorage.StorageAction#process(RerunClusterStorage)} method.
-     */
-    @FunctionalInterface
-    public interface StorageAction<T> {
-        /**
-         * Access or modify the given storage inside a transaction.
-         * If the method throws an exception, it will be logged, a {@link RerunClusterStorage#rollback()} will be performed and
-         * a wrapping {@link dk.kb.util.webservice.exception.ServiceException} will be thrown.
-         *
-         * @param storage a storage ready for requests and updates.
-         * @return custom return value.
-         * @throws Exception if something went wrong.
-         */
-        T process(RerunClusterStorage storage) throws Exception;
+  public void commit() throws SQLException {
+    connection.commit();
+  }
+
+  public void rollback() {
+    try {
+      connection.rollback();
+    } catch (Exception e) {
+      // nothing to do here
     }
+  }
+
+  @Override
+  public void close() {
+    // Make sure connection is closed
+    try {
+      connection.close();
+    } catch (Exception e) {
+      //Nothing to do
+    }
+  }
 
   /**
    * Return new rows from remote p3rerun database in clusters table.
    *
+   * @param id      id of the latest id in our database
    * @param created latest created time in our database
+   * @param limit   how many rows are we returning
    * @return List<RerunClusterRequestDto> of rows
    * @throws Exception
    */
-  public List<RerunClusterRequestDto> getRerunClusters(OffsetDateTime created) throws Exception {
-    List<RerunClusterRequestDto> rerunClusterRequestDtoList = new ArrayList<>();
-
+  public List<RerunClusterRequestDto> getRerunClusters(UUID id, OffsetDateTime created, int limit)
+      throws Exception {
     try (PreparedStatement stmt = connection.prepareStatement(getRerunClustersStatement)) {
       stmt.setObject(1, created);
-      stmt.setObject(2, created);
-      ResultSet resultSet = stmt.executeQuery();
+      stmt.setObject(2, id);
+      stmt.setInt(3, limit);
 
-      while (resultSet.next()) {
-        RerunClusterRequestDto rerunClusterRequestDto = rerunClusterRequestDtoMapper.map(resultSet);
-        rerunClusterRequestDtoList.add(rerunClusterRequestDto);
+      try (ResultSet resultSet = stmt.executeQuery()) {
+        List<RerunClusterRequestDto> rerunClusterRequestDtoList = new ArrayList<>();
+        while (resultSet.next()) {
+          RerunClusterRequestDto rerunClusterRequestDto =
+              rerunClusterRequestDtoMapper.map(resultSet);
+          rerunClusterRequestDtoList.add(rerunClusterRequestDto);
+        }
+
+        return rerunClusterRequestDtoList;
       }
-
-      return rerunClusterRequestDtoList;
     } catch (SQLException e) {
       String message = "SQL Exception in getRerunClusters: " + e.getMessage();
       log.error(message);
-      throw new SQLException(message, e);
+      throw new SQLException(message, e.getSQLState(), e);
     }
+  }
+
+  /**
+   * Callback used with
+   * {@link #performStorageAction(String, Class, RerunClusterStorage.StorageAction)}.
+   *
+   * @param <T> the object returned from the
+   *            {@link RerunClusterStorage.StorageAction#process(RerunClusterStorage)} method.
+   */
+  @FunctionalInterface
+  public interface StorageAction<T> {
+    /**
+     * Access or modify the given storage inside a transaction. If the method throws an exception,
+     * it will be logged, a {@link RerunClusterStorage#rollback()} will be performed and a wrapping
+     * {@link dk.kb.util.webservice.exception.ServiceException} will be thrown.
+     *
+     * @param storage a storage ready for requests and updates.
+     * @return custom return value.
+     * @throws Exception if something went wrong.
+     */
+    T process(RerunClusterStorage storage) throws Exception;
   }
 }
