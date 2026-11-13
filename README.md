@@ -65,6 +65,11 @@ This tells your computer that the address `keycloak.local` points to your local 
 docker compose up --detach --build
 ```
 
+The build needs the KB nexus credentials, which it reads from `settings.xml` and `settings-security.xml` in `~/.m2`.
+They are passed to the build as Docker secrets, so they are never stored in the images. The same directory is also
+given to the build as an extra build context, because otherwise Docker refuses to read files from outside the
+project ("additional privileges requested").
+
 ### Service logs
 
 Shows all containers logs:
