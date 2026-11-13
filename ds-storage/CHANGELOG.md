@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added index on column `created` and `id` together on `rerun_clusters` table and removed an old index on only
+  `created.  (*Remember: OPS need to run `Flyway` migration*).
+
 ### Changed
 
 - Rename method `latestCreated` to `latestCreatedRerunCluster` so it does not collide when `summaries` is implemented.
