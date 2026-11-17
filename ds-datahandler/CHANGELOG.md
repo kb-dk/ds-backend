@@ -20,11 +20,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `/kaltura/validate` and `/kaltura/deltaupload` can not run at the same time. Starting one while the other is
   running is rejected.
 
-### Changed
-
-- The Kaltura delta upload finds existing entries with the entry service instead of eSearch, so entries not yet
-  indexed in eSearch are no longer uploaded twice.
-
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14

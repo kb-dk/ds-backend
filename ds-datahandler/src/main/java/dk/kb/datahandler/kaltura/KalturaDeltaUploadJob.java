@@ -137,7 +137,7 @@ public class KalturaDeltaUploadJob {
             // Check file not already in kaltura.
             String kalturaInternalId = getInternalIdKaltura(fileId);
             if (kalturaInternalId != null) {
-                log.info("Stream already found in Kaltura. FileId='{}' and has kalturaId='{}'. Setting this kalturaId for recordId='{}'", fileId, kalturaInternalId, id);
+                log.warn("Stream already found in Kaltura. FileId='{}' and has kalturaId='{}'. Setting this kalturaId for recordId='{}'", fileId, kalturaInternalId, id);
                 updateKalturaIdForRecord(storageClient, fileId, kalturaInternalId);
                 return 0;
             }
@@ -284,18 +284,20 @@ public class KalturaDeltaUploadJob {
      * Check if a file_id already does exist in kaltura. Then it is already uploaded.
      * There can be meta-data errors where different records points to same stream.
      *
-     * The kalturaId is returned whatever the entry status. Entries in a Kaltura error state are marked by
-     * {@link KalturaValidationJob}, which also handles the cleanup.
-     *
      * @param file_id Our reference to the stream.
      * @return kalturaId or null if does not exist.
-     * @throws IOException If more than 1 entry was found with the file_id.
+     * @throws IOException
      * @throws APIException If API error
      *
      */
     static String getInternalIdKaltura(String file_id) throws IOException, APIException {
         initKalturaClient();
-        return kalturaClient.getEntryIdByReferenceId(file_id);
+
+        String kalturaInternalId = kalturaClient.getKalturaInternalId(file_id);
+        if (kalturaInternalId != null) {
+            log.debug("Kaltura fileId='{}' is already in kaltura with entry_id='{}'", file_id, kalturaInternalId);
+        }
+        return kalturaInternalId;
     }
 
     /*

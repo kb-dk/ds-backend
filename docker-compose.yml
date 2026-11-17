@@ -8,8 +8,6 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
-      additional_contexts:
-        m2: ${HOME}/.m2
     cap_drop:
       - ALL
     container_name: ds-storage
@@ -46,8 +44,6 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
-      additional_contexts:
-        m2: ${HOME}/.m2
     cap_drop:
       - ALL
     container_name: ds-license
@@ -85,8 +81,6 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
-      additional_contexts:
-        m2: ${HOME}/.m2
     cap_drop:
       - ALL
     container_name: ds-present
@@ -120,8 +114,6 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
-      additional_contexts:
-        m2: ${HOME}/.m2
     cap_drop:
       - ALL
     container_name: ds-datahandler
@@ -161,8 +153,6 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
-      additional_contexts:
-        m2: ${HOME}/.m2
     cap_drop:
       - ALL
     container_name: ds-discover
@@ -199,8 +189,6 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
-      additional_contexts:
-        m2: ${HOME}/.m2
     cap_drop:
       - ALL
     container_name: ds-image
@@ -234,8 +222,6 @@ services:
       secrets:
         - maven_settings
         - maven_settings_security
-      additional_contexts:
-        m2: ${HOME}/.m2
     cap_drop:
       - ALL
     container_name: ds-bff
@@ -487,9 +473,9 @@ volumes:
 
 secrets:
   maven_settings:
-    file: ${HOME}/.m2/settings.xml
+    file: ~/.m2/settings.xml
   maven_settings_security:
-    file: ${HOME}/.m2/settings-security.xml
+    file: ~/.m2/settings-security.xml
 
 networks:
   ds_archive_network:

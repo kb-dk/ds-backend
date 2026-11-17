@@ -9,11 +9,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- `DsKalturaClient.getEntryStatus`, `getEntryStatuses` (batch), `listMediaEntry` and `getEntryIdByReferenceId`.
-
-### Removed
-
-- `DsKalturaClient.getKalturaInternalId`. Use `getEntryIdByReferenceId` instead.
+- `DsKalturaClient.getEntryStatus`, `getEntryStatuses` (batch) and `listMediaEntry` with a pager.
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 
