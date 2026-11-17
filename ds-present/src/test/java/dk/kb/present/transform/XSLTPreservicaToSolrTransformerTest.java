@@ -314,22 +314,20 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     @Test
     void testIndividualProhibitionJa() throws IOException {
-        assertIndividualProhibition(TestFiles.PVICA_INDIVIDUAL_PROHIBITION_JA, "true");
+        String solrDoc = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_JA);
+        assertTrue(solrDoc.contains("\"access_individual_prohibition\":\"true\""), solrDoc);
     }
 
     @Test
     void testIndividualProhibitionNej() throws IOException {
-        assertIndividualProhibition(TestFiles.PVICA_INDIVIDUAL_PROHIBITION_NEJ, "false");
+        String solrDoc = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_NEJ);
+        assertTrue(solrDoc.contains("\"access_individual_prohibition\":\"false\""), solrDoc);
     }
 
     @Test
     void testIndividualProhibitionMissing() throws IOException {
-        assertIndividualProhibition(TestFiles.PVICA_INDIVIDUAL_PROHIBITION_MISSING, "false");
-    }
-
-    private void assertIndividualProhibition(String record, String expected) throws IOException {
-        String solrDoc = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, record);
-        assertTrue(solrDoc.contains("\"access_individual_prohibition\":\"" + expected + "\""), solrDoc);
+        String solrDoc = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_MISSING);
+        assertTrue(solrDoc.contains("\"access_individual_prohibition\":\"false\""), solrDoc);
     }
 
     @Test
