@@ -334,20 +334,12 @@ public class RecordApiServiceImpl extends ImplBase implements RecordApi {
     }
 
     @Override
-    public List<DsRecordMinimalDto> getMinimalRecordsJSON(@NotNull String origin, @NotNull Integer maxRecords, Long mTime, Boolean includeDeleted) {
-        log.debug("referenceIds called with call details: {}", getCallDetails());
+    public List<DsRecordMinimalDto> getMinimalRecordsJson(@NotNull String origin, @NotNull Integer maxRecords, Long mTime, Boolean includeDeleted) {
+        log.debug("getMinimalRecordsJson() called with call details: {}", getCallDetails());
         try {
-            log.debug("updateReferenceIdForRecord() called with call details: {}", getCallDetails());
-            ServiceConfig.getDBBatchSize();
-            return RecordFacade.getReferenceIds(origin,mTime,maxRecords, includeDeleted);
+            return RecordFacade.getReferenceIds(origin, mTime, maxRecords, includeDeleted);
         } catch (Exception e) {
             throw handleException(e);
         }
-
-             
-              
-
- 
-
     }
 }
