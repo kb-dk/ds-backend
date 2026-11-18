@@ -1,6 +1,7 @@
 package dk.kb.storage.storage;
 
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.util.UniqueTimestampGenerator;
@@ -107,7 +108,12 @@ public class RecordStorageTest extends TestcontainersUtil {
 
         //MTime must also be updated when mark for delete
         Assertions.assertTrue(recordUpdated.getmTime() < record_deleted.getmTime());
-
+        
+        long mTimeNew = recordUpdated.getmTime();
+        //Test minimal dto has deleted flag
+        List<DsRecordMinimalDto> minimal = recordStorage.getReferenceIds(origin, mTimeNew, 1, true);
+        assertTrue(minimal.get(0).getDeleted());
+        
         //Update it and deleted flag should be removed
         record.setData("bla bla bla2");
         recordStorage.updateRecord(record);

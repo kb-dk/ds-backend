@@ -21,7 +21,7 @@ public class RecordMinimalDtoMapper {
     dsRecordMinimalDto.setmTime(resultSet.getLong("mtime"));
     dsRecordMinimalDto.setReferenceId(resultSet.getString("referenceid"));
     dsRecordMinimalDto.setKalturaId(resultSet.getString("kalturaid"));
-
+    dsRecordMinimalDto.setDeleted(resultSet.getBoolean("deleted"));
     return dsRecordMinimalDto;
   }
 }

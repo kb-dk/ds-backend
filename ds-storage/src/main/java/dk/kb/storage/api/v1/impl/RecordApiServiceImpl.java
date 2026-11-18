@@ -4,6 +4,7 @@ import dk.kb.storage.api.v1.RecordApi;
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.facade.RecordFacade;
 import dk.kb.storage.model.v1.DsRecordDto;
+import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.OriginDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
@@ -22,6 +23,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Providers;
 import java.util.ArrayList;
@@ -329,5 +331,15 @@ public class RecordApiServiceImpl extends ImplBase implements RecordApi {
                 RecordFacade.getMinimalRecordsModifiedAfter(writer, origin, finalMTime, finalMaxRecords, ServiceConfig.getDBBatchSize());
             }
         };
+    }
+
+    @Override
+    public List<DsRecordMinimalDto> getMinimalRecordsJson(@NotNull String origin, @NotNull Integer maxRecords, Long mTime, Boolean includeDeleted) {
+        log.debug("getMinimalRecordsJson() called with call details: {}", getCallDetails());
+        try {
+            return RecordFacade.getReferenceIds(origin, mTime, maxRecords, includeDeleted);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
     }
 }

@@ -9,6 +9,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`. The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to `DsStorageClient`.
 - Added index on column `created` and `id` together on `rerun_clusters` table and removed an old index on only
   `created.  (*Remember: OPS need to run `Flyway` migration*).
 - Added summaries table (*Remember: OPS need to run `Flyway` migration*).
@@ -24,6 +25,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Rename method `latestCreated` to `latestCreatedRerunCluster` so it does not collide when `summaries` is implemented.
 - Renamed endpoint `POST rerun-cluster` -> `POST rerun-clusters`.
 - `CreatedDto` is changed to also return id of the latest created row.
+
+## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 

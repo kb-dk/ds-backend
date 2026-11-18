@@ -26,6 +26,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Renamed config `db_p3rerun` -> `db_p3reruns`. Remember to inform OPS about it.
 - Use keyset pagination to only fetch 1000 rows from foreign database at a time for `rerun_cluster` in a loop.
 
+## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
+
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14
