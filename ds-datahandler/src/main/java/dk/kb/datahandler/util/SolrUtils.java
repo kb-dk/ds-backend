@@ -11,6 +11,7 @@ import dk.kb.datahandler.model.v1.CategoryDto;
 import dk.kb.datahandler.model.v1.JobDto;
 import dk.kb.datahandler.model.v1.JobStatusDto;
 import dk.kb.datahandler.model.v1.TypeDto;
+import dk.kb.datahandler.solr.RecordIndexResult;
 import dk.kb.datahandler.solr.SolrIndexResponse;
 import dk.kb.datahandler.solr.SolrResponseHeader;
 import dk.kb.present.model.v1.FormatDto;
@@ -18,6 +19,7 @@ import dk.kb.present.util.DsPresentClient;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import dk.kb.util.webservice.exception.ServiceException;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -36,7 +38,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -100,42 +101,39 @@ public class SolrUtils {
     /**
      * Index documents from a given origin into the configured solr index.
      * <p>
-     * For each batch a list of record ids is fetched from
-     * ds-storage, each id is transformed into a solr document by ds-present one record at a time, and the
-     * assembled batch is POSTed to solr. Paging is driven by the mTime of the last record in the batch.
+     * No streams are involved anywhere in this flow. A batch of record ids is fetched from ds-storage, and each
+     * id is then transformed by ds-present and posted to solr on its own. Paging is driven by the mTime of the
+     * last record in the batch, so no continuation token or HTTP header is needed to know how far the indexing
+     * has come.
      * <p>
-     * A batch either succeeds completely or fails completely: any exception aborts the whole indexing run,
-     * and nothing is persisted about how far it got. The local mTime is simply discarded. A later delta index
-     * derives its start time from the highest internal_storage_mTime in solr, so it resumes after the last batch solr accepted.
+     * Indexing a single record is self contained, see {@link #indexSingleRecord}. The records of a batch are
+     * processed sequentially for now, but the per record call is written so it can be submitted to a thread
+     * pool without changing anything else.
      * <p>
-     * The per record call to ds-present is deliberately sequential for now. The calls are independent, so the
-     * loop over the ids of a batch is the natural place to add a thread pool later.
+     * Records are posted without a commit and solr is committed once when the origin is done. Committing per
+     * document would mean one hard commit per record, which solr handles very poorly.
      *
      * @param origin    where the records come from. Has to be registered with DS-Storage
      * @param sinceTime A long representation of time since epoch. Exclusive. {@code null} is treated as 0.
      * @return          A status on how many records have been indexed.
      */
     public static SolrIndexResponse indexOrigin(String origin, Long sinceTime) {
-
+        // sinceTime is advanced below, so keep the requested start point for the full-vs-delta decision.
         final Long requestedSinceTime = sinceTime;
 
         DsStorageClient storageClient = new DsStorageClient(ServiceConfig.getDsStorageUrl());
         DsPresentClient presentClient = new DsPresentClient(ServiceConfig.getDsPresentUrl());
 
-        URL solrUpdateUrl;
-        try {
-            solrUpdateUrl = new URIBuilder(ServiceConfig.getSolrUpdateUrl())
-                    .setParameter("commit", "true")
-                    .build().toURL();
-        } catch (MalformedURLException | URISyntaxException e) {
-            log.warn("Update URL for solr could not be constructed. Tried to build URL from '{}'.", ServiceConfig.getSolrUpdateUrl());
-            throw new InternalServiceException(e);
-        }
+        URL solrUpdateUrl = buildSolrUpdateUrl(false);
+        URL solrCommitUrl = buildSolrUpdateUrl(true);
 
         final int batchSize = ServiceConfig.getSolrBatchSize();
 
         long mTime = sinceTime == null ? 0L : sinceTime;
         long documents = 0L;
+        long failedRecords = 0L;
+        String lastSolrResponse = null;
+
         SolrIndexResponse finalResponse = new SolrIndexResponse();
         // Must be non-null even when there is nothing to index: DsDatahandlerFacade calls intValue() on it.
         finalResponse.setAllDocumentsIndexed(0L);
@@ -143,10 +141,19 @@ public class SolrUtils {
         log.info("Starting indexing of records with sinceTime: '{}' from origin: '{}'", sinceTime, origin);
 
         while (true) {
+            // Minimal records carry id, mTime, referenceId and kalturaId but not the data field, so this stays
+            // cheap even though records can be very large.
+            //
             // Note that this endpoint does not filter on recordType, so it returns every record type in the
             // origin. Every record in the indexed origins is a DELIVERABLEUNIT today, so it makes no
             // difference. If an origin ever gets MANIFESTATION records, ds-storage needs a record type filter
             // here, otherwise ds-present will be asked to transform records its solr view was not written for.
+            //
+            // Soft deleted records are not handled either. They are returned like any other record, their data
+            // is left intact when they are marked as deleted, and they are therefore indexed as live documents
+            // where the previous implementation turned them into solr delete commands. The intended solution is
+            // to index the deleted flag as a field in solr and let the license module filter on it, which is
+            // handled as a separate task.
             List<DsRecordMinimalDto> records = storageClient.getMinimalRecords(origin, batchSize, mTime);
             if (records == null || records.isEmpty()) {
                 log.info("No more records in ds-storage for origin '{}' after mTime {}. Indexing is up to date.",
@@ -158,29 +165,38 @@ public class SolrUtils {
                      "'{}' documents have been indexed through this request.",
                      records.size(), origin, mTime, documents);
 
-            // Soft deleted records are not handled here. They are returned by ds-storage like any other record,
-            // their data field is left intact when they are marked as deleted, and ds-present therefore returns
-            // a perfectly normal solr document for them. They are consequently indexed as live documents, where
-            // the previous implementation turned them into solr delete commands.
-            //
-            // This is a deliberate, known limitation. Soft deletes are extremely rare in practice. The intended
-            // solution is to index the deleted flag as a field in solr and let the license module filter on it,
-            // which is handled as a separate task. When that lands, the flag has to be carried from ds-storage
-            // to the indexed document rather than being ignored.
-            List<String> solrDocuments = new ArrayList<>(records.size());
             for (DsRecordMinimalDto record : records) {
-                solrDocuments.add(presentClient.getRecord(record.getId(), FormatDto.SOLRJSON));
+                RecordIndexResult result = indexSingleRecord(presentClient, solrUpdateUrl, record.getId());
+
+                if (result.isSuccess()) {
+                    documents++;
+                    lastSolrResponse = result.getSolrResponse();
+                    continue;
+                }
+
+                // A failing record is logged and skipped rather than aborting the origin. A transformation
+                // failure is deterministic, so retrying the same record achieves nothing and one bad record
+                // would otherwise block the origin permanently.
+                failedRecords++;
+                log.warn("Skipping record '{}' from origin '{}'. ds-present status: {}, solr status: {}. Response: {}",
+                        result.getRecordId(), origin, result.getPresentStatus(), result.getSolrStatus(),
+                        result.getExceptionMessage());
             }
 
-            String solrResponse = postDocumentsToSolr(solrUpdateUrl, solrDocuments);
-            documents += solrDocuments.size();
-            updateFinalResponse(solrResponse, finalResponse, documents);
-            log.info("indexed #records=" + solrDocuments.size());
+            if (lastSolrResponse != null) {
+                updateFinalResponse(lastSolrResponse, finalResponse, documents);
+            }
 
             mTime = records.get(records.size() - 1).getmTime();
         }
 
-        log.info("Solr index completed for origin: '{}', mTime: {}, #docs: {}", origin, mTime, documents);
+        // Documents were posted without a commit, so nothing is searchable until this runs. A failed run leaves
+        // the documents uncommitted, which is harmless: the next delta index resolves its start time from what
+        // is actually in solr and simply indexes the window again.
+        commitSolr(solrCommitUrl);
+
+        log.info("Solr index completed for origin: '{}', mTime: {}, #docs: {}, #failed records: {}",
+                origin, mTime, documents, failedRecords);
 
         //Only build suggest for full index
         if (requestedSinceTime == null || requestedSinceTime == 0) {
@@ -194,52 +210,91 @@ public class SolrUtils {
     }
 
     /**
-     * POST the given solr documents to the solr update handler as a single request.
-     * The update URL carries {@code commit=true}, so the documents are searchable when this method returns.
+     * Transform a single record in ds-present and post it to solr.
+     * <p>
+     * Solr is only called when ds-present answered 200. Neither failure throws: the outcome of both calls is
+     * reported in the returned {@link RecordIndexResult} so the caller can log it and continue.
+     * <p>
+     * This method is the unit of work intended for a thread pool. It holds no state beyond its arguments.
      *
-     * @param solrUpdateUrl the solr update handler, including the commit parameter.
-     * @param solrDocuments solr documents as delivered by ds-present.
-     * @return the raw response from solr, used for the job bookkeeping.
+     * @param presentClient client for the remote ds-present.
+     * @param solrUpdateUrl the solr update handler. Must not carry a commit parameter.
+     * @param recordId      the record to transform and index.
+     * @return the outcome for this record.
      */
-    private static String postDocumentsToSolr(URL solrUpdateUrl, List<String> solrDocuments) {
-        String payload = assembleSolrUpdatePayload(solrDocuments);
+    static RecordIndexResult indexSingleRecord(DsPresentClient presentClient, URL solrUpdateUrl, String recordId) {
+        String solrDocument;
+        try {
+            solrDocument = presentClient.getRecord(recordId, FormatDto.SOLRJSON);
+        } catch (ServiceException e) {
+            // kb-util maps the HTTP status to an exception type and does not keep the response body, so the
+            // exception message is the best available description of the failure.
+            int status = e.getResponseStatus() == null
+                    ? RecordIndexResult.NOT_CALLED
+                    : e.getResponseStatus().getStatusCode();
+            return RecordIndexResult.presentFailed(recordId, status, e.getMessage());
+        } catch (Exception e) {
+            return RecordIndexResult.presentFailed(recordId, RecordIndexResult.NOT_CALLED, e.toString());
+        }
+
+        String payload = "{\n\"add\": { \"doc\" : " + solrDocument + " }\n}\n";
         try {
             HttpURLConnection solrServerConnection = (HttpURLConnection) solrUpdateUrl.openConnection();
             String solrResponse = HttpPostUtil.callPost(solrServerConnection,
                     new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8)), "application/json");
+            int solrStatus = solrServerConnection.getResponseCode();
 
-            if (!solrResponse.contains("\"status\":0")) {
-                //Example: {  "responseHeader":{    "rf":1,    "status":0,    "QTime":1348}}
-                log.error("Unexpected reply from solr: '" + solrResponse + "'");
-                throw new IOException("Unexpected status from solr: '" + solrResponse + "'");
+            // Solr reports failures both as an HTTP status and in the body, so check both.
+            //Example body: {  "responseHeader":{    "rf":1,    "status":0,    "QTime":1348}}
+            if (solrStatus != 200 || !solrResponse.contains("\"status\":0")) {
+                return RecordIndexResult.solrFailed(recordId, solrStatus, solrResponse);
             }
-            return solrResponse;
-        } catch (IOException e) {
-            log.warn("An error occurred when posting {} documents to Solr at: '{}'", solrDocuments.size(), solrUpdateUrl);
-            throw new InternalServiceException(e);
+            return RecordIndexResult.success(recordId, solrResponse);
+        } catch (Exception e) {
+            return RecordIndexResult.solrFailed(recordId, RecordIndexResult.NOT_CALLED, e.toString());
         }
     }
 
     /**
-     * Wrap the solr documents as add-commands in the structure solr expects for JSON index updates.
-     * <p>
-     * Solr accepts repeated {@code add} keys inside one object. That is not valid JSON, but it is the format
-     * solr prescribes for index updates, and it is the same structure the previous streaming implementation
-     * produced.
+     * Commit the documents posted since the last commit, making them searchable.
+     * A failed commit is logged but does not fail the indexing: the documents are in solr either way, and the
+     * next index run will simply cover the same window again.
      *
-     * @param solrDocuments solr documents as delivered by ds-present.
-     * @return a complete request body for the solr update handler.
+     * @param solrCommitUrl the solr update handler with {@code commit=true}.
      */
-    static String assembleSolrUpdatePayload(List<String> solrDocuments) {
-        StringBuilder payload = new StringBuilder("{\n");
-        for (int i = 0; i < solrDocuments.size(); i++) {
-            payload.append("\"add\": { \"doc\" : ").append(solrDocuments.get(i)).append(" }");
-            if (i < solrDocuments.size() - 1) {
-                payload.append(",");
+    private static void commitSolr(URL solrCommitUrl) {
+        try {
+            HttpURLConnection solrServerConnection = (HttpURLConnection) solrCommitUrl.openConnection();
+            String solrResponse = HttpPostUtil.callPost(solrServerConnection,
+                    new ByteArrayInputStream("{}".getBytes(StandardCharsets.UTF_8)), "application/json");
+            if (!solrResponse.contains("\"status\":0")) {
+                log.warn("Unexpected reply from solr when committing: '{}'", solrResponse);
             }
-            payload.append("\n");
+        } catch (IOException e) {
+            log.warn("Could not commit to solr at '{}'. The documents are posted but are not searchable until " +
+                     "solr commits on its own.", solrCommitUrl, e);
         }
-        return payload.append("}\n").toString();
+    }
+
+    /**
+     * Build the solr update URL from configuration.
+     *
+     * @param commit whether the request should commit. Documents are posted without a commit and the origin is
+     *               committed once at the end, since a commit per document would cripple solr.
+     * @return the solr update handler URL.
+     */
+    private static URL buildSolrUpdateUrl(boolean commit) {
+        try {
+            URIBuilder uriBuilder = new URIBuilder(ServiceConfig.getSolrUpdateUrl());
+            if (commit) {
+                uriBuilder.setParameter("commit", "true");
+            }
+            return uriBuilder.build().toURL();
+        } catch (MalformedURLException | URISyntaxException e) {
+            log.warn("Update URL for solr could not be constructed. Tried to build URL from '{}'.",
+                    ServiceConfig.getSolrUpdateUrl());
+            throw new InternalServiceException(e);
+        }
     }
 
     /**
