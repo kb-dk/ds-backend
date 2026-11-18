@@ -239,6 +239,36 @@ public class DsStorageClient {
     }
 
     /**
+     * Get a list of minimal records having a referenceId after a given lastModified time
+     * Extract a list of records with a given batch size by origin and mTime larger than input. 
+     * The records will only have the id, mTime, referenceId and kalturaId fields. This means that no actual data can be retrieved through this endpoint. It can however be used  for operations where the data from the record isn&#39;t needed. Such as updating Kaltura IDs for records, which is done with referenceId and kalturaId only. 
+     *
+     * @param origin The origin to extract records for (required)
+     * @param mTime Only extract records after this mTime. (optional, default to 0l)
+     * @param maxRecords Number of records to extract. (required)
+     * @param includeDeleted include soft deleted records
+     * @return List of DsRecordMinimalDto;
+     * @throws ServiceException if fails to make API call
+     */
+    public List<DsRecordMinimalDto> getMinimalRecordsJson(String origin, Long mTime, Integer maxRecords, boolean includeDeleted) throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                    .appendPathSegments("records","minimalJSON")                                                               
+                    .addParameter("origin",origin)
+                    .addParameter("mTime",""+mTime)
+                    .addParameter("maxRecords",""+maxRecords)
+                    .addParameter("includeDeleted)",""+includeDeleted)
+                    .build();
+            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new ArrayList<DsRecordMinimalDto>(), null);              
+        }
+        catch (URISyntaxException e) {
+            log.error("Invalid url:"+e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);               
+         }                                            
+    }
+    
+    
+    /**
      * Call the remote ds-storage {@link #getRecordsModifiedAfter} and return the response in the form of a Stream 
      * of records.
      * The stream is unbounded by memory and gives access to the highest modification time (microseconds since
