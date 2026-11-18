@@ -471,6 +471,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/DsRecordMinimalList'
 
+  /records/minimalJSON:
+    get:
+      tags:
+        - 'Record'
+      summary: 'Get a stream of minimal records having a referenceId after a given lastModified time'
+      security:
+        - KBOAuth:
+            - any
+      description: >
+        Extract a list of records with a given batch size by origin and mTime larger than input.        
+         The records will only have the id, mTime, referenceId,kalturaId  and deleted fields. This means that no actual data can be retrieved through this endpoint. It can however be used
+         for operations where the data from the record isn't needed. Such as updating Kaltura IDs for records, which is done with referenceId and kalturaId only.
+      operationId: getMinimalRecordsJSON
+      parameters:
+        - name: origin
+          in: query
+          description: 'The origin to extract records for'
+          required: true
+          schema:
+            type: string
+            example: "ds.tv"
+        - name: mTime
+          in: query
+          description: 'Only extract records after this mTime.'
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 1701262548465000
+            default: 0
+        - name: maxRecords
+          in: query
+          description: 'Number of records to extract.'
+          required: true
+          schema:
+            type: integer
+            example: 500
+            default: 500
+        - name: includeDeleted
+          in: query
+          description: 'Include soft deleted records'
+          required: false
+          schema:
+            type: boolean
+            example: false
+            default: false            
+      responses:
+        '200':
+          description: 'List of DsRecordReferenceId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DsRecordMinimalList'                
+                
+                
   /transcription:
     get:
       tags:
@@ -763,6 +818,9 @@ components:
         kalturaId:
           type: string
           description: 'The Kaltura  ID for the record. It can be null even if the record is Kaltura but the mapping has not been updated yet.  '
+        deleted:         
+          type: boolean 
+          description: 'Is record soft deleted'
 
     RecordsCount:
       type: object
