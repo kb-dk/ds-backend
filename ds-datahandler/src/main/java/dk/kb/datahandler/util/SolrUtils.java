@@ -131,6 +131,7 @@ public class SolrUtils {
 
         long mTime = sinceTime == null ? 0L : sinceTime;
         long documents = 0L;
+        long deletedRecords = 0L;
         long failedRecords = 0L;
         String lastSolrResponse = null;
 
@@ -141,20 +142,18 @@ public class SolrUtils {
         log.info("Starting indexing of records with sinceTime: '{}' from origin: '{}'", sinceTime, origin);
 
         while (true) {
-            // Minimal records carry id, mTime, referenceId and kalturaId but not the data field, so this stays
-            // cheap even though records can be very large.
+            // Minimal records carry id, mTime, referenceId, kalturaId and the deleted flag, but not the data
+            // field, so this stays cheap even though records can be very large.
+            //
+            // includeDeleted is true because ds-datahandler turns the soft deleted records into solr delete
+            // commands itself, see below. Leaving them out would mean a record deleted since the last run
+            // stayed in the index until the next full index.
             //
             // Note that this endpoint does not filter on recordType, so it returns every record type in the
             // origin. Every record in the indexed origins is a DELIVERABLEUNIT today, so it makes no
             // difference. If an origin ever gets MANIFESTATION records, ds-storage needs a record type filter
             // here, otherwise ds-present will be asked to transform records its solr view was not written for.
-            //
-            // Soft deleted records are not handled either. They are returned like any other record, their data
-            // is left intact when they are marked as deleted, and they are therefore indexed as live documents
-            // where the previous implementation turned them into solr delete commands. The intended solution is
-            // to index the deleted flag as a field in solr and let the license module filter on it, which is
-            // handled as a separate task.
-            List<DsRecordMinimalDto> records = storageClient.getMinimalRecords(origin, batchSize, mTime);
+            List<DsRecordMinimalDto> records = storageClient.getMinimalRecordsJson(origin, batchSize, mTime, true);
             if (records == null || records.isEmpty()) {
                 log.info("No more records in ds-storage for origin '{}' after mTime {}. Indexing is up to date.",
                         origin, mTime);
@@ -166,10 +165,20 @@ public class SolrUtils {
                      records.size(), origin, mTime, documents);
 
             for (DsRecordMinimalDto record : records) {
-                RecordIndexResult result = indexSingleRecord(presentClient, solrUpdateUrl, record.getId());
+                // A soft deleted record is turned into a solr delete command here rather than in ds-present.
+                // ds-present is not called at all for it: its data field is left intact when the record is
+                // marked as deleted, so it would happily return a perfectly normal document for it.
+                boolean deleted = Boolean.TRUE.equals(record.getDeleted());
+                RecordIndexResult result = deleted
+                        ? deleteSingleRecord(solrUpdateUrl, record.getId())
+                        : indexSingleRecord(presentClient, solrUpdateUrl, record.getId());
 
                 if (result.isSuccess()) {
-                    documents++;
+                    if (deleted) {
+                        deletedRecords++;
+                    } else {
+                        documents++;
+                    }
                     lastSolrResponse = result.getSolrResponse();
                     continue;
                 }
@@ -195,8 +204,8 @@ public class SolrUtils {
         // is actually in solr and simply indexes the window again.
         commitSolr(solrCommitUrl);
 
-        log.info("Solr index completed for origin: '{}', mTime: {}, #docs: {}, #failed records: {}",
-                origin, mTime, documents, failedRecords);
+        log.info("Solr index completed for origin: '{}', mTime: {}, #docs: {}, #deleted: {}, #failed records: {}",
+                origin, mTime, documents, deletedRecords, failedRecords);
 
         //Only build suggest for full index
         if (requestedSinceTime == null || requestedSinceTime == 0) {
@@ -237,7 +246,33 @@ public class SolrUtils {
             return RecordIndexResult.presentFailed(recordId, RecordIndexResult.NOT_CALLED, e.toString());
         }
 
-        String payload = "{\n\"add\": { \"doc\" : " + solrDocument + " }\n}\n";
+        return postToSolr(solrUpdateUrl, recordId, "\"add\": { \"doc\" : " + solrDocument + " }");
+    }
+
+    /**
+     * Remove a single record from the solr index.
+     * <p>
+     * ds-present is not involved: the record still has its data in ds-storage, so ds-present would return a
+     * normal document for it. The deleted flag from ds-storage is the only thing that says it should go.
+     *
+     * @param solrUpdateUrl the solr update handler. Must not carry a commit parameter.
+     * @param recordId      the record to remove from the index.
+     * @return the outcome for this record.
+     */
+    static RecordIndexResult deleteSingleRecord(URL solrUpdateUrl, String recordId) {
+        return postToSolr(solrUpdateUrl, recordId, "\"delete\": { \"id\": \"" + recordId + "\" }");
+    }
+
+    /**
+     * POST a single solr update command, either an add or a delete.
+     *
+     * @param solrUpdateUrl the solr update handler. Must not carry a commit parameter.
+     * @param recordId      the record the command concerns, used for reporting.
+     * @param command       a solr update command without the surrounding object.
+     * @return the outcome for this record.
+     */
+    private static RecordIndexResult postToSolr(URL solrUpdateUrl, String recordId, String command) {
+        String payload = "{\n" + command + "\n}\n";
         try {
             HttpURLConnection solrServerConnection = (HttpURLConnection) solrUpdateUrl.openConnection();
             String solrResponse = HttpPostUtil.callPost(solrServerConnection,

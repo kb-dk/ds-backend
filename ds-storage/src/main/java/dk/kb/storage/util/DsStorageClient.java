@@ -256,9 +256,9 @@ public class DsStorageClient {
                     .addParameter("origin",origin)
                     .addParameter("maxRecords",""+maxRecords)
                     .addParameter("mTime",""+mTime)
-                    .addParameter("includeDeleted)",""+includeDeleted)
+                    .addParameter("includeDeleted",""+includeDeleted)
                     .build();
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new ArrayList<DsRecordMinimalDto>(), null);              
+            return Service2ServiceRequest.httpCallWithOAuthTokenAsDtoList(uri,"GET", new DsRecordMinimalDto(), null);              
         }
         catch (URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
