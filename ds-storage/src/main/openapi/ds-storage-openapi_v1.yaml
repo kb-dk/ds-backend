@@ -483,7 +483,7 @@ paths:
         Extract a list of records with a given batch size by origin and mTime larger than input.        
          The records will only have the id, mTime, referenceId,kalturaId  and deleted fields. This means that no actual data can be retrieved through this endpoint. It can however be used
          for operations where the data from the record isn't needed. Such as updating Kaltura IDs for records, which is done with referenceId and kalturaId only.
-      operationId: getMinimalRecordsJSON
+      operationId: getMinimalRecordsJson
       parameters:
         - name: origin
           in: query

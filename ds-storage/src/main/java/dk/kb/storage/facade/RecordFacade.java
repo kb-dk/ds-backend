@@ -52,7 +52,7 @@ public class RecordFacade {
         while (pending > 0) {
             int request = pending < batchSize ? (int) pending : batchSize;
             long delivered = BaseModuleStorage.performStorageAction(id, RecordStorage.class, storage -> {
-                ArrayList<DsRecordMinimalDto> records = ((RecordStorage) storage).getReferenceIds(origin, lastMTime.get(), request,true);
+                List<DsRecordMinimalDto> records = ((RecordStorage) storage).getReferenceIds(origin, lastMTime.get(), request, true);
                 writer.writeAll(records);
                 if (!records.isEmpty()) {
                     lastMTime.set(records.get(records.size() - 1).getmTime());

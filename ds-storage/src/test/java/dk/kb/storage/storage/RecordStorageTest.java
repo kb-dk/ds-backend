@@ -111,7 +111,7 @@ public class RecordStorageTest extends TestcontainersUtil {
         
         long mTimeNew = recordUpdated.getmTime();
         //Test minimal dto has deleted flag
-        ArrayList<DsRecordMinimalDto> minimal = recordStorage.getReferenceIds(origin, mTimeNew,1,true);
+        List<DsRecordMinimalDto> minimal = recordStorage.getReferenceIds(origin, mTimeNew, 1, true);
         assertTrue(minimal.get(0).getDeleted());
         
         //Update it and deleted flag should be removed
