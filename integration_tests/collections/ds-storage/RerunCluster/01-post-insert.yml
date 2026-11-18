@@ -1,11 +1,11 @@
 info:
-  name: POST rerun-cluster - insert (2 items)
+  name: POST rerun-clusters - insert (2 items)
   type: http
   seq: 1
 
 http:
   method: POST
-  url: "{{baseUrl}}/rerun-cluster"
+  url: "{{baseUrl}}/rerun-clusters"
   headers:
     - name: Content-Type
       value: application/json

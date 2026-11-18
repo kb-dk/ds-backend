@@ -1,11 +1,11 @@
 info:
-  name: POST rerun-cluster - invalid UUID in body returns 500
+  name: POST rerun-clusters - invalid UUID in body returns 500
   type: http
   seq: 4
 
 http:
   method: POST
-  url: "{{baseUrl}}/rerun-cluster"
+  url: "{{baseUrl}}/rerun-clusters"
   headers:
     - name: Content-Type
       value: application/json

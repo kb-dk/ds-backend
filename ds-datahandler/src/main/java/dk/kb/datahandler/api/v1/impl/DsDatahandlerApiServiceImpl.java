@@ -174,6 +174,7 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
     @Override
     public RecordsCountDto updateRerunClusters() {
         try {
+            log.info("Starting updating reruns");
             return DsDatahandlerFacade.getRerunClusters();
         } catch (Exception e) {
             throw handleException(e);
