@@ -144,6 +144,17 @@ curl --request POST "http://localhost:8084/ds-datahandler/v1/kaltura/validate?dr
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
+The call returns `204` with no body once the job is done. Find the dry run result here:
+
+- The job message, e.g. `Dry run: 3 records would have kaltura_id changed`:
+  ```shell
+  curl "http://localhost:8084/ds-datahandler/v1/monitor/jobs?category=KALTURA_VALIDATION"
+  ```
+- The log has the summary and one line per affected record. All of them contain `DRY RUN`:
+  ```shell
+  docker logs ds-datahandler 2>&1 | grep "DRY RUN"
+  ```
+
 ### Reindex Solr
 
 So kaltura_id can be found in Solr

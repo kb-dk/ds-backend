@@ -273,15 +273,11 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'Start job that validates that kaltura_id values registered on records in ds-storage still point to a Kaltura entry with status READY.
-       This is not a delta job, so all records in ds-storage with a kaltura_id are (re)checked on every run. Upload error markers (ERROR_*, e.g. ERROR_FILE_MISSING) and records marked for delete are skipped.
-       Entries in status IMPORT, PRECONVERT, PENDING or MODERATE are skipped. Entries that never finish must be deleted manually in Kaltura; the next run then clears the kaltura_id.
-       Entries in status ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE or INFECTED are kept and the kaltura_id is set to ERROR_KALTURA_TRANSCODING, ERROR_KALTURA_IMPORT, ERROR_KALTURA_BLOCKED or ERROR_KALTURA_SCAN.
-       To retry such a record, delete the entry in Kaltura first and then clear the kaltura_id. Otherwise the upload links the failed entry again.
-       Entries in status NO_CONTENT are deleted and the kaltura_id is cleared. A kaltura_id that does not exist in Kaltura is cleared. Any other status is skipped with a warning.
-       No solr index job is started. Changed records are picked up by the next solr delta index.
-       With dryRun=true nothing is changed. A summary of kaltura_ids that would be changed is logged, including how many entries had to be confirmed with media.get.
-       The job can not be started while a kaltura upload job is running, and kaltura upload can not be started while it runs.'
+      summary: 'Start job that checks every kaltura_id in ds-storage against Kaltura. Records with ERROR_* markers or marked for delete are skipped.
+       Not found in Kaltura: kaltura_id is cleared. NO_CONTENT: entry is deleted and kaltura_id is cleared.
+       Failed entries (ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE, INFECTED): kaltura_id is set to an ERROR_KALTURA_* marker. To retry, delete the entry in Kaltura and clear the kaltura_id.
+       Entries still processing, and unknown statuses, are skipped.
+       Changed records are picked up by the next solr delta index. Can not run at the same time as kaltura upload.'
       security:
         - KBOAuth:
             - any
@@ -290,7 +286,7 @@ paths:
         - name: dryRun
           in: query
           required: false
-          description: 'If true, nothing is changed in Kaltura or storage. A summary of kaltura_ids that would be changed is logged.'
+          description: 'If true, nothing is changed. What would change is logged and summarised in the job message.'
           schema:
             type: boolean
             default: false
