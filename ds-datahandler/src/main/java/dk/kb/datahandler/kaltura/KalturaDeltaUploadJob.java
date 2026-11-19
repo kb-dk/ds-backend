@@ -346,31 +346,8 @@ public class KalturaDeltaUploadJob {
         if (kalturaClient != null) {
             return; // already inititalised
         }
-
-        String kalturaUrl = ServiceConfig.getKalturaUrl();
-        int partnerId = ServiceConfig.getKalturaPartnerId();
-        String adminSecret = null;// We use appTokens instead
-        String userId = ServiceConfig.getKalturaUserId();
-        String token = ServiceConfig.getKalturaToken();
-        String tokenId = ServiceConfig.getKalturaTokenId();
-        int sessionDurationSeconds = ServiceConfig.getKalturaSessionDurationSeconds();
-        int sessionRefreshThreshold = ServiceConfig.getKalturaSessionRefreshThreshold();
-        int conversionQueueThreshold = ServiceConfig.getConversionQueueThreshold();
-        int conversionQueueDelaySeconds = ServiceConfig.getConversionQueueDelaySeconds();
-
         try {
-            kalturaClient = new DsKalturaClient(
-                    kalturaUrl,
-                    userId,
-                    partnerId,
-                    token,
-                    tokenId,
-                    adminSecret,
-                    sessionDurationSeconds,
-                    sessionRefreshThreshold,
-                    conversionQueueThreshold,
-                    conversionQueueDelaySeconds
-            );
+            kalturaClient = KalturaUtil.createKalturaClient();
         } catch (Exception e) {
             log.error("Could not instantiate DsKaltura client.", e);
         }

@@ -2,7 +2,9 @@ package dk.kb.datahandler.kaltura;
 
 import com.kaltura.client.enums.EntryStatus;
 import com.kaltura.client.enums.MediaType;
+import com.kaltura.client.types.APIException;
 import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,25 @@ public class KalturaUtil {
         DOMS_RADIOTV_PATH = ServiceConfig.getStreamPathDomsRadioTv();
         PRESERVICA_TV_PATH=ServiceConfig.getStreamPathPreservicaTv();
         PRESERVICA_RADIO_PATH=ServiceConfig.getStreamPathPreservicaRadio();        
+    }
+
+    /**
+     * Create a Kaltura client from the service configuration. Authenticates with an app token, not the admin secret.
+     *
+     * @throws APIException If the client can not start a Kaltura session.
+     */
+    public static DsKalturaClient createKalturaClient() throws APIException {
+        return new DsKalturaClient(
+                ServiceConfig.getKalturaUrl(),
+                ServiceConfig.getKalturaUserId(),
+                ServiceConfig.getKalturaPartnerId(),
+                ServiceConfig.getKalturaToken(),
+                ServiceConfig.getKalturaTokenId(),
+                null, // adminSecret. App tokens are used instead.
+                ServiceConfig.getKalturaSessionDurationSeconds(),
+                ServiceConfig.getKalturaSessionRefreshThreshold(),
+                ServiceConfig.getConversionQueueThreshold(),
+                ServiceConfig.getConversionQueueDelaySeconds());
     }
 
     /**
