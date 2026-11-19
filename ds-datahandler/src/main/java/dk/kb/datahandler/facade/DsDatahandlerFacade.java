@@ -564,19 +564,6 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * Creates new a new running job
-     * @param typeDto
-     * @param categoryDto
-     * @param source
-     * @param modifiedTimeFrom
-     * @param user
-     * @return jobDto JobDto that is running
-     */
-    public static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user) {
-        return startJob(typeDto, categoryDto, source, modifiedTimeFrom, user, new CategoryDto[0]);
-    }
-
-    /**
      * Creates a new running job, unless a job of the same category and source, or a job of one of the
      * blocking categories without a source, is already running.
      * The check and the insert are not atomic, and running jobs are marked failed when an instance starts. This
