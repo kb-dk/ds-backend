@@ -6,9 +6,10 @@ import dk.kb.util.Resolver;
 import java.util.HashMap;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +30,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         return PRESERVICA2SCHEMAORG;
     }
 
-    @BeforeAll
-    public static void beforeMethod() {
-        if (Resolver.getPathFromClasspath("internal_test_files/preservica7") == null){
-            fail("Internal test files are not present. Unittest 'XSLTPreservicaSchemaOrgTransformerTest'");
+    // Only integration tests need the internal test files; the untagged tests use tracked records.
+    @BeforeEach
+    void requireInternalTestFiles(TestInfo testInfo) {
+        if (testInfo.getTags().contains("integration")
+                && Resolver.getPathFromClasspath("internal_test_files/preservica7") == null) {
+            fail("Internal test files are not present. Integration tests in 'XSLTPreservicaSchemaOrgTransformerTest' cannot run.");
         }
     }
 
@@ -451,6 +454,24 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertTrue(transformedJSON.contains("\"kb:access_individual_prohibition\":\"Nej\"," +
                                                         "\"kb:access_claused\":\"Nej\"," +
                                                         "\"kb:access_malfunction\":\"Nej\""));
+    }
+
+    @Test
+    void transform_whenIndividueltForbudIsJa_thenAccessIndividualProhibitionIsJa() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_JA);
+        assertTrue(transformedJSON.contains("\"kb:access_individual_prohibition\":\"Ja\""), transformedJSON);
+    }
+
+    @Test
+    void transform_whenIndividueltForbudIsNej_thenAccessIndividualProhibitionIsNej() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_NEJ);
+        assertTrue(transformedJSON.contains("\"kb:access_individual_prohibition\":\"Nej\""), transformedJSON);
+    }
+
+    @Test
+    void transform_whenIndividueltForbudIsMissing_thenAccessIndividualProhibitionIsAbsent() throws IOException {
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_MISSING);
+        assertFalse(transformedJSON.contains("kb:access_individual_prohibition"), transformedJSON);
     }
 
     @Tag("integration")
