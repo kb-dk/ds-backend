@@ -15,12 +15,14 @@ import java.util.Map;
  * {@link DsKalturaClient} that never calls Kaltura. {@code listMediaEntry} returns the configured entries and keeps
  * the last filter and pager it was called with. {@code media.get} can not see the requested id, so it returns the
  * first configured entry, the Kaltura not found error if there are none, or the error set with {@link #setGetError}.
+ * {@code media.delete} succeeds, or returns the error set with {@link #setDeleteError}.
  */
 class EntryStatusStubKalturaClient extends DsKalturaClient {
     private final Map<String, EntryStatus> entries;
     private MediaEntryFilter lastFilter;
     private FilterPager lastPager;
     private APIException getError;
+    private APIException deleteError;
 
     EntryStatusStubKalturaClient(Map<String, EntryStatus> entries) throws APIException {
         super("http://localhost", "test@kb.dk", 0, "token", "tokenId", null, 86400, 3600, 10, 1);
@@ -37,6 +39,10 @@ class EntryStatusStubKalturaClient extends DsKalturaClient {
 
     void setGetError(APIException getError) {
         this.getError = getError;
+    }
+
+    void setDeleteError(APIException deleteError) {
+        this.deleteError = deleteError;
     }
 
     @Override
@@ -69,6 +75,9 @@ class EntryStatusStubKalturaClient extends DsKalturaClient {
             }
             Map.Entry<String, EntryStatus> entry = entries.entrySet().iterator().next();
             return new Response<>(mediaEntry(entry.getKey(), entry.getValue()), null);
+        }
+        if ("media.delete".equals(requestBuilder.getTag())) {
+            return new Response<>(null, deleteError);
         }
         throw new IllegalStateException("Unexpected request: " + requestBuilder.getTag());
     }

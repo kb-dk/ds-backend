@@ -1,6 +1,7 @@
 package dk.kb.datahandler.kaltura;
 
 import com.kaltura.client.enums.EntryStatus;
+import com.kaltura.client.types.APIException;
 import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.StreamErrorTypeDto;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -434,6 +436,25 @@ class KalturaValidationUnitTest {
         // Assert
         assertEquals(0, summary.getFallbackLookups());
         service.verify(() -> KalturaValidationJob.getEntryStatus(any()), never());
+    }
+
+    @Test
+    void testValidateRecord_whenNoContentDeleteFails_thenKalturaIdIsNotCleared() throws Exception {
+        // Arrange
+        // Clearing kaltura_id after a failed delete would leave the entry in Kaltura with no record pointing at it.
+        ValidationSummary summary = new ValidationSummary();
+        APIException permissionError = new APIException("No permission");
+        permissionError.setCode("SERVICE_FORBIDDEN");
+        doThrow(permissionError).when(KalturaValidationJob.kalturaClient).deleteEntry(KALTURA_ID);
+
+        // Act
+        InternalServiceException thrown = assertThrows(InternalServiceException.class, () ->
+                KalturaValidationJob.validateRecord(null, ID, FILE_ID, KALTURA_ID, EntryStatus.NO_CONTENT, false, summary));
+
+        // Assert
+        assertSame(permissionError, thrown.getCause());
+        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
+        assertEquals(0, summary.size());
     }
 
     // ─── initKalturaClient ───────────────────────────────────────────────────

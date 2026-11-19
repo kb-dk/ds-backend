@@ -87,6 +87,27 @@ public class DsKalturaClient extends DsKalturaClientBase {
     }
 
     /**
+     * Delete an entry and all its meta-data in Kaltura. An entry that does not exist counts as deleted.
+     * Unlike {@link #deleteStreamByEntryId}, any other API error is thrown, so the caller knows the entry is still
+     * in Kaltura.
+     *
+     * @param entryId The internal Kaltura entry id.
+     * @throws APIException if Kaltura did not delete the entry.
+     */
+    public void deleteEntry(String entryId) throws APIException {
+        try {
+            handleRequest(MediaService.delete(entryId));
+        } catch (APIException e) {
+            if (ENTRY_ID_NOT_FOUND.equals(e.getCode())) {
+                log.info("Kaltura entryId='{}' was already deleted", entryId);
+                return;
+            }
+            throw e;
+        }
+        log.info("Deleted kaltura entryId='{}'", entryId);
+    }
+
+    /**
      * Block a stream and all meta-data for the record in Kaltura.
      * The stream can not be played. An Kaltura administrator can still see the stream in the KMC and remove the flag it needed.
      * In KMC refine -> moderation status -> rejected so see a list of all rejected streams and search in them.

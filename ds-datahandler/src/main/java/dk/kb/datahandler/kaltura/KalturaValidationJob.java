@@ -238,17 +238,15 @@ public class KalturaValidationJob {
     /**
      * Delete a stream in Kaltura.
      *
+     * An entry that is already gone counts as deleted.
+     *
      * @param kalturaEntryId The internal kaltura entryId
-     * @throws APIException If API error
+     * @throws APIException If Kaltura did not delete the entry. The caller must then keep the kaltura_id, or the
+     *                      entry is left in Kaltura with no record pointing at it.
      */
     static void deleteStream(String kalturaEntryId) throws APIException {
         initKalturaClient();
-        boolean deleted = kalturaClient.deleteStreamByEntryId(kalturaEntryId);
-        if (deleted) {
-            log.info("Deleted kaltura entryId='{}'", kalturaEntryId);
-        } else {
-            log.warn("Failed deleting kaltura entryId='{}'", kalturaEntryId);
-        }
+        kalturaClient.deleteEntry(kalturaEntryId);
     }
 
     /**
