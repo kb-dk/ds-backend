@@ -243,9 +243,9 @@ public class DsDatahandlerFacade {
      * No solr index job is started. Changed records get a new mTime and are picked up by the next solr delta index.
      * The job can not be started while a kaltura upload job is running, and blocks kaltura upload while it runs.
      *
-     * @param dryRun If true, nothing is changed in Kaltura or storage.
-     *               A summary of the kaltura_ids that would be changed is logged, with the number of entries that
-     *               had to be confirmed one at a time with media.get.
+     * @param dryRun If true, nothing is changed in Kaltura or storage. Each record that would be changed is logged.
+     *               The counts per reason, and the number of entries confirmed one at a time with media.get, are
+     *               logged at the end. The total goes in the job message.
      * @throws InternalServiceException
      */
     public static void kalturaValidate(boolean dryRun) throws InternalServiceException {

@@ -54,11 +54,11 @@ public class KalturaValidationJob {
      * <li>Any other status: skipped with a warning, so a status unknown to this job never causes a delete.</li>
      * </ul>
      * A cleared kaltura_id makes the record eligible for upload again by KalturaDeltaUploadJob.
-     * 4) A summary of the kaltura_ids that were cleared or marked with an error, and the number of entries that had to
-     * be confirmed with media.get, is logged at the end.
+     * 4) Each record that is cleared or marked is logged when it is handled. The counts per reason, and the number of
+     * entries that had to be confirmed with media.get, are logged at the end.
      *
-     * @param dryRun If true, no Kaltura entries are deleted and no kaltura_ids are cleared in storage. Only the
-     *               summary of what would have been done is logged.
+     * @param dryRun If true, no Kaltura entries are deleted and no kaltura_ids are cleared in storage. What would
+     *               have been done is only logged.
      * @return number of records where the kaltura_id was cleared or marked, or would have been if dryRun
      * @throws InternalServiceException If fetching records from storage fails, or if a Kaltura/storage call for a
      *                                  record fails. Stop validating more.
@@ -68,7 +68,7 @@ public class KalturaValidationJob {
         try {
             validateAllRecords(dryRun, summary);
         } finally {
-            // Also log on failure, so the records handled before the error are visible
+            // Also log on failure, so the counts handled before the error are visible
             summary.logSummary(dryRun);
         }
         return summary.size();
@@ -153,7 +153,7 @@ public class KalturaValidationJob {
             }
 
             String prefix = dryRun ? "DRY RUN: " : "";
-            String verb = dryRun ? "Would" : "Will";
+            String verb = dryRun ? "Would" : "Going to";
             StreamErrorTypeDto streamError = KalturaUtil.getStreamError(status);
             if (streamError != null) { //Entry failed in Kaltura. Keep the entry and mark the record with the error.
                 log.warn("{}Kaltura entry='{}' for id='{}' has status='{}'. {} set kaltura_id to '{}'.",
@@ -161,7 +161,7 @@ public class KalturaValidationJob {
                 if (!dryRun) {
                     updateKalturaIdForRecordWithError(storageClient, fileId, streamError);
                 }
-                summary.addMarkedError(id, kalturaId, status, streamError);
+                summary.addMarkedError();
             } else if (status == EntryStatus.NO_CONTENT) { //Entry exists in Kaltura but has no stream. Remove it.
                 log.warn("{}Kaltura entry='{}' for id='{}' has status='{}'. {} delete entry and clear kaltura_id.",
                         prefix, kalturaId, id, status, verb);
@@ -169,14 +169,14 @@ public class KalturaValidationJob {
                     deleteStream(kalturaId);
                     clearKalturaIdForRecord(storageClient, fileId);
                 }
-                summary.addNoContent(id, kalturaId);
+                summary.addNoContent();
             } else if (status == null) {
                 log.warn("{}Kaltura entry='{}' for id='{}' does not exist in Kaltura. {} clear kaltura_id.",
                         prefix, kalturaId, id, verb);
                 if (!dryRun) {
                     clearKalturaIdForRecord(storageClient, fileId);
                 }
-                summary.addNotFound(id, kalturaId);
+                summary.addNotFound();
             } else { //Never delete on a status this job does not know
                 log.warn("Kaltura entry='{}' for id='{}' has unhandled status='{}'. Skipped.", kalturaId, id, status);
             }
