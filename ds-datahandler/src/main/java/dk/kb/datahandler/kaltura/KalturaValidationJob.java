@@ -99,6 +99,7 @@ public class KalturaValidationJob {
             if (records.isEmpty()) {
                 return;
             }
+            long batchMTimeFrom = mTimeFromCurrent;
             mTimeFromCurrent = records.get(records.size() - 1).getmTime(); //Storage returns records with mTime after this
 
             List<DsRecordKalturaDto> recordsToValidate = records.stream()
@@ -116,9 +117,9 @@ public class KalturaValidationJob {
             try {
                 batchStatuses = getEntryStatuses(kalturaIds);
             } catch (Exception e) {
-                log.error("Error fetching Kaltura entry statuses for origin={} batch after mTime={}", origin, mTimeFromCurrent, e);
+                log.error("Error fetching Kaltura entry statuses for origin={} batch after mTime={}", origin, batchMTimeFrom, e);
                 throw new InternalServiceException("Error fetching Kaltura entry statuses for origin=" + origin +
-                        " batch after mTime=" + mTimeFromCurrent, e);
+                        " batch after mTime=" + batchMTimeFrom, e);
             }
 
             for (DsRecordKalturaDto record : recordsToValidate) {

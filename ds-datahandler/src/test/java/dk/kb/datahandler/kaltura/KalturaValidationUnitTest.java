@@ -19,6 +19,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -273,6 +274,29 @@ class KalturaValidationUnitTest {
         service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
     }
 
+    @Test
+    void testValidateKalturaIds_whenGetEntryStatusesThrows_thenMessageNamesMTimeTheBatchWasFetchedFrom() {
+        // Arrange
+        DsRecordKalturaDto first = buildRecord("record-1", "file-1", "kaltura-1");
+        first.setmTime(100L);
+        DsRecordKalturaDto second = buildRecord("record-2", "file-2", "kaltura-2");
+        second.setmTime(200L);
+
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.tv"), eq(0L), anyInt()))
+                .thenReturn(List.of(first));
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.tv"), eq(100L), anyInt()))
+                .thenReturn(List.of(second));
+        service.when(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-1")))
+                .thenReturn(Map.of("kaltura-1", EntryStatus.READY));
+        service.when(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-2")))
+                .thenThrow(new RuntimeException("Kaltura API error"));
+
+        // Act
+        Exception exception = assertThrows(InternalServiceException.class, () -> KalturaValidationJob.validateKalturaIds(false));
+
+        // Assert
+        assertTrue(exception.getMessage().endsWith("batch after mTime=100"), exception.getMessage());
+    }
 
     @Test
     void testValidateKalturaIds_whenKalturaIdIsBlank_thenRecordIsSkipped() {
