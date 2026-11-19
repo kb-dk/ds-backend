@@ -522,13 +522,12 @@ paths:
             default: 500
         - name: mTime
           in: query
-          description: 'Only extract records after this mTime.'
+          description: 'Only extract records after this mTime. Starts from the beginning if not given.'
           required: false
           schema:
             type: integer
             format: int64
             example: 1701262548465000
-            default: 0
       responses:
         '200':
           description: 'List of DsRecordKaltura'
