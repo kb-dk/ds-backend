@@ -157,6 +157,28 @@ public class RecordStorageTest extends TestcontainersUtil {
     }
 
     @Test
+    public void testUpdateKalturaId_whenBlank_thenStoredAsNull() throws Exception {
+        // Arrange
+        String recordId = "test_blank_kaltura_id";
+        String kalturaReferenceId = "kaltura_ref_blank";
+        DsRecordDto record = new DsRecordDto();
+        record.setId(recordId);
+        record.setOrigin("origin_123");
+        record.setData("");
+        record.setRecordType(RecordTypeDto.MANIFESTATION);
+        record.setReferenceId(kalturaReferenceId);
+        recordStorage.createNewRecord(record);
+        recordStorage.updateKalturaIdForRecords(kalturaReferenceId, "0_old");
+
+        // Act
+        recordStorage.updateKalturaIdForRecords(kalturaReferenceId, " ");
+        DsRecordDto recordUpdated = recordStorage.loadRecord(recordId);
+
+        // Assert
+        Assertions.assertNull(recordUpdated.getKalturaId());
+    }
+
+    @Test
     public void testGetKalturaRecords() throws Exception {
         // Arrange
         String origin = "kaltura.test";

@@ -1006,6 +1006,9 @@ public class RecordStorage extends BaseModuleStorage {
     }
 
     public void updateKalturaIdForRecords(String referenceId, String kalturaId) throws Exception {
+        if (kalturaId != null && kalturaId.isBlank()) { //No kaltura_id is always null
+            kalturaId = null;
+        }
         ArrayList<String> recordIds = getIdsByReferenceId(referenceId);
 
         if (recordIds.size() > 1) {

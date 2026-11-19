@@ -273,6 +273,27 @@ class KalturaValidationUnitTest {
         service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any()), never());
     }
 
+
+    @Test
+    void testValidateKalturaIds_whenKalturaIdIsBlank_thenRecordIsSkipped() {
+        // Arrange
+        DsRecordKalturaDto blank = buildRecord("record-1", "file-1", "");
+        DsRecordKalturaDto valid = buildRecord("record-2", "file-2", "kaltura-2");
+
+        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
+                .thenReturn(List.of(blank, valid), List.of());
+        service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
+                .thenReturn(Map.of("kaltura-2", EntryStatus.READY));
+
+        // Act
+        int result = KalturaValidationJob.validateKalturaIds(false);
+
+        // Assert
+        assertEquals(0, result);
+        service.verify(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-2")), times(1));
+        service.verify(() -> KalturaValidationJob.getEntryStatus(any()), never());
+    }
+
     @Test
     void testValidateKalturaIds_whenEntryMissingFromBatchButReady_thenRecordIsNotCleared() {
         // Since Kaltura media.list can not be trusted to always return all ID's, each missing entry must be double

@@ -14,6 +14,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `StreamErrorType` values `ERROR_KALTURA_TRANSCODING`, `ERROR_KALTURA_IMPORT`, `ERROR_KALTURA_BLOCKED` and
   `ERROR_KALTURA_SCAN`.
 
+### Changed
+
+- A blank kaltura_id is treated as null when a record is created or updated, or its kaltura_id is set by referenceId. On a record update with an unchanged referenceId, the existing kaltura_id is now kept instead of cleared. Existing rows are not changed.
+
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 
 ## [8.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.1) - 2026-10-14

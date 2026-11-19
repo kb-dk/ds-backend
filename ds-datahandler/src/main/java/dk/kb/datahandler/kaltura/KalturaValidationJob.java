@@ -103,6 +103,7 @@ public class KalturaValidationJob {
 
             List<DsRecordKalturaDto> recordsToValidate = records.stream()
                     .filter(record -> !Boolean.TRUE.equals(record.getDeleted()))
+                    .filter(KalturaValidationJob::hasKalturaId)
                     .collect(Collectors.toList());
             if (recordsToValidate.isEmpty()) {
                 continue;
@@ -186,6 +187,18 @@ public class KalturaValidationJob {
             log.error("Error validating kaltura_id='{}' for id='{}'", kalturaId, id, e);
             throw new InternalServiceException("Error validating kaltura_id: " + kalturaId + " for id: " + id, e);
         }
+    }
+
+    /**
+     * Storage stores a blank kaltura_id as null, but older rows can still hold an empty string. Kaltura can not
+     * look up a blank id, and the error would stop the whole run, so such records are skipped.
+     */
+    private static boolean hasKalturaId(DsRecordKalturaDto record) {
+        if (record.getKalturaId() == null || record.getKalturaId().isBlank()) {
+            log.warn("Record id='{}' has a blank kaltura_id. Skipped. Set it to null in storage.", record.getId());
+            return false;
+        }
+        return true;
     }
 
     static void clearKalturaIdForRecord(DsStorageClient storageClient, String fileId) {
