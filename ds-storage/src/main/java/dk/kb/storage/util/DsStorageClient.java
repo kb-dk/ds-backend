@@ -29,18 +29,15 @@ import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
 import dk.kb.util.webservice.stream.ContinuationInputStream;
 import dk.kb.util.webservice.stream.ContinuationStream;
-
+import org.apache.hc.core5.net.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import org.apache.hc.core5.net.URIBuilder;
 
 /**
  * Client for the service. Intended for use by other projects that calls this service.
@@ -230,7 +227,7 @@ public class DsStorageClient {
                     .addParameter("maxRecords",""+maxRecords)
                     .addParameter("mTime",""+mTime)                    
                     .build();
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new ArrayList<DsRecordMinimalDto>(), null);              
+            return Service2ServiceRequest.httpCallWithOAuthTokenAsDtoList(uri,"GET", new DsRecordMinimalDto(), null);              
         }
         catch (URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
@@ -257,9 +254,9 @@ public class DsStorageClient {
                     .addParameter("origin",origin)
                     .addParameter("mTime",""+mTime)
                     .addParameter("maxRecords",""+maxRecords)
-                    .addParameter("includeDeleted)",""+includeDeleted)
+                    .addParameter("includeDeleted",""+includeDeleted)
                     .build();
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new ArrayList<DsRecordMinimalDto>(), null);              
+            return Service2ServiceRequest.httpCallWithOAuthTokenAsDtoList(uri,"GET", new DsRecordMinimalDto(), null);              
         }
         catch (URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
@@ -470,9 +467,30 @@ public class DsStorageClient {
         catch(URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);
-        }                                      
+        }
     }
-    
+
+    /**
+     * Clear the Kaltura id for a record, setting it to null.
+     * Used when the kalturaId no longer points to a valid Kaltura entry, so the record becomes
+     * eligible for re-upload again.
+     *
+     * @param referenceId (required)
+     * @throws ServiceException if fails to make API call
+     */
+    public void clearKalturaIdForRecord(String referenceId) throws ServiceException {
+        try {
+            URI uri = new URIBuilder(serviceURI)
+                    .appendPathSegments("record", "clearKalturaId")
+                    .addParameter("referenceId", referenceId)
+                    .build();
+            Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST", null, null);
+        } catch (URISyntaxException e) {
+            log.error("Invalid url:" + e.getMessage());
+            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
+        }
+    }
+
     /**
      * Create a new transcription.
      *

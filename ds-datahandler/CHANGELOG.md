@@ -7,6 +7,19 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `/kaltura/validate` checks the kaltura_ids of `ds.tv` and `ds.radio` records against Kaltura. Entries still
+  being processed (`IMPORT`, `PRECONVERT`, `PENDING`) or waiting for moderation are skipped. Entries that Kaltura
+  failed or rejected are kept and the kaltura_id is marked `ERROR_KALTURA_TRANSCODING`, `ERROR_KALTURA_IMPORT`,
+  `ERROR_KALTURA_BLOCKED` or `ERROR_KALTURA_SCAN`. To retry a marked record, delete the entry in Kaltura, then
+  clear the kaltura_id. `NO_CONTENT` entries are deleted and their kaltura_id cleared, as are kaltura_ids not
+  found in Kaltura. Supports `dryRun`, which is not recorded in the job log.
+  Solr is not reindexed by the job; changed records are picked up by the next delta index, after which cleared
+  records are uploaded again by `/kaltura/deltaupload`.
+- `/kaltura/validate` and `/kaltura/deltaupload` can not run at the same time. Starting one while the other is
+  running is rejected. A dry run of `/kaltura/validate` is not blocked and does not block.
+
 ## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26

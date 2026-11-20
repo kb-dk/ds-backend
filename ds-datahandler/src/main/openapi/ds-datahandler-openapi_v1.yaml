@@ -259,11 +259,37 @@ paths:
         - '${project.name}'
       summary: 'Start job that uploading streams to kaltura that does not have an kaltura_id already and are not marked with access_malfunction.
        Will only extract records from solr with access_malfuction:false and production_code_allowed:true
-       Storage records will be updated with the kalturaid. An solr delta index will be started after the job finishes. Also if it finishes unexpected'
+       Storage records will be updated with the kalturaid. An solr delta index will be started after the job finishes. Also if it finishes unexpected.
+       The job can not be started while a kaltura validation job is running.'
       security:
         - KBOAuth:
             - any
       operationId: kalturaDeltaUpload
+      responses:
+        '204':
+          description: No Content - The job finished and the server did not deliver any content.
+
+  /kaltura/validate:
+    post:
+      tags:
+        - '${project.name}'
+      summary: 'Start job that checks every kaltura_id in ds-storage against Kaltura. Records with ERROR_* markers are skipped.
+       Not found in Kaltura: kaltura_id is cleared. NO_CONTENT: entry is deleted and kaltura_id is cleared.
+       Failed entries (ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE, INFECTED): kaltura_id is set to an ERROR_KALTURA_* marker. To retry, delete the entry in Kaltura and clear the kaltura_id.
+       Entries still processing, and unknown statuses, are skipped.
+       Changed records are picked up by the next solr delta index. Can not run at the same time as kaltura upload, except as a dry run.'
+      security:
+        - KBOAuth:
+            - any
+      operationId: kalturaValidate
+      parameters:
+        - name: dryRun
+          in: query
+          required: false
+          description: 'If true, nothing is changed and no job is logged. What would change is written to the service log.'
+          schema:
+            type: boolean
+            default: false
       responses:
         '204':
           description: No Content - The job finished and the server did not deliver any content.
@@ -600,6 +626,7 @@ components:
         - solr index
         - solr build suggest
         - kaltura upload
+        - kaltura validation
         - transcriptions
         - rerun clusters
       x-enum-varnames:
@@ -607,6 +634,7 @@ components:
         - SOLR_INDEX
         - SOLR_BUILD_SUGGEST
         - KALTURA_UPLOAD
+        - KALTURA_VALIDATION
         - TRANSCRIPTIONS
         - RERUN_CLUSTERS
       x-enum-descriptions:
@@ -614,6 +642,7 @@ components:
         - solr index
         - solr build suggest
         - kaltura upload
+        - kaltura validation
         - transcriptions
         - rerun clusters
 

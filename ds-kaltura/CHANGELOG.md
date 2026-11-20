@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `DsKalturaClient.getEntryStatus`, `getEntryStatuses` (batch) and `listMediaEntry` with a pager.
+- `DsKalturaClient.deleteEntry`. Throws if Kaltura does not delete the entry. An entry that does not exist counts as deleted.
+
 ## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26

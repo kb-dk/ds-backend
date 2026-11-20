@@ -1,21 +1,11 @@
 package dk.kb.datahandler.facade;
 
-import dk.kb.storage.model.v1.CreatedDto;
-import dk.kb.storage.model.v1.RerunClusterRequestDto;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import com.kaltura.client.types.APIException;
+
+import dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl;
+import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.datahandler.kaltura.KalturaDeltaUploadJob;
+import dk.kb.datahandler.kaltura.KalturaValidationJob;
 import dk.kb.datahandler.model.v1.*;
 import dk.kb.datahandler.oai.OaiResponseFilterDrArchive;
 import dk.kb.datahandler.oai.OaiResponseFilterPreservicaSeven;
@@ -24,19 +14,9 @@ import dk.kb.datahandler.storage.BaseModuleStorage;
 import dk.kb.datahandler.storage.JobStorage;
 import dk.kb.datahandler.storage.RerunClusterStorage;
 import dk.kb.datahandler.transcriptions.TranscriptionJob;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl;
-import dk.kb.datahandler.config.ServiceConfig;
-
+import dk.kb.storage.model.v1.CreatedDto;
+import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.datahandler.oai.OaiHarvestClient;
-import dk.kb.datahandler.kaltura.KalturaDeltaUploadJob;
 import dk.kb.datahandler.oai.OaiRecord;
 import dk.kb.datahandler.oai.OaiResponse;
 import dk.kb.datahandler.oai.OaiResponseFilter;
@@ -48,6 +28,27 @@ import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import dk.kb.util.webservice.exception.InvalidArgumentServiceException;
 import dk.kb.util.webservice.exception.ServiceException;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class DsDatahandlerFacade {
     private static final Logger log = LoggerFactory.getLogger(DsDatahandlerFacade.class);
@@ -187,6 +188,7 @@ public class DsDatahandlerFacade {
      * <li>Kaltura API error. Very rare this happens. Have not seen it yet.</li>
      * </ul>
      * It is important to mark the records as failed or a new delta upload job will start processing the same streams with errors every time.
+     * The job can not be started while a kaltura validation job is running.
      * A solr delta indexing job will be started if both the job completes succesfully or fails. 
      *  
      * @throws InternalServiceException
@@ -198,7 +200,8 @@ public class DsDatahandlerFacade {
         
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
-        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom,user);
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom, user,
+                CategoryDto.KALTURA_VALIDATION);
 
         log.info("Starting kaltura delta upload");
         try {
@@ -219,9 +222,60 @@ public class DsDatahandlerFacade {
         catch (Exception e) {
             log.error("Kaltura delta upload/indexing stopped due to error", e);
 
+            updateJob(jobDto, JobStatusDto.FAILED, e.getMessage(), OffsetDateTime.now(ZoneOffset.UTC), null, null);
+
+            throw e;
+        }
+    }
+
+    /**
+     * Start job that validates that kaltura_id values registered on records in ds-storage still point to a
+     * Kaltura entry with status READY.
+     * This is not a delta job, so all records with a kaltura_id are (re)checked on every run.
+     * Upload error markers (ERROR_*, e.g. ERROR_FILE_MISSING) are skipped.
+     * Entries in status IMPORT, PRECONVERT, PENDING or MODERATE are skipped.
+     * Entries in status ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE or INFECTED are kept, and the
+     * kaltura_id is set to ERROR_KALTURA_TRANSCODING, ERROR_KALTURA_IMPORT, ERROR_KALTURA_BLOCKED or
+     * ERROR_KALTURA_SCAN. To retry such a record, delete the entry in Kaltura first and then clear the kaltura_id,
+     * otherwise kalturaDeltaUpload links the failed entry again.
+     * Entries in status NO_CONTENT are deleted and the kaltura_id is cleared. A kaltura_id not found in Kaltura is
+     * cleared. A cleared kaltura_id makes the record eligible for kalturaDeltaUpload again.
+     * No solr index job is started. Changed records get a new mTime and are picked up by the next solr delta index.
+     * The job can not be started while a kaltura upload job is running, and blocks kaltura upload while it runs.
+     *
+     * @param dryRun If true, nothing is changed in Kaltura or storage and no job is created. Each record that would
+     *               be changed is logged. The counts per reason, the number of entries confirmed one at a time with
+     *               media.get, and the total are logged at the end. A dry run takes no job lock, so it can run
+     *               alongside kaltura upload.
+     * @throws InternalServiceException
+     */
+    public static void kalturaValidate(boolean dryRun) throws InternalServiceException {
+        if (dryRun) {
+            log.info("Starting kaltura validation dry run");
+            int numberRecordsChanged = KalturaValidationJob.validateKalturaIds(true);
+            log.info("Kaltura validation dry run completed. #records that would change={}", numberRecordsChanged);
+            return;
+        }
+
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
+        JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION, null, null, user,
+                CategoryDto.KALTURA_UPLOAD);
+
+        log.info("Starting kaltura validation");
+        try {
+            int numberRecordsChanged = KalturaValidationJob.validateKalturaIds(false);
+
+            log.info("Kaltura validation completed successfully. #records changed={}", numberRecordsChanged);
+
+            updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
+                    numberRecordsChanged, null);
+
+        } catch (Exception e) {
+            log.error("Kaltura validation stopped due to error", e);
+
             updateJob(jobDto, JobStatusDto.FAILED, e.getMessage(),  OffsetDateTime.now(ZoneOffset.UTC), null, null);
 
-            throw e; 
+            throw e;
         }
     }
 
@@ -517,15 +571,21 @@ public class DsDatahandlerFacade {
     }
 
     /**
-     * Creates new a new running job
+     * Creates a new running job, unless a job of the same category and source, or a job of one of the
+     * blocking categories without a source, is already running.
+     * The check and the insert are not atomic, and running jobs are marked failed when an instance starts. This
+     * assumes a single ds-datahandler instance, with jobs not started at the exact same time.
      * @param typeDto
      * @param categoryDto
      * @param source
      * @param modifiedTimeFrom
      * @param user
+     * @param blockingCategories categories of jobs that must not be running when this job is started
      * @return jobDto JobDto that is running
+     * @throws InvalidArgumentServiceException if a conflicting job is running
      */
-    public static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user) {
+    public static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user,
+                                  CategoryDto... blockingCategories) {
         JobDto jobDto = new JobDto();
 
         jobDto.setId(UUID.randomUUID());
@@ -542,6 +602,11 @@ public class DsDatahandlerFacade {
         UUID jobId = BaseModuleStorage.performStorageAction(databaseMessage, JobStorage.class, storage -> {
             if (((JobStorage) storage).hasRunningJob(categoryDto, source)) {
                 throw new InvalidArgumentServiceException("There is already a/an " + categoryDto + " job running");
+            }
+            for (CategoryDto blocking : blockingCategories) {
+                if (((JobStorage) storage).hasRunningJob(blocking, null)) {
+                    throw new InvalidArgumentServiceException("Cannot start " + categoryDto + " job while a/an " + blocking + " job is running");
+                }
             }
             return ((JobStorage) storage).createJob(jobDto);
         });

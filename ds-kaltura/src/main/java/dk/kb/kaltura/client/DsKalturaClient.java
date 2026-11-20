@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 public class DsKalturaClient extends DsKalturaClientBase {
     private static final Integer MAX_RETRY_COUNT = 3;
     private static final long CHUNK_SIZE_BYTES = 50 * 1024 * 1024; // 50MB
+    static final String ENTRY_ID_NOT_FOUND = "ENTRY_ID_NOT_FOUND";
 
     private final Integer conversionQueueThreshold;
     private final Integer conversionQueueRetryDelaySeconds;
@@ -86,6 +87,27 @@ public class DsKalturaClient extends DsKalturaClientBase {
     }
 
     /**
+     * Delete an entry and all its meta-data in Kaltura. An entry that does not exist counts as deleted.
+     * Unlike {@link #deleteStreamByEntryId}, any other API error is thrown, so the caller knows the entry is still
+     * in Kaltura.
+     *
+     * @param entryId The internal Kaltura entry id.
+     * @throws APIException if Kaltura did not delete the entry.
+     */
+    public void deleteEntry(String entryId) throws APIException {
+        try {
+            handleRequest(MediaService.delete(entryId));
+        } catch (APIException e) {
+            if (ENTRY_ID_NOT_FOUND.equals(e.getCode())) {
+                log.info("Kaltura entryId='{}' was already deleted", entryId);
+                return;
+            }
+            throw e;
+        }
+        log.info("Deleted kaltura entryId='{}'", entryId);
+    }
+
+    /**
      * Block a stream and all meta-data for the record in Kaltura.
      * The stream can not be played. An Kaltura administrator can still see the stream in the KMC and remove the flag it needed.
      * In KMC refine -> moderation status -> rejected so see a list of all rejected streams and search in them.
@@ -132,6 +154,65 @@ public class DsKalturaClient extends DsKalturaClientBase {
         }
 
         return response.getObjects().get(0).getObject().getId();
+    }
+
+    public ListResponse<MediaEntry> listMediaEntry(MediaEntryFilter filter, FilterPager pager) throws APIException {
+        return handleRequest(MediaService.list(filter, pager));
+    }
+
+    /**
+     * Get the status of a single Kaltura entry with media.get. Unlike media.list, this does not depend on paging, so
+     * it can confirm that an entry missing from {@link #getEntryStatuses} really does not exist.
+     *
+     * @param entryId The internal Kaltura entry id.
+     * @return The {@link EntryStatus} of the entry, or null if the entry does not exist or is deleted.
+     * @throws APIException if the client failed to establish a Kaltura session or if the request itself was
+     *                      unsuccessful for any other reason than the entry not being found.
+     */
+    public EntryStatus getEntryStatus(String entryId) throws APIException {
+        MediaEntry entry;
+        try {
+            entry = handleRequest(MediaService.get(entryId));
+        } catch (APIException e) {
+            if (ENTRY_ID_NOT_FOUND.equals(e.getCode())) {
+                log.info("No entry found at Kaltura for entryId:'{}'", entryId);
+                return null;
+            }
+            throw e;
+        }
+        return entry.getStatus() == EntryStatus.DELETED ? null : entry.getStatus();
+    }
+
+    /**
+     * Get the status of a batch of Kaltura entries with a single request. Unlike eSearch, the entry service
+     * returns entries in any status, not only READY.
+     *
+     * @param entryIds The internal Kaltura entry ids. At most {@link #getBatchSize()}.
+     * @return Map from entry id to {@link EntryStatus}. Entries not found in Kaltura are absent from the map.
+     * @throws IllegalArgumentException if there are more entryIds than the batch size.
+     * @throws APIException             if the client failed to establish a Kaltura session or if the request itself
+     *                                  was unsuccessful.
+     */
+    public Map<String, EntryStatus> getEntryStatuses(List<String> entryIds) throws APIException {
+        if (entryIds.size() > getBatchSize()) {
+            throw new IllegalArgumentException("Size of entryIds: " + entryIds.size() +
+                    " is greater than batchSize: " + getBatchSize());
+        }
+        if (entryIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        MediaEntryFilter filter = new MediaEntryFilter();
+        filter.setIdIn(String.join(",", entryIds));
+        filter.setStatusNotEqual(EntryStatus.DELETED);
+        FilterPager pager = new FilterPager();
+        pager.setPageSize(entryIds.size());
+        List<MediaEntry> entries = listMediaEntry(filter, pager).getObjects();
+
+        Map<String, EntryStatus> statuses = new LinkedHashMap<>();
+        for (MediaEntry entry : entries) {
+            statuses.put(entry.getId(), entry.getStatus());
+        }
+        return statuses;
     }
 
     /**

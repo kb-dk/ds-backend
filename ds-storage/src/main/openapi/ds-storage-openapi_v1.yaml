@@ -317,6 +317,26 @@ paths:
         '204':
           description: No Content - The request has been executed correct and the server did not deliver any content.
 
+  /record/clearKalturaId:
+    post:
+      tags:
+        - 'Record'
+      summary: 'Clear the Kaltura id for a record. '
+      security:
+        - KBOAuth:
+            - any
+      description: 'Set the Kaltura id for a record to null. Used when the kalturaId no longer points to a valid Kaltura entry, so the record can be picked up for re-upload.'
+      operationId: clearKalturaIdForRecord
+      parameters:
+        - name: referenceId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content - The request has been executed correct and the server did not deliver any content.
+
   /record/updateReferenceId:
     post:
       tags:
@@ -516,16 +536,16 @@ paths:
           schema:
             type: boolean
             example: false
-            default: false            
+            default: false
       responses:
         '200':
           description: 'List of DsRecordReferenceId'
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DsRecordMinimalList'                
-                
-                
+                $ref: '#/components/schemas/DsRecordMinimalList'
+
+
   /transcription:
     get:
       tags:
@@ -818,8 +838,8 @@ components:
         kalturaId:
           type: string
           description: 'The Kaltura  ID for the record. It can be null even if the record is Kaltura but the mapping has not been updated yet.  '
-        deleted:         
-          type: boolean 
+        deleted:
+          type: boolean
           description: 'Is record soft deleted'
 
     RecordsCount:
@@ -1056,10 +1076,22 @@ components:
         | ERROR_API            |  External system gave error when uploading stream. No futher information is known             |         
         | ERROR_FILE_MISSING   |  Stream file does not exist, path is calculated from metadata                                 |
         | ERROR_FILE_TOO_SHORT |  Byte length for file too small to be valid                                                   |
+        | ERROR_KALTURA_TRANSCODING |  Kaltura entry has status ERROR_CONVERTING. Transcoding of the uploaded stream failed      |
+        | ERROR_KALTURA_IMPORT |  Kaltura entry has status ERROR_IMPORTING. Kaltura failed importing the uploaded stream       |
+        | ERROR_KALTURA_BLOCKED |  Kaltura entry has status BLOCKED. Kaltura rejected the uploaded stream                       |
+        | ERROR_KALTURA_SCAN   |  Kaltura entry has status SCAN_FAILURE or INFECTED. The virus scan of the stream failed       |
+
+        The ERROR_KALTURA_* markers are set by the datahandler Kaltura validation job. The Kaltura entry is kept. To retry
+        the upload, first delete the entry in Kaltura, then clear the kaltura_id. Otherwise the upload links the failed
+        entry again.
       enum:
         - ERROR_API
         - ERROR_FILE_MISSING
         - ERROR_FILE_TOO_SHORT
+        - ERROR_KALTURA_TRANSCODING
+        - ERROR_KALTURA_IMPORT
+        - ERROR_KALTURA_BLOCKED
+        - ERROR_KALTURA_SCAN
       example: ERROR_FILE_MISSING
 
     # Basic status response component.

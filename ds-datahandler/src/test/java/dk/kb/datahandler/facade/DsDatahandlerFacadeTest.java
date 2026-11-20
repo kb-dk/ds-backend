@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.datahandler.kaltura.KalturaValidationJob;
 import dk.kb.datahandler.model.v1.CategoryDto;
 import dk.kb.datahandler.model.v1.JobDto;
 import dk.kb.datahandler.model.v1.JobStatusDto;
@@ -282,5 +283,68 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
         () -> DsDatahandlerFacade.kalturaDeltaUpload());
 
     assertEquals(expectedMessage, exception.getMessage());
+  }
+
+  /**
+   * Kaltura validation deletes entries that are not READY, so it must not run while a kaltura upload job is
+   * creating new entries.
+   */
+  @Test
+  public void kalturaValidate_whenKalturaUploadJobIsRunning_thenThrowInvalidArgumentServiceException() {
+    // Arrange
+    createRunningJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD);
+
+    // Act/Assert
+    Exception exception = Assertions.assertThrows(InvalidArgumentServiceException.class,
+        () -> DsDatahandlerFacade.kalturaValidate(false));
+
+    assertEquals("Cannot start kaltura validation job while a/an kaltura upload job is running", exception.getMessage());
+  }
+
+  @Test
+  public void kalturaValidate_whenDryRun_thenNoJobIsCreated() throws Exception {
+    // Arrange
+    try (MockedStatic<KalturaValidationJob> validationJob = mockStatic(KalturaValidationJob.class)) {
+      validationJob.when(() -> KalturaValidationJob.validateKalturaIds(true)).thenReturn(3);
+
+      // Act
+      DsDatahandlerFacade.kalturaValidate(true);
+      List<JobDto> jobs = DsDatahandlerFacade.getJobs(null, null);
+
+      // Assert
+      assertTrue(jobs.isEmpty());
+      validationJob.verify(() -> KalturaValidationJob.validateKalturaIds(true));
+    }
+  }
+
+  /**
+   * Kaltura upload must not run while a kaltura validation job is running.
+   */
+  @Test
+  public void kalturaDeltaUpload_whenKalturaValidationJobIsRunning_thenThrowInvalidArgumentServiceException() {
+    // Arrange
+    createRunningJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION);
+
+    // Act/Assert
+    Exception exception = Assertions.assertThrows(InvalidArgumentServiceException.class,
+        () -> DsDatahandlerFacade.kalturaDeltaUpload());
+
+    assertEquals("Cannot start kaltura upload job while a/an kaltura validation job is running", exception.getMessage());
+  }
+
+  private static void createRunningJob(TypeDto type, CategoryDto category) {
+    JobDto jobDto = new JobDto();
+    jobDto.setType(type);
+    jobDto.category(category);
+    jobDto.setSource(null);
+    jobDto.setCreatedBy("Unit test user");
+    jobDto.setJobStatus(JobStatusDto.RUNNING);
+    jobDto.setStartTime(OffsetDateTime.now(ZoneOffset.UTC));
+
+    BaseModuleStorage.performStorageAction("Create running " + category + " job for test", JobStorage.class,
+        storage -> {
+          ((JobStorage) storage).createJob(jobDto);
+          return null;
+        });
   }
 }

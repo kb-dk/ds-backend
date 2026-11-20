@@ -4,16 +4,15 @@ import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
-import dk.kb.storage.util.UniqueTimestampGenerator;
 import dk.kb.storage.util.TestcontainersUtil;
-import java.sql.SQLException;
-import org.junit.jupiter.api.AfterAll;
+import dk.kb.storage.util.UniqueTimestampGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -108,12 +107,12 @@ public class RecordStorageTest extends TestcontainersUtil {
 
         //MTime must also be updated when mark for delete
         Assertions.assertTrue(recordUpdated.getmTime() < record_deleted.getmTime());
-        
+
         long mTimeNew = recordUpdated.getmTime();
         //Test minimal dto has deleted flag
         List<DsRecordMinimalDto> minimal = recordStorage.getReferenceIds(origin, mTimeNew, 1, true);
         assertTrue(minimal.get(0).getDeleted());
-        
+
         //Update it and deleted flag should be removed
         record.setData("bla bla bla2");
         recordStorage.updateRecord(record);
@@ -160,6 +159,28 @@ public class RecordStorageTest extends TestcontainersUtil {
         DsRecordDto recordUpdated = recordStorage.loadRecord(recordId);
         assertEquals(kalturaReferenceId, recordUpdated.getReferenceId());
         assertEquals(kalturaId, recordUpdated.getKalturaId());
+    }
+
+    @Test
+    public void testUpdateKalturaId_whenBlank_thenStoredAsNull() throws Exception {
+        // Arrange
+        String recordId = "test_blank_kaltura_id";
+        String kalturaReferenceId = "kaltura_ref_blank";
+        DsRecordDto record = new DsRecordDto();
+        record.setId(recordId);
+        record.setOrigin("origin_123");
+        record.setData("");
+        record.setRecordType(RecordTypeDto.MANIFESTATION);
+        record.setReferenceId(kalturaReferenceId);
+        recordStorage.createNewRecord(record);
+        recordStorage.updateKalturaIdForRecords(kalturaReferenceId, "0_old");
+
+        // Act
+        recordStorage.updateKalturaIdForRecords(kalturaReferenceId, " ");
+        DsRecordDto recordUpdated = recordStorage.loadRecord(recordId);
+
+        // Assert
+        Assertions.assertNull(recordUpdated.getKalturaId());
     }
 
     @Test

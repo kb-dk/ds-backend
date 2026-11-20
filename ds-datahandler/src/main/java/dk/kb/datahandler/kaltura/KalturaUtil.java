@@ -1,13 +1,15 @@
 package dk.kb.datahandler.kaltura;
 
-import java.io.IOException;
-
+import com.kaltura.client.enums.EntryStatus;
+import com.kaltura.client.enums.MediaType;
+import com.kaltura.client.types.APIException;
+import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.kaltura.client.DsKalturaClient;
+import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kaltura.client.enums.MediaType;
-
-import dk.kb.datahandler.config.ServiceConfig;
+import java.io.IOException;
 
 public class KalturaUtil {
     private static String DOMS_RADIOTV_PATH;
@@ -27,7 +29,60 @@ public class KalturaUtil {
         PRESERVICA_TV_PATH=ServiceConfig.getStreamPathPreservicaTv();
         PRESERVICA_RADIO_PATH=ServiceConfig.getStreamPathPreservicaRadio();        
     }
-    
+
+    /**
+     * Create a Kaltura client from the service configuration. Authenticates with an app token, not the admin secret.
+     *
+     * @throws APIException If the client can not start a Kaltura session.
+     */
+    public static DsKalturaClient createKalturaClient() throws APIException {
+        return new DsKalturaClient(
+                ServiceConfig.getKalturaUrl(),
+                ServiceConfig.getKalturaUserId(),
+                ServiceConfig.getKalturaPartnerId(),
+                ServiceConfig.getKalturaToken(),
+                ServiceConfig.getKalturaTokenId(),
+                null, // adminSecret. App tokens are used instead.
+                ServiceConfig.getKalturaSessionDurationSeconds(),
+                ServiceConfig.getKalturaSessionRefreshThreshold(),
+                ServiceConfig.getConversionQueueThreshold(),
+                ServiceConfig.getConversionQueueDelaySeconds());
+    }
+
+    /**
+     * Map a Kaltura entry status to the error marker stored as kaltura_id for the record.
+     *
+     * @param status Status of the Kaltura entry.
+     * <ul>
+     * <li>ERROR_CONVERTING: ERROR_KALTURA_TRANSCODING</li>
+     * <li>ERROR_IMPORTING: ERROR_KALTURA_IMPORT</li>
+     * <li>BLOCKED: ERROR_KALTURA_BLOCKED</li>
+     * <li>SCAN_FAILURE, INFECTED: ERROR_KALTURA_SCAN</li>
+     * </ul>
+     * Entries are not rejected manually in Kaltura, so BLOCKED is assumed to always mean that Kaltura rejected the
+     * stream.
+     *
+     * @return The matching error, or null if the status is not a Kaltura error.
+     */
+    public static StreamErrorTypeDto getStreamError(EntryStatus status) {
+        if (status == null) {
+            return null;
+        }
+        switch (status) {
+            case ERROR_CONVERTING:
+                return StreamErrorTypeDto.KALTURA_TRANSCODING;
+            case ERROR_IMPORTING:
+                return StreamErrorTypeDto.KALTURA_IMPORT;
+            case BLOCKED:
+                return StreamErrorTypeDto.KALTURA_BLOCKED;
+            case SCAN_FAILURE:
+            case INFECTED:
+                return StreamErrorTypeDto.KALTURA_SCAN;
+            default:
+                return null;
+        }
+    }
+
     /**
      * Map resourceDescription to Kaltura MediaType
      * 

@@ -1,8 +1,8 @@
 package dk.kb.storage.storage;
 
+import dk.kb.storage.mapper.OriginCountDtoMapper;
 import dk.kb.storage.mapper.RecordDtoMapper;
 import dk.kb.storage.mapper.RecordMinimalDtoMapper;
-import dk.kb.storage.mapper.OriginCountDtoMapper;
 import dk.kb.storage.mapper.RecordsCountDtoMapper;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,7 +32,6 @@ public class RecordStorage extends BaseModuleStorage {
     private final static RecordDtoMapper recordDtoMapper = new RecordDtoMapper();
     private final static RecordMinimalDtoMapper recordMinimalDtoMapper = new RecordMinimalDtoMapper();
     private final static OriginCountDtoMapper originCountDtoMapper = new OriginCountDtoMapper();
-
     private static String createRecordStatement = """
         INSERT INTO ds_records (
             id,
@@ -980,6 +980,9 @@ public class RecordStorage extends BaseModuleStorage {
     }
 
     public void updateKalturaIdForRecords(String referenceId, String kalturaId) throws Exception {
+        if (kalturaId != null && kalturaId.isBlank()) { //No kaltura_id is always null
+            kalturaId = null;
+        }
         ArrayList<String> recordIds = getIdsByReferenceId(referenceId);
 
         if (recordIds.size() > 1) {

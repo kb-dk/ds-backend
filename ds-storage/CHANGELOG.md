@@ -9,6 +9,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- `/record/clearKalturaId` (`DsStorageClient.clearKalturaIdForRecord`) clears the kaltura_id of the records with a given referenceId.
+- `StreamErrorType` values `ERROR_KALTURA_TRANSCODING`, `ERROR_KALTURA_IMPORT`, `ERROR_KALTURA_BLOCKED` and
+  `ERROR_KALTURA_SCAN`.
 - Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`. The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to `DsStorageClient`.
 
 ## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13

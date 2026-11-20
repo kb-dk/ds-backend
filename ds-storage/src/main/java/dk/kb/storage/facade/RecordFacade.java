@@ -74,6 +74,9 @@ public class RecordFacade {
             validateOriginExists(record.getOrigin());
             validateIdHasOriginPrefix(record.getOrigin(), record.getId());
             validateRecordType(record.getRecordType());
+            if (record.getKalturaId() != null && record.getKalturaId().isBlank()) { //No kaltura_id is always null
+                record.setKalturaId(null);
+            }
             String orgId = record.getId();
             if (record.getParentId() != null) { //Parent ID must belong to same collection and also validate
                 validateIdHasOriginPrefix(record.getOrigin(), record.getParentId());
@@ -420,6 +423,21 @@ public class RecordFacade {
                 "getMaxMtimeAfter(origin='" + origin + "', mTime=" + mTime + ", maxRecords=" + maxRecords + ")",
                 RecordStorage.class,
                 storage -> ((RecordStorage) storage).getMaxMtimeAfter(origin, mTime, maxRecords));
+    }
+
+    /**
+     * Clear the kalturaId for a record, setting it to null. Used when the kalturaId no longer points
+     * to a valid Kaltura entry, so the record becomes eligible for re-upload again.
+     *
+     * @param referenceId the referenceId of the record to clear the kalturaId for
+     */
+    public static void clearKalturaIdForRecord(String referenceId) {
+        BaseModuleStorage.performStorageAction("clearKalturaIdForRecord(" + referenceId + ")",
+                RecordStorage.class,
+                storage -> {
+                    ((RecordStorage) storage).updateKalturaIdForRecords(referenceId, null);
+                    return null;    // Something must be returned
+                });
     }
 
     /**
