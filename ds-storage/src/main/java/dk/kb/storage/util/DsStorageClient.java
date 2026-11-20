@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -228,7 +227,7 @@ public class DsStorageClient {
                     .addParameter("maxRecords",""+maxRecords)
                     .addParameter("mTime",""+mTime)                    
                     .build();
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new ArrayList<DsRecordMinimalDto>(), null);              
+            return Service2ServiceRequest.httpCallWithOAuthTokenAsDtoList(uri,"GET", new DsRecordMinimalDto(), null);              
         }
         catch (URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
@@ -255,9 +254,9 @@ public class DsStorageClient {
                     .addParameter("origin",origin)
                     .addParameter("mTime",""+mTime)
                     .addParameter("maxRecords",""+maxRecords)
-                    .addParameter("includeDeleted)",""+includeDeleted)
+                    .addParameter("includeDeleted",""+includeDeleted)
                     .build();
-            return Service2ServiceRequest.httpCallWithOAuthToken(uri,"GET", new ArrayList<DsRecordMinimalDto>(), null);              
+            return Service2ServiceRequest.httpCallWithOAuthTokenAsDtoList(uri,"GET", new DsRecordMinimalDto(), null);              
         }
         catch (URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());

@@ -137,23 +137,20 @@ curl --request POST "http://localhost:8084/ds-datahandler/v1/kaltura/deltaupload
 ### Kaltura validation
 
 Checks that the kaltura_ids in ds-storage point to READY entries in Kaltura. Can not run while a Kaltura upload is
-running. Use `dryRun=true` to only log what would be changed.
+running. Use `dryRun=true` to only log what would be changed. A dry run creates no job and can run alongside a
+Kaltura upload.
 
 ```shell
 curl --request POST "http://localhost:8084/ds-datahandler/v1/kaltura/validate?dryRun=true" \
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
-The call returns `204` with no body once the job is done. Find the dry run result here:
+The call returns `204` with no body once the run is done. The dry run result is only in the log, which has the
+summary and one line per affected record. All of them contain `DRY RUN`:
 
-- The job message, e.g. `Dry run: 3 records would have kaltura_id changed`:
-  ```shell
-  curl "http://localhost:8084/ds-datahandler/v1/monitor/jobs?category=KALTURA_VALIDATION"
-  ```
-- The log has the summary and one line per affected record. All of them contain `DRY RUN`:
-  ```shell
-  docker logs ds-datahandler 2>&1 | grep "DRY RUN"
-  ```
+```shell
+docker logs ds-datahandler 2>&1 | grep "DRY RUN"
+```
 
 ### Reindex Solr
 

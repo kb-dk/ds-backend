@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import dk.kb.datahandler.config.ServiceConfig;
+import dk.kb.datahandler.kaltura.KalturaValidationJob;
 import dk.kb.datahandler.model.v1.CategoryDto;
 import dk.kb.datahandler.model.v1.JobDto;
 import dk.kb.datahandler.model.v1.JobStatusDto;
@@ -295,9 +296,25 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
 
     // Act/Assert
     Exception exception = Assertions.assertThrows(InvalidArgumentServiceException.class,
-        () -> DsDatahandlerFacade.kalturaValidate(true));
+        () -> DsDatahandlerFacade.kalturaValidate(false));
 
     assertEquals("Cannot start kaltura validation job while a/an kaltura upload job is running", exception.getMessage());
+  }
+
+  @Test
+  public void kalturaValidate_whenDryRun_thenNoJobIsCreated() throws Exception {
+    // Arrange
+    try (MockedStatic<KalturaValidationJob> validationJob = mockStatic(KalturaValidationJob.class)) {
+      validationJob.when(() -> KalturaValidationJob.validateKalturaIds(true)).thenReturn(3);
+
+      // Act
+      DsDatahandlerFacade.kalturaValidate(true);
+      List<JobDto> jobs = DsDatahandlerFacade.getJobs(null, null);
+
+      // Assert
+      assertTrue(jobs.isEmpty());
+      validationJob.verify(() -> KalturaValidationJob.validateKalturaIds(true));
+    }
   }
 
   /**

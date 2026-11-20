@@ -243,25 +243,32 @@ public class DsDatahandlerFacade {
      * No solr index job is started. Changed records get a new mTime and are picked up by the next solr delta index.
      * The job can not be started while a kaltura upload job is running, and blocks kaltura upload while it runs.
      *
-     * @param dryRun If true, nothing is changed in Kaltura or storage. Each record that would be changed is logged.
-     *               The counts per reason, and the number of entries confirmed one at a time with media.get, are
-     *               logged at the end. The total goes in the job message.
+     * @param dryRun If true, nothing is changed in Kaltura or storage and no job is created. Each record that would
+     *               be changed is logged. The counts per reason, the number of entries confirmed one at a time with
+     *               media.get, and the total are logged at the end. A dry run takes no job lock, so it can run
+     *               alongside kaltura upload.
      * @throws InternalServiceException
      */
     public static void kalturaValidate(boolean dryRun) throws InternalServiceException {
+        if (dryRun) {
+            log.info("Starting kaltura validation dry run");
+            int numberRecordsChanged = KalturaValidationJob.validateKalturaIds(true);
+            log.info("Kaltura validation dry run completed. #records that would change={}", numberRecordsChanged);
+            return;
+        }
+
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION, null, null, user,
                 CategoryDto.KALTURA_UPLOAD);
 
-        log.info("Starting kaltura validation. dryRun={}", dryRun);
+        log.info("Starting kaltura validation");
         try {
-            int numberRecordsChanged = KalturaValidationJob.validateKalturaIds(dryRun);
+            int numberRecordsChanged = KalturaValidationJob.validateKalturaIds(false);
 
-            log.info("Kaltura validation completed successfully. dryRun={}, #records changed={}", dryRun, numberRecordsChanged);
+            log.info("Kaltura validation completed successfully. #records changed={}", numberRecordsChanged);
 
-            String message = dryRun ? "Dry run: " + numberRecordsChanged + " records would have kaltura_id changed" : null;
-            updateJob(jobDto, JobStatusDto.COMPLETED, message, OffsetDateTime.now(ZoneOffset.UTC),
-                    dryRun ? 0 : numberRecordsChanged, null);
+            updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
+                    numberRecordsChanged, null);
 
         } catch (Exception e) {
             log.error("Kaltura validation stopped due to error", e);

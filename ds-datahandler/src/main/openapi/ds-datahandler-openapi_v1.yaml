@@ -277,7 +277,7 @@ paths:
        Not found in Kaltura: kaltura_id is cleared. NO_CONTENT: entry is deleted and kaltura_id is cleared.
        Failed entries (ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE, INFECTED): kaltura_id is set to an ERROR_KALTURA_* marker. To retry, delete the entry in Kaltura and clear the kaltura_id.
        Entries still processing, and unknown statuses, are skipped.
-       Changed records are picked up by the next solr delta index. Can not run at the same time as kaltura upload.'
+       Changed records are picked up by the next solr delta index. Can not run at the same time as kaltura upload, except as a dry run.'
       security:
         - KBOAuth:
             - any
@@ -286,7 +286,7 @@ paths:
         - name: dryRun
           in: query
           required: false
-          description: 'If true, nothing is changed. What would change is logged and summarised in the job message.'
+          description: 'If true, nothing is changed and no job is logged. What would change is written to the service log.'
           schema:
             type: boolean
             default: false
