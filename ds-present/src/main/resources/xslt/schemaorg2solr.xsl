@@ -841,16 +841,14 @@
     <!-- Access field from preservica, historically these values have been used to clause access to material in mediestream. These clauses and prohibitions should also be made
     in DR Archive. Here we are converting it to an actual boolean. -->
     <xsl:variable name="individual_prohibition">
-      <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_individual_prohibition') != ''"/>
+      <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:access_individual_prohibition')"/>
     </xsl:variable>
-    <xsl:if test="$individual_prohibition != ''">
-      <f:string key="access_individual_prohibition">
-        <xsl:choose>
-          <xsl:when test="f:lower-case($individual_prohibition) = 'ja'">true</xsl:when>
-          <xsl:otherwise>false</xsl:otherwise>
-        </xsl:choose>
-      </f:string>
-    </xsl:if>
+    <f:string key="access_individual_prohibition">
+      <xsl:choose>
+        <xsl:when test="lower-case($individual_prohibition) = 'ja'">true</xsl:when>
+        <xsl:otherwise>false</xsl:otherwise>
+      </xsl:choose>
+    </f:string>
 
   <!-- Access field from preservica, historically these values have been used to clause access to material in mediestream. These clauses and prohibitions should also be made
     in DR Archive. Here we are converting it to an actual boolean. -->

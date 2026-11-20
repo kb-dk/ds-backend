@@ -7,6 +7,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed 
+-`access_individual_prohibition` always being `false` in Solr (since 2.1.4). It is now `true` when `individuelt_forbud` is `Ja` and `false` otherwise, also when the element is missing. **Requires a full Solr reindex.**
+
 ## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
 
 ### Fixed
