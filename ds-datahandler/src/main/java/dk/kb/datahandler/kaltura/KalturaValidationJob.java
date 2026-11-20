@@ -5,7 +5,7 @@ import com.kaltura.client.types.APIException;
 import dk.kb.datahandler.config.ServiceConfig;
 import dk.kb.kaltura.client.DsKalturaClient;
 import dk.kb.kaltura.client.DsKalturaClientBase;
-import dk.kb.storage.model.v1.DsRecordKalturaDto;
+import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -33,10 +33,10 @@ public class KalturaValidationJob {
     /**
      * Start job that validates all records with a registered kaltura_id.
      * Workflow:
-     * 1) For each origin, extract the records with a kaltura_id from ds-storage in batches ordered by mTime. Storage
-     * is used rather than Solr, so kaltura_ids changed since the last index are seen. Storage does not return upload
-     * error markers (ERROR_*, e.g. ERROR_FILE_MISSING), so they are never cleared. Records marked for delete are
-     * skipped.
+     * 1) For each origin, extract the minimal records from ds-storage in batches ordered by mTime. Storage is used
+     * rather than Solr, so kaltura_ids changed since the last index are seen. Only records with a kaltura_id are
+     * validated. Error markers (ERROR_*, e.g. ERROR_FILE_MISSING) stored as kaltura_id are skipped, so markers are
+     * never cleared.
      * This is not a delta job. All records with a kaltura_id must be (re)checked on every run, so mTime
      * always starts at 0.
      * 2) Look up the entry status in Kaltura for the whole batch in a single media.list call. Kaltura paging is
@@ -87,7 +87,7 @@ public class KalturaValidationJob {
         long mTimeFromCurrent = 0; //Not a delta job. All records with a kaltura_id must be checked every time.
 
         while (true) {
-            List<DsRecordKalturaDto> records;
+            List<DsRecordMinimalDto> records;
             try {
                 records = fetchStorageRecords(storageClient, origin, mTimeFromCurrent, DsKalturaClientBase.MAX_BATCH_SIZE);
             } catch (Exception e) {
@@ -102,16 +102,15 @@ public class KalturaValidationJob {
             long batchMTimeFrom = mTimeFromCurrent;
             mTimeFromCurrent = records.get(records.size() - 1).getmTime(); //Storage returns records with mTime after this
 
-            List<DsRecordKalturaDto> recordsToValidate = records.stream()
-                    .filter(record -> !Boolean.TRUE.equals(record.getDeleted()))
-                    .filter(KalturaValidationJob::hasKalturaId)
+            List<DsRecordMinimalDto> recordsToValidate = records.stream()
+                    .filter(KalturaValidationJob::isValidatable)
                     .collect(Collectors.toList());
             if (recordsToValidate.isEmpty()) {
                 continue;
             }
 
             List<String> kalturaIds = recordsToValidate.stream()
-                    .map(DsRecordKalturaDto::getKalturaId)
+                    .map(DsRecordMinimalDto::getKalturaId)
                     .collect(Collectors.toList());
             Map<String, EntryStatus> batchStatuses;
             try {
@@ -122,7 +121,7 @@ public class KalturaValidationJob {
                         " batch after mTime=" + batchMTimeFrom, e);
             }
 
-            for (DsRecordKalturaDto record : recordsToValidate) {
+            for (DsRecordMinimalDto record : recordsToValidate) {
                 validateRecord(storageClient, record.getId(), record.getReferenceId(), record.getKalturaId(),
                         batchStatuses.get(record.getKalturaId()), dryRun, summary);
             }
@@ -191,11 +190,16 @@ public class KalturaValidationJob {
     }
 
     /**
-     * Storage stores a blank kaltura_id as null, but older rows can still hold an empty string. Kaltura can not
-     * look up a blank id, and the error would stop the whole run, so such records are skipped.
+     * True if the record has a kaltura_id that can be looked up in Kaltura: not null, not blank, and not an error
+     * marker (ERROR_*). Storage stores a blank kaltura_id as null, but older rows can still hold an empty string.
+     * Kaltura can not look up a blank id, and the error would stop the whole run.
      */
-    private static boolean hasKalturaId(DsRecordKalturaDto record) {
-        if (record.getKalturaId() == null || record.getKalturaId().isBlank()) {
+    private static boolean isValidatable(DsRecordMinimalDto record) {
+        String kalturaId = record.getKalturaId();
+        if (kalturaId == null || kalturaId.startsWith("ERROR_")) {
+            return false;
+        }
+        if (kalturaId.isBlank()) {
             log.warn("Record id='{}' has a blank kaltura_id. Skipped. Set it to null in storage.", record.getId());
             return false;
         }
@@ -211,16 +215,17 @@ public class KalturaValidationJob {
     }
 
     /**
-     * Fetch records with a kaltura_id (id, mTime, referenceId, kaltura_id, deleted) from storage.
+     * Fetch minimal records (id, mTime, referenceId, kaltura_id) from storage. Records without a kaltura_id are
+     * included and must be filtered by the caller.
      *
      * @param origin    The origin to extract records for.
      * @param mTimeFrom Only extract records with mTime higher than this value.
      * @param batchSize Maximum number of records to extract.
      * @return The records ordered by mTime. Empty when there are no more records.
      */
-    static List<DsRecordKalturaDto> fetchStorageRecords(DsStorageClient storageClient, String origin, long mTimeFrom,
+    static List<DsRecordMinimalDto> fetchStorageRecords(DsStorageClient storageClient, String origin, long mTimeFrom,
                                                         int batchSize) {
-        List<DsRecordKalturaDto> records = storageClient.getKalturaRecords(origin, batchSize, mTimeFrom);
+        List<DsRecordMinimalDto> records = storageClient.getMinimalRecordsJson(origin, mTimeFrom, batchSize, false);
         log.debug("Loaded storage records for kaltura validation. origin={}, mTime={}, #records={}", origin, mTimeFrom, records.size());
         return records;
     }

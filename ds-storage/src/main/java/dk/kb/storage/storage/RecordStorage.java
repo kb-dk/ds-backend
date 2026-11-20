@@ -2,11 +2,9 @@ package dk.kb.storage.storage;
 
 import dk.kb.storage.mapper.OriginCountDtoMapper;
 import dk.kb.storage.mapper.RecordDtoMapper;
-import dk.kb.storage.mapper.RecordKalturaDtoMapper;
 import dk.kb.storage.mapper.RecordMinimalDtoMapper;
 import dk.kb.storage.mapper.RecordsCountDtoMapper;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
@@ -34,8 +32,6 @@ public class RecordStorage extends BaseModuleStorage {
     private final static RecordDtoMapper recordDtoMapper = new RecordDtoMapper();
     private final static RecordMinimalDtoMapper recordMinimalDtoMapper = new RecordMinimalDtoMapper();
     private final static OriginCountDtoMapper originCountDtoMapper = new OriginCountDtoMapper();
-    private final static RecordKalturaDtoMapper recordKalturaDtoMapper = new RecordKalturaDtoMapper();
-
     private static String createRecordStatement = """
         INSERT INTO ds_records (
             id,
@@ -388,30 +384,6 @@ public class RecordStorage extends BaseModuleStorage {
             AND
             mtime > ?
     """;
-
-    //SELECT id,mTime,referenceId,kalturaId,deleted FROM ds_records WHERE origin= 'ds.tv' and mTime > 0 AND kalturaId IS NOT NULL AND kalturaId NOT LIKE 'ERROR\_%' ESCAPE '\' ORDER BY mtime ASC LIMIT 50
-    // Upload error markers (StreamErrorType, e.g. ERROR_FILE_MISSING) are stored in kalturaId, but are not Kaltura ids
-    private static String kalturaRecordsStatement = """
-                SELECT
-                    id,
-                    deleted,
-                    mtime,
-                    referenceid,
-                    kalturaid
-                FROM
-                    ds_records
-                WHERE
-                    origin = ?
-                    AND
-                    mtime > ?
-                    AND
-                    kalturaid IS NOT NULL
-                    AND
-                    kalturaid NOT LIKE 'ERROR\\_%' ESCAPE '\\'
-                ORDER BY
-                    mtime ASC
-                LIMIT ?
-            """;
 
     public RecordStorage() throws SQLException {
         super();
@@ -1044,38 +1016,6 @@ public class RecordStorage extends BaseModuleStorage {
             log.error(message);
             throw new SQLException(message, e);
         }
-    }
-
-    /**
-     * Get a list of records with a Kaltura id after a given mTime. Records with an upload error marker (ERROR_*) as
-     * kalturaId are not included. The records will only have fields id, mTime, referenceId, kalturaId and deleted.
-     *
-     * @param origin    The origin to fetch records from
-     * @param mTime     only fetch records with mTime larger that this
-     * @param batchSize Number of maximum records to return
-     * @return List of records ordered by mTime
-     */
-    public List<DsRecordKalturaDto> getKalturaRecords(String origin, long mTime, int batchSize) throws SQLException {
-        if (batchSize < 1 || batchSize > 100000) { //No doom switch
-            throw new InvalidArgumentServiceException("Batchsize must be in range 1 to 100000");
-        }
-        List<DsRecordKalturaDto> records = new ArrayList<>();
-        try (PreparedStatement stmt = connection.prepareStatement(kalturaRecordsStatement)) {
-            stmt.setString(1, origin);
-            stmt.setLong(2, mTime);
-            stmt.setLong(3, batchSize);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    DsRecordKalturaDto record = recordKalturaDtoMapper.map(rs);
-                    records.add(record);
-                }
-            }
-        } catch (Exception e) {
-            throw new SQLException("SQL error getKalturaRecords", e);
-        }
-
-        return records;
     }
 
     private static int boolToInt(Boolean isTrue) {

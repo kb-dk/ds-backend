@@ -273,7 +273,7 @@ paths:
     post:
       tags:
         - '${project.name}'
-      summary: 'Start job that checks every kaltura_id in ds-storage against Kaltura. Records with ERROR_* markers or marked for delete are skipped.
+      summary: 'Start job that checks every kaltura_id in ds-storage against Kaltura. Records with ERROR_* markers are skipped.
        Not found in Kaltura: kaltura_id is cleared. NO_CONTENT: entry is deleted and kaltura_id is cleared.
        Failed entries (ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE, INFECTED): kaltura_id is set to an ERROR_KALTURA_* marker. To retry, delete the entry in Kaltura and clear the kaltura_id.
        Entries still processing, and unknown statuses, are skipped.

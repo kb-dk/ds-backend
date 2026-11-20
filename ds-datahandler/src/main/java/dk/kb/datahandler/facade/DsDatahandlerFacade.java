@@ -232,7 +232,7 @@ public class DsDatahandlerFacade {
      * Start job that validates that kaltura_id values registered on records in ds-storage still point to a
      * Kaltura entry with status READY.
      * This is not a delta job, so all records with a kaltura_id are (re)checked on every run.
-     * Upload error markers (ERROR_*, e.g. ERROR_FILE_MISSING) and records marked for delete are skipped.
+     * Upload error markers (ERROR_*, e.g. ERROR_FILE_MISSING) are skipped.
      * Entries in status IMPORT, PRECONVERT, PENDING or MODERATE are skipped.
      * Entries in status ERROR_CONVERTING, ERROR_IMPORTING, BLOCKED, SCAN_FAILURE or INFECTED are kept, and the
      * kaltura_id is set to ERROR_KALTURA_TRANSCODING, ERROR_KALTURA_IMPORT, ERROR_KALTURA_BLOCKED or

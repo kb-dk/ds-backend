@@ -2,7 +2,6 @@ package dk.kb.storage.facade;
 
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.OriginDto;
@@ -424,23 +423,6 @@ public class RecordFacade {
                 "getMaxMtimeAfter(origin='" + origin + "', mTime=" + mTime + ", maxRecords=" + maxRecords + ")",
                 RecordStorage.class,
                 storage -> ((RecordStorage) storage).getMaxMtimeAfter(origin, mTime, maxRecords));
-    }
-
-
-    /**
-     * Get a list of records with a Kaltura id after a given mTime. Records with an upload error marker (ERROR_*) as
-     * kalturaId are not included. The records will only have fields id, mTime, referenceId, kalturaId and deleted.
-     *
-     * @param origin    The origin to fetch records from
-     * @param mTime     only fetch records with mTime larger that this
-     * @param batchSize Number of maximum records to return
-     * @return List of records ordered by mTime
-     */
-    public static List<DsRecordKalturaDto> getKalturaRecords(String origin, long mTime, int batchSize) {
-        return BaseModuleStorage.performStorageAction(
-                "getKalturaRecords(origin='" + origin + "', mTime=" + mTime + ", batchSize=" + batchSize + ")",
-                RecordStorage.class,
-                storage -> ((RecordStorage) storage).getKalturaRecords(origin, mTime, batchSize));
     }
 
     /**

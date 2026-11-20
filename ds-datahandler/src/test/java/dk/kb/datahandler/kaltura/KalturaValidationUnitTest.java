@@ -3,7 +3,7 @@ package dk.kb.datahandler.kaltura;
 import com.kaltura.client.enums.EntryStatus;
 import com.kaltura.client.types.APIException;
 import dk.kb.kaltura.client.DsKalturaClient;
-import dk.kb.storage.model.v1.DsRecordKalturaDto;
+import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import dk.kb.util.webservice.exception.InternalServiceException;
 import org.junit.jupiter.api.AfterEach;
@@ -49,7 +49,7 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenStorageHasNoRecords_thenNoRecordIsCleared() {
         // Arrange
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(emptyRecords);
@@ -65,8 +65,8 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenEntryIsReady_thenRecordIsNotCleared() {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -86,8 +86,8 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenEntryHasNoContent_thenEntryIsDeletedAndKalturaIdIsCleared() {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -159,8 +159,8 @@ class KalturaValidationUnitTest {
 
     private void assertStatusIsSkipped(EntryStatus status) {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -179,8 +179,8 @@ class KalturaValidationUnitTest {
 
     private void assertKalturaErrorIsMarked(EntryStatus status, StreamErrorTypeDto expectedError) {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -202,8 +202,8 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenEntryDoesNotExistInKaltura_thenKalturaIdIsClearedWithoutDelete() {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -223,10 +223,10 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenMultipleDocuments_thenAccumulatesCount() {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(
+        List<DsRecordMinimalDto> records = List.of(
                 buildRecord("id-1", "file-1", "kaltura-1"),
                 buildRecord("id-2", "file-2", "kaltura-2"));
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -262,7 +262,7 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenGetEntryStatusesThrows_thenThrowsInternalServiceException() {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records);
@@ -277,9 +277,9 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenGetEntryStatusesThrows_thenMessageNamesMTimeTheBatchWasFetchedFrom() {
         // Arrange
-        DsRecordKalturaDto first = buildRecord("record-1", "file-1", "kaltura-1");
+        DsRecordMinimalDto first = buildRecord("record-1", "file-1", "kaltura-1");
         first.setmTime(100L);
-        DsRecordKalturaDto second = buildRecord("record-2", "file-2", "kaltura-2");
+        DsRecordMinimalDto second = buildRecord("record-2", "file-2", "kaltura-2");
         second.setmTime(200L);
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.tv"), eq(0L), anyInt()))
@@ -299,13 +299,16 @@ class KalturaValidationUnitTest {
     }
 
     @Test
-    void testValidateKalturaIds_whenKalturaIdIsBlank_thenRecordIsSkipped() {
+    void testValidateKalturaIds_whenKalturaIdIsMissingBlankOrErrorMarker_thenRecordIsSkipped() {
         // Arrange
-        DsRecordKalturaDto blank = buildRecord("record-1", "file-1", "");
-        DsRecordKalturaDto valid = buildRecord("record-2", "file-2", "kaltura-2");
+        // Storage returns every record of the origin, so the job must filter out the ones it can not validate.
+        DsRecordMinimalDto blank = buildRecord("record-1", "file-1", "");
+        DsRecordMinimalDto valid = buildRecord("record-2", "file-2", "kaltura-2");
+        DsRecordMinimalDto noKalturaId = buildRecord("record-3", "file-3", null);
+        DsRecordMinimalDto uploadError = buildRecord("record-4", "file-4", "ERROR_FILE_MISSING");
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
-                .thenReturn(List.of(blank, valid), List.of());
+                .thenReturn(List.of(blank, valid, noKalturaId, uploadError), List.of());
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
                 .thenReturn(Map.of("kaltura-2", EntryStatus.READY));
 
@@ -324,8 +327,8 @@ class KalturaValidationUnitTest {
         // checked separately with media.get.
 
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -344,7 +347,7 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenFallbackGetEntryStatusThrows_thenThrowsInternalServiceException() {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records);
@@ -360,10 +363,10 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenDryRun_thenNothingIsDeletedOrCleared() {
         // Arrange
-        DsRecordKalturaDto notReady = buildRecord("record-1", "file-1", "kaltura-1");
-        DsRecordKalturaDto notFound = buildRecord("record-2", "file-2", "kaltura-2");
-        List<DsRecordKalturaDto> records = List.of(notReady, notFound);
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        DsRecordMinimalDto notReady = buildRecord("record-1", "file-1", "kaltura-1");
+        DsRecordMinimalDto notFound = buildRecord("record-2", "file-2", "kaltura-2");
+        List<DsRecordMinimalDto> records = List.of(notReady, notFound);
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -384,8 +387,8 @@ class KalturaValidationUnitTest {
     @Test
     void testValidateKalturaIds_whenDryRunAndEntryReady_thenNothingWouldBeCleared() {
         // Arrange
-        List<DsRecordKalturaDto> records = List.of(buildRecord());
-        List<DsRecordKalturaDto> emptyRecords = List.of();
+        List<DsRecordMinimalDto> records = List.of(buildRecord());
+        List<DsRecordMinimalDto> emptyRecords = List.of();
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
                 .thenReturn(records, emptyRecords);
@@ -402,35 +405,11 @@ class KalturaValidationUnitTest {
     }
 
     @Test
-    void testValidateKalturaIds_whenRecordMarkedForDelete_thenRecordIsSkipped() {
-        // Arrange
-        DsRecordKalturaDto deleted = buildRecord("record-1", "file-1", "kaltura-1");
-        deleted.setDeleted(true);
-        DsRecordKalturaDto active = buildRecord("record-2", "file-2", "kaltura-2");
-
-        service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
-                .thenReturn(List.of(deleted, active), List.of());
-        service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
-                .thenReturn(Map.of("kaltura-2", EntryStatus.NO_CONTENT));
-        service.when(() -> KalturaValidationJob.deleteStream(any())).thenAnswer(inv -> null);
-        service.when(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), any())).thenAnswer(inv -> null);
-
-        // Act
-        int result = KalturaValidationJob.validateKalturaIds(false);
-
-        // Assert
-        assertEquals(1, result);
-        service.verify(() -> KalturaValidationJob.getEntryStatuses(List.of("kaltura-2")), times(1));
-        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), eq("file-1")), never());
-        service.verify(() -> KalturaValidationJob.clearKalturaIdForRecord(any(), eq("file-2")), times(1));
-    }
-
-    @Test
     void testValidateKalturaIds_thenPagesEachOriginFromLastMTime() {
         // Arrange
-        DsRecordKalturaDto first = buildRecord("record-1", "file-1", "kaltura-1");
+        DsRecordMinimalDto first = buildRecord("record-1", "file-1", "kaltura-1");
         first.setmTime(100L);
-        DsRecordKalturaDto second = buildRecord("record-2", "file-2", "kaltura-2");
+        DsRecordMinimalDto second = buildRecord("record-2", "file-2", "kaltura-2");
         second.setmTime(200L);
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), eq("ds.tv"), eq(0L), anyInt()))
@@ -516,17 +495,16 @@ class KalturaValidationUnitTest {
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
-    private DsRecordKalturaDto buildRecord() {
+    private DsRecordMinimalDto buildRecord() {
         return buildRecord(ID, FILE_ID, KALTURA_ID);
     }
 
-    private DsRecordKalturaDto buildRecord(String id, String referenceId, String kalturaId) {
-        DsRecordKalturaDto record = new DsRecordKalturaDto();
+    private DsRecordMinimalDto buildRecord(String id, String referenceId, String kalturaId) {
+        DsRecordMinimalDto record = new DsRecordMinimalDto();
         record.setId(id);
         record.setReferenceId(referenceId);
         record.setKalturaId(kalturaId);
         record.setmTime(1_700_000_000L);
-        record.setDeleted(false);
         return record;
     }
 }

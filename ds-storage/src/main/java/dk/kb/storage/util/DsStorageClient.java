@@ -16,7 +16,6 @@ package dk.kb.storage.util;
 
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.DsRecordDto;
-import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
 import dk.kb.storage.model.v1.OriginDto;
@@ -468,32 +467,6 @@ public class DsStorageClient {
         }
         catch(URISyntaxException e) {
             log.error("Invalid url:"+e.getMessage());
-            throw new InternalServiceException(CLIENT_URL_EXCEPTION);
-        }
-    }
-
-    /**
-     * Get a batch of records with a Kaltura id after a given mTime, ordered by mTime. Records with an upload error
-     * marker (ERROR_*) as kalturaId are not included. The records will only have the id, mTime, referenceId,
-     * kalturaId and deleted fields.
-     *
-     * @param origin     The origin to extract records for (required)
-     * @param maxRecords Number of records to extract. (required)
-     * @param mTime      Only extract records after this mTime.
-     * @return List&lt;DsRecordKalturaDto&gt;
-     * @throws ServiceException if fails to make API call
-     */
-    public List<DsRecordKalturaDto> getKalturaRecords(String origin, Integer maxRecords, Long mTime) throws ServiceException {
-        try {
-            URI uri = new URIBuilder(serviceURI)
-                    .appendPathSegments("records", "kaltura")
-                    .addParameter("origin", origin)
-                    .addParameter("maxRecords", "" + maxRecords)
-                    .addParameter("mTime", "" + mTime)
-                    .build();
-            return Service2ServiceRequest.httpCallWithOAuthTokenAsDtoList(uri, "GET", new DsRecordKalturaDto(), null);
-        } catch (URISyntaxException e) {
-            log.error("Invalid url:" + e.getMessage());
             throw new InternalServiceException(CLIENT_URL_EXCEPTION);
         }
     }

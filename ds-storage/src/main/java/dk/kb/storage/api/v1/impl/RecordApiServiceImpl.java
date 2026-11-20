@@ -3,7 +3,6 @@ package dk.kb.storage.api.v1.impl;
 import dk.kb.storage.api.v1.RecordApi;
 import dk.kb.storage.config.ServiceConfig;
 import dk.kb.storage.facade.RecordFacade;
-import dk.kb.storage.model.v1.DsRecordKalturaDto;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.OriginCountDto;
@@ -290,16 +289,6 @@ public class RecordApiServiceImpl extends ImplBase implements RecordApi {
         try {
             log.debug("updateKalturaId() called with call details: {}", getCallDetails());
             RecordFacade.updateKalturaIdForRecord(referenceId, kalturaId);
-        } catch (Exception e) {
-            throw handleException(e);
-        }
-    }
-
-    @Override
-    public List<DsRecordKalturaDto> getKalturaRecords(String origin, Integer maxRecords, Long mTime) {
-        try {
-            log.debug("getKalturaRecords() called with call details: {}", getCallDetails());
-            return RecordFacade.getKalturaRecords(origin, mTime == null ? 0L : mTime, maxRecords);
         } catch (Exception e) {
             throw handleException(e);
         }
