@@ -7,12 +7,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed 
+-`access_individual_prohibition` always being `false` in Solr (since 2.1.4). It is now `true` when `individuelt_forbud` is `Ja` and `false` otherwise, also when the element is missing. **Requires a full Solr reindex.**
+
 ## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
 
 ### Fixed
 
 - Fixed radio channel mapping `drp4k94` -> `DR P4 KANAL 94 VEJLE`
-- Fixed `access_individual_prohibition` always being `false` in Solr (since 2.1.4). It is now `true` when `individuelt_forbud` is `Ja` and `false` otherwise, also when the element is missing. **Requires a full Solr reindex.**
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 
@@ -25,7 +27,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add `rerun_cluster_id` and `rerun_cluster_id_count` to `schema.org` and `solr schema`.
 - Update solr schema version to 1.8.10.
 - Update solr schema version to 1.8.11.
-- New field `season_number_ritzau` with the season number from the ritzau metadata. Requires a reindex and Solr config version 1.8.12.
 
 ### Changed
 
