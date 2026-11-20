@@ -12,25 +12,21 @@ import java.sql.SQLException;
  * Between each unittest the all tables are cleared for data and the method is only defined in this subclass
  */
 public class TranscriptionStorageForUnitTest extends TranscriptionStorage {
-
     private static final Logger log = LoggerFactory.getLogger(TranscriptionStorageForUnitTest.class);
-
-    private static String clearTableTranscriptionsStatement = "DELETE FROM TRANSCRIPTIONS";
 
     public TranscriptionStorageForUnitTest() throws SQLException {
         super();
     }
 
     /**
-     * Will clear data in transcriptions tables.
-     * Unit test functionality only.
+     * Will clear data in table. Unit test functionality only.
      */
-    public void clearTableRecords() throws SQLException {
-        try (PreparedStatement stmt = connection.prepareStatement(clearTableTranscriptionsStatement)) {
-            stmt.execute(); //No result set to close
+    public void clearTable() throws SQLException {
+        try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM TRANSCRIPTIONS")) {
+            stmt.executeUpdate();
         }
 
         connection.commit();
-        log.info("Tables cleared for unittest");
+        log.info("Table cleared for unittest");
     }
 }

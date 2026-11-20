@@ -45,7 +45,7 @@ public class LicenseModuleStorageTest extends TestcontainersUtil {
     }
 
     /**
-     * Delete all records between each unittest. The clearTableRecords is only defined on the unittest extension of the storage module
+     * Delete all records between each unittest. The clearTables is only defined on the unittest extension of the storage module
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
@@ -61,7 +61,7 @@ public class LicenseModuleStorageTest extends TestcontainersUtil {
         tables.add("LICENSECONTENT");
         tables.add("PRESENTATION");
         tables.add("AUDITLOG");
-        licenseStorage.clearTableRecords(tables);
+        licenseStorage.clearTables(tables);
     }
 
     @Test

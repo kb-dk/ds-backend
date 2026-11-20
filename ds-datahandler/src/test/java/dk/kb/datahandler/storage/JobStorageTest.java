@@ -31,7 +31,7 @@ public class JobStorageTest extends TestcontainersUtil {
 
     @BeforeEach
     public void beforeEach() throws SQLException {
-        jobStorage.clearTables();
+        jobStorage.clearTable();
     }
 
     @Test

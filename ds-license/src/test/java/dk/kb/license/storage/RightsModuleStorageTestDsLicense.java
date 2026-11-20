@@ -30,7 +30,7 @@ public class RightsModuleStorageTestDsLicense extends TestcontainersUtil {
     }
 
     /**
-     * Delete all records between each unittest. The clearTableRecords is only called from here.
+     * Delete all records between each unittest. The clearTables is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
@@ -39,7 +39,7 @@ public class RightsModuleStorageTestDsLicense extends TestcontainersUtil {
         tables.add("RESTRICTED_IDS");
         tables.add("DR_HOLDBACK_RANGES");
         tables.add("DR_HOLDBACK_CATEGORIES");
-        rightsStorage.clearTableRecords(tables);
+        rightsStorage.clearTables(tables);
     }
 
     @AfterEach
