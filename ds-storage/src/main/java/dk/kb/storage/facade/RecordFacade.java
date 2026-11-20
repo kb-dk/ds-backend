@@ -38,9 +38,9 @@ public class RecordFacade {
      * @param batchSize Number of maximum records to return
      * @return List of records only have fields id, mTime, referenceid and kalturaid
      */
-    public static ArrayList<DsRecordMinimalDto> getReferenceIds(String origin, long mTime, int batchSize) {
+    public static ArrayList<DsRecordMinimalDto> getReferenceIds(String origin, long mTime, int batchSize, boolean includeDeleted) {
         String id = String.format(Locale.ROOT, "getReferenceIds(origin='%s', mTime=%d, batchSize=%d)", origin, mTime, batchSize);
-        return BaseModuleStorage.performStorageAction(id, RecordStorage.class, storage -> ((RecordStorage) storage).getReferenceIds(origin, mTime, batchSize));
+        return BaseModuleStorage.performStorageAction(id, RecordStorage.class, storage -> ((RecordStorage) storage).getReferenceIds(origin, mTime, batchSize,includeDeleted));
     }
 
     public static Long getMinimalRecordsModifiedAfter(
@@ -53,7 +53,7 @@ public class RecordFacade {
         while (pending > 0) {
             int request = pending < batchSize ? (int) pending : batchSize;
             long delivered = BaseModuleStorage.performStorageAction(id, RecordStorage.class, storage -> {
-                ArrayList<DsRecordMinimalDto> records = ((RecordStorage) storage).getReferenceIds(origin, lastMTime.get(), request);
+                List<DsRecordMinimalDto> records = ((RecordStorage) storage).getReferenceIds(origin, lastMTime.get(), request, true);
                 writer.writeAll(records);
                 if (!records.isEmpty()) {
                     lastMTime.set(records.get(records.size() - 1).getmTime());
@@ -69,7 +69,7 @@ public class RecordFacade {
         log.info("Delivered '{}' records", totalDelivered);
         return totalDelivered;
     }
-
+    
     public static void createOrUpdateRecord(DsRecordDto record) {
         BaseModuleStorage.performStorageAction("createOrUpdateRecord(" + record.getId() + ")", RecordStorage.class, storage -> {
             validateOriginExists(record.getOrigin());

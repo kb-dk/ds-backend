@@ -19,11 +19,14 @@ public class RightsModuleStorageForUnitTest extends RightsModuleStorage {
         super();
     }
 
-    public void clearTableRecords(List<String> tables) throws SQLException {
+    /**
+     * Will clear data in tables. Unit test functionality only.
+     */
+    public void clearTables(List<String> tables) throws SQLException {
         for (String table : tables) {
             String deleteSQL = "DELETE FROM " + table;
-            try (PreparedStatement stmt = connection.prepareStatement(deleteSQL);) {
-                stmt.execute();
+            try (PreparedStatement stmt = connection.prepareStatement(deleteSQL)) {
+                stmt.executeUpdate();
             }
         }
         connection.commit();

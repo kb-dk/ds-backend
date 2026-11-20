@@ -259,13 +259,14 @@ public class RecordStorage extends BaseModuleStorage {
         LIMIT ?
         """;
 
-    // SELECT id,mTime,referenceId,kalturaId FROM ds_records WHERE origin= 'ds.tv' and mTime > 0 ORDER BY mtime ASC LIMIT 50
+    // SELECT id,mTime,referenceId,kalturaId, deleted FROM ds_records WHERE origin= 'ds.tv' and mTime > 0 ORDER BY mtime ASC LIMIT 50
     private static String referenceIdsStatement = """
         SELECT
             id,
             mtime,
             referenceid,
-            kalturaid
+            kalturaid,
+            deleted
         FROM
             ds_records
         WHERE
@@ -553,9 +554,10 @@ public class RecordStorage extends BaseModuleStorage {
      * @param origin    The origin to fetch records from
      * @param mTime     only fetch records with mTime larger that this
      * @param batchSize Number of maximum records to return
+     * @param includeDeleted Will also include soft-deleted records 
      * @return List of records only have fields id,mTime,referenceid and kalturaid
      */
-    public ArrayList<DsRecordMinimalDto> getReferenceIds(String origin, long mTime, int batchSize) throws SQLException {
+    public ArrayList<DsRecordMinimalDto> getReferenceIds(String origin, long mTime, int batchSize, boolean includeDeleted) throws SQLException {
         if (batchSize < 1 || batchSize > 100000) { //No doom switch
             throw new InvalidArgumentServiceException("Batchsize must be in range 1 to 100000");
         }

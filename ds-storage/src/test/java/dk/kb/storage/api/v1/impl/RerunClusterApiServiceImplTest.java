@@ -46,13 +46,13 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
   }
 
   /**
-   * Delete all records between each unittest. The clearTableRecords is only called from here. The
+   * Delete all records between each unittest. The clearTable is only called from here. The
    * facade class is responsible for committing transactions. So clean up between unittests.
    */
   @BeforeEach
   public void beforeEach() throws SQLException {
-    recordStorage.clearTableRecords();
-    rerunClusterStorage.clearTableRecords();
+    recordStorage.clearTable();
+    rerunClusterStorage.clearTable();
   }
 
   @Test

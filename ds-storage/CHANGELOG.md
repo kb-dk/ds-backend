@@ -13,10 +13,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `/record/clearKalturaId` (`DsStorageClient.clearKalturaIdForRecord`) clears the kaltura_id of the records with a given referenceId.
 - `StreamErrorType` values `ERROR_KALTURA_TRANSCODING`, `ERROR_KALTURA_IMPORT`, `ERROR_KALTURA_BLOCKED` and
   `ERROR_KALTURA_SCAN`.
+- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`. The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to `DsStorageClient`.
 
-### Changed
-
-- A blank kaltura_id is treated as null when a record is created or updated, or its kaltura_id is set by referenceId. On a record update with an unchanged referenceId, the existing kaltura_id is now kept instead of cleared. Existing rows are not changed.
+## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
 
@@ -30,11 +29,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found in
   `create_rerun_clusters.ddl`*).
 - Added endpoint `POST /rerun_clusters` that takes a List of `RerunClusterRequestDto` and save it to our
-  `rerun_clusters`
-  table, update `mtime` in `ds_records` table and return number of rows inserted or updated in `rerun_clusters` table.
+  `rerun_clusters` table, update `mtime` in `ds_records` table and return number of rows inserted or updated in
+  `rerun_clusters` table.
 - Added endpoint `GET /rerun_clusters/{fileId}` that returns a `RerunClusterResponseDto` matching the fileId. Returns a
-  `HTTP 404`
-  if no match was found.
+  `HTTP 404` if no match was found.
 - Added endpoint `GET /rerun-cluster/created/latest` that return latest `created` datetime from `rerun_clusters` table.
   It can be null, if `rerun_clusters` table is empty.
 
@@ -49,9 +47,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Refactored method `createEmptyH2DBFromDDL` to dynamically take multiple ddl scripts instead of hardcoded ddl.
 - Refactored `@InInterceptors(interceptors` in `apiServiceImpl.mustache` to add the correct path to
   `KBAuthorizationInterceptor`.
-- Renamed class `DsStorageUnitTestUtil` to `DsStorageUnitTestUtil` and refactored the class so it is possible to have
-  multiple
-  unit test storage classes.
+- Renamed class `DsStorageUnitTestUtil` to `TestcontainersUtil` and refactored the class so it is possible to have
+  multiple unit test storage classes.
 - Explicit catch `NotFoundServiceException` in `performStorageAction` in `BaseModuleStorage` because it only needs debug
   level, and we don't want to spam log file with expected behavior.
 - Explicit catch `ServiceException` in `performStorageAction` in `BaseModuleStorage` so it keeps the original

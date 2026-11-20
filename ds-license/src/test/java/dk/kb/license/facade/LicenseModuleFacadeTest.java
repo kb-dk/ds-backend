@@ -37,7 +37,7 @@ public class LicenseModuleFacadeTest extends TestcontainersUtil {
     }
 
     /**
-     * Delete all records between each unittest. The clearTableRecords is only called from here.
+     * Delete all records between each unittest. The clearTables is only called from here.
      * The facade class is responsible for committing transactions. So clean up between unittests.
      */
     @BeforeEach
@@ -53,7 +53,7 @@ public class LicenseModuleFacadeTest extends TestcontainersUtil {
         tables.add("LICENSECONTENT");    
         tables.add("PRESENTATION");
         tables.add("AUDITLOG");    
-        licenseStorage.clearTableRecords(tables);
+        licenseStorage.clearTables(tables);
     }
     
     @Test
