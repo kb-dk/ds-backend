@@ -1,0 +1,462 @@
+services:
+  ds-storage:
+    image: ds-storage/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-storage
+    cap_drop:
+      - ALL
+    container_name: ds-storage
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      flyway-storage:
+        condition: service_completed_successfully
+    environment:
+      TZ: UTC
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-storage/v1/monitor/status" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 35s
+    ports:
+      - "8081:8080"
+    env_file:
+      - aegis/docker/ds-backend/.env
+    networks:
+      - ds_archive_network
+      - postgres_network
+    security_opt:
+      - no-new-privileges:true
+
+  ds-license:
+    image: ds-license/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-license
+    cap_drop:
+      - ALL
+    container_name: ds-license
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      flyway-license:
+        condition: service_completed_successfully
+    environment:
+      TZ: UTC
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-license/v1/monitor/status" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 35s
+    ports:
+      - "8082:8080"
+    env_file:
+      - aegis/docker/ds-backend/.env
+    networks:
+      - ds_archive_network
+      - postgres_network
+      - solr_network
+    security_opt:
+      - no-new-privileges:true
+
+  ds-present:
+    image: ds-present/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-present
+    cap_drop:
+      - ALL
+    container_name: ds-present
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      TZ: UTC
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-present/v1/monitor/status" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 35s
+    ports:
+      - "8083:8080"
+    env_file:
+      - aegis/docker/ds-backend/.env
+    networks:
+      - ds_archive_network
+    security_opt:
+      - no-new-privileges:true
+
+  ds-datahandler:
+    image: ds-datahandler/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-datahandler
+    cap_drop:
+      - ALL
+    container_name: ds-datahandler
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      solr:
+        condition: service_healthy
+      flyway-datahandler:
+        condition: service_completed_successfully
+    environment:
+      TZ: UTC
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-datahandler/v1/monitor/status" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 35s
+    ports:
+      - "8084:8080"
+    env_file:
+      - aegis/docker/ds-backend/.env
+    networks:
+      - ds_archive_network
+      - postgres_network
+      - solr_network
+    security_opt:
+      - no-new-privileges:true
+
+  ds-discover:
+    image: ds-discover/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-discover
+    cap_drop:
+      - ALL
+    container_name: ds-discover
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      solr:
+        condition: service_healthy
+    environment:
+      TZ: UTC
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-discover/v1/monitor/status" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 35s
+    ports:
+      - "8085:8080"
+    env_file:
+      - aegis/docker/ds-backend/.env
+    networks:
+      - ds_archive_network
+      - solr_network
+    security_opt:
+      - no-new-privileges:true
+
+  ds-image:
+    image: ds-image/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ds-image
+    cap_drop:
+      - ALL
+    container_name: ds-image
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      TZ: UTC
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/ds-image/v1/monitor/status" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 35s
+    ports:
+      - "8086:8080"
+    env_file:
+      - aegis/docker/ds-backend/.env
+    networks:
+      - ds_archive_network
+    security_opt:
+      - no-new-privileges:true
+
+  bff:
+    image: bff/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bff
+    cap_drop:
+      - ALL
+    container_name: ds-bff
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      TZ: UTC
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/bff/v1/monitor/status" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 35s
+    ports:
+      - "8091:8080"
+    env_file:
+      - aegis/docker/ds-backend/.env
+    networks:
+      - ds_archive_network
+      - solr_network
+    security_opt:
+      - no-new-privileges:true
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.7.0-1
+    command: [ "start-dev", "--import-realm", "--http-port=8087" ]
+    cap_drop:
+      - ALL
+    container_name: ds-keycloak
+    environment:
+      TZ: UTC
+      KC_BOOTSTRAP_ADMIN_USERNAME: user
+      KC_BOOTSTRAP_ADMIN_PASSWORD: changeit
+      KC_HTTP_ENABLED: true
+      # Sets the uniform identity for token issuance across your entire environment
+      KC_HOSTNAME: http://keycloak.local:8087
+      KC_HEALTH_ENABLED: true
+    healthcheck:
+      test: [ "CMD-SHELL", "[ -f /tmp/HealthCheck.java ] || echo 'public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(new java.net.URI(args[0])).build(), java.net.http.HttpResponse.BodyHandlers.discarding()).statusCode() == 200 ? 0 : 1); } }' > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/live" ]
+      interval: 60s
+      timeout: 5s
+      retries: 55
+      start_interval: 5s
+      start_period: 25s
+    ports:
+      - "8087:8087"
+    networks:
+      ds_archive_network:
+        aliases:
+          - keycloak.local
+    volumes:
+      - ./conf/keycloak:/opt/keycloak/data/import
+      - keycloak_data:/opt/keycloak/data
+    security_opt:
+      - no-new-privileges:true
+
+  postgres-license:
+    image: postgres:13.23-alpine3.21
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    container_name: ds-postgres-license
+    environment:
+      TZ: UTC
+      POSTGRES_DB: digisam
+      POSTGRES_USER: digisam
+      POSTGRES_PASSWORD: p0stgr3s
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready --username=$${POSTGRES_USER} --dbname=$${POSTGRES_DB}" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 5s
+    ports:
+      - "8088:5432"
+    volumes:
+      - postgres_license_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+    security_opt:
+      - no-new-privileges:true
+
+  postgres-storage:
+    image: postgres:13.23-alpine3.21
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    container_name: ds-postgres-storage
+    environment:
+      TZ: UTC
+      POSTGRES_DB: digisam
+      POSTGRES_USER: digisam
+      POSTGRES_PASSWORD: p0stgr3s
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready --username=$${POSTGRES_USER} --dbname=$${POSTGRES_DB}" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 5s
+    ports:
+      - "8092:5432"
+    volumes:
+      - postgres_storage_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+    security_opt:
+      - no-new-privileges:true
+
+  postgres-datahandler:
+    image: postgres:13.23-alpine3.21
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_READ_SEARCH
+      - FOWNER
+      - SETGID
+      - SETUID
+    container_name: ds-postgres-datahandler
+    environment:
+      TZ: UTC
+      POSTGRES_DB: digisam
+      POSTGRES_USER: digisam
+      POSTGRES_PASSWORD: p0stgr3s
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready --username=$${POSTGRES_USER} --dbname=$${POSTGRES_DB}" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 5s
+    ports:
+      - "8093:5432"
+    volumes:
+      - postgres_datahandler_data:/var/lib/postgresql/data
+    networks:
+      - postgres_network
+    security_opt:
+      - no-new-privileges:true
+
+  flyway-storage:
+    image: redgate/flyway:13.5.0-alpine
+    container_name: local-storage-flyway
+    command:
+      - "-url=jdbc:postgresql://postgres-storage:5432/digisam"
+      - "-user=digisam"
+      - "-password=p0stgr3s"
+      - "-locations=filesystem:/ds-storage/flyway/sql"
+      - "-connectRetries=60"
+      - "migrate"
+    volumes:
+      - ./ds-storage/src/main/resources/db/migration/ds-storage:/ds-storage/flyway/sql
+    networks:
+      - postgres_network
+    depends_on:
+      postgres-storage:
+        condition: service_healthy
+
+  flyway-datahandler:
+    image: redgate/flyway:13.5.0-alpine
+    container_name: local-datahandler-flyway
+    command:
+      - "-url=jdbc:postgresql://postgres-datahandler:5432/digisam"
+      - "-user=digisam"
+      - "-password=p0stgr3s"
+      - "-locations=filesystem:/ds-datahandler/flyway/sql"
+      - "-connectRetries=60"
+      - "migrate"
+    volumes:
+      - ./ds-datahandler/src/main/resources/db/migration/ds-datahandler:/ds-datahandler/flyway/sql
+    networks:
+      - postgres_network
+    depends_on:
+      postgres-datahandler:
+        condition: service_healthy
+
+  flyway-license:
+    image: redgate/flyway:13.5.0-alpine
+    container_name: local-license-flyway
+    command:
+      - "-url=jdbc:postgresql://postgres-license:5432/digisam"
+      - "-user=digisam"
+      - "-password=p0stgr3s"
+      - "-locations=filesystem:/ds-license/flyway/sql,filesystem:/ds-license/flyway/test-sql,filesystem:/ds-license/flyway/devel-sql"
+      - "-connectRetries=60"
+      - "migrate"
+    volumes:
+      - ./ds-license/src/main/resources/db/migration/ds-license:/ds-license/flyway/sql
+      - ./ds-license/src/test/resources/db/testdata/ds-license:/ds-license/flyway/test-sql
+      - ./ds-license/src/test/resources/db/devel/ds-license:/ds-license/flyway/devel-sql
+    networks:
+      - postgres_network
+    depends_on:
+      postgres-license:
+        condition: service_healthy
+
+  solr:
+    image: solr-image/master:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: solr
+    cap_drop:
+      - ALL
+    container_name: ds-solr
+    environment:
+      TZ: UTC
+      SOLR_MODULES: extraction,langid,ltr,analysis-extras,scripting
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8983/solr/ds-collection_shard1_replica_n1/admin/ping?wt=json" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 25s
+    ports:
+      - "8089:8983"
+      - "9983:9983"
+    env_file:
+      - aegis/docker/ds-backend/.env
+    command: [ "solr-foreground", "-c" ]
+    volumes:
+      - solr_data:/opt/solr/server/solr/writable
+    networks:
+      - solr_network
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  solr_data:
+  keycloak_data:
+  postgres_datahandler_data:
+  postgres_storage_data:
+  postgres_license_data:
+
+networks:
+  ds_archive_network:
+    name: ds_archive_network
+    driver: bridge
+  postgres_network:
+    name: postgres_network
+    driver: bridge
+  solr_network:
+    name: solr_network
+    driver: bridge
