@@ -1,0 +1,79 @@
+# Local Graylog stack (Graylog + Data Node + MongoDB), included from docker-compose.yml.
+# Can also be started on its own: docker compose -f docker_graylog.yml up
+#
+# First start: open http://localhost:9000 and complete the preflight setup (the one-time
+# login is printed in the log: docker logs ds-graylog). Then create an input under
+# System -> Inputs -> "OpenTelemetry (gRPC)" on port 4317 with TLS disabled.
+# Services join graylog_network and send OTLP logs to http://graylog:4317.
+#
+# The secrets below are for local development only.
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: ds-graylog-mongodb
+    environment:
+      TZ: UTC
+    volumes:
+      - graylog_mongodb_data:/data/db
+    networks:
+      - graylog_network
+
+  graylog-datanode:
+    image: graylog/graylog-datanode:6.3
+    container_name: ds-graylog-datanode
+    hostname: datanode
+    environment:
+      TZ: UTC
+      GRAYLOG_DATANODE_NODE_ID_FILE: /var/lib/graylog-datanode/node-id
+      # Must match GRAYLOG_PASSWORD_SECRET on the graylog service (min. 16 characters)
+      GRAYLOG_DATANODE_PASSWORD_SECRET: localdevpasswordsecret-change-me
+      GRAYLOG_DATANODE_MONGODB_URI: mongodb://mongodb:27017/graylog
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - graylog_datanode_data:/var/lib/graylog-datanode
+    networks:
+      - graylog_network
+    depends_on:
+      - mongodb
+
+  graylog:
+    image: graylog/graylog:6.3
+    container_name: ds-graylog
+    entrypoint: /usr/bin/tini -- /docker-entrypoint.sh
+    environment:
+      TZ: UTC
+      GRAYLOG_NODE_ID_FILE: /usr/share/graylog/data/data/node-id
+      GRAYLOG_PASSWORD_SECRET: localdevpasswordsecret-change-me
+      # SHA-256 of the admin password "admin"
+      GRAYLOG_ROOT_PASSWORD_SHA2: 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      GRAYLOG_HTTP_BIND_ADDRESS: 0.0.0.0:9000
+      GRAYLOG_HTTP_EXTERNAL_URI: http://localhost:9000/
+      GRAYLOG_MONGODB_URI: mongodb://mongodb:27017/graylog
+    ports:
+      - "9000:9000"        # Web UI (admin / admin)
+      - "4317:4317"        # OpenTelemetry (gRPC) input
+      - "12201:12201/udp"  # GELF UDP input (optional)
+    volumes:
+      - graylog_data:/usr/share/graylog/data/data
+    networks:
+      - graylog_network
+    depends_on:
+      - mongodb
+      - graylog-datanode
+
+volumes:
+  graylog_mongodb_data:
+  graylog_datanode_data:
+  graylog_data:
+
+networks:
+  graylog_network:
+    name: graylog_network
+    driver: bridge

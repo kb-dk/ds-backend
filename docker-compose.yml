@@ -1,3 +1,7 @@
+# Local Graylog stack (Graylog, Data Node, MongoDB)
+include:
+  - docker-graylog.yml
+
 services:
   ds-storage:
     image: ds-storage/master:latest
