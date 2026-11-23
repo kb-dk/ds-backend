@@ -66,8 +66,6 @@ public class SolrUtils {
     
     private static final Logger log = LoggerFactory.getLogger(SolrUtils.class);
 
-    /** Number of records handled in parallel within a batch. */
-    private static final int INDEXING_THREADS = 10;
 
     /**
      * Get the latest MTime for records in the backing storage represented in the existing solr index
@@ -112,8 +110,8 @@ public class SolrUtils {
      * Index documents from a given origin into the configured solr index.
      * <p>
      * Record ids are fetched from ds-storage in batches. Within a batch each id is transformed by ds-present
-     * and posted to solr individually, on {@value #INDEXING_THREADS} threads. The batch is committed when all
-     * its records are done, and mTime is then advanced to the mTime of its last record.
+     * and posted to solr individually, on {@code solr.indexingThreads} threads. The batch is committed when
+     * all its records are done, and mTime is then advanced to the mTime of its last record.
      * <p>
      * A failing record is logged and skipped. A failing commit aborts the run.
      *
@@ -149,7 +147,7 @@ public class SolrUtils {
 
         log.info("Starting indexing of records with sinceTime: '{}' from origin: '{}'", sinceTime, origin);
 
-        ExecutorService executor = Executors.newFixedThreadPool(INDEXING_THREADS);
+        ExecutorService executor = Executors.newFixedThreadPool(ServiceConfig.getSolrIndexingThreads());
         try {
             while (true) {
                 // Minimal records hold id, mTime, referenceId, kalturaId and deleted, but not the data field.

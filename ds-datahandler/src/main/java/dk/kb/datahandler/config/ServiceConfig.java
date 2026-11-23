@@ -99,6 +99,9 @@ public class ServiceConfig {
     private static String dsPresentUrl = null;
     private static int solrBatchSize = 100;
 
+    /** Number of records indexed in parallel within a batch. */
+    private static int solrIndexingThreads = 10;
+
     private static int oaiRetryTimes = 5;
     private static int oaiRetrySeconds = 600;
 
@@ -194,6 +197,7 @@ public class ServiceConfig {
         solrWriteCollectionUrl = serviceConfig.getValue("solr.update.url", String.class);
         solrQueryUrl = serviceConfig.getValue("solr.queryUrl", String.class);
         solrBatchSize = serviceConfig.getValue("solr.batchSize", Integer.class);
+        solrIndexingThreads = getOptionalInt("solr.indexingThreads", 10);
         dsPresentUrl = serviceConfig.getValue("present.url", String.class);
 
         // The kaltura.* block below is frequently absent or filled with non-functional placeholder values in the
@@ -228,8 +232,8 @@ public class ServiceConfig {
         transcriptionsCompletedFolder = getOptionalString("transcriptions.completedFolder", null);
 
         log.info("Initialised from config: '{}' with the following values: solrUpdateUrl: '{}', solrQueryUrl: '{}', " +
-                "solrBatchSize: '{}', dsStorageUrl: '{}', dsPresentUrl: '{}', oaiRetryTimes: '{}', oaiRetrySeconds: '{}', transcriptionDropFolder: '{}', transcriptionCompletedFolder: '{}'",
-               configFile, solrUpdateUrl, solrQueryUrl, solrBatchSize, dsStorageUrl, dsPresentUrl, oaiRetryTimes, oaiRetrySeconds, transcriptionsDropFolder
+                "solrBatchSize: '{}', solrIndexingThreads: '{}', dsStorageUrl: '{}', dsPresentUrl: '{}', oaiRetryTimes: '{}', oaiRetrySeconds: '{}', transcriptionDropFolder: '{}', transcriptionCompletedFolder: '{}'",
+               configFile, solrUpdateUrl, solrQueryUrl, solrBatchSize, solrIndexingThreads, dsStorageUrl, dsPresentUrl, oaiRetryTimes, oaiRetrySeconds, transcriptionsDropFolder
                ,transcriptionsCompletedFolder);
 
         Path folderPath = Paths.get(oaiTimestampFolder);
@@ -395,6 +399,14 @@ public class ServiceConfig {
 
     public static int getSolrBatchSize() {
     	return solrBatchSize;
+    }
+
+    /**
+     * Number of records indexed in parallel within a batch. Defaults to 10 if {@code solr.indexingThreads}
+     * is absent from the configuration.
+     */
+    public static int getSolrIndexingThreads() {
+        return solrIndexingThreads;
     }
 
     /**

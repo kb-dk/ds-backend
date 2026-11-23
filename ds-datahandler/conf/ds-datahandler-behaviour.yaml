@@ -44,6 +44,8 @@ solr:
     requestHandler: /update
   queryUrl: http://localhost:10011/solr/ds
   batchSize: 500
+  # Number of records indexed in parallel within a batch.
+  indexingThreads: 10
 
 # The ds-present server used for xslt
 present:

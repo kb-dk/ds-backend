@@ -46,6 +46,8 @@ solr:
     url: "${solr_url}/solr/${solr_write_collection}"
     requestHandler: /update
   batchSize: 500
+  # Number of records indexed in parallel within a batch.
+  indexingThreads: 5
 
 db:
   url: "jdbc:postgresql://postgres-datahandler:5432/${datahandler_database}"
