@@ -7,6 +7,34 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [9.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.1) - 2026-11-23
+
+### Changed
+
+- Replaced the `kb-util`/`AutoYAML`-based configuration with [SmallRye Config](https://smallrye.io/smallrye-config/),
+  a standalone (non-Quarkus) MicroProfile Config implementation. The previous setup merged several YAML files
+  found via a glob (`*-behaviour.yaml` + `*-environment.yaml` + `*-local.yaml`) at startup, which had become
+  confusing and hard to maintain - it was often unclear which file a given value actually came from.
+- Exactly one YAML configuration file is now loaded - no more glob/wildcard merging of multiple files. Its path
+  must be declared explicitly via the `application-config` entry in the Tomcat context file; wildcards are not
+  supported.
+- All per-environment overrides and secrets must now also be declared in the Tomcat context file, via a new
+  `application-properties-config` entry pointing at a `.properties` file (see
+  `ds-image-application.properties.SAMPLE`). Anything that used to live in the old `*-environment.yaml` must be
+  moved into this file, or it will silently stop being read.
+- New context file block (`conf/ocp/ds-image.xml`):
+
+  ```xml
+  <Environment name="application-config"
+      value="${user.home}/services/conf/ds-image-behaviour.yaml"
+      type="java.lang.String"
+      override="false"/>
+  <Environment name="application-properties-config"
+      value="${user.home}/services/conf/ds-image-application.properties"
+      type="java.lang.String"
+      override="false"/>
+  ```
+
 ## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
 
 ## [8.0.2](https://github.com/kb-dk/ds-backend/releases/tag/v8.0.2) - 2026-10-26
