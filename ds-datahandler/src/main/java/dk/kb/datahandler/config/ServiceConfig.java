@@ -534,23 +534,23 @@ public class ServiceConfig {
         return serviceConfig.getOptionalValue("db.connectionPoolSize", Integer.class).orElse(10); //Default 10
     }
 
-    public static String getP3RerunDatabaseDriver() {
+    public static String getP3RerunsDatabaseDriver() {
         return serviceConfig.getValue("db_p3reruns.driver", String.class);
     }
 
-    public static String getP3RerunJdbcUrl() {
+    public static String getP3RerunsJdbcUrl() {
         return serviceConfig.getValue("db_p3reruns.url", String.class);
     }
 
-    public static String getP3RerunDatabaseUsername() {
+    public static String getP3RerunsDatabaseUsername() {
         return serviceConfig.getValue("db_p3reruns.username", String.class);
     }
 
-    public static String getP3RerunDatabasePassword() {
+    public static String getP3RerunsDatabasePassword() {
         return serviceConfig.getValue("db_p3reruns.password", String.class);
     }
 
-    public static int getP3RerunDatabaseConnectionPoolSize() {
+    public static int getP3RerunsDatabaseConnectionPoolSize() {
         return serviceConfig.getValue("db_p3reruns.connectionPoolSize", Integer.class);
     }
 
