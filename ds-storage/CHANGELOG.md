@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`. The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to `DsStorageClient`.
+
 ## [9.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.1) - 2026-11-23
 
 ### Changed
