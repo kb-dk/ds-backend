@@ -41,7 +41,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added endpoint `POST /rerun_clusters` that takes a List of `RerunClusterRequestDto` and save it to our
   `rerun_clusters` table, update `mtime` in `ds_records` table and return number of rows inserted or updated in
   `rerun_clusters` table.
-- Added endpoint `GET /rerun_cluster/{fileId}` that returns a `RerunClusterResponseDto` matching the `fileId`. Returns a
+- Added endpoint `GET /rerun-cluster/{fileId}` that returns a `RerunClusterResponseDto` matching the `fileId`. Returns a
   `HTTP 404` if no match was found.
 - Added endpoint `GET /rerun-cluster/created/latest` that return latest `created` datetime from `rerun_clusters` table.
   It can be null, if `rerun_clusters` table is empty.
