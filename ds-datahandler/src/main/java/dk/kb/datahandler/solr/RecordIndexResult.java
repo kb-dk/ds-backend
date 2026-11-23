@@ -3,13 +3,8 @@ package dk.kb.datahandler.solr;
 /**
  * The outcome of indexing a single record: transforming it in ds-present and posting it to solr.
  * <p>
- * Indexing one record is self contained, so this is the natural unit of work. The indexing currently runs the
- * records of a batch sequentially, but nothing in this class or in the method producing it depends on that:
- * the intention is to submit one unit per record to a thread pool and collect the results.
- * <p>
- * Both calls are reported separately, because the two failures mean different things. A failing transformation
- * is deterministic, so the same record fails again on every run and there is nothing to do but log it. A
- * failing solr call is usually transient and the record is worth retrying.
+ * The two calls are reported separately. A transformation failure repeats on every run; a solr failure is
+ * usually transient.
  */
 public class RecordIndexResult {
 
@@ -42,7 +37,7 @@ public class RecordIndexResult {
     }
 
     /**
-     * ds-present could not deliver the record. Solr was never called.
+     * ds-present could not deliver the record. Solr was not called.
      *
      * @param presentStatus    HTTP status from ds-present, or {@link #NOT_CALLED} if no response was received.
      * @param exceptionMessage the response from ds-present, or the exception if there was no response.
@@ -66,7 +61,7 @@ public class RecordIndexResult {
         return exceptionMessage == null;
     }
 
-    /** @return true if ds-present could not deliver the record. These failures are deterministic. */
+    /** @return true if ds-present could not deliver the record. */
     public boolean isPresentFailure() {
         return !isSuccess() && presentStatus != 200;
     }
