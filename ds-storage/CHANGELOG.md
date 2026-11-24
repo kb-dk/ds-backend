@@ -9,7 +9,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`. The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to `DsStorageClient`.
+- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`.
+  The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to
+  `DsStorageClient`.
 - Added index on column `created` and `id` together on `rerun_clusters` table and removed an old index on only
   `created.  (*Remember: OPS need to run `Flyway` migration*).
 
