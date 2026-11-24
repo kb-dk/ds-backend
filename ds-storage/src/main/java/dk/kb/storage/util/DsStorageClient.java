@@ -502,7 +502,7 @@ public class DsStorageClient {
         throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
-                .appendPathSegments("rerun-cluster")
+                .appendPathSegments("rerun-clusters")
                 .build();
 
             return Service2ServiceRequest.httpCallWithOAuthToken(uri, "POST",
@@ -540,7 +540,7 @@ public class DsStorageClient {
      *
      * @throws ServiceException if fails to make API call
      */
-    public CreatedDto latestCreated() throws ServiceException {
+    public CreatedDto latestCreatedRerunCluster() throws ServiceException {
         try {
             URI uri = new URIBuilder(serviceURI)
                 .appendPathSegments("rerun-cluster", "created", "latest")

@@ -9,7 +9,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`. The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to `DsStorageClient`.
+- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`.
+  The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to
+  `DsStorageClient`.
+- Added index on column `created` and `id` together on `rerun_clusters` table and removed an old index on only
+  `created.  (*Remember: OPS need to run `Flyway` migration*).
+
+### Changed
+
+- Rename method `latestCreated` to `latestCreatedRerunCluster` so it does not collide when `summaries` is implemented.
+- Renamed endpoint `POST rerun-cluster` -> `POST rerun-clusters`.
+- `CreatedDto` is changed to also return id of the latest created row.
 
 ## [9.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.1) - 2026-11-23
 
@@ -50,12 +60,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added support for OffsetDateTime with OpenAPI generation.
-- Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found in
-  `create_rerun_clusters.ddl`*).
+- Added rerun_clusters table (*Remember: OPS need to run `Flyway` migration*).
 - Added endpoint `POST /rerun_clusters` that takes a List of `RerunClusterRequestDto` and save it to our
   `rerun_clusters` table, update `mtime` in `ds_records` table and return number of rows inserted or updated in
   `rerun_clusters` table.
-- Added endpoint `GET /rerun_clusters/{fileId}` that returns a `RerunClusterResponseDto` matching the fileId. Returns a
+- Added endpoint `GET /rerun-cluster/{fileId}` that returns a `RerunClusterResponseDto` matching the `fileId`. Returns a
   `HTTP 404` if no match was found.
 - Added endpoint `GET /rerun-cluster/created/latest` that return latest `created` datetime from `rerun_clusters` table.
   It can be null, if `rerun_clusters` table is empty.

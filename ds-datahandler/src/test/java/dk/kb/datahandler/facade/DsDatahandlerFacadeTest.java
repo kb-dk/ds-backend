@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -62,7 +63,8 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
   public void updateRerunClusters_whenGivenRerunClusterRequestDtoList_thenReturnHowManyRowsWasInsertedOrUpdated() {
     // Arrange
     dk.kb.storage.model.v1.CreatedDto createdDto = new dk.kb.storage.model.v1.CreatedDto();
-    createdDto.setCreated(OffsetDateTime.parse("2026-03-20T00:00:00.001Z"));
+    createdDto.setId(null);
+    createdDto.setCreated(null);
 
     UUID id = UUID.randomUUID();
     UUID fileId = UUID.randomUUID();
@@ -100,10 +102,10 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
             .thenReturn(dsStorageClient);
 
         try (MockedConstruction<RerunClusterStorage> mockedConstruction = Mockito.mockConstruction(
-            RerunClusterStorage.class, (mock, context) -> Mockito.when(mock.getRerunClusters(any()))
+            RerunClusterStorage.class, (mock, context) -> Mockito.when(mock.getRerunClusters(any(), any(), anyInt()))
                 .thenReturn(rerunClusterRequestDtoList))) {
 
-          Mockito.when(dsStorageClient.latestCreated()).thenReturn(createdDto);
+          Mockito.when(dsStorageClient.latestCreatedRerunCluster()).thenReturn(createdDto);
           Mockito.when(dsStorageClient.updateRerunClusters(rerunClusterRequestDtoList))
               .thenReturn(recordsCountDto);
 
@@ -146,7 +148,8 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
   public void updateRerunClusters_whenGivenRerunClusterRequestDtoListDoNotMatchSavedRerunCluster_thenThrowInternalServiceException() {
     // Arrange
     dk.kb.storage.model.v1.CreatedDto createdDto = new dk.kb.storage.model.v1.CreatedDto();
-    createdDto.setCreated(OffsetDateTime.parse("2026-03-20T00:00:00.001Z"));
+    createdDto.setId(null);
+    createdDto.setCreated(null);
 
     UUID id = UUID.randomUUID();
     UUID fileId = UUID.randomUUID();
@@ -184,10 +187,10 @@ public class DsDatahandlerFacadeTest extends TestcontainersUtil {
             .thenReturn(dsStorageClient);
 
         try (MockedConstruction<RerunClusterStorage> mockedConstruction = Mockito.mockConstruction(
-            RerunClusterStorage.class, (mock, context) -> Mockito.when(mock.getRerunClusters(any()))
+            RerunClusterStorage.class, (mock, context) -> Mockito.when(mock.getRerunClusters(any(), any(), anyInt()))
                 .thenReturn(rerunClusterRequestDtoList))) {
 
-          Mockito.when(dsStorageClient.latestCreated()).thenReturn(createdDto);
+          Mockito.when(dsStorageClient.latestCreatedRerunCluster()).thenReturn(createdDto);
           Mockito.when(dsStorageClient.updateRerunClusters(rerunClusterRequestDtoList))
               .thenReturn(recordsCountDto);
 

@@ -7,6 +7,7 @@ import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RecordsCountDto;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
+import dk.kb.storage.util.UniqueTimestampGenerator;
 import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,7 +57,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
                                                              UPDATE
                                                                  ds_records dr
                                                              SET
-                                                                 mtime = (EXTRACT(EPOCH FROM statement_timestamp()) * 1000000)::bigint -- get unix timestamp in microseconds
+                                                                 mtime = ?
                                                              FROM
                                                                  insert_update_rerun_clusters iurc
                                                              WHERE
@@ -79,12 +80,18 @@ public class RerunClusterStorage extends BaseModuleStorage {
                                                                      file_id = ?
                                                                  """;
 
-  private static final String latestCreatedStatement = """
-                                                       SELECT
-                                                           max(rc.created) AS latest_created -- find the latest created datetime
-                                                       FROM
-                                                           rerun_clusters rc
-                                                       """;
+  private static final String latestCreatedRerunClusterStatement = """
+                                                                   SELECT
+                                                                       rc.id,
+                                                                       rc.created
+                                                                   FROM
+                                                                       rerun_clusters rc
+                                                                   ORDER BY
+                                                                       rc.created DESC,
+                                                                       rc.id DESC   -- same tiebreaker as the paging query
+                                                                   LIMIT
+                                                                       1
+                                                                   """;
 
   public RerunClusterStorage() throws SQLException {
     super();
@@ -103,11 +110,14 @@ public class RerunClusterStorage extends BaseModuleStorage {
 
     try (PreparedStatement stmt = connection.prepareStatement(updateRerunClustersStatement)) {
       for (RerunClusterRequestDto rerunClusterRequestDto : rerunClusterRequestDtoList) {
+        long uniqueTimestamp = UniqueTimestampGenerator.next();
+
         stmt.setObject(1, rerunClusterRequestDto.getId());
         stmt.setObject(2, rerunClusterRequestDto.getFileId());
         stmt.setObject(3, rerunClusterRequestDto.getRerunClusterId());
         stmt.setObject(4, rerunClusterRequestDto.getCreated());
-        stmt.setObject(5, rerunClusterRequestDto.getJobId());
+        stmt.setString(5, rerunClusterRequestDto.getJobId());
+        stmt.setLong(6, uniqueTimestamp);
 
         stmt.addBatch();
       }
@@ -161,8 +171,8 @@ public class RerunClusterStorage extends BaseModuleStorage {
    * @return CreatedDto with latest created datetime
    * @throws SQLException
    */
-  public CreatedDto latestCreated() throws SQLException {
-    try (PreparedStatement stmt = connection.prepareStatement(latestCreatedStatement)) {
+  public CreatedDto latestCreatedRerunCluster() throws SQLException {
+    try (PreparedStatement stmt = connection.prepareStatement(latestCreatedRerunClusterStatement)) {
       ResultSet resultSet = stmt.executeQuery();
 
       if (resultSet.next()) {
@@ -171,7 +181,7 @@ public class RerunClusterStorage extends BaseModuleStorage {
 
       return null;
     } catch (SQLException e) {
-      String message = "SQL Exception in latestCreated. Error: " + e.getMessage();
+      String message = "SQL Exception in latestCreatedRerunCluster. Error: " + e.getMessage();
       log.error(message);
       throw new SQLException(message, e);
     }
