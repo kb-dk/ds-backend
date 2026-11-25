@@ -102,10 +102,10 @@ curl --request GET "http://localhost:8084/ds-datahandler/v1/oai/import/delta?oai
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
-### Fetch rerun clusters from remote database (takes 1,5 hour):
+### Fetch rerun clusters from remote database (takes 3-10 minutes):
 
 ```shell
-curl --request POST "http://localhost:8084/ds-datahandler/v1/rerun-cluster" \
+curl --request POST "http://localhost:8084/ds-datahandler/v1/rerun-clusters" \
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 

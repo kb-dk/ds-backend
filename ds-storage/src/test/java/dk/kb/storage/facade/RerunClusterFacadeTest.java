@@ -2,7 +2,6 @@ package dk.kb.storage.facade;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,8 +38,8 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
   }
 
   /**
-   * Delete all records between each unittest. The clearTable is only called from here. The
-   * facade class is responsible for committing transactions. So clean up between unittests.
+   * Delete all records between each unittest. The clearTable is only called from here. The facade
+   * class is responsible for committing transactions. So clean up between unittests.
    */
   @BeforeEach
   public void beforeEach() throws SQLException {
@@ -244,8 +243,9 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsPopulated_thenReturnLatestCreated() {
+  public void latestCreatedRerunCluster_whenTableIsPopulated_thenReturnLatestCreated() {
     // Arrange
+    UUID secondId = UUID.randomUUID();
     OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
 
@@ -257,7 +257,7 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
     firstRerunClusterRequestDto.setJobId("test run 1");
 
     RerunClusterRequestDto secondRerunClusterRequestDto = new RerunClusterRequestDto();
-    secondRerunClusterRequestDto.setId(UUID.randomUUID());
+    secondRerunClusterRequestDto.setId(secondId);
     secondRerunClusterRequestDto.setFileId(UUID.randomUUID());
     secondRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
     secondRerunClusterRequestDto.setCreated(secondCreated);
@@ -270,20 +270,22 @@ public class RerunClusterFacadeTest extends TestcontainersUtil {
         RerunClusterFacade.updateRerunClusters(rerunClusterRequestDtoList);
 
     // Act
-    CreatedDto createdDto = RerunClusterFacade.latestCreated();
+    CreatedDto createdDto = RerunClusterFacade.latestCreatedRerunCluster();
 
     // Assert
     assertNotNull(createdDto);
+    assertEquals(secondId, createdDto.getId());
     assertEquals(secondCreated, createdDto.getCreated());
   }
 
   @Test
-  public void latestCreated_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated() {
+  public void latestCreatedRerunCluster_whenTableIsEmpty_thenThrowNotFoundServiceException() {
     // Act
-    CreatedDto createdDto = RerunClusterFacade.latestCreated();
+    NotFoundServiceException exception = assertThrows(NotFoundServiceException.class,
+        () -> RerunClusterFacade.latestCreatedRerunCluster());
 
     // Assert
-    assertNotNull(createdDto);
-    assertNull(createdDto.getCreated());
+    String errorMessage = "No rows were found in rerun_clusters table";
+    assertEquals(errorMessage, exception.getMessage());
   }
 }

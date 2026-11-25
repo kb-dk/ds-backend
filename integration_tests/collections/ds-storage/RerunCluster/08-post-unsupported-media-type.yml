@@ -1,11 +1,11 @@
 info:
-  name: POST rerun-cluster - text/plain returns 415
+  name: POST rerun-clusters - text/plain returns 415
   type: http
   seq: 8
 
 http:
   method: POST
-  url: "{{baseUrl}}/rerun-cluster"
+  url: "{{baseUrl}}/rerun-clusters"
   headers:
     - name: Content-Type
       value: text/plain

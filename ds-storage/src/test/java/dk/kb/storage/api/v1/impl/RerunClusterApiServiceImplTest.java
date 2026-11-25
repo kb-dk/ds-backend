@@ -2,7 +2,6 @@ package dk.kb.storage.api.v1.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -46,8 +45,8 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
   }
 
   /**
-   * Delete all records between each unittest. The clearTable is only called from here. The
-   * facade class is responsible for committing transactions. So clean up between unittests.
+   * Delete all records between each unittest. The clearTable is only called from here. The facade
+   * class is responsible for committing transactions. So clean up between unittests.
    */
   @BeforeEach
   public void beforeEach() throws SQLException {
@@ -173,8 +172,9 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
   }
 
   @Test
-  public void latestCreated_whenTableIsPopulated_thenReturnLatestCreated() {
+  public void latestCreatedRerunCluster_whenTableIsPopulated_thenReturnLatestCreated() {
     // Arrange
+    UUID secondId = UUID.randomUUID();
     OffsetDateTime firstCreated = OffsetDateTime.parse("2026-04-30T12:26:57.570Z");
     OffsetDateTime secondCreated = OffsetDateTime.parse("2026-05-01T07:20:00.000Z");
 
@@ -186,7 +186,7 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
     firstRerunClusterRequestDto.setJobId("test run 1");
 
     RerunClusterRequestDto secondRerunClusterRequestDto = new RerunClusterRequestDto();
-    secondRerunClusterRequestDto.setId(UUID.randomUUID());
+    secondRerunClusterRequestDto.setId(secondId);
     secondRerunClusterRequestDto.setFileId(UUID.randomUUID());
     secondRerunClusterRequestDto.setRerunClusterId(UUID.randomUUID());
     secondRerunClusterRequestDto.setCreated(secondCreated);
@@ -199,20 +199,43 @@ public class RerunClusterApiServiceImplTest extends TestcontainersUtil {
         rerunClusterApiServiceImpl.updateRerunClusters(rerunClusterRequestDtoList);
 
     // Act
-    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreated();
+    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreatedRerunCluster();
 
     // Assert
     assertNotNull(createdDto);
+    assertEquals(secondId, createdDto.getId());
     assertEquals(secondCreated, createdDto.getCreated());
   }
 
   @Test
-  public void latestCreated_whenTableIsEmpty_thenReturnCreatedDtoWithNullCreated() {
+  public void latestCreatedRerunCluster_whenTableIsEmpty_thenThrowNotFoundServiceException() {
+    // Arrange
+    // The JAX-RS container injects HttpServletRequest via @Context. In unit tests we must do it ourselves,
+    // otherwise handleException -> getCallDetails() throws a NullPointerException
+    HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
+    HttpServletMapping httpServletMappingMock = mock(HttpServletMapping.class);
+
+    when(httpServletRequestMock.getMethod()).thenReturn("GET");
+    when(httpServletRequestMock.getContextPath()).thenReturn("/ds-storage");
+    when(httpServletRequestMock.getHttpServletMapping()).thenReturn(httpServletMappingMock);
+    when(httpServletMappingMock.getMatchValue()).thenReturn("v1");
+    when(httpServletRequestMock.getPathInfo()).thenReturn("/rerun-cluster/created/latest");
+    when(httpServletRequestMock.getParameterMap()).thenReturn(Map.of());
+    when(httpServletRequestMock.getHeaders("Accept")).thenReturn(Collections.emptyEnumeration());
+
+    // Anonymous subclass, so we can set the protected field from ImplBase without reflection
+    rerunClusterApiServiceImpl = new RerunClusterApiServiceImpl() {
+      {
+        httpServletRequest = httpServletRequestMock;
+      }
+    };
+
     // Act
-    CreatedDto createdDto = rerunClusterApiServiceImpl.latestCreated();
+    NotFoundServiceException exception = assertThrows(NotFoundServiceException.class,
+        () -> rerunClusterApiServiceImpl.latestCreatedRerunCluster());
 
     // Assert
-    assertNotNull(createdDto);
-    assertNull(createdDto.getCreated());
+    String errorMessage = "No rows were found in rerun_clusters table";
+    assertEquals(errorMessage, exception.getMessage());
   }
 }

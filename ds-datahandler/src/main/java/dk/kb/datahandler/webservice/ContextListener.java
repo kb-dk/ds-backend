@@ -109,9 +109,9 @@ public class ContextListener implements ServletContextListener {
             ServiceConfig.getDatabaseConnectionPoolSize());
 
         RerunClusterStorage.initialize(
-            ServiceConfig.getP3RerunDatabaseDriver(), ServiceConfig.getP3RerunJdbcUrl(),
-            ServiceConfig.getP3RerunDatabaseUsername(), ServiceConfig.getP3RerunDatabasePassword(),
-            ServiceConfig.getP3RerunDatabaseConnectionPoolSize());
+            ServiceConfig.getP3RerunsDatabaseDriver(), ServiceConfig.getP3RerunsJdbcUrl(),
+            ServiceConfig.getP3RerunsDatabaseUsername(), ServiceConfig.getP3RerunsDatabasePassword(),
+            ServiceConfig.getP3RerunsDatabaseConnectionPoolSize());
 
         handleRunningJobs(JobStatusDto.FAILED, "Marked as failed on startup.");
     }

@@ -9,7 +9,45 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`. The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to `DsStorageClient`.
+- Added new method `/records/minimalJson` that returns JSON, similar to the streaming response from `/records/minimal`.
+  The streaming method should be removed later. deleted flag added to `DsRecordMinimalDto`. Method added to
+  `DsStorageClient`.
+- Added index on column `created` and `id` together on `rerun_clusters` table and removed an old index on only
+  `created.  (*Remember: OPS need to run `Flyway` migration*).
+
+### Changed
+
+- Rename method `latestCreated` to `latestCreatedRerunCluster` so it does not collide when `summaries` is implemented.
+- Renamed endpoint `POST rerun-cluster` -> `POST rerun-clusters`.
+- `CreatedDto` is changed to also return id of the latest created row.
+
+## [9.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.1) - 2026-11-23
+
+### Changed
+
+- Replaced the `kb-util`/`AutoYAML`-based configuration with [SmallRye Config](https://smallrye.io/smallrye-config/),
+  a standalone (non-Quarkus) MicroProfile Config implementation. The previous setup merged several YAML files
+  found via a glob (`*-behaviour.yaml` + `*-environment.yaml` + `*-local.yaml`) at startup, which had become
+  confusing and hard to maintain - it was often unclear which file a given value actually came from.
+- Exactly one YAML configuration file is now loaded - no more glob/wildcard merging of multiple files. Its path
+  must be declared explicitly via the `application-config` entry in the Tomcat context file; wildcards are not
+  supported.
+- All per-environment overrides and secrets must now also be declared in the Tomcat context file, via a new
+  `application-properties-config` entry pointing at a `.properties` file (see
+  `ds-storage-application.properties.SAMPLE`). Anything that used to live in the old `*-environment.yaml` must
+  be moved into this file, or it will silently stop being read.
+- New context file block (`conf/ocp/ds-storage.xml`):
+
+  ```xml
+  <Environment name="application-config"
+      value="${user.home}/services/conf/ds-storage-behaviour.yaml"
+      type="java.lang.String"
+      override="false"/>
+  <Environment name="application-properties-config"
+      value="${user.home}/services/conf/ds-storage-application.properties"
+      type="java.lang.String"
+      override="false"/>
+  ```
 
 ## [9.0.0](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.0) - 2026-11-13
 
@@ -22,12 +60,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added support for OffsetDateTime with OpenAPI generation.
-- Added rerun_clusters table (*Remember: rerun_clusters table creation for OPS to be found in
-  `create_rerun_clusters.ddl`*).
+- Added rerun_clusters table (*Remember: OPS need to run `Flyway` migration*).
 - Added endpoint `POST /rerun_clusters` that takes a List of `RerunClusterRequestDto` and save it to our
   `rerun_clusters` table, update `mtime` in `ds_records` table and return number of rows inserted or updated in
   `rerun_clusters` table.
-- Added endpoint `GET /rerun_clusters/{fileId}` that returns a `RerunClusterResponseDto` matching the fileId. Returns a
+- Added endpoint `GET /rerun-cluster/{fileId}` that returns a `RerunClusterResponseDto` matching the `fileId`. Returns a
   `HTTP 404` if no match was found.
 - Added endpoint `GET /rerun-cluster/created/latest` that return latest `created` datetime from `rerun_clusters` table.
   It can be null, if `rerun_clusters` table is empty.

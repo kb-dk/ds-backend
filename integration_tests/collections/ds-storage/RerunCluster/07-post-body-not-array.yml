@@ -1,11 +1,11 @@
 info:
-  name: POST rerun-cluster - object instead of array returns 400
+  name: POST rerun-clusters - object instead of array returns 400
   type: http
   seq: 7
 
 http:
   method: POST
-  url: "{{baseUrl}}/rerun-cluster"
+  url: "{{baseUrl}}/rerun-clusters"
   headers:
     - name: Content-Type
       value: application/json
