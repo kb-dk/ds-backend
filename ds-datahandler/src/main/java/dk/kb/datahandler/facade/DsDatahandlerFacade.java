@@ -201,7 +201,7 @@ public class DsDatahandlerFacade {
         OffsetDateTime offsetDateModifiedTimeFrom = OffsetDateTime.ofInstant(Instant.EPOCH.plus(0, ChronoUnit.MICROS), ZoneOffset.UTC);
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.KALTURA_UPLOAD, null, offsetDateModifiedTimeFrom, user,
-                CategoryDto.KALTURA_VALIDATION);
+                List.of(CategoryDto.KALTURA_VALIDATION));
 
         log.info("Starting kaltura delta upload");
         try {
@@ -259,7 +259,7 @@ public class DsDatahandlerFacade {
 
         String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
         JobDto jobDto = startJob(TypeDto.FULL, CategoryDto.KALTURA_VALIDATION, null, null, user,
-                CategoryDto.KALTURA_UPLOAD);
+                List.of(CategoryDto.KALTURA_UPLOAD));
 
         log.info("Starting kaltura validation");
         try {
@@ -543,23 +543,6 @@ public class DsDatahandlerFacade {
         return oaiFilter.getProcessed();
     }
 
-    private static DsKalturaClient getKalturaClient() throws APIException {
-        String kalturaUrl = ServiceConfig.getKalturaUrl();
-        String adminSecret = ServiceConfig.getKalturaAdminSecret();
-        Integer partnerId = ServiceConfig.getKalturaPartnerId();
-        String userId = ServiceConfig.getKalturaUserId();
-        String token = ServiceConfig.getKalturaToken();
-        String tokenId = ServiceConfig.getKalturaTokenId();
-        int sessionDurationSeconds = ServiceConfig.getKalturaSessionDurationSeconds();
-        int sessionRefreshThreshold = ServiceConfig.getKalturaSessionRefreshThreshold();
-        int conversionQueueThreshold = ServiceConfig.getConversionQueueThreshold();
-        int conversionQueueDelaySeconds = ServiceConfig.getConversionQueueDelaySeconds();
-
-        log.info("creating kaltura client for partnerID:" + partnerId);
-        return new DsKalturaClient(kalturaUrl, userId, partnerId, token, tokenId, adminSecret,
-                sessionDurationSeconds, sessionRefreshThreshold, conversionQueueThreshold, conversionQueueDelaySeconds);
-    }
-
     public static DsStorageClient getDsStorageApiClient() {
         if (storageClient != null) {
             return storageClient;
@@ -570,11 +553,16 @@ public class DsDatahandlerFacade {
         return storageClient;
     }
 
+    public static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user){
+        return startJob(typeDto, categoryDto, source, modifiedTimeFrom, user, new ArrayList<>());
+    }
+
     /**
      * Creates a new running job, unless a job of the same category and source, or a job of one of the
      * blocking categories without a source, is already running.
      * The check and the insert are not atomic, and running jobs are marked failed when an instance starts. This
      * assumes a single ds-datahandler instance, with jobs not started at the exact same time.
+     *
      * @param typeDto
      * @param categoryDto
      * @param source
@@ -585,7 +573,7 @@ public class DsDatahandlerFacade {
      * @throws InvalidArgumentServiceException if a conflicting job is running
      */
     public static JobDto startJob(TypeDto typeDto, CategoryDto categoryDto, String source, OffsetDateTime modifiedTimeFrom, String user,
-                                  CategoryDto... blockingCategories) {
+                                  List<CategoryDto> blockingCategories) {
         JobDto jobDto = new JobDto();
 
         jobDto.setId(UUID.randomUUID());
@@ -604,7 +592,7 @@ public class DsDatahandlerFacade {
                 throw new InvalidArgumentServiceException("There is already a/an " + categoryDto + " job running");
             }
             for (CategoryDto blocking : blockingCategories) {
-                if (((JobStorage) storage).hasRunningJob(blocking, null)) {
+                if (((JobStorage) storage).hasRunningJob(blocking, source)) {
                     throw new InvalidArgumentServiceException("Cannot start " + categoryDto + " job while a/an " + blocking + " job is running");
                 }
             }
