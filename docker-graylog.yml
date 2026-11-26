@@ -1,9 +1,8 @@
-# Local Graylog stack (Graylog + Data Node + MongoDB), included from docker-compose.yml.
+# Local Graylog stack (Graylog + Data Node + MongoDB).
 # Can also be started on its own: docker compose -f docker_graylog.yml up
 #
-# First start: open http://localhost:9000 and complete the preflight setup (the one-time
-# login is printed in the log: docker logs ds-graylog). Then create an input under
-# System -> Inputs -> "OpenTelemetry (gRPC)" on port 4317 with TLS disabled.
+# First start: open http://localhost:9000 and complete the preflight setup
+# (the one-time login is printed in the log: docker logs ds-graylog).
 # Services join graylog_network and send OTLP logs to http://graylog:4317.
 #
 # The secrets below are for local development only.
