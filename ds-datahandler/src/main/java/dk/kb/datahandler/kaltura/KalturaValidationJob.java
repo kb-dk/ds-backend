@@ -191,8 +191,8 @@ public class KalturaValidationJob {
 
     /**
      * True if the record has a kaltura_id that can be looked up in Kaltura: not null, not blank, and not an error
-     * marker (ERROR_*). Storage stores a blank kaltura_id as null, but older rows can still hold an empty string.
-     * Kaltura can not look up a blank id, and the error would stop the whole run.
+     * marker (ERROR_*). Storage can hold a blank kaltura_id. Kaltura can not look up a blank id, and the error would
+     * stop the whole run.
      */
     private static boolean isValidatable(DsRecordMinimalDto record) {
         String kalturaId = record.getKalturaId();

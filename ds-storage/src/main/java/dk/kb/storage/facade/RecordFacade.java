@@ -74,9 +74,6 @@ public class RecordFacade {
             validateOriginExists(record.getOrigin());
             validateIdHasOriginPrefix(record.getOrigin(), record.getId());
             validateRecordType(record.getRecordType());
-            if (record.getKalturaId() != null && record.getKalturaId().isBlank()) { //No kaltura_id is always null
-                record.setKalturaId(null);
-            }
             String orgId = record.getId();
             if (record.getParentId() != null) { //Parent ID must belong to same collection and also validate
                 validateIdHasOriginPrefix(record.getOrigin(), record.getParentId());

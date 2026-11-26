@@ -125,48 +125,6 @@ public class RecordFacadeTest extends TestcontainersUtil {
     }
 
     @Test
-    public void testCreateRecord_whenKalturaIdIsBlank_thenStoredAsNull() {
-        // Arrange
-        String id = "doms.radio:blank_kaltura_id";
-        DsRecordDto record = new DsRecordDto();
-        record.setId(id);
-        record.setOrigin("doms.radio");
-        record.setData("Hello");
-        record.setReferenceId("ref_blank");
-        record.setKalturaId("");
-        record.setRecordType(RecordTypeDto.MANIFESTATION);
-
-        // Act
-        RecordFacade.createOrUpdateRecord(record);
-        DsRecordDto recordLoaded = RecordFacade.getRecord(id, false);
-
-        // Assert
-        assertNull(recordLoaded.getKalturaId());
-    }
-
-    @Test
-    public void testUpdateRecord_whenKalturaIdIsBlankAndReferenceIdUnchanged_thenKalturaIdIsKept() {
-        // Arrange
-        String id = "doms.radio:blank_kaltura_id_update";
-        DsRecordDto record = new DsRecordDto();
-        record.setId(id);
-        record.setOrigin("doms.radio");
-        record.setData("Hello");
-        record.setReferenceId("ref_keep");
-        record.setKalturaId("0_keep");
-        record.setRecordType(RecordTypeDto.MANIFESTATION);
-        RecordFacade.createOrUpdateRecord(record);
-        record.setKalturaId("");
-
-        // Act
-        RecordFacade.createOrUpdateRecord(record);
-        DsRecordDto recordLoaded = RecordFacade.getRecord(id, false);
-
-        // Assert
-        assertEquals("0_keep", recordLoaded.getKalturaId());
-    }
-
-    @Test
     public void testKeepKalturaId() {
         String id ="doms.radio:id1";
         String origin="doms.radio";
