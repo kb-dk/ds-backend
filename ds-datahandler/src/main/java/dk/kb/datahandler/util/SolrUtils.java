@@ -402,7 +402,7 @@ public class SolrUtils {
     /**
      * Update the final {@code SolrIndexResponse} with the content from the single {@code individualSolrResponse}.
      * The updated {@code SolrIndexResponse} is used as the response for the endpoint
-     * {@link dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl#indexSolr(String, Long, TypeDto)}. This
+     * {@link dk.kb.datahandler.api.v1.impl.DsDatahandlerApiServiceImpl#indexSolr(String, TypeDto)}. This
      * updated response contains information on the amount of documents that have been indexed in total and not just
      * during the last batch of the stream.
      *
