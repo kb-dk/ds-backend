@@ -248,6 +248,7 @@ services:
     networks:
       - ds_archive_network
       - solr_network
+      - graylog_network
     security_opt:
       - no-new-privileges:true
 
