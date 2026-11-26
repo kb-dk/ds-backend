@@ -8,6 +8,10 @@
 #
 # The secrets below are for local development only.
 
+# Password secret shared by graylog and graylog-datanode. Both must use the same value
+# (min. 16 characters), so it is defined once here and referenced with *graylog-password-secret.
+x-graylog-password-secret: &graylog-password-secret graylogDatanodeSecret
+
 services:
   mongodb:
     image: mongo:7.0
@@ -26,8 +30,7 @@ services:
     environment:
       TZ: UTC
       GRAYLOG_DATANODE_NODE_ID_FILE: /var/lib/graylog-datanode/node-id
-      # Must match GRAYLOG_PASSWORD_SECRET on the graylog service (min. 16 characters)
-      GRAYLOG_DATANODE_PASSWORD_SECRET: localdevpasswordsecret-change-me
+      GRAYLOG_DATANODE_PASSWORD_SECRET: *graylog-password-secret
       GRAYLOG_DATANODE_MONGODB_URI: mongodb://mongodb:27017/graylog
     ulimits:
       memlock:
@@ -50,7 +53,7 @@ services:
     environment:
       TZ: UTC
       GRAYLOG_NODE_ID_FILE: /usr/share/graylog/data/data/node-id
-      GRAYLOG_PASSWORD_SECRET: localdevpasswordsecret-change-me
+      GRAYLOG_PASSWORD_SECRET: *graylog-password-secret
       # SHA-256 of the admin password "admin"
       GRAYLOG_ROOT_PASSWORD_SHA2: 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
       GRAYLOG_HTTP_BIND_ADDRESS: 0.0.0.0:9000
