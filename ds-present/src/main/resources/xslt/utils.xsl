@@ -31,7 +31,7 @@
   <xsl:function name="my:toMilliseconds" as="xs:integer">
     <xsl:param name="startDate" as="xs:dateTime"/>
     <xsl:param name="endDate" as="xs:dateTime"/>
-    <xsl:value-of select="($endDate - $startDate) div xs:dayTimeDuration('PT0.001S')"/>
+    <xsl:sequence select="xs:integer(($endDate - $startDate) div xs:dayTimeDuration('PT0.001S'))"/>
   </xsl:function>
 
   <!-- Get the objects from inside a nested array flattened. If the array doesn't exist an empty string will be returned. -->

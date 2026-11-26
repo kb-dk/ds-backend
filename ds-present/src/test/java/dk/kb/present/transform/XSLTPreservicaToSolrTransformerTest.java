@@ -5,9 +5,10 @@ import dk.kb.present.TestUtil;
 import dk.kb.present.util.TestFileProvider;
 import dk.kb.util.Resolver;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *  To run these tests, the test metadata has to be fetched from the internal aegis project.
  *  With aegis running this can be done by running 'kb init' in this repository.
  */
-@Tag("integration")
 public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase {
     public static final String SCHEMA2SOLR =  "xslt/schemaorg2solr.xsl";
     private static final Logger log = LoggerFactory.getLogger(XSLTPreservicaToSolrTransformerTest.class);
@@ -38,18 +38,22 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         return PRESERVICA2SCHEMAORG + " AND " + SCHEMA2SOLR;
     }
 
-    @BeforeAll
-    public static void beforeMethod() {
-        if (Resolver.getPathFromClasspath("internal_test_files/preservica7") == null){
-            fail("Internal test files are not present. Unittest 'XSLTPreservicaToSolrTransformerTest' is therefore not run.");
+    // Only integration tests need the internal test files; the untagged tests use tracked records.
+    @BeforeEach
+    void requireInternalTestFiles(TestInfo testInfo) {
+        if (testInfo.getTags().contains("integration")
+                && Resolver.getPathFromClasspath("internal_test_files/preservica7") == null) {
+            fail("Internal test files are not present. Integration tests in 'XSLTPreservicaToSolrTransformerTest' cannot run.");
         }
     }
 
+    @Tag("integration")
     @Test
     public void testExtraction() {
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"id\":\"ds.test:e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml\"");
     }
 
+    @Tag("integration")
     @Test
     public void testTitles() {
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"title\":\"Ugen der gik\"");
@@ -57,102 +61,121 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_df3dc9cf, "\"title\":\"Før Bjørnen Er Skudt\"");
     }
 
+    @Tag("integration")
     @Test
     public void testCalculatedDuration() {
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1,"\"duration_ms\":\"7200000\"");
     }
 
+    @Tag("integration")
     @Test
     public void testGenrePresent() {
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"genre\":\"");
     }
 
+    @Tag("integration")
     @Test
     void testGenreContent() {
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121,"\"categories\":[\"Serier\",\"Krimiserie\"");
         assertPvicaNotContains(TestFiles.PVICA_RECORD_a8aafb121, "\"categories\":[\"hovedgenre: Serier ritzau\",\"undergenre: Krimiserie ritzau\"");
     }
 
+    @Tag("integration")
     @Test
     void testEmptyGenre(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"categories\":");
         assertPvicaContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"genre\":\"TV-rodekasse\"");
     }
 
+    @Tag("integration")
     @Test
     void testMainGenre() {
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121,"\"genre\":\"Film og serier\"");
     }
 
+    @Tag("integration")
     @Test
     void testSubGenre() {
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"genre_sub\":\"Krimiserie\"");
     }
 
+    @Tag("integration")
     @Test
     public void testNoGenre() {
         assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"genre\":[\"");
     }
 
+    @Tag("integration")
     @Test
     public void testResourceDescription() {
         assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"resource_description\": \"Moving Image\"");
     }
 
+    @Tag("integration")
     @Test
     public void testCollection() {
         assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"collection\": \"Det Kgl. Bibliotek; Radio/TV-Samlingen\"");
     }
 
+    @Tag("integration")
     @Test
     public void testCreatorAffiliation() {
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"creator_affiliation\":\"DR1\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"creator_affiliation_length\":\"3\"");
     }
 
+    @Tag("integration")
     @Test
     public void testCreatorAffiliationFallback() {
         assertPvicaContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"creator_affiliation\":\"tvkolding\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"creator_affiliation_length\":\"9\"");
     }
 
+    @Tag("integration")
     @Test
     public void testBroadcaster() {
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"broadcaster\":\"DR\"");
     }
 
+    @Tag("integration")
     @Test
     public void testCreatorAffiliationGeneric() {
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic\":\"DR P1\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic_length\":\"5\"");
     }
 
+    @Tag("integration")
     @Test
     public void testCreatorAffiliationGenericCount() {
         assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic_count\":\"1\"");
     }
 
+    @Tag("integration")
     @Test
     void testDescription() {
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description\":\"To begravelser er planlagt. Den ene for Sir Magnus Pye, den anden for Alan Conway.");
     }
 
+    @Tag("integration")
     @Test
     void testShortDescription(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"abstract\":\"Eng. krimiserie\",");
     }
 
+    @Tag("integration")
     @Test
     public void testOrigin(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"origin\":\"ds.test\"");
     }
 
+    @Tag("integration")
     @Test
     void testEpisode(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"episode\":");
         assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"episode\":");
     }
 
+    @Tag("integration")
     @Test
     void testNumberOfEpisodes() {
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"number_of_episodes\":");
@@ -160,24 +183,28 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaNotContains(TestFiles.PVICA_RECORD_3006e2f8, "\"number_of_episodes\":");
     }
 
+    @Tag("integration")
     @Test
     void testEpisodeButNoTotalNumberOfEpisodes(){
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"episode\"");
         assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"number_of_episode\"");
     }
 
+    @Tag("integration")
     @Test
     void testLive(){
         assertPvicaContains(TestFiles.PVICA_RECORD_74e22fd8, "\"live_broadcast\":\"true\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"live_broadcast\":\"false\"");
     }
 
+    @Tag("integration")
     @Test
     void testEpisodeTitle(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"episode_title\":\"Kagerester\"");
         assertPvicaNotContains(TestFiles.PVICA_RECORD_74e22fd8, "\"episode_title\"");
     }
 
+    @Tag("integration")
     @Test
     void testVideoQuality(){
         //ikke hd
@@ -188,17 +215,20 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         //TODO: We dont have any test files that are HD=true. Either find one when more data is available or create a mock
     }
 
+    @Tag("integration")
     @Test
     void testSurround(){
         assertPvicaContains(TestFiles.PVICA_RECORD_4b18d02d, "\"surround_sound\":\"true\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"surround_sound\":\"false\"");
     }
 
+    @Tag("integration")
     @Test
     void testInternalFormatIdentifier(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_format_identifier_ritzau\":\"81318588\"");
     }
 
+    @Tag("integration")
     @Test
     void testRetransmission(){
         // TODO: find a record which is a retransmission
@@ -206,104 +236,123 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_4b18d02d, "\"retransmission\":\"false\"");
     }
 
+    @Tag("integration")
     @Test
     void testHovedgenreId() {
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1,"\"internal_maingenre_id\":\"10\"");
     }
 
+    @Tag("integration")
     @Test
     void testChannelId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"ritzau_channel_id\":\"3\"");
     }
 
+    @Tag("integration")
     @Test
     void testDoubleChannelId() {
         assertPvicaContains(TestFiles.PVICA_DOUBLE_CHANNEL, "\"ritzau_channel_id\":\"325\"");
         assertPvicaContains(TestFiles.PVICA_DOUBLE_CHANNEL, "\"nielsen_channel_id\":\"103\"");
     }
 
+    @Tag("integration")
     @Test
     void testCountryOfOriginId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"country_of_origin_id\":\"0\"");
     }
 
+    @Tag("integration")
     @Test
     void testRitzauProgramID(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_ritzau_program_id\":\"25101143\"");
     }
 
+    @Tag("integration")
     @Test
     void testProgramOphold(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_program_ophold\":\"false\"");
         //TODO: Test true value with test file which contains program_ophold:program_ophold
     }
 
+    @Tag("integration")
     @Test
     void testSubGenreId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_subgenre_id\":\"736\"");
     }
 
+    @Tag("integration")
     @Test
     void testEpisodeId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_episode_id\":\"0\"");
     }
 
+    @Tag("integration")
     @Test
     void testSeasonId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_season_id\":\"174278\"");
     }
 
+    @Tag("integration")
     @Test
     void testSeriesId(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_series_id\":\"146180\"");
     }
 
+    @Tag("integration")
     @Test
     void solrTransformation_whenSeasonNumberRitzauExist_thenSeasonNumberRitzauExistInSolrData(){
         assertPvicaContains(TestFiles.PVICA_RECORD_0e89456b, "\"season_number_ritzau\":\"7\"");
         assertPvicaContains(TestFiles.PVICA_RECORD_e8c664f9, "\"season_number_ritzau\":\"1\"");
     }
 
+    @Tag("integration")
     @Test
     void solrTransformation_whenSeasonNumberRitzauIsZero_thenSeasonNumberRitzauDoNotExistSolrData(){
         assertPvicaNotContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "season_number_ritzau");
     }
 
+    @Tag("integration")
     @Test
     void solrTransformation_whenSeasonNumberRitzauDoNotExists_thenSeasonNumberRitzauDoNotExistInSolrData(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_3945e2d1, "season_number_ritzau");
     }
 
+    @Tag("integration")
     @Test
     void testSubtitles(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"has_subtitles\":\"false\"");
         // TODO: Create test for has_subtitles:true, with custom test file
     }
 
+    @Tag("integration")
     @Test
     void testSubtitlesHearingImpaired(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"has_subtitles_for_hearing_impaired\":\"false\"");
         // TODO: Create test for has_subtitles_for_hearing_impaired:true, with custom test file
     }
 
+    @Tag("integration")
     @Test
     void testTeletext(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_is_teletext\":\"false\"");
         // TODO: Create test for internal_is_teletext:true, with custom test file
     }
 
+    @Tag("integration")
     @Test
     void testShowviewcode(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_showviewcode\":\"0\"");
         // TODO: Create test for internal_is_teletext:true, with custom test file
     }
 
+    @Tag("integration")
     @Test
     void testPaddingSeconds(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"internal_padding_seconds\":\"15\"");
         // TODO: Create test for internal_is_teletext:true, with custom test file
     }
 
+    @Tag("integration")
     @Test
     void testAccessMetadata(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"access_individual_prohibition\":\"false\"," +
@@ -313,10 +362,30 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
     }
 
     @Test
+    void transform_whenIndividueltForbudIsJa_thenAccessIndividualProhibitionIsTrue() throws IOException {
+        String solrDoc = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_JA);
+        assertTrue(solrDoc.contains("\"access_individual_prohibition\":\"true\""), solrDoc);
+    }
+
+    @Test
+    void transform_whenIndividueltForbudIsNej_thenAccessIndividualProhibitionIsFalse() throws IOException {
+        String solrDoc = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_NEJ);
+        assertTrue(solrDoc.contains("\"access_individual_prohibition\":\"false\""), solrDoc);
+    }
+
+    @Test
+    void transform_whenIndividueltForbudIsMissing_thenAccessIndividualProhibitionIsFalse() throws IOException {
+        String solrDoc = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_INDIVIDUAL_PROHIBITION_MISSING);
+        assertTrue(solrDoc.contains("\"access_individual_prohibition\":\"false\""), solrDoc);
+    }
+
+    @Tag("integration")
+    @Test
     void testPid(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3945e2d1, "\"pid\":\"109.1.4\\/3945e2d1-83a2-40d8-af1c-30f7b3b94390\"");
     }
 
+    @Tag("integration")
     @Test
     void testProgramStructure(){
         assertPvicaContains(TestFiles.PVICA_RECORD_2b462c63, "\"internal_program_structure_missing_seconds_start\":\"0\"," +
@@ -324,12 +393,14 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         //TODO: add tests for fields 'holes' and 'overlaps' with a constructed test file.
     }
 
+    @Tag("integration")
     @Test
     void internalOverlappingStructure() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_f90f0a79);
         assertTrue(solrString.contains("\"internal_overlapping_files_count\":\"1\""));
     }
 
+    @Tag("integration")
     @Test
     void missingKanalnavn() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_MISSING_KANALNAVN);
@@ -339,6 +410,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(solrString.contains("\"creator_affiliation_facet\""));
     }
 
+    @Tag("integration")
     @Test
     void platformField() throws IOException {
         Map<String, String > platformMap = Map.of("platform", "DRARKIV");
@@ -346,6 +418,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(solrDocument.contains("\"platform\":\"DRARKIV\""));
     }
 
+    @Tag("integration")
     @Test
     void transformWithInjections_whenTranscriptionExists_thenTranscriptionFieldIsPopulatedAndHasTranscriptionIsTrue() throws IOException {
         // Arrange
@@ -361,6 +434,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(solrDocument.contains("\"has_transcription\":\"true\""));
     }
 
+    @Tag("integration")
     @Test
     void transformWithInjections_whenTranscriptionDoesNotExists_thenTranscriptionFieldDoesNotExistAndHasTranscriptionIsFalse() throws IOException {
         // Arrange
@@ -375,16 +449,19 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(solrDocument.contains("\"has_transcription\":\"false\""));
     }
 
+    @Tag("integration")
     @Test
     void testStartTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"startTime\":\"1987-05-04T14:45:00Z\"");
     }
 
+    @Tag("integration")
     @Test
     void testEndTime(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"endTime\":\"1987-05-04T16:45:00Z\"");
     }
 
+    @Tag("integration")
     @Test
     void testTemporalSearchWinterFields() throws IOException {
         // Sanity check time zone conversions at https://www.worldtimebuddy.com/
@@ -406,6 +483,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
 
     // Adjusted version of testTemporalSearchFields, where the month has been changed from April to February to
     // check if Danish summer/winter time is obeyed.
+    @Tag("integration")
     @Test
     void testTemporalSearchSummer() throws IOException {
         Map<String, String > summerDates = Map.of("startTime", "2022-05-28T17:29:55Z",
@@ -426,6 +504,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
                 "\"temporal_end_day_da\":\"Saturday\""));
     }
 
+    @Tag("integration")
     @Test
     void testNoNotes(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_b346acc8, "\"notes\":");
@@ -436,17 +515,20 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_WITH_TRANSCODINGSTATUS, "\\/radio-tv\\/2\\/e\\/e\\/6\\/2ee62889-a4d0-43c4-bfe5-4d7e3dcca7c8.mp3");
     }*/
 
+    @Tag("integration")
     @Test
     void testHoldbackName() {
         assertPvicaContains(TestFiles.PVICA_DOMS_MIG_eaea0362, "\"holdback_name\":\"Aktualitet og debat\"");
     }
 
+    @Tag("integration")
     @Test
     void testHoldbackDate() {
         assertPvicaContains(TestFiles.PVICA_DOMS_MIG_eaea0362, "\"holdback_expired_date\":\"2026-01-17T09:34:42Z\"");
     }
 
     /* disabled as they are not represented in solr
+    @Tag("integration")
     @Test
     void testOverlaps() {
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_two_length_ms\":\"3120\"");
@@ -455,36 +537,43 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_b346acc8, "\"internal_program_structure_overlap_type_two_file2UUID\":\"f73b69da-2bc0-4e06-b19b-95f24756804e\"");
     }*/
 
+    @Tag("integration")
     @Test
     void testNoBroadcasterInformation(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_0b3f6a54, "\"publishedOn\"");
     }
 
+    @Tag("integration")
     @Test
     void testMTime() {
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"internal_storage_mTime\":\"");
     }
      
+    @Tag("integration")
     @Test
     void testNoEmptyGenreSubField(){
         assertPvicaNotContains(TestFiles.PVICA_RECORD_53ce4817, "\"genre_sub\"");
     }
     
+    @Tag("integration")
     @Test
     void testNoSpecificOrigin(){
         assertPvicaContains(TestFiles.PVICA_EMPTY_RECORD, "\"origin\"");
     }
 
+    @Tag("integration")
     @Test
     void testCountFields(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"categories_count\":\"2\"");
     }
 
+    @Tag("integration")
     @Test
     void testMultiplePaddingFragments() throws Exception {
         assertPvicaContains(TestFiles.PVICA_RECORD_5238ea5d, "\"internal_padding_seconds\":\"0\"");
     }
 
+    @Tag("integration")
     @Test
     void testLengthFields(){
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"title_length\":\"25\"");
@@ -492,6 +581,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_a8aafb121, "\"description_length\":\"374\"");
     }
 
+    @Tag("integration")
     @Test
     void testFileIdAndPath(){
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_id\":\"c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4\"", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
@@ -499,6 +589,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION, "\"file_extension\":\"mp4\"", "c8d2e73c-0943-4b0d-ab1f-186ef10d8eb4");
     }
 
+    @Tag("integration")
     @Test
     void testFileIdAndPathMultipeFiles(){
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_id\":\"b557f9dd-197c-47f6-b481-785d5f7accd2\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
@@ -506,6 +597,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_extension\":\"mp3\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
     }
 
+    @Tag("integration")
     @Test
     void transformWithInjections_whenRerunClusterExists_thenRerunClusterFieldsIsPopulated()
         throws IOException {
@@ -525,6 +617,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
             solrDocument.contains("\"rerun_cluster_id_count\":\"" + rerunClusterIdCount + "\""));
     }
 
+    @Tag("integration")
     @Test
     void transformWithInjections_whenRerunClusterDoesNotExists_thenRerunClusterFieldsDoesNotExit()
         throws IOException {
@@ -539,6 +632,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertFalse(solrDocument.contains("\"rerun_cluster_id_count\""));
     }
 
+    @Tag("integration")
     @Test
     void transformWithInjections_whenSummaryExists_thenSummaryFieldsIsPopulated()
         throws IOException {
@@ -572,16 +666,19 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_DOMS_MIG_e2dfb840, "\"originates_from\":\"DOMS\"");
     }
 
+    @Tag("integration")
     @Test
     void testOriginatesFromPreservica(){
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"originates_from\":\"Preservica\"");
     }
 
+    @Tag("integration")
     @Test
     void testEmptyFields() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_3b0c391f);
     }
 
+    @Tag("integration")
     @Test
     void testActors() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
@@ -589,12 +686,14 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
                 "\"Elizabeth McGovern\",\"James Woods\",\"Robert De Niro\"],"));
     }
 
+    @Tag("integration")
     @Test
     void testActorsCount() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         assertTrue(solrString.contains("\"actor_count\":\"3\""));
     }
 
+    @Tag("integration")
     @Test
     void testCharacters() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
@@ -602,90 +701,105 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
                 "\"Deborah\",\"Max\",\"Noodles\"],"));
     }
 
+    @Tag("integration")
     @Test
     void testCharacterCount() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         assertTrue(solrString.contains("\"character_count\":\"3\""));
     }
 
+    @Tag("integration")
     @Test
     void testContributor() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
         assertTrue(solrString.contains("\"contributor\":["));
     }
 
+    @Tag("integration")
     @Test
     void testContributorCount() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_HOMEMADE_RADIO_WITH_CONTRIBUTORS);
         assertTrue(solrString.contains("\"contributor_count\":\"3\""));
     }
 
+    @Tag("integration")
     @Test
     void testNoActors() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(solrString.contains("\"actor\":["));
     }
 
+    @Tag("integration")
     @Test
     void testNoCharacters() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(solrString.contains("\"character\":["));
     }
 
+    @Tag("integration")
     @Test
     void testDirector() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         assertTrue(solrString.contains("\"director\":[\"Sergio Leone\"],"));
     }
 
+    @Tag("integration")
     @Test
     void testNoDirector() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(solrString.contains("\"director\":"));
     }
 
+    @Tag("integration")
     @Test
     void testCreators() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         assertTrue(solrString.contains("\"creator\":[\"Franco Ferrini og Sergio Leon\","));
     }
 
+    @Tag("integration")
     @Test
     void testNoCreators() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_597e79f7);
         assertFalse(solrString.contains("\"creator\":"));
     }
 
+    @Tag("integration")
     @Test
     void testCreatorCount() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_054c55b3);
         prettyPrintJson(solrString);
     }
 
+    @Tag("integration")
     @Test
     void testFailure() throws IOException {
         String solrString = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_eec71f45);
         prettyPrintJson(solrString);
     }
 
+    @Tag("integration")
     @Test
     public void testNoPresentationCopyDoms() throws IOException {
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_1ab7e0fc);
         assertTrue(transformedJSON.contains("\"access_malfunction\":\"true\""));
     }
 
+    @Tag("integration")
     @Test
     public void testPresentationCopyDoms() throws IOException {
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_17f56f97);
         assertTrue(transformedJSON.contains("\"access_malfunction\":\"false\""));
     }
 
+    @Tag("integration")
     @Test
     public void testDOMSLogicNotAffectsPreservicaRecord() throws IOException {
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_0b3f6a54);
         assertTrue(transformedJSON.contains("\"access_malfunction\":\"false\""));
     }
 
+    @Tag("integration")
     @Test
     public void getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File_whenContainsDsTvDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws IOException {
         // Act
@@ -700,6 +814,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(transformedJSON.contains("\"contains_ritzau\":\"true\""));
     }
 
+    @Tag("integration")
     @Test
     public void getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File_whenContainsDsRadioDrArchiveSupplementaryRightsMetadata_thenContainsDrArchiveSupplementaryRightsMetadataIsTrue() throws IOException {
         // Act
@@ -714,6 +829,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(transformedJSON.contains("\"contains_ritzau\":\"false\""));
     }
 
+    @Tag("integration")
     @Test
     public void testFragmentBooleansTvmeter() throws IOException {
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_DOMS_MIG_172c987b);
@@ -723,6 +839,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(transformedJSON.contains("\"contains_ritzau\":\"false\""));
     }
 
+    @Tag("integration")
     @Test
     public void testFragmentBooleansNielsen() throws IOException {
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_0e89456b);
@@ -732,6 +849,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertTrue(transformedJSON.contains("\"contains_ritzau\":\"true\""));
     }
 
+    @Tag("integration")
     @Test
     public void testIKKWithAnnoation() throws IOException {
         String transformedJSON = TestUtil.getTransformedToSolrJsonThroughSchemaJsonWithPreservica7File(PRESERVICA2SCHEMAORG, TestFiles.PVICA_WITH_ANNOTATION);
