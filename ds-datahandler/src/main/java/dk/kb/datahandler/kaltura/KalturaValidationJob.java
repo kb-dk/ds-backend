@@ -9,6 +9,7 @@ import dk.kb.storage.model.v1.DsRecordMinimalDto;
 import dk.kb.storage.model.v1.StreamErrorTypeDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,7 +193,7 @@ public class KalturaValidationJob {
     /**
      * True if the record has a kaltura_id that can be looked up in Kaltura: not null, not blank, and not an error
      * marker (ERROR_*). Storage can hold a blank kaltura_id. Kaltura can not look up a blank id, and the error would
-     * stop the whole run.
+     * stop the whole run. Records are changed by referenceId, so a record without one can not be fixed by this job.
      */
     private static boolean isValidatable(DsRecordMinimalDto record) {
         String kalturaId = record.getKalturaId();
@@ -201,6 +202,10 @@ public class KalturaValidationJob {
         }
         if (kalturaId.isBlank()) {
             log.warn("Record id='{}' has a blank kaltura_id. Skipped. Set it to null in storage.", record.getId());
+            return false;
+        }
+        if (StringUtils.isBlank(record.getReferenceId())) {
+            log.warn("Record id='{}' has kaltura_id='{}' but no referenceId. Skipped.", record.getId(), kalturaId);
             return false;
         }
         return true;

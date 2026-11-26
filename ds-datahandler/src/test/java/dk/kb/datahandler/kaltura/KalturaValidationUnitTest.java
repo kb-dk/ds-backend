@@ -299,16 +299,17 @@ class KalturaValidationUnitTest {
     }
 
     @Test
-    void testValidateKalturaIds_whenKalturaIdIsMissingBlankOrErrorMarker_thenRecordIsSkipped() {
+    void testValidateKalturaIds_whenKalturaIdIsMissingBlankOrErrorMarkerOrReferenceIdMissing_thenRecordIsSkipped() {
         // Arrange
         // Storage returns every record of the origin, so the job must filter out the ones it can not validate.
         DsRecordMinimalDto blank = buildRecord("record-1", "file-1", "");
         DsRecordMinimalDto valid = buildRecord("record-2", "file-2", "kaltura-2");
         DsRecordMinimalDto noKalturaId = buildRecord("record-3", "file-3", null);
         DsRecordMinimalDto uploadError = buildRecord("record-4", "file-4", "ERROR_FILE_MISSING");
+        DsRecordMinimalDto noReferenceId = buildRecord("record-5", null, "kaltura-5");
 
         service.when(() -> KalturaValidationJob.fetchStorageRecords(any(), anyString(), anyLong(), anyInt()))
-                .thenReturn(List.of(blank, valid, noKalturaId, uploadError), List.of());
+                .thenReturn(List.of(blank, valid, noKalturaId, uploadError, noReferenceId), List.of());
         service.when(() -> KalturaValidationJob.getEntryStatuses(anyList()))
                 .thenReturn(Map.of("kaltura-2", EntryStatus.READY));
 
