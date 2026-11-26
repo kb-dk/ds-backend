@@ -1,3 +1,7 @@
+# Local Graylog stack (Graylog, Data Node, MongoDB)
+include:
+  - docker-graylog.yml
+
 services:
   ds-storage:
     image: ds-storage/master:latest
@@ -244,6 +248,7 @@ services:
     networks:
       - ds_archive_network
       - solr_network
+      - graylog_network
     security_opt:
       - no-new-privileges:true
 
