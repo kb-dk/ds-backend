@@ -47,16 +47,15 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         }
     }
 
-    @Tag("integration")
     @Test
     public void testExtraction() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"id\":\"ds.test:e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_RADIO, "\"id\":\"ds.test:radio.xml\"");
     }
 
     @Tag("integration")
     @Test
     public void testTitles() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"title\":\"Ugen der gik\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_RADIO, "\"title\":\"Test record\"");
 
         assertPvicaContains(TestFiles.PVICA_RECORD_df3dc9cf, "\"title\":\"Før Bjørnen Er Skudt\"");
     }
@@ -137,17 +136,15 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_RECORD_3006e2f8, "\"broadcaster\":\"DR\"");
     }
 
-    @Tag("integration")
     @Test
     public void testCreatorAffiliationGeneric() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic\":\"DR P1\"");
-        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic_length\":\"5\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_RADIO, "\"creator_affiliation_generic\":\"DR P1\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_RADIO, "\"creator_affiliation_generic_length\":\"5\"");
     }
 
-    @Tag("integration")
     @Test
     public void testCreatorAffiliationGenericCount() {
-        assertPvicaContains(TestFiles.PVICA_RECORD_e683b0b8, "\"creator_affiliation_generic_count\":\"1\"");
+        assertPvicaContains(TestFiles.PVICA_RECORD_RADIO, "\"creator_affiliation_generic_count\":\"1\"");
     }
 
     @Tag("integration")
@@ -597,7 +594,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         assertPvicaContains(TestFiles.PVICA_WITH_CORRECT_PRESENTATION_MULTIPLE_FILES, "\"file_extension\":\"mp3\"", "b557f9dd-197c-47f6-b481-785d5f7accd2");
     }
 
-    @Tag("integration")
     @Test
     void transformWithInjections_whenRerunClusterExists_thenRerunClusterFieldsIsPopulated()
         throws IOException {
@@ -609,7 +605,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         map.put("rerun_cluster_id_count", rerunClusterIdCount.toString());
 
         // Act
-        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_RADIO, map);
 
         // Assert
         assertTrue(solrDocument.contains("\"rerun_cluster_id\":\"" + rerunClusterId + "\""));
@@ -617,7 +613,6 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
             solrDocument.contains("\"rerun_cluster_id_count\":\"" + rerunClusterIdCount + "\""));
     }
 
-    @Tag("integration")
     @Test
     void transformWithInjections_whenRerunClusterDoesNotExists_thenRerunClusterFieldsDoesNotExit()
         throws IOException {
@@ -625,14 +620,13 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         Map<String, String> map = new HashMap<>();
 
         // Act
-        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_RADIO, map);
 
         // Assert
         assertFalse(solrDocument.contains("\"rerun_cluster_id\""));
         assertFalse(solrDocument.contains("\"rerun_cluster_id_count\""));
     }
 
-    @Tag("integration")
     @Test
     void transformWithInjections_whenSummaryExists_thenSummaryFieldsIsPopulated()
         throws IOException {
@@ -642,7 +636,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         map.put("summary", summary);
 
         // Act
-        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_RADIO, map);
 
         // Assert
         assertTrue(solrDocument.contains("\"summary\":\"" + summary + "\""));
@@ -655,7 +649,7 @@ public class XSLTPreservicaToSolrTransformerTest extends XSLTTransformerTestBase
         Map<String, String> map = new HashMap<>();
 
         // Act
-        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_3006e2f8, map);
+        String solrDocument = transformWithInjections(TestFiles.PVICA_RECORD_RADIO, map);
 
         // Assert
         assertFalse(solrDocument.contains("\"summary\""));

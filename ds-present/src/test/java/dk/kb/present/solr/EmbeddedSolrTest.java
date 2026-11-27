@@ -64,7 +64,7 @@ import static dk.kb.present.TestFiles.PVICA_RECORD_9d9785a8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_a8aafb121;
 import static dk.kb.present.TestFiles.PVICA_RECORD_b346acc8;
 import static dk.kb.present.TestFiles.PVICA_RECORD_c6fde2f4;
-import static dk.kb.present.TestFiles.PVICA_RECORD_e683b0b8;
+import static dk.kb.present.TestFiles.PVICA_RECORD_RADIO;
 import static dk.kb.present.TestFiles.PVICA_WITH_CORRECT_PRESENTATION;
 import static dk.kb.present.transform.XSLTPreservicaSchemaOrgTransformerTest.PRESERVICA2SCHEMAORG;
 import static org.junit.jupiter.api.Assertions.*;
@@ -354,9 +354,8 @@ public class EmbeddedSolrTest {
     }
 
     @Test
-    @Tag("integration")
     void testPreservicaDuration() throws Exception {
-        testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "duration_ms", 7200000L);
+        testLongValuePreservicaField(PVICA_RECORD_RADIO, "duration_ms", 7200000L);
     }
 
     @Test
@@ -655,9 +654,8 @@ public class EmbeddedSolrTest {
     }*/
 
     @Test
-    @Tag("integration")
     void testIndexingOfRadioRecord() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "resource_description", "AudioObject");
+        testStringValuePreservicaField(PVICA_RECORD_RADIO, "resource_description", "AudioObject");
     }
 
     @Test
@@ -667,9 +665,8 @@ public class EmbeddedSolrTest {
     }
 
     @Test
-    @Tag("integration")
     void testDateModified() throws Exception {
-        testLongValuePreservicaField(PVICA_RECORD_e683b0b8, "internal_storage_mTime", 1701261949625000L);
+        testLongValuePreservicaField(PVICA_RECORD_RADIO, "internal_storage_mTime", 1701261949625000L);
     }
 
     @Test
@@ -686,9 +683,8 @@ public class EmbeddedSolrTest {
     }
 
     @Test
-    @Tag("integration")
     void testKalturaId() throws Exception {
-        testStringValuePreservicaField(PVICA_RECORD_e683b0b8, "kaltura_id", "aVeryTrueKalturaID");
+        testStringValuePreservicaField(PVICA_RECORD_RADIO, "kaltura_id", "aVeryTrueKalturaID");
     }
 
     @Test

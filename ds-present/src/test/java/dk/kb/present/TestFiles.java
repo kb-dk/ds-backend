@@ -22,7 +22,6 @@ public class TestFiles {
     // Preservica 5 manifestation
     public static final String PVICA_RECORD_33e30aa9 = "internal_test_files/preservica7/33e30aa9-d216-4216-aabf-b28d2b465215.xml";
     public static final String PVICA_RECORD_b346acc8 = "internal_test_files/preservica7//b346acc8-bcb2-41cd-bab1-be58bb0665e0.xml";
-    public static final String PVICA_RECORD_e683b0b8 = "internal_test_files/preservica7/e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml";
     // White program radio metadata from 1966
     public static final String PVICA_RECORD_c295ae6c = "internal_test_files/preservica7/c295ae6c-fd34-4694-a9cc-4204b4a9f3a0.xml";
 
@@ -117,4 +116,7 @@ public class TestFiles {
     public static final String PVICA_INDIVIDUAL_PROHIBITION_JA = "xml/preservica_access/individual_prohibition_ja.xml";
     public static final String PVICA_INDIVIDUAL_PROHIBITION_NEJ = "xml/preservica_access/individual_prohibition_nej.xml";
     public static final String PVICA_INDIVIDUAL_PROHIBITION_MISSING = "xml/preservica_access/individual_prohibition_missing.xml";
+
+    // Artificial records, tracked in git.
+    public static final String PVICA_RECORD_RADIO = "xml/preservica/radio.xml";
 }

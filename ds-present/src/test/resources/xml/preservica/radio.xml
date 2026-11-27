@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XIP>
+  <InformationObject>
+    <Ref>00000000-0000-0000-0000-00000000000</Ref>
+    <Title>Test record</Title>
+    <Description>Fin beskrivelse</Description>
+    <SecurityTag>security_tag</SecurityTag>
+    <Parent>11111111-1111-1111-1111-11111111111</Parent>
+  </InformationObject>
+  <Metadata schemaUri="http://preservica.com/LegacyXIP">
+    <Ref>22222222-2222-2222-2222-22222222222</Ref>
+    <Entity>00000000-0000-0000-0000-00000000000</Entity>
+    <Content>
+    </Content>
+  </Metadata>
+  <Metadata schemaUri="http://preservica.com/ExtendedXIP/v6.0">
+    <Ref>33333333-3333-3333-3333-33333333333</Ref>
+    <Entity>00000000-0000-0000-0000-00000000000</Entity>
+    <Content>
+      <ExtendedXIP>
+        <DigitalSurrogate>false</DigitalSurrogate>
+        <CoverageFrom>2022-05-29T16:40:00.000Z</CoverageFrom>
+        <CoverageTo>2022-05-29T17:00:00.000Z</CoverageTo>
+      </ExtendedXIP>
+    </Content>
+  </Metadata>
+  <Metadata schemaUri="http://www.pbcore.org/PBCore/PBCoreNamespace.html">
+    <Ref>44444444-4444-4444-4444-44444444444</Ref>
+    <Entity>00000000-0000-0000-0000-00000000000</Entity>
+    <Content>
+      <PBCoreDescriptionDocument:PBCoreDescriptionDocument
+              xmlns:PBCoreDescriptionDocument="http://www.pbcore.org/PBCore/PBCoreNamespace.html"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <pbcoreIdentifier>
+          <identifier>55555555-5555-5555-5555-55555555555</identifier>
+          <identifierSource>ritzauId</identifierSource>
+        </pbcoreIdentifier>
+        <pbcoreTitle>
+          <title>Test record</title>
+          <titleType>titel</titleType>
+        </pbcoreTitle>
+        <pbcoreTitle>
+          <titleType>originaltitel</titleType>
+        </pbcoreTitle>
+        <pbcoreTitle>
+          <title/>
+          <titleType>episodetitel</titleType>
+        </pbcoreTitle>
+        <pbcoreDescription>
+          <description/>
+          <descriptionType>kortomtale</descriptionType>
+        </pbcoreDescription>
+        <pbcoreDescription>
+          <description/>
+          <descriptionType>langomtale1</descriptionType>
+        </pbcoreDescription>
+        <pbcorePublisher>
+          <publisher>drp1</publisher>
+          <publisherRole>channel_name</publisherRole>
+        </pbcorePublisher>
+        <pbcorePublisher>
+          <publisher>DR P1</publisher>
+          <publisherRole>kanalnavn</publisherRole>
+        </pbcorePublisher>
+        <pbcoreInstantiation>
+          <formatLocation>Det Kgl. Bibliotek; Radio/TV-Samlingen</formatLocation>
+          <formatMediaType>Sound</formatMediaType>
+          <formatStandard>ikke hd</formatStandard>
+          <formatDuration>0</formatDuration>
+          <formatColors>farve</formatColors>
+          <formatChannelConfiguration>ikke surround</formatChannelConfiguration>
+          <pbcoreDateAvailable>
+            <dateAvailableStart>2022-05-29T16:40:00Z</dateAvailableStart>
+            <dateAvailableEnd>2022-05-29T17:00:00Z</dateAvailableEnd>
+          </pbcoreDateAvailable>
+          <pbcoreFormatID>
+            <formatIdentifier>81318370</formatIdentifier>
+            <formatIdentifierSource>ritzau</formatIdentifierSource>
+          </pbcoreFormatID>
+        </pbcoreInstantiation>
+        <pbcoreExtension>
+          <extension>antalepisoder:0</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>premiere:ikke premiere</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>genudsendelse:ikke genudsendelse</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>hovedgenre_id:0</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>kanalid:80</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>live:ikke live</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>produktionsland_id:0</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>program_id:00000000</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>program_ophold:ikke program ophold</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>undergenre_id:0</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>afsnit_id:0</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>saeson_id:0</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>serie_id:0</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>tekstet:ikke tekstet</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>th:ikke tekstet for hørehæmmede</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>ttv:ikke tekst-tv</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+        <pbcoreExtension>
+          <extension>showviewcode:0</extension>
+          <extensionAuthorityUsed>ritzau</extensionAuthorityUsed>
+        </pbcoreExtension>
+      </PBCoreDescriptionDocument:PBCoreDescriptionDocument>
+    </Content>
+  </Metadata>
+  <Metadata schemaUri="http://old.url.com/types/checksumObject/0/1/#">
+    <Ref>66666666-6666-6666-6666-66666666666</Ref>
+    <Entity>00000000-0000-0000-0000-00000000000</Entity>
+    <Content>
+      <initialChecksumInfo:initialChecksumInfo
+              xmlns:initialChecksumInfo="http://old.url.com/types/checksumObject/0/1/#"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <checksum>8BEFC7F744C224FCD1CF19014F50C3E3</checksum>
+      </initialChecksumInfo:initialChecksumInfo>
+    </Content>
+  </Metadata>
+  <Metadata schemaUri="http://new.url.com/types/padding/0/1/#">
+    <Ref>0b0b0b0b-0000-0000-0000-00000000000</Ref>
+    <Entity>00000000-0000-0000-0000-00000000000</Entity>
+    <Content>
+      <padding:padding xmlns:padding="http://new.url.com/types/padding/0/1/#"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <paddingSeconds>15</paddingSeconds>
+      </padding:padding>
+    </Content>
+  </Metadata>
+  <Metadata schemaUri="http://new.url.com/types/radiotv_transcoding_status/0/1/#">
+    <Ref>88888888-8888-8888-8888-88888888888</Ref>
+    <Entity>00000000-0000-0000-0000-00000000000</Entity>
+    <Content>
+      <radiotvTranscodingStatus:radiotvTranscodingStatus
+              xmlns:radiotvTranscodingStatus="http://new.url.com/types/radiotv_transcoding_status/0/1/#"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <transcodingStatus>done</transcodingStatus>
+      </radiotvTranscodingStatus:radiotvTranscodingStatus>
+    </Content>
+  </Metadata>
+  <Metadata schemaUri="http://id.new.url.com/schemas/radiotv_access/access">
+    <Ref>99999999-9999-9999-9999-99999999999</Ref>
+    <Entity>00000000-0000-0000-0000-00000000000</Entity>
+    <Content>
+      <access xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://id.new.url.com/schemas/radiotv_access/access https://id.new.url.com/schemas/radiotv_access/access/v3_0/access.xsd">
+        <individuelt_forbud>Nej</individuelt_forbud>
+        <klausuleret>Nej</klausuleret>
+        <defekt>Nej</defekt>
+        <kommentarer/>
+      </access>
+    </Content>
+  </Metadata>
+  <Metadata schemaUri="http://new.url.com/types/pidhandle/0/1/#">
+    <Ref>0a0a0a0a-0000-0000-0000-00000000000</Ref>
+    <Entity>00000000-0000-0000-0000-00000000000</Entity>
+    <Content>
+      <pidhandle:pidhandle xmlns:pidhandle="http://new.url.com/types/pidhandle/0/1/#"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <handle>hdl:109.1.4/00000000-0000-0000-0000-00000000000</handle>
+      </pidhandle:pidhandle>
+    </Content>
+  </Metadata>
+</XIP>
