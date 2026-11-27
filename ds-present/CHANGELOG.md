@@ -7,8 +7,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Add `summary` to `reservica2schemaorg.xsl`, `schemaorg2solr.xsl`, `schema.xml` and `solrconfig.xml`. Requires a
+  reindex and Solr config version 1.8.13.
+
 ## Fixed
--`access_individual_prohibition` always being `false` in Solr (since 2.1.4). It is now `true` when `individuelt_forbud` is `Ja` and `false` otherwise, also when the element is missing. **Requires a full Solr reindex.**
+
+-`access_individual_prohibition` always being `false` in Solr (since 2.1.4). It is now `true` when `individuelt_forbud`
+is `Ja` and `false` otherwise, also when the element is missing. **Requires a full Solr reindex.**
 
 ## [9.0.1](https://github.com/kb-dk/ds-backend/releases/tag/v9.0.1) - 2026-11-23
 
@@ -57,7 +64,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add `rerun_cluster_id` and `rerun_cluster_id_count` to `schema.org` and `solr schema`.
 - Update solr schema version to 1.8.10.
 - Update solr schema version to 1.8.11.
-- New field `season_number_ritzau` with the season number from the ritzau metadata. Requires a reindex and Solr config version 1.8.12.
+- New field `season_number_ritzau` with the season number from the ritzau metadata. Requires a reindex and Solr config
+  version 1.8.12.
 
 ### Changed
 

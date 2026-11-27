@@ -17,6 +17,7 @@ package dk.kb.present.storage;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
+import dk.kb.storage.model.v1.SummaryResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.storage.util.DsStorageClient;
 import dk.kb.util.webservice.exception.InternalServiceException;
@@ -163,6 +164,28 @@ public class DSStorage implements Storage {
         } catch (ServiceException e) {
             log.warn(
                 "Failed calling ds-storage when trying to retrieve rerunClusterResponseDto with fileId: '{}'. URL: '{}'. Exception: ",
+                fileId, storageUrl, e);
+            throw e;
+        }
+    }
+
+    /**
+     * Return a SummaryResponseDto from fileId.
+     *
+     * @param fileId UUID of fileId.
+     * @return SummaryResponseDto
+     */
+    @Override
+    public SummaryResponseDto getSummaryByFileId(UUID fileId) {
+        log.debug("getSummaryByFileId(fileId='{}') called", fileId);
+        try {
+            return storageClient.getSummaryByFileId(fileId);
+        } catch (NotFoundServiceException e) {
+            // No rerun cluster for this fileId. It is to be expected
+            throw e;
+        } catch (ServiceException e) {
+            log.warn(
+                "Failed calling ds-storage when trying to retrieve summaryResponseDto with fileId: '{}'. URL: '{}'. Exception: ",
                 fileId, storageUrl, e);
             throw e;
         }

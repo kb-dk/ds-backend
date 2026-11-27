@@ -18,6 +18,7 @@ import dk.kb.present.util.Combiner;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
+import dk.kb.storage.model.v1.SummaryResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import dk.kb.util.webservice.stream.ContinuationStream;
@@ -164,6 +165,11 @@ public class MultiStorage implements Storage {
 
     @Override
     public RerunClusterResponseDto getRerunClusterByFileId(UUID fileId) {
+        return null;
+    }
+
+    @Override
+    public SummaryResponseDto getSummaryByFileId(UUID fileId) {
         return null;
     }
 

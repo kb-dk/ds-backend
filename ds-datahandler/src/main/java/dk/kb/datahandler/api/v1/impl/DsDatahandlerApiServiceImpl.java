@@ -181,6 +181,21 @@ public class DsDatahandlerApiServiceImpl extends ImplBase implements DsDatahandl
         }
     }
 
+    /**
+     * Returns new rows from remote p3summaries database in summaries table, then calls ds-storage via
+     * DsStorageClient that save the rows in our summaries table, update mtime in ds_records table and
+     * return number of rows inserted or updated in summaries table in a RecordsCountDto object.
+     */
+    @Override
+    public RecordsCountDto updateSummaries() {
+        try {
+            log.info("Starting updating summaries");
+            return DsDatahandlerFacade.getSummaries();
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+
     @Override
     public void buildSuggest() {
         DsDatahandlerFacade.buildSuggest();

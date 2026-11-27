@@ -83,7 +83,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         assertTrue(transformedJSON.contains("\"kb:file_extension\":\"mp3\""));
     }
 
-    @Tag("integration")
     @Test
     void getTransformedWithAccessFieldsAdded_whenRerunClusterExists_thenRerunClusterFieldsIsPopulated()
         throws IOException {
@@ -96,7 +95,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
         // Act
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
-            TestFiles.PVICA_RECORD_e683b0b8, map);
+            TestFiles.PVICA_RECORD_RADIO, map);
 
         // Assert
         assertTrue(transformedJSON.contains("\"kb:rerun_cluster_id\":\"" + rerunClusterId + "\""));
@@ -104,7 +103,6 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
             transformedJSON.contains("\"kb:rerun_cluster_id_count\":" + rerunClusterIdCount));
     }
 
-    @Tag("integration")
     @Test
     void getTransformedWithAccessFieldsAdded_whenRerunClusterDoesNotExists_thenRerunClusterFieldsDoesNotExits()
         throws IOException {
@@ -113,14 +111,43 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
 
         // Act
         String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
-            TestFiles.PVICA_RECORD_e683b0b8, map);
+            TestFiles.PVICA_RECORD_RADIO, map);
 
         // Assert
         assertFalse(transformedJSON.contains("\"kb:rerun_cluster_id\":"));
         assertFalse(transformedJSON.contains("\"kb:rerun_cluster_id_count\":"));
     }
 
-    @Tag("integration")
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenSummaryExists_thenSummaryFieldsIsPopulated()
+        throws IOException {
+        // Arrange
+        String summary = "Fin beskrivelse.";
+        Map<String, String> map = new HashMap<>();
+        map.put("summary", summary);
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
+            TestFiles.PVICA_RECORD_RADIO, map);
+
+        // Assert
+        assertTrue(transformedJSON.contains("\"kb:summary\":\"" + summary + "\""));
+    }
+
+    @Test
+    void getTransformedWithAccessFieldsAdded_whenSummaryDoesNotExists_thenSummaryFieldsDoesNotExits()
+        throws IOException {
+        // Arrange
+        Map<String, String> map = new HashMap<>();
+
+        // Act
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG,
+            TestFiles.PVICA_RECORD_RADIO, map);
+
+        // Assert
+        assertFalse(transformedJSON.contains("\"kb:summary\":"));
+    }
+
     @Test
     void getTransformedWithAccessFieldsAdded_whenTranscriptionExists_thenTranscriptionFieldIsPopulatedAndHasTranscriptionIsTrue() throws IOException {
         // Arrange
@@ -129,14 +156,13 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         map.put("has_transcription", "true");
 
         // Act
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO, map);
 
         // Assert
         assertTrue(transformedJSON.contains("\"kb:transcription\":\"Dette er en transcription\""));
         assertTrue(transformedJSON.contains("\"kb:has_transcription\":\"true\""));
     }
 
-    @Tag("integration")
     @Test
     void getTransformedWithAccessFieldsAdded_whenTranscriptionDoesNotExists_thenTranscriptionFieldDoesNotExistAndHasTranscriptionIsFalse() throws IOException {
         // Arrange
@@ -144,7 +170,7 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         map.put("has_transcription", "false");
 
         // Act
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8, map);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO, map);
 
         // Assert
         assertFalse(transformedJSON.contains("\"kb:transcription\":"));
@@ -158,32 +184,28 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertTrue(transformedJSON.contains("\"name\":\"Ibens\""));
     }
 
-    @Tag("integration")
     @Test
     void testBroadcastDisplayName() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertTrue(transformedJSON.contains("\"broadcastDisplayName\":\"DR P1\",\"alternateName\":\"DR P1\""));
     }
 
-    @Tag("integration")
     @Test
     void testBroadcasterOrganization() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertTrue(transformedJSON.contains("\"legalName\":\"DR\""));
     }
 
-    @Tag("integration")
     @Test
     void testStartAndEndDates() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertTrue(transformedJSON.contains("\"startTime\":\"1987-05-04T14:45:00Z\"") &&
                                        transformedJSON.contains("\"endTime\":\"1987-05-04T16:45:00Z\""));
     }
 
-    @Tag("integration")
     @Test
     void testDuration() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         // TODO: Fix the time format delivered by the XSLT even though this format is compliant with schema.org as it is part of ISO 8601.
         Assertions.assertTrue(transformedJSON.contains("\"duration\":\"PT2H\""));
     }
@@ -191,12 +213,12 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
     @Tag("integration")
     @Test
     void testIdentifiers() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_a8afb121);
 
-        Assertions.assertTrue(transformedJSON.contains("\"identifier\":[{\"@type\":\"PropertyValue\",\"PropertyID\":\"Origin\",\"value\":\"ds.test\"}")
-                && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"ritzauId\",\"value\":\"926e730f-b3e6-44b9-aea7-a6ea27ec98ae\"}")
-                && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"RecordID\",\"value\":\"ds.test:e683b0b8-425b-45aa-be86-78ac2b4ef0ca.xml\"}")
-                && transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"PID\",\"value\":\"109.1.4\\/e683b0b8-425b-45aa-be86-78ac2b4ef0ca\"}"));
+        Assertions.assertTrue(transformedJSON.contains("\"identifier\":[{\"@type\":\"PropertyValue\",\"PropertyID\":\"Origin\",\"value\":\"ds.test\"}"));
+        Assertions.assertTrue(transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"ritzauId\",\"value\":\"dda8f853-ce55-4329-a0ea-190322800749\"}"));
+        Assertions.assertTrue(transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"RecordID\",\"value\":\"ds.test:a8afb121-e8b8-467a-8704-10dc42356ac4.xml\"}"));
+        Assertions.assertTrue(transformedJSON.contains("{\"@type\":\"PropertyValue\",\"PropertyID\":\"PID\",\"value\":\"109.1.4\\/a8afb121-e8b8-467a-8704-10dc42356ac4\"}"));
     }
 
     @Tag("integration")
@@ -356,10 +378,9 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         prettyPrintJson(transformedJSON);
     }
 
-    @Tag("integration")
     @Test
     void noVideoQualityForRadioRecords() throws IOException {
-        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertFalse(radio.contains("\"videoQuality\":"));
     }
 
@@ -379,31 +400,27 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertFalse(radio.contains("kb:showviewcode"));
     }
 
-    @Tag("integration")
     @Test
     void noAspectRatioForRadio() throws IOException {
-        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertFalse(radio.contains("\"kb:aspect_ratio\":"));
     }
 
-    @Tag("integration")
     @Test
     void noColorForRadio() throws IOException {
-        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertFalse(radio.contains("\"kb:color\":"));
     }
 
-    @Tag("integration")
     @Test
     void noTeletextForRadio() throws IOException {
-        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertFalse(radio.contains("\"kb:is_teletext\":"));
     }
 
-    @Tag("integration")
     @Test
     void noSubtitlesForRadio() throws IOException {
-        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String radio = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertFalse(radio.contains("\"kb:has_subtitles\":"));
         Assertions.assertFalse(radio.contains("\"kb:has_subtitles_for_hearing_impaired\":"));
     }
@@ -534,10 +551,9 @@ public class XSLTPreservicaSchemaOrgTransformerTest extends XSLTTransformerTestB
         Assertions.assertFalse(transformedJSON.contains("\"kb:internal\":{}"));
     }
 
-    @Tag("integration")
     @Test
     void testDateInjection() throws IOException {
-        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_e683b0b8);
+        String transformedJSON = TestUtil.getTransformedWithAccessFieldsAdded(PRESERVICA2SCHEMAORG, TestFiles.PVICA_RECORD_RADIO);
         Assertions.assertTrue(transformedJSON.contains("\"kb:storage_mTime\":"));
     }
 

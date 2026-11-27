@@ -408,6 +408,14 @@
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:platform')"/>
         </f:string>
       </xsl:if>
+
+      <!-- Extract summary -->
+      <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:summary') != ''">
+        <f:string key="summary">
+          <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:summary') "/>
+        </f:string>
+      </xsl:if>
+
       <xsl:if test="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:transcription') != ''">
         <f:string key="transcription">
           <xsl:value-of select="my:getNestedMapValue2Levels($schemaorg-xml, 'kb:internal', 'kb:transcription')"/>

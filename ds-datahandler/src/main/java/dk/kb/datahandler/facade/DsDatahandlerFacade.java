@@ -1,7 +1,11 @@
 package dk.kb.datahandler.facade;
 
+import dk.kb.datahandler.storage.SummaryStorage;
 import dk.kb.storage.model.v1.CreatedDto;
 import dk.kb.storage.model.v1.RerunClusterRequestDto;
+import dk.kb.util.webservice.exception.NotFoundServiceException;
+
+import dk.kb.storage.model.v1.SummaryRequestDto;
 import dk.kb.util.webservice.exception.NotFoundServiceException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -438,6 +442,110 @@ public class DsDatahandlerFacade {
             return Optional.empty();
         } catch (Exception exception) {
             log.error("Failed fetching latest rerun_clusters from ds-storage. Exception: ", exception);
+            throw exception;
+        }
+    }
+
+    /**
+     * Returns new rows from remote p3summaries database in summaries table, then calls ds-storage via
+     * DsStorageClient that save the rows in our summaries table, update mtime in ds_records table and
+     * return number of rows inserted or updated in summaries table in a RecordsCountDto object.
+     *
+     * @return RecordsCountDto number of rows inserted or updated
+     */
+    public static RecordsCountDto getSummaries() {
+        int limit = 1000;
+        RecordsCountDto allRecordsCountDto = new RecordsCountDto();
+        // Start the count at 0
+        allRecordsCountDto.setCount(0);
+
+        String user = DsDatahandlerApiServiceImpl.getCurrentUsername();
+        DsStorageClient dsStorageApiClient = getDsStorageApiClient();
+
+        Optional<CreatedDto> latestCreatedSummary = latestCreatedSummary();
+        UUID latestCreatedId = null;
+        OffsetDateTime latestCreatedDateTime = null;
+
+        if (latestCreatedSummary.isPresent()) {
+            latestCreatedId = latestCreatedSummary.get().getId();
+            latestCreatedDateTime = latestCreatedSummary.get().getCreated();
+        }
+
+        JobDto jobDto = startJob(TypeDto.DELTA, CategoryDto.SUMMARIES, null,
+            latestCreatedDateTime, user);
+
+        try {
+            log.info("Fetching rows from p3summaries table");
+
+            while (true) {
+                // The lambda needs variables that never change, so copy the current cursor position
+                final UUID afterId = latestCreatedId;
+                final OffsetDateTime afterCreated = latestCreatedDateTime;
+
+                List<SummaryRequestDto> summaryRequestDtoList =
+                    SummaryStorage.performStorageAction("getSummaries()", SummaryStorage.class,
+                        storage -> {
+                            return storage.getSummaries(afterId, afterCreated, limit);
+                        });
+
+                if (summaryRequestDtoList.isEmpty()) {
+                    break;
+                }
+
+                dk.kb.storage.model.v1.RecordsCountDto returnedRecordsCountDto =
+                    dsStorageApiClient.updateSummaries(summaryRequestDtoList);
+
+                if (summaryRequestDtoList.size() != returnedRecordsCountDto.getCount()) {
+                    throw new InternalServiceException(
+                        "Expected to save " + summaryRequestDtoList.size() + " summaries, but " +
+                            returnedRecordsCountDto.getCount() + " were saved");
+                }
+
+                allRecordsCountDto.setCount(
+                    allRecordsCountDto.getCount() + returnedRecordsCountDto.getCount());
+
+                SummaryRequestDto latestSummaryRequestDto = summaryRequestDtoList.get(summaryRequestDtoList.size() - 1);
+                latestCreatedId = latestSummaryRequestDto.getId();
+                latestCreatedDateTime = latestSummaryRequestDto.getCreated();
+
+                if (summaryRequestDtoList.size() < limit) {
+                    break;
+                }
+            }
+
+            updateJob(jobDto, JobStatusDto.COMPLETED, null, OffsetDateTime.now(ZoneOffset.UTC),
+                allRecordsCountDto.getCount(), null);
+
+            log.info("Successfully updated ds-storage summaries table with '{}' rows", allRecordsCountDto.getCount());
+
+            return allRecordsCountDto;
+        } catch (Exception exception) {
+            log.error("Inserting/updating summaries table failed with jobId='{}'. Exception: ",
+                jobDto.getId(), exception);
+            updateJob(jobDto, JobStatusDto.FAILED, exception.getMessage(),
+                OffsetDateTime.now(ZoneOffset.UTC), null, latestCreatedDateTime);
+            throw exception;
+        }
+    }
+
+    /**
+     * Calls ds-storage via DsStorageClient that return latest row from summaries table.
+     *
+     * @return CreatedDto latest created row
+     */
+    public static Optional<CreatedDto> latestCreatedSummary() {
+        try {
+            CreatedDto createdDto = getDsStorageApiClient().latestCreatedSummary();
+
+            log.info("Latest summary in ds-storage: id='{}', created='{}'", createdDto.getId(),
+                createdDto.getCreated());
+
+            return Optional.of(createdDto);
+        } catch (NotFoundServiceException exception) {
+            log.info("No rows in ds-storage yet, all rows will be fetched from p3summaries");
+            return Optional.empty();
+        } catch (Exception exception) {
+            log.error("Failed fetching latest summary from ds-storage. Exception: ", exception);
             throw exception;
         }
     }

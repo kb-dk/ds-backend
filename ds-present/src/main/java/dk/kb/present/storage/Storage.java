@@ -17,6 +17,7 @@ package dk.kb.present.storage;
 import dk.kb.storage.model.v1.DsRecordDto;
 import dk.kb.storage.model.v1.RecordTypeDto;
 import dk.kb.storage.model.v1.RerunClusterResponseDto;
+import dk.kb.storage.model.v1.SummaryResponseDto;
 import dk.kb.storage.model.v1.TranscriptionDto;
 import dk.kb.util.webservice.stream.ContinuationStream;
 
@@ -94,4 +95,12 @@ public interface Storage {
      * @return RerunClusterResponseDto
      */
     RerunClusterResponseDto getRerunClusterByFileId(UUID fileId);
+
+    /**
+     * Return a SummaryResponseDto from fileId.
+     *
+     * @param fileId UUID of fileId.
+     * @return SummaryResponseDto
+     */
+    SummaryResponseDto getSummaryByFileId(UUID fileId);
 }

@@ -109,6 +109,13 @@ curl --request POST "http://localhost:8084/ds-datahandler/v1/rerun-clusters" \
 --header "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
+### Fetch summaries from remote database:
+
+```shell
+curl --request POST "http://localhost:8084/ds-datahandler/v1/summaries" \
+--header "Authorization: Bearer $ACCESS_TOKEN"
+```
+
 ### Index records in Solr (we only have one collection (read and write in one))
 
 tv

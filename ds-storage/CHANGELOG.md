@@ -14,6 +14,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `DsStorageClient`.
 - Added index on column `created` and `id` together on `rerun_clusters` table and removed an old index on only
   `created.  (*Remember: OPS need to run `Flyway` migration*).
+- Added summaries table (*Remember: OPS need to run `Flyway` migration*).
+- Added endpoint `POST /summaries` that takes a List of `SummaryRequestDto` and save it to our `summaries` table, update
+  `mtime` in `ds_records` table and return number of rows inserted or updated in `summaries` table.
+- Added endpoint `GET /summary/{fileId}` that returns a `SummaryResponseDto` matching the `fileId`. Returns a `HTTP 404`
+  if no match was found.
+- Added endpoint `GET /summary/created/latest` that return latest `created` datetime from `summaries` table.
+  It can be null, if `summaries` table is empty.
 
 ### Changed
 

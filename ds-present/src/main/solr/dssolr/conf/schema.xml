@@ -78,9 +78,10 @@ When adding fields to this schema please have the following guidelines in mind:
 1.8.10: Add rerun_cluster_id and rerun_cluster_id_count field.
 1.8.11: Change rerun_cluster_id from uuid to string because Solr has a bug with UUID in JSON response.
 1.8.12: Added field season_number_ritzau
+1.8.13: Added field summary
 
   -->
-  <field name="_ds_1.8.12_" type="string" indexed="false" stored="false"/>
+  <field name="_ds_1.8.13_" type="string" indexed="false" stored="false"/>
   <uniqueKey>id</uniqueKey>
 
    <!-- START FIELDS  -->
@@ -1192,6 +1193,10 @@ When adding fields to this schema please have the following guidelines in mind:
     <?example ?>
   </field>
 
+  <field name="summary" type="text_general" multiValued="false" indexed="true" stored="true">
+    <?description AI generated summary from transcription text.?>
+    <?example     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce quis consequat libero, quis ornare mi.?>
+  </field>
 
   <!-- Contains the full transcription text without time interval for each sentence.-->
   <field name="transcription" type="text_general" multiValued="false" indexed="true" stored="false">

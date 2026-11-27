@@ -7,6 +7,18 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added endpoint `POST /summaries` that calls `ds-storage` via DsStorageClient that fetch
+  `latestCreatedSummary` timestamp (can be null) in our `summaries` table, then `ds-datahandler` uses the
+  fetched `latestCreatedRerunCluster` timestamp to fetch all new rows (unique `file_id`) from remote `p3summaries`
+  database in table `summaries` table and convert it to a list of `SummaryRequestDto`, and sends it to `ds-storage`,
+  that saves it in our `summaries` table, update `mtime` in `ds_records` table and return number of rows inserted or
+  updated in `summaries` table in a `RecordsCountDto` object to `ds-datahandler`, that saves the number in `jobs`
+  table.
+- Added new database connection to remote `p3summaries` database. OPS need to add extra database connection properties
+  in `ds-datahandler-application.properties` file.
+
 ### Changed
 
 - Rename method `latestCreated` to `latestCreatedRerunCluster` so it does not collide when `summaries` is implemented.
